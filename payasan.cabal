@@ -1,0 +1,80 @@
+name:             payasan
+version:          0.1.0
+license:          BSD3
+license-file:     LICENSE
+copyright:        Stephen Tetley <stephen.tetley@gmail.com>
+maintainer:       Stephen Tetley <stephen.tetley@gmail.com>
+homepage:         http://code.google.com/p/copperbox/
+category:         Music
+synopsis:         Score kit for MIDI.
+description:
+  .
+  DSL to generate MIDI tracks.
+  .
+  (c) Stephen Tetley 2015
+  .
+
+build-type:         Simple
+stability:          half baked
+cabal-version:      >= 1.2
+
+extra-source-files:
+  demo/Demo01.hs
+
+
+library
+  hs-source-dirs:     src
+  build-depends:      base,
+                      containers,
+                      template-haskell,
+                      parsec       >= 3.1   && <= 4.0,
+                      mtl          >= 2.0   && <= 3.0,
+                      zmidi-core   >= 0.7.0 && <= 1.0.0,
+                      vector-space >= 0.8.0 && <= 1.0.0
+
+  exposed-modules:
+    Payasan.Base,
+    Payasan.Base.Advance,
+    Payasan.Base.Concat,
+    Payasan.Base.Context,
+    Payasan.Base.Event,
+    Payasan.Base.EventList,
+    Payasan.Base.Internal.Base,
+    Payasan.Base.Internal.Midi,
+    Payasan.Base.Internal.MidiOutput,
+    Payasan.Base.Internal.Pitch,
+    Payasan.Base.Internal.Utils,
+    Payasan.Base.Names.Chord,
+    Payasan.Base.Names.Duration,
+    Payasan.Base.Names.GeneralMidiDrums,
+    Payasan.Base.Names.GeneralMidiInstruments,
+    Payasan.Base.Names.Interval,   
+    Payasan.Base.Names.Pitch,
+    Payasan.Base.Shim,
+    Payasan.Models.Djembe,
+    Payasan.Models.Djembe.Base,
+    Payasan.Models.Djembe.Interpret,
+    Payasan.Models.Djembe.Parser,
+    Payasan.Models.Metronome,
+    Payasan.Models.Metronome.Base,
+    Payasan.Models.Metronome.Interpret,
+    Payasan.Symbolic.SimpleNoteList,
+    Payasan.Symbolic.SimpleNoteList.Base,
+    Payasan.Symbolic.SimpleNoteList.Interpret,
+    Payasan.Symbolic.SimpleNoteList.Parser
+
+
+
+
+  other-modules:
+
+  extensions:
+    
+
+  ghc-options:
+  
+  includes: 
+  
+
+  
+  

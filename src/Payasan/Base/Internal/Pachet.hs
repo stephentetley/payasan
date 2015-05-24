@@ -1,0 +1,158 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveDataTypeable         #-}
+{-# OPTIONS -Wall #-}
+
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Payasan.Base.Internal.Pachet
+-- Copyright   :  (c) Stephen Tetley 2015
+-- License     :  BSD3
+--
+-- Maintainer  :  stephen.tetley@gmail.com
+-- Stability   :  unstable
+-- Portability :  GHC
+--
+-- Pitch type
+--
+-- Import directly if needed.
+--
+--------------------------------------------------------------------------------
+
+module Payasan.Base.Internal.Pachet
+  
+
+
+  where
+
+import Data.Data
+
+data PitchLetter = C | D | E | F | G | A | B 
+  deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
+
+data Alteration = DBL_FLAT | FLAT | NAT | SHARP | DBL_SHARP
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+data Note = Note !PitchLetter !Alteration
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+type Octave = Int
+
+data Pitch = Pitch !Note !Octave 
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+
+semitoneCountPL :: PitchLetter -> Int
+semitoneCountPL C = 0
+semitoneCountPL D = 2
+semitoneCountPL E = 4
+semitoneCountPL F = 5
+semitoneCountPL G = 7
+semitoneCountPL A = 9
+semitoneCountPL B = 11
+
+semitoneCountA :: Alteration -> Int
+semitoneCountA DBL_FLAT  = -2
+semitoneCountA FLAT      = -1
+semitoneCountA NAT       = 0
+semitoneCountA SHARP     = 1
+semitoneCountA DBL_SHARP = 2
+
+semitoneCountN :: Note -> Int
+semitoneCountN (Note pl a) = semitoneCountPL pl + semitoneCountA a
+
+
+equivalent :: Note -> Note -> Bool
+equivalent n1 n2 = semitoneCountN n1 == semitoneCountN n2
+
+
+sharpA :: Alteration -> Alteration
+sharpA DBL_FLAT  = FLAT
+sharpA FLAT      = NAT
+sharpA NAT       = SHARP
+sharpA SHARP     = DBL_SHARP
+sharpA DBL_SHARP = error "sharpA - DBL_SHARP"
+
+
+sharp :: Note -> Note 
+sharp (Note pl a) = Note pl $ sharpA a
+
+flatA :: Alteration -> Alteration
+flatA DBL_FLAT  = error "flatA - DBL_FLAT"
+flatA FLAT      = DBL_FLAT
+flatA NAT       = FLAT
+flatA SHARP     = NAT
+flatA DBL_SHARP = SHARP
+
+flat :: Note -> Note 
+flat (Note pl a) = Note pl $ flatA a
+
+
+--------------------------------------------------------------------------------
+-- Interval
+
+
+data IntervalType = OCTAVE | SECOND | THIRD | FOURTH | FIFTH | SIXTH | SEVENTH
+
+data Interval = Interval
+    { interval_type             :: !Int
+    , interval_semicount        :: !Int
+    }
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+
+-- constructor examples
+
+fifth                   :: Interval
+fifth                   = Interval { interval_type        = 5
+                                   , interval_semicount   = 7
+                                   }
+
+diminishedSeventh       :: Interval
+diminishedSeventh       = Interval { interval_type        = 7
+                                   , interval_semicount   = 9
+                                   }
+
+
+
+intervalName :: Interval -> String
+intervalName ivl = unwords [ distanceName ivl, intervalColour ivl ]
+
+identify :: [String] -> Int -> Maybe String
+identify names ix | ix >= length names = Nothing
+                  | otherwise          = Just $ names !! ix
+
+distanceName :: Interval -> String
+distanceName (Interval {interval_type = ty}) = step $ (ty-1) `mod` 7
+  where
+    step 0 = "octave"
+    step 1 = "second"
+    step 2 = "third"
+    step 3 = "fourth"
+    step 4 = "fifth"
+    step 5 = "sixth"
+    step 6 = "seventh"
+    step _ = error $ "distanceName - unreachable"
+
+intervalColour :: Interval -> String
+intervalColour (Interval {interval_type = ty, interval_semicount = n}) = 
+    maybe "unknown colour" id $ case ty of
+      2 -> identify ["diminished", "minor", "major", "augmented"] (n+1)
+      3 -> identify ["minor", "major"] (n-2)
+      4 -> identify ["diminished", "perfect", "augmented"] (n-3)
+      5 -> identify ["diminished", "perfect", "augmented"] (n-5)
+      6 -> identify ["minor", "major", "augmented"] (n-7)
+      7 -> identify ["diminished", "minor", "major"] (n-8)
+      _ -> Nothing
+
+reverseInterval :: Interval -> Interval
+reverseInterval (Interval {interval_type = ty, interval_semicount = n}) = 
+    Interval { interval_type        = 9 - ty
+             , interval_semicount   = 12 - n
+             }
+
+
+-- alterateToReach :: Note -> Int -> Note
+
+intervalWith :: Note -> Note -> Interval
+intervalWith _ _ = undefined
+
