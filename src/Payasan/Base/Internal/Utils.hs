@@ -5,7 +5,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  SymNotelist.Utils
+-- Module      :  Payasan.Base.Internal.Utils
 -- Copyright   :  (c) Stephen Tetley 2014-2015
 -- License     :  BSD3
 --
@@ -19,7 +19,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module SymNotelist.Utils
+module Payasan.Base.Internal.Utils
   ( 
 
   -- * Time divisions

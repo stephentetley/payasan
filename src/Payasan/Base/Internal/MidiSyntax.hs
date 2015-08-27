@@ -1,8 +1,9 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Midi
+-- Module      :  Payasan.Base.Internal.MidiSyntax
 -- Copyright   :  (c) Stephen Tetley 2014-2015
 -- License     :  BSD3
 --
@@ -17,9 +18,10 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Midi
+module Payasan.Base.Internal.MidiSyntax
   ( 
 
+  -- * syntax
     Track(..)
   , InterimTrack(..)
   , TrackData(..)
@@ -27,14 +29,13 @@ module Payasan.Base.Internal.Midi
   , NoteValue(..)
   , MidiNoteList
 
-  , timeSpanMidiNote
+  -- * Helpers
   , compareMidiNote
 
   ) where
 
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Pitch
 import Payasan.Base.Internal.Utils
 
 import qualified ZMidi.Core as Z
@@ -82,16 +83,27 @@ data NoteValue = NoteValue
 type MidiNoteList = H MidiNote
 
 
+
+newtype MidiPitch = MidiPitch Int
+  deriving (Enum,Eq,Ord,Num,Real,Integral,Show)
+
+
 --------------------------------------------------------------------------------
 -- Helpers
 
-timeSpanMidiNote :: MidiNote -> TimeSpan
-timeSpanMidiNote a = TimeSpan (note_start a) (note_dur a)
 
 
 -- | Sort by instrument, then start time.
 compareMidiNote :: MidiNote -> MidiNote -> Ordering
 compareMidiNote = compare `on` note_start
+
+{-
+
+pitchToMidi :: Pitch -> MidiPitch
+pitchToMidi (Pitch o i) = fromIntegral $ fromIntegral i + ove
+  where
+    ove = 12 * (o-3)
+-}
 
 
 

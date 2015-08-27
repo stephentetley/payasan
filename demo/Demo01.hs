@@ -4,8 +4,10 @@
 module Demo01 where
 
 import Payasan.Base.Internal.ABCOutput (abcOutput) -- temp
-
 import Payasan.Base.Notelist
+
+import Payasan.Base.Internal.MidiOutput
+
 
 phrase01 :: StdPhrase
 phrase01 = fromABC $ [abcPhrase| [cg] G2 E2 C/2 | c |]

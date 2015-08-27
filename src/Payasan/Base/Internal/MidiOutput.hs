@@ -26,7 +26,7 @@ module Payasan.Base.Internal.MidiOutput
 
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Midi
+import Payasan.Base.Internal.MidiSyntax
 import Payasan.Base.Internal.Utils
 
 import qualified ZMidi.Core as Z
