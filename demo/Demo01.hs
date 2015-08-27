@@ -1,42 +1,42 @@
+{-# LANGUAGE QuasiQuotes                #-}
 {-# OPTIONS -Wall #-}
 
 module Demo01 where
 
+import Payasan.Base.Internal.ABCOutput (abcOutput) -- temp
 
-import Payasan.Base
-import Payasan.Base.EventList
+import Payasan.Base.Notelist
 
-import Payasan.Base.Names.Pitch
+phrase01 :: StdPhrase
+phrase01 = fromABC $ [abcPhrase| [cg] G2 E2 C/2 | c |]
+
+manual_ri :: RenderInfo
+manual_ri = default_render_info { render_unit_note_len      = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = writeMF0 "out01.mid" eventlist
+demo01 = printAsABC phrase01
 
-wgBowedBar :: Pitch -> Event ()
-wgBowedBar pch = 
-    makeEventFw () 0.5 (NoteValue { note_pitch    = pitchToMidi pch
-                                  , note_velo_on  = 65
-                                  , note_velo_off = 65
-                                  })
+-- Be care to judge on beaming - manual may be non-standard
+phrase02 :: StdPhrase
+phrase02 = fromABCWith manual_ri $ 
+    [abcPhrase| c2 {d}c {c2d2}c|{dcd}c {ede}d {fef}e f| c/{gfef}d/e/f/ f/e/{gfedc}d/c/|c G E {cBAGFED}C| |]
 
-eventlist :: Track
-eventlist = renderEventList track_cfg $ do
-                { event    0   0.25 $ wgBowedBar c_4
-                ; event    0.5 2    $ wgBowedBar e_4
-                ; accTrill 2   1 e_4 e_4 4 $ \pch -> wgBowedBar pch
-                ; trill    3   2 c_4 e_4 4 $ \pch -> wgBowedBar pch
-                ; decTrill 6   2 e_4 e_4 4 $ \pch -> wgBowedBar pch
-                }
+demo02 :: IO ()
+demo02 = printAsABC phrase02
 
+phrase03 :: ABCPhrase
+phrase03 = [abcPhrase|
+    (3cde e2 | (6cegczg (3czg | (3:2:2G4c2 | (3:2:4G2A2Bc | (3:2:6(3GGGA2Bc |]
+
+demo03:: IO ()
+demo03 = putStrLn $ ppRender $ abcOutput phrase03
 
 
+-- Beaming wrong - todo
+testPh :: StdPhrase
+testPh = fromABCWith manual_ri $ 
+    [abcPhrase| c c//c//c//c//  c/4c/4c/4c/4 c |]
 
-track_cfg :: TrackData
-track_cfg = TrackData { channel_number    = 1
-                      , program_change    = Nothing
-                      , generic_text      = ""
-                      , sequence_name     = ""
-                      , instrument_name   = ""
-                      }
-
-
+test01 :: IO ()
+test01 = printAsABC testPh
