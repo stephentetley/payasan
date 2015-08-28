@@ -6,6 +6,7 @@ module Demo01 where
 import Payasan.Base.Internal.ABCOutput (abcOutput) -- temp
 import Payasan.Base.Notelist
 import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
 import Payasan.Base.Internal.MidiOutput
 import Payasan.Base.Internal.MidiOutTrans
@@ -48,3 +49,8 @@ testPh = fromABCWith manual_ri $
 
 test01 :: IO ()
 test01 = printAsABC testPh
+
+
+testMiddleC :: StdPhrase
+testMiddleC = fromABCWith manual_ri $ 
+    [abcPhrase| C |]

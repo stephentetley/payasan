@@ -114,7 +114,7 @@ compareMidiNote = compare `on` note_start
 pitchToMidi :: Pitch -> MidiPitch
 pitchToMidi (Pitch lbl o) = fromIntegral $ semitoneCountNL lbl + ove
   where
-    ove = 12 * (o-3)
+    ove = 12 * (o+1)
 
 
 

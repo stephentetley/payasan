@@ -25,6 +25,8 @@ module Payasan.Base.Pitch
   , Alteration(..)
   , Octave
 
+  , middle_c
+
   , semitoneCountNL
   , semitoneCountPL
   , semitoneCountA
@@ -53,7 +55,8 @@ data Alteration = DBL_FLAT | FLAT | NAT | SHARP | DBL_SHARP
 
 type Octave = Int
 
-
+middle_c :: Pitch
+middle_c = Pitch (NoteLabel C NAT) 4
 
 semitoneCountNL :: NoteLabel -> Int
 semitoneCountNL (NoteLabel pl a) = semitoneCountPL pl + semitoneCountA a
