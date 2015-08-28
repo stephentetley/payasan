@@ -24,6 +24,11 @@ module Payasan.Base.Pitch
   , PitchLetter(..)
   , Alteration(..)
   , Octave
+
+  , semitoneCountNL
+  , semitoneCountPL
+  , semitoneCountA
+
   )
   where
 
@@ -49,7 +54,9 @@ data Alteration = DBL_FLAT | FLAT | NAT | SHARP | DBL_SHARP
 type Octave = Int
 
 
-{-
+
+semitoneCountNL :: NoteLabel -> Int
+semitoneCountNL (NoteLabel pl a) = semitoneCountPL pl + semitoneCountA a
 
 
 semitoneCountPL :: PitchLetter -> Int
@@ -68,10 +75,8 @@ semitoneCountA NAT       = 0
 semitoneCountA SHARP     = 1
 semitoneCountA DBL_SHARP = 2
 
-semitoneCountN :: NoteLabel -> Int
-semitoneCountN (NoteLabel pl a) = semitoneCountPL pl + semitoneCountA a
 
-
+{-
 equivalent :: NoteLabel -> NoteLabel -> Bool
 equivalent n1 n2 = semitoneCountN n1 == semitoneCountN n2
 

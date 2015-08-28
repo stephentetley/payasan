@@ -38,6 +38,8 @@ module Payasan.Base.Internal.CommonSyntax
 
   ) where
 
+import Payasan.Base.Internal.Base
+
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
@@ -49,10 +51,11 @@ import Data.Ratio
 
 
 data RenderInfo = RenderInfo
-    { render_key_sig            :: KeySig
-    , render_time_sig           :: TimeSig
-    , render_meter_patn         :: MeterPattern
-    , render_unit_note_len      :: UnitNoteLength
+    { render_key_sig            :: !KeySig
+    , render_time_sig           :: !TimeSig
+    , render_meter_patn         :: !MeterPattern
+    , render_unit_note_len      :: !UnitNoteLength
+    , render_bpm                :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -65,6 +68,7 @@ default_render_info = RenderInfo
     , render_time_sig           = Meter 4 4 
     , render_meter_patn         = [1%2,1%2]
     , render_unit_note_len      = UNIT_NOTE_8
+    , render_bpm                = 120
     }
 
 

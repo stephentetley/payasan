@@ -5,8 +5,11 @@ module Demo01 where
 
 import Payasan.Base.Internal.ABCOutput (abcOutput) -- temp
 import Payasan.Base.Notelist
+import Payasan.Base.Duration
 
 import Payasan.Base.Internal.MidiOutput
+import Payasan.Base.Internal.MidiOutTrans
+import Payasan.Base.Internal.MidiSyntax
 
 
 phrase01 :: StdPhrase
@@ -18,6 +21,9 @@ manual_ri = default_render_info { render_unit_note_len      = UNIT_NOTE_4 }
 
 demo01 :: IO ()
 demo01 = printAsABC phrase01
+
+demo01a :: IO ()
+demo01a = writeAsMIDI "out/phrase1.mid" phrase01
 
 -- Be care to judge on beaming - manual may be non-standard
 phrase02 :: StdPhrase

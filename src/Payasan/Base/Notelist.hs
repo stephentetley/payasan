@@ -34,15 +34,21 @@ module Payasan.Base.Notelist
 
   , ppRender
 
+  , writeAsMIDI
+
   ) where
 
-import qualified Payasan.Base.Internal.ABCInTrans as ABCIn
-import qualified Payasan.Base.Internal.ABCOutTrans as ABCOut
+import qualified Payasan.Base.Internal.ABCInTrans       as ABCIn
+import qualified Payasan.Base.Internal.ABCOutTrans      as ABCOut
 import Payasan.Base.Internal.ABCOutput
 import Payasan.Base.Internal.ABCParser (abcPhrase)
 import Payasan.Base.Internal.ABCSyntax (ABCPhrase)
-import qualified Payasan.Base.Internal.BracketTrans as BRKT
+import qualified Payasan.Base.Internal.BracketTrans     as BRKT
 import Payasan.Base.Internal.MainSyntax
+import qualified Payasan.Base.Internal.MidiOutput       as MIDI
+import qualified Payasan.Base.Internal.MidiOutTrans     as MIDIOut
+import qualified Payasan.Base.Internal.MidiPitchTrans   as MIDIPch
+import qualified Payasan.Base.Internal.MidiSyntax       as MIDI
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -68,3 +74,12 @@ printAsABC = putStrLn . outputAsABC
 
 ppRender :: Doc -> String
 ppRender = renderStyle (style {lineLength=500})
+
+
+writeAsMIDI :: FilePath -> StdPhrase -> IO ()
+writeAsMIDI path notes = 
+   let trk = MIDIOut.translate (MIDI.simpleTrackData 1) (noteTrans notes)
+   in MIDI.writeMF1 path [trk]
+
+noteTrans :: StdPhrase -> Phrase MIDI.MidiPitch Duration
+noteTrans = MIDIPch.translate 

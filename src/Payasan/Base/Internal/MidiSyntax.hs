@@ -28,15 +28,20 @@ module Payasan.Base.Internal.MidiSyntax
   , MidiNote(..)
   , NoteValue(..)
   , MidiNoteList
+  , MidiPitch
 
   -- * Helpers
+  , simpleTrackData
   , compareMidiNote
+  , pitchToMidi
 
   ) where
 
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.Utils
+
+import Payasan.Base.Pitch
 
 import qualified ZMidi.Core as Z
 
@@ -91,20 +96,25 @@ newtype MidiPitch = MidiPitch Int
 --------------------------------------------------------------------------------
 -- Helpers
 
-
+simpleTrackData :: Int -> TrackData
+simpleTrackData ch = TrackData
+    { channel_number    = ch
+    , program_change    = Nothing
+    , generic_text      = ""
+    , sequence_name     = ""
+    , instrument_name   = ""
+    }
 
 -- | Sort by instrument, then start time.
 compareMidiNote :: MidiNote -> MidiNote -> Ordering
 compareMidiNote = compare `on` note_start
 
-{-
+
 
 pitchToMidi :: Pitch -> MidiPitch
-pitchToMidi (Pitch o i) = fromIntegral $ fromIntegral i + ove
+pitchToMidi (Pitch lbl o) = fromIntegral $ semitoneCountNL lbl + ove
   where
     ove = 12 * (o-3)
--}
-
 
 
 
