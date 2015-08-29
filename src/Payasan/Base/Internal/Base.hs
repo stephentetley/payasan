@@ -21,6 +21,7 @@ module Payasan.Base.Internal.Base
   , Seconds
   , BPM
 
+
   )  where
 
 
@@ -32,4 +33,6 @@ type Decimal = Fixed E9
 type Seconds = Decimal
 
 type BPM     = Decimal
+
+
 

@@ -21,21 +21,43 @@ module Payasan.Base.Internal.ABCOutput
 
 import Payasan.Base.Internal.ABCSyntax
 import Payasan.Base.Internal.ABCUtils
+import Payasan.Base.Internal.Utils
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 type CatOp = Doc -> Doc -> Doc
 
-abcOutput :: ABCPhrase -> Doc
-abcOutput = oABCPhrase
+-- Generating output should be stateful so we can insert a 
+-- newline every four lines.
 
-oABCPhrase :: ABCPhrase -> Doc
-oABCPhrase (ABCPhrase [])       = empty
+type Mon a = State Int a
+
+lineLen :: Mon Int
+lineLen = get
+
+resetLineLen :: Mon ()
+resetLineLen = put 0
+
+incrLineLen :: Mon ()
+incrLineLen = puts (+1)
+
+abcOutput :: ABCPhrase -> Doc
+abcOutput ph = evalState (oABCPhrase ph) 0
+
+
+
+oABCPhrase :: ABCPhrase -> Mon Doc
+oABCPhrase (ABCPhrase [])       = return empty
 oABCPhrase (ABCPhrase (x:xs))   = step (oBar x) xs
   where
-    step d (b:bs) = let ac = d <+> char '|' <+> oBar b in step ac bs
-    step d []     = d
+    step d []     = return d
+    step d (b:bs) = do { i <- lineLen
+                       ; if i > 4 then resetLineLen else incrLineLen
+                       ; let ac = if i > 4 then (d $+$ oBar b) 
+                                           else (d <+> char '|' <+> oBar b)
+                       ; step ac bs
+                       }
 
 
 oBar :: Bar -> Doc

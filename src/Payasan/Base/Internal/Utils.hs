@@ -22,10 +22,11 @@
 module Payasan.Base.Internal.Utils
   ( 
 
-  -- * Time divisions
-    equalLengths
-  , acceleratingLengths
-  , deceleratingLengths
+    State
+  , evalState
+  , get
+  , put
+  , puts
 
   -- * Hughes list
   , H
@@ -51,7 +52,6 @@ module Payasan.Base.Internal.Utils
 
 
 import Data.Data
-import Data.Fixed
 import qualified Data.Foldable as F
 
 #ifndef MIN_VERSION_GLASGOW_HASKELL
@@ -60,29 +60,38 @@ import Data.Monoid
 import qualified Data.Traversable as T
 
 
-type Decimal = Fixed E9
+
+--------------------------------------------------------------------------------
 
 
-type Seconds = Decimal
 
+newtype State st a = State { getState :: st -> (st, a) }
 
-equalLengths :: Int -> Seconds -> [Seconds]
-equalLengths n totd = 
-    let unitd = totd / fromIntegral n
-    in replicate n unitd
+instance Functor (State st) where
+  fmap f ma = State $ \s -> let (s1,a) = getState ma s in (s1, f a)
 
-acceleratingLengths :: Int -> Seconds -> [Seconds]
-acceleratingLengths n totd = reverse $ deceleratingLengths n totd
+instance Applicative (State st) where
+  pure a    = State $ \s -> (s,a)
+  mf <*> ma = State $ \s -> let (s1,f) = getState mf s
+                                (s2,a) = getState ma s1
+                            in (s2, f a)
 
-deceleratingLengths :: Int -> Seconds -> [Seconds]
-deceleratingLengths n totd = 
-    let unitc   = (two ^ n) - 1
-        unitd   = totd / fromIntegral unitc
-        ixs     = [0.. (n-1)]
-    in map (\i -> unitd * fromIntegral (two ^ i)) ixs
-  where
-    two ::Integer
-    two = 2
+instance Monad (State st) where
+  return    = pure
+  ma >>= k  = State $ \s -> let (s1,a) = getState ma s 
+                            in getState (k a) s1
+ 
+evalState :: State st a -> st -> a
+evalState ma s = let (_,a) = getState ma s in a
+
+get :: State st st
+get = State $ \s -> (s,s)
+
+put :: st -> State st ()
+put s = State $ \_ -> (s,())
+
+puts :: (st -> st) -> State st ()
+puts f = State $ \s -> (f s,())
 
 
 

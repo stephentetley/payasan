@@ -24,6 +24,7 @@ import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.MainSyntax
 import qualified Payasan.Base.Internal.MidiOutput as T
 import qualified Payasan.Base.Internal.MidiSyntax as T
+import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Duration
 -- import Payasan.Base.Pitch
@@ -40,40 +41,22 @@ import Payasan.Base.Duration
 --
 
 translate :: T.TrackData -> Phrase T.MidiPitch Duration -> T.Track
-translate td ph = T.render $ evalMon (phraseT td ph) 0
+translate td ph = T.render $ evalState (phraseT td ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.
 -- It will be easier with seconds to extend with quantization
 -- (swing).
 
-type St = Seconds
 
-newtype Mon a = Mon { getMon :: St -> (St, a) }
-
-instance Functor Mon where
-  fmap f ma = Mon $ \s -> let (s1,a) = getMon ma s in (s1, f a)
-
-instance Applicative Mon where
-  pure a    = Mon $ \s -> (s,a)
-  mf <*> ma = Mon $ \s -> let (s1,f) = getMon mf s
-                              (s2,a) = getMon ma s1
-                          in (s2, f a)
-
-instance Monad Mon where
-  return    = pure
-  ma >>= k  = Mon $ \s -> let (s1,a) = getMon ma s 
-                          in getMon (k a) s1
-
-evalMon :: Mon a -> St -> a
-evalMon ma s = let (_,a) = getMon ma s in a
+type Mon a = State Seconds a
 
 
 advanceOnset :: Seconds -> Mon ()
-advanceOnset d = Mon $ \s -> (s+d, ())
+advanceOnset d = puts (\s -> s+d)
 
 onset :: Mon Seconds
-onset = Mon $ \s -> (s,s)
+onset = get
 
 phraseT :: T.TrackData -> Phrase T.MidiPitch Duration -> Mon T.InterimTrack
 phraseT td (Phrase bs) = 
