@@ -18,6 +18,13 @@
 module Payasan.Base.Internal.ABCParser
   (
     abcPhrase
+
+  -- * Elementary parsers
+  , pitch
+  , accidental
+  , pitchLetter
+  , noteLength
+  , tupletSpec
   ) where
 
 import Payasan.Base.Internal.ABCLexer
@@ -205,4 +212,13 @@ tupletSpec = symbol "(" *> int >>= step1
 
     decode2 n t = return $ TupletSpec n t n
 
+
+--------------------------------------------------------------------------------
+-- Helpers
+
+
+elementSize :: CtxElement -> Int
+elementSize (Tuplet spec _) = tuplet_len spec
+elementSize (Beamed xs)     = sum $ map elementSize xs
+elementSize _               = 1
 

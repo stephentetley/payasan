@@ -37,15 +37,20 @@ module Payasan.Base.Internal.ABCUtils
   , recomposePitch
   , fromLetterParts
   , toLetterParts
+
+  , rduration
+  , unitLength 
  
   ) where
 
 import Payasan.Base.Internal.ABCSyntax
 
 import qualified Payasan.Base.Pitch as P
+import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
+import Data.Ratio
 
 --------------------------------------------------------------------------------
 -- Pretty printing helpers
@@ -239,3 +244,21 @@ fromAlteration P.FLAT           = FLAT
 fromAlteration P.NAT            = NO_ACCIDENTAL
 fromAlteration P.SHARP          = SHARP
 fromAlteration P.DBL_SHARP      = DBL_SHARP
+
+
+
+
+-- UnitNoteLength = UNIT_NOTE_8 | UNIT_NOTE_16
+
+rduration :: UnitNoteLength -> NoteLength -> RDuration
+rduration unl (DNL)      = unitLength unl
+rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl
+rduration unl (Divd i)   = let r = fromIntegral i in (unitLength unl) / r
+rduration unl (Frac n d) = 
+    let nr = fromIntegral n; nd = fromIntegral d in (unitLength unl) * (nr%nd)
+
+
+unitLength :: UnitNoteLength -> RDuration
+unitLength UNIT_NOTE_4  = 1%4
+unitLength UNIT_NOTE_8  = 1%8
+unitLength UNIT_NOTE_16 = 1%16

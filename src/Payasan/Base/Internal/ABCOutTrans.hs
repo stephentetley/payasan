@@ -74,7 +74,7 @@ noteT f g (Note pch drn)        = T.Note (f pch) (g drn)
 
 durationT :: UnitNoteLength -> Duration -> T.NoteLength
 durationT unl nd = 
-    (fn . fork numerator denominator) $ (durationSize nd) / T.unitLength unl
+    (fn . fork numerator denominator) $ (durationSize nd) / unitLength unl
   where  
     fork f g a = (f a, g a)
     fn (1,1)   = T.DNL

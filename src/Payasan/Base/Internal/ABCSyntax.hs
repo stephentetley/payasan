@@ -33,18 +33,11 @@ module Payasan.Base.Internal.ABCSyntax
   , Pitch(..)
   , NoteLength(..)
 
-
-  , elementSize
-  , rduration
-  , unitLength 
-
   ) where
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Duration
 
 import Data.Data
-import Data.Ratio
 
 --------------------------------------------------------------------------------
 -- Syntax
@@ -132,26 +125,5 @@ data NoteLength = DNL
 
 
 
-elementSize :: CtxElement -> Int
-elementSize (Tuplet spec _) = tuplet_len spec
-elementSize (Beamed xs)     = sum $ map elementSize xs
-elementSize _               = 1
-
-
-
--- UnitNoteLength = UNIT_NOTE_8 | UNIT_NOTE_16
-
-rduration :: UnitNoteLength -> NoteLength -> RDuration
-rduration unl (DNL)      = unitLength unl
-rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl
-rduration unl (Divd i)   = let r = fromIntegral i in (unitLength unl) / r
-rduration unl (Frac n d) = 
-    let nr = fromIntegral n; nd = fromIntegral d in (unitLength unl) * (nr%nd)
-
-
-unitLength :: UnitNoteLength -> RDuration
-unitLength UNIT_NOTE_4  = 1%4
-unitLength UNIT_NOTE_8  = 1%8
-unitLength UNIT_NOTE_16 = 1%16
 
 
