@@ -54,7 +54,7 @@ oABCPhrase (ABCPhrase (x:xs))   = step (oBar x) xs
     step d []     = return d
     step d (b:bs) = do { i <- lineLen
                        ; if i > 4 then resetLineLen else incrLineLen
-                       ; let ac = if i > 4 then (d $+$ oBar b) 
+                       ; let ac = if i > 4 then (d <+> char '|' $+$ oBar b) 
                                            else (d <+> char '|' <+> oBar b)
                        ; step ac bs
                        }
