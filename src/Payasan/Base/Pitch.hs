@@ -31,6 +31,10 @@ module Payasan.Base.Pitch
   , semitoneCountPL
   , semitoneCountA
 
+  , extractLabel 
+
+  , nearest
+
   )
   where
 
@@ -77,6 +81,15 @@ semitoneCountA FLAT      = -1
 semitoneCountA NAT       = 0
 semitoneCountA SHARP     = 1
 semitoneCountA DBL_SHARP = 2
+
+
+extractLabel :: Pitch -> NoteLabel
+extractLabel (Pitch lbl _) = lbl
+
+
+-- Need this fot LilyPond.
+nearest :: NoteLabel -> Pitch -> Pitch
+nearest _lbl _pch = error "Pitch.nearest"
 
 
 {-

@@ -19,6 +19,7 @@ module Payasan.Base.Internal.CommonSyntax
   ( 
     RenderInfo(..)
   , UnitNoteLength(..)
+  , PitchDirective(..)
   , default_render_info
 
   , KeySig(..)
@@ -56,11 +57,15 @@ data RenderInfo = RenderInfo
     , render_meter_patn         :: !MeterPattern
     , render_unit_note_len      :: !UnitNoteLength
     , render_bpm                :: !BPM
+    , render_ly_pitch           :: !PitchDirective
     }
   deriving (Data,Eq,Show,Typeable)
 
 data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+data PitchDirective = AbsPitch | RelPitch Pitch
+  deriving (Data,Eq,Show,Typeable)
 
 default_render_info :: RenderInfo
 default_render_info = RenderInfo 
@@ -69,6 +74,7 @@ default_render_info = RenderInfo
     , render_meter_patn         = [1%2,1%2]
     , render_unit_note_len      = UNIT_NOTE_8
     , render_bpm                = 120
+    , render_ly_pitch           = RelPitch middle_c
     }
 
 

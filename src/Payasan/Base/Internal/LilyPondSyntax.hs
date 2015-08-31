@@ -103,7 +103,7 @@ data Pitch = Pitch PitchLetter Accidental Octave
 data Accidental = NO_ACCIDENTAL | DBL_FLAT | FLAT | NATURAL | SHARP | DBL_SHARP
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
--- | Two octave range - just lower
+-- | One octave range - just lower
 data PitchLetter = CL | DL | EL | FL | GL | AL | BL
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 

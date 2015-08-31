@@ -25,6 +25,7 @@ module Payasan.Base.Internal.Utils
     State
   , evalState
   , get
+  , gets
   , put
   , puts
 
@@ -86,6 +87,9 @@ evalState ma s = let (_,a) = getState ma s in a
 
 get :: State st st
 get = State $ \s -> (s,s)
+
+gets :: (st -> a) -> State st a
+gets f = State $ \s -> (s,f s)
 
 put :: st -> State st ()
 put s = State $ \_ -> (s,())

@@ -17,20 +17,8 @@
 module Payasan.Base.Internal.ABCUtils
   ( 
 
-  -- * Output
-    vsep
-  , sepList
-  , field
-
-  , tupletSpec
-  , note
-  , rest
-  , chord
-  , graceForm
-  , chordForm
-
   -- * Conversion
-  , toPitch
+    toPitch
   , fromPitch
   , LetterCase(..)
   , decomposePitch
@@ -40,6 +28,18 @@ module Payasan.Base.Internal.ABCUtils
 
   , rduration
   , unitLength 
+
+  -- * Output
+  , vsep
+  , sepList
+  , field
+
+  , tupletSpec
+  , note
+  , rest
+  , chord
+  , graceForm
+  , chordForm
  
   ) where
 
@@ -52,106 +52,9 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 import Data.Ratio
 
+
 --------------------------------------------------------------------------------
--- Pretty printing helpers
-
-vsep :: [Doc] -> Doc
-vsep = sepList ($+$)
-
-sepList :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
-sepList _  [] = empty
-sepList op (x:xs) = step x xs
-  where
-    step ac []     = ac
-    step ac (d:ds) = step (ac `op` d) ds
-
-
-field :: Char -> Doc -> Doc
-field c d = char c <> colon <> d
-
-
-tupletSpec :: TupletSpec -> Doc
-tupletSpec (TupletSpec { tuplet_num   = n
-                       , tuplet_time  = t
-                       , tuplet_len   = x }) = 
-    char '(' <> int n <> char ':' <> int t <> char ':' <> int x
-
--- | Print a note. Note that durations in ABC are multipliers of
--- the /unit note length/ rather than absolute values. 
---
-note :: Note -> Doc 
-note (Note p d) = pitch p <> noteLength d
-
-rest :: NoteLength -> Doc
-rest d = char 'z' <> noteLength d
-
-
-chord :: [Pitch] -> NoteLength -> Doc
-chord ps d = chordForm (map pitch ps) <> noteLength d
-
--- | Print a duration multiplier.
-noteLength :: NoteLength -> Doc
-noteLength (DNL)      = empty
-noteLength (Mult n)   = int n
-noteLength (Divd n)   = char '/' <> int n
-noteLength (Frac n d) = int n <> char '/' <> int d
-
-pitch :: Pitch -> Doc
-pitch (Pitch a l o) = accidental a <> pitchLetter l <> octaveModifier o
-
-
-octaveModifier:: Octave -> Doc
-octaveModifier (OveDefault)     = empty
-octaveModifier (OveRaised i)    = text $ replicate i '\''
-octaveModifier (OveLowered i)   = text $ replicate i ','
-
-
-
-pitchLetter :: PitchLetter -> Doc
-pitchLetter CU = char 'C'
-pitchLetter DU = char 'D'
-pitchLetter EU = char 'E'
-pitchLetter FU = char 'F'
-pitchLetter GU = char 'G'
-pitchLetter AU = char 'A'
-pitchLetter BU = char 'B'
-pitchLetter CL = char 'c'
-pitchLetter DL = char 'd'
-pitchLetter EL = char 'e'
-pitchLetter FL = char 'f'
-pitchLetter GL = char 'g'
-pitchLetter AL = char 'a'
-pitchLetter BL = char 'b'
-
-
-accidental :: Accidental -> Doc
-accidental NO_ACCIDENTAL = empty
-accidental DBL_FLAT      = text "__"
-accidental FLAT          = char '_' 
-accidental NATURAL       = char '='    
-accidental SHARP         = char '^' 
-accidental DBL_SHARP     = text "^^"
-
-
--- | Chords - notes are printed inside square brackets, e.g.:
--- @ 
---  [c4e4g4]
--- @ 
-chordForm :: [Doc] -> Doc
-chordForm = brackets . hcat
-
-
--- | Grace notes are printed inside braces,
--- e.g:
--- @ 
---  {f2e}
--- @ 
---
--- Not all ABC processors acknowledge duration multipliers within
--- graces.
-graceForm :: [Doc] -> Doc
-graceForm = braces . hcat
-
+-- Conversion
 
 -- TODO are pitch conversions Context Free regarding key and alterations?
 
@@ -262,3 +165,104 @@ unitLength :: UnitNoteLength -> RDuration
 unitLength UNIT_NOTE_4  = 1%4
 unitLength UNIT_NOTE_8  = 1%8
 unitLength UNIT_NOTE_16 = 1%16
+
+
+--------------------------------------------------------------------------------
+-- Pretty printing helpers
+
+vsep :: [Doc] -> Doc
+vsep = sepList ($+$)
+
+sepList :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
+sepList _  [] = empty
+sepList op (x:xs) = step x xs
+  where
+    step ac []     = ac
+    step ac (d:ds) = step (ac `op` d) ds
+
+
+field :: Char -> Doc -> Doc
+field c d = char c <> colon <> d
+
+
+tupletSpec :: TupletSpec -> Doc
+tupletSpec (TupletSpec { tuplet_num   = n
+                       , tuplet_time  = t
+                       , tuplet_len   = x }) = 
+    char '(' <> int n <> char ':' <> int t <> char ':' <> int x
+
+-- | Print a note. Note that durations in ABC are multipliers of
+-- the /unit note length/ rather than absolute values. 
+--
+note :: Note -> Doc 
+note (Note p d) = pitch p <> noteLength d
+
+rest :: NoteLength -> Doc
+rest d = char 'z' <> noteLength d
+
+
+chord :: [Pitch] -> NoteLength -> Doc
+chord ps d = chordForm (map pitch ps) <> noteLength d
+
+-- | Print a duration multiplier.
+noteLength :: NoteLength -> Doc
+noteLength (DNL)      = empty
+noteLength (Mult n)   = int n
+noteLength (Divd n)   = char '/' <> int n
+noteLength (Frac n d) = int n <> char '/' <> int d
+
+pitch :: Pitch -> Doc
+pitch (Pitch a l o) = accidental a <> pitchLetter l <> octaveModifier o
+
+
+octaveModifier:: Octave -> Doc
+octaveModifier (OveDefault)     = empty
+octaveModifier (OveRaised i)    = text $ replicate i '\''
+octaveModifier (OveLowered i)   = text $ replicate i ','
+
+
+
+pitchLetter :: PitchLetter -> Doc
+pitchLetter CU = char 'C'
+pitchLetter DU = char 'D'
+pitchLetter EU = char 'E'
+pitchLetter FU = char 'F'
+pitchLetter GU = char 'G'
+pitchLetter AU = char 'A'
+pitchLetter BU = char 'B'
+pitchLetter CL = char 'c'
+pitchLetter DL = char 'd'
+pitchLetter EL = char 'e'
+pitchLetter FL = char 'f'
+pitchLetter GL = char 'g'
+pitchLetter AL = char 'a'
+pitchLetter BL = char 'b'
+
+
+accidental :: Accidental -> Doc
+accidental NO_ACCIDENTAL = empty
+accidental DBL_FLAT      = text "__"
+accidental FLAT          = char '_' 
+accidental NATURAL       = char '='    
+accidental SHARP         = char '^' 
+accidental DBL_SHARP     = text "^^"
+
+
+-- | Chords - notes are printed inside square brackets, e.g.:
+-- @ 
+--  [c4e4g4]
+-- @ 
+chordForm :: [Doc] -> Doc
+chordForm = brackets . hcat
+
+
+-- | Grace notes are printed inside braces,
+-- e.g:
+-- @ 
+--  {f2e}
+-- @ 
+--
+-- Not all ABC processors acknowledge duration multipliers within
+-- graces.
+graceForm :: [Doc] -> Doc
+graceForm = braces . hcat

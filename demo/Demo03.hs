@@ -9,6 +9,7 @@ import Payasan.Base.Pitch
 
 import Payasan.Base.Internal.LilyPondParser
 import Payasan.Base.Internal.LilyPondSyntax
+import Payasan.Base.Internal.LilyPondInTrans
 
 
 import Text.Parsec       -- TEMP
