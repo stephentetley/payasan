@@ -11,13 +11,13 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Simple NoteList
+-- Parser for subset of ABC.
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.ABCParser
   (
-    abcPhrase
+    abc
 
   -- * Elementary parsers
   , pitch
@@ -40,8 +40,8 @@ import Data.Char (isSpace)
 --------------------------------------------------------------------------------
 -- Quasiquote
 
-abcPhrase :: QuasiQuoter
-abcPhrase = QuasiQuoter
+abc :: QuasiQuoter
+abc = QuasiQuoter
     { quoteExp = \s -> case parseABCPhrase s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
@@ -170,8 +170,8 @@ pitchLetter = choice $
 octave :: ABCParser Octave
 octave = octavehi <|> octavelo <|> return OveDefault
   where
-    octavehi = (OvePos . length) <$> many1 (char '\'')
-    octavelo = (OveNeg . length) <$> many1 (char ',')
+    octavehi = (OveRaised  . length) <$> many1 (char '\'')
+    octavelo = (OveLowered . length) <$> many1 (char ',')
 
 
 

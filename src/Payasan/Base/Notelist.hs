@@ -20,7 +20,7 @@ module Payasan.Base.Notelist
     StdPhrase
 
   , ABCPhrase           -- * re-export
-  , abcPhrase           -- * re-export
+  , abc                 -- * re-export
 
   , RenderInfo(..)
   , UnitNoteLength(..)
@@ -41,7 +41,7 @@ module Payasan.Base.Notelist
 import qualified Payasan.Base.Internal.ABCInTrans       as ABCIn
 import qualified Payasan.Base.Internal.ABCOutTrans      as ABCOut
 import Payasan.Base.Internal.ABCOutput
-import Payasan.Base.Internal.ABCParser (abcPhrase)
+import Payasan.Base.Internal.ABCParser (abc)
 import Payasan.Base.Internal.ABCSyntax (ABCPhrase)
 import qualified Payasan.Base.Internal.BracketTrans     as BRKT
 import Payasan.Base.Internal.MainSyntax

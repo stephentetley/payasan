@@ -24,11 +24,8 @@ module Payasan.Base.Monophonic.Internal.MonoOutTrans
 
 import Payasan.Base.Monophonic.Internal.MonoSyntax
 
-import Payasan.Base.Internal.ABCUtils
 import qualified Payasan.Base.Internal.MainSyntax as T
 
-import Payasan.Base.Duration
-import Payasan.Base.Pitch
 
 
 

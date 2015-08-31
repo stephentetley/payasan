@@ -3,18 +3,10 @@
 
 module Demo02 where
 
--- import Payasan.Base.Notelist
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Payasan.Base.Internal.MidiOutput
-import Payasan.Base.Internal.MidiOutTrans
-import Payasan.Base.Internal.MidiSyntax
 
-import Payasan.Base.Monophonic.Internal.MonoSyntax
-import Payasan.Base.Monophonic.Internal.ABCParser
-import Payasan.Base.Monophonic.Internal.ABCInTrans
-import Payasan.Base.Monophonic.Internal.MonoOutTrans
 import Payasan.Base.Monophonic.Notelist
 
 phrase01 :: StdMonoPhrase

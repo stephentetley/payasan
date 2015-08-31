@@ -27,12 +27,14 @@ module Payasan.Base.Duration
   , isDotted
   , notDotted
   , dot
+  , addDots
   , components
   , durationSize
   , rationalToDuration
 
   -- * Named durations
   , dZero
+  , dMaxima
   , dLonga
   , dBreve
   , dWhole
@@ -41,15 +43,16 @@ module Payasan.Base.Duration
   , dEighth
   , dSixteenth
   , dThirtySecondth
-
+  , dSixtyFourth
+  , dOneHundredAndTwentyEighth
   ) where
 
 import Data.Data
 import Data.Ratio
 
-data Numeral = N128  | N64   | N32   | N16
-             | N8    | N4    | N2    | N1
-             | Breve | Longa
+data Numeral = N128   | N64     | N32     | N16
+             | N8     | N4      | N2      | N1
+             | Breve  | Longa   | Maxima
   deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
 
 
@@ -82,11 +85,18 @@ notDotted :: Duration -> Bool
 notDotted = not . isDotted
        
 -- | Dot a duration. 
--- Note, if the duration represents a concatenation of two or more 
--- primitive durations only the first will be dotted.
+--
+-- Note, @DZero@ an opaque value in the internal representation
+-- cannot be dotted.
+--
 dot :: Duration -> Duration
-dot DZero     = error "Duration.dot - cannot dot 0 duration"
+dot DZero     = DZero
 dot (D1 n dc) = D1 n (dc+1)
+
+
+addDots :: Int -> Duration -> Duration
+addDots _ DZero     = DZero
+addDots i (D1 n dc) = D1 n (dc+i)
 
 
 
@@ -108,28 +118,31 @@ durationSize (D1 n dc)
     step acc h i = step (acc + h) (h/2) (i-1)
 
 toRat :: Numeral -> Rational
-toRat N128  = 1%128
-toRat N64   = 1%64
-toRat N32   = 1%32
-toRat N16   = 1%16
-toRat N8    = 1%8
-toRat N4    = 1%4
-toRat N2    = 1%2
-toRat N1    = 1
-toRat Breve = 2
-toRat Longa = 4
+toRat N128      = 1%128
+toRat N64       = 1%64
+toRat N32       = 1%32
+toRat N16       = 1%16
+toRat N8        = 1%8
+toRat N4        = 1%4
+toRat N2        = 1%2
+toRat N1        = 1
+toRat Breve     = 2
+toRat Longa     = 4
+toRat Maxima    = 8
 
 
 -- | Convert a rational to a duration - dotting and double dotting
 -- is supported.
 --
 rationalToDuration :: Rational -> Maybe Duration
-rationalToDuration r | r == 4%1   = Just $ D1 Longa 0
-                     | r == 2%1   = Just $ D1 Breve 0
-                     | r == 0     = Just $ DZero
-                     | r >  1     = Nothing
-                     | otherwise  = let (n,d) = (numerator r,denominator r)
-                                    in fn d >>= \base -> dotfun n base
+rationalToDuration r 
+    | r == 8%1      = Just $ D1 Maxima 0
+    | r == 4%1      = Just $ D1 Longa 0
+    | r == 2%1      = Just $ D1 Breve 0
+    | r == 0        = Just $ DZero
+    | r >  1        = Nothing
+    | otherwise     = let (n,d) = (numerator r,denominator r)
+                      in fn d >>= \base -> dotfun n base
   where
     dotfun i sym | i == 1    = Just $ D1 sym 0
                  | i == 3    = Just $ D1 (succ sym) 1
@@ -158,27 +171,35 @@ makeDuration :: Numeral -> Duration
 makeDuration nm = D1 nm 0
 
 
-dLonga          :: Duration
-dLonga          = makeDuration Longa
+dMaxima                         :: Duration
+dMaxima                         = makeDuration Maxima
 
-dBreve          :: Duration
-dBreve          = makeDuration Breve
+dLonga                          :: Duration
+dLonga                          = makeDuration Longa
 
-dWhole          :: Duration
-dWhole          = makeDuration N1
+dBreve                          :: Duration
+dBreve                          = makeDuration Breve
 
-dHalf           :: Duration
-dHalf           = makeDuration N2
+dWhole                          :: Duration
+dWhole                          = makeDuration N1
 
-dQuarter        :: Duration
-dQuarter        = makeDuration N4
+dHalf                           :: Duration
+dHalf                           = makeDuration N2
 
-dEighth         :: Duration
-dEighth         = makeDuration N8
+dQuarter                        :: Duration
+dQuarter                        = makeDuration N4
 
-dSixteenth      :: Duration
-dSixteenth      = makeDuration N16
+dEighth                         :: Duration
+dEighth                         = makeDuration N8
 
-dThirtySecondth :: Duration
-dThirtySecondth = makeDuration N32
+dSixteenth                      :: Duration
+dSixteenth                      = makeDuration N16
 
+dThirtySecondth                 :: Duration
+dThirtySecondth                 = makeDuration N32
+
+dSixtyFourth                    :: Duration
+dSixtyFourth                    = makeDuration N64
+
+dOneHundredAndTwentyEighth      :: Duration
+dOneHundredAndTwentyEighth      = makeDuration N128

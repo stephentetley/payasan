@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCSyntax
+-- Module      :  Payasan.Base.Internal.LilyPondSyntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -18,13 +18,14 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCSyntax
+module Payasan.Base.Internal.LilyPondSyntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
 
-  , ABCPhrase(..)
+  , LyPhrase(..)
   , Bar(..)
   , CtxElement(..)
+  , LyTupletSpec(..)
   , Element(..)
   , Note(..)
   , Accidental(..)
@@ -36,6 +37,7 @@ module Payasan.Base.Internal.ABCSyntax
   ) where
 
 import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Duration
 
 import Data.Data
 
@@ -43,15 +45,11 @@ import Data.Data
 -- Syntax
 
 
--- | ABC is read from the quasiquoter with an initial
--- key sig and metrical information, but when it is used as 
--- an output format it might have diffrent key sigs and 
--- meter info from diferrent fragments.
---
--- We use the ABC- prefix here because the type may be exposed 
+
+-- | We use the Ly- prefix here because the type may be exposed 
 -- in user code and we don\'t want a name clash.
 --
-data ABCPhrase = ABCPhrase { phrase_bars :: [Bar] }
+data LyPhrase = LyPhrase { phrase_bars :: [Bar] }
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -75,6 +73,14 @@ data CtxElement = Atom    Element
   deriving (Data,Eq,Show,Typeable)
 
 
+
+-- | LilyPond has a simpler Tuplet spec than ABC which we 
+-- expand during parsing.
+-- 
+data LyTupletSpec = LyTupletSpec Int Int
+  deriving (Data,Eq,Show,Typeable)
+
+
 -- | Note is should be quite easy to add ties (as write-only)
 -- to get long notes after beaming.
 --
@@ -90,17 +96,17 @@ data Element = NoteElem Note
 data Note = Note Pitch NoteLength
   deriving (Data,Eq,Show,Typeable)
 
-data Pitch = Pitch Accidental PitchLetter Octave
+data Pitch = Pitch PitchLetter Accidental Octave
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
 data Accidental = NO_ACCIDENTAL | DBL_FLAT | FLAT | NATURAL | SHARP | DBL_SHARP
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
--- | Two octave range - upper and lower
-data PitchLetter = CU | DU | EU | FU | GU | AU | BU 
-                 | CL | DL | EL | FL | GL | AL | BL 
+-- | Two octave range - just lower
+data PitchLetter = CL | DL | EL | FL | GL | AL | BL
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
 
 
 data Octave = OveDefault
@@ -109,16 +115,9 @@ data Octave = OveDefault
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-
--- | does this need @Frac Int Int@ ?
---
-data NoteLength = DNL
-                | Mult Int
-                | Divd Int
-                | Frac Int Int
+data NoteLength = DrnDefault
+                | DrnExplicit Duration
   deriving (Data,Eq,Ord,Show,Typeable)
-
-
 
 
 

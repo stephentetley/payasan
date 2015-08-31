@@ -11,7 +11,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Monophonic notelist using ABC notation. 
+-- Parsec Lexer combinators for ABC. 
 --
 --------------------------------------------------------------------------------
 
@@ -37,8 +37,8 @@ import qualified Text.Parsec.Token as P
 import Control.Monad.Identity
 
 
-type ABCParser a         = ParsecT String () Identity a
-type ABCLexer            = P.GenTokenParser String () Identity
+type ABCParser a        = ParsecT String () Identity a
+type ABCLexer           = P.GenTokenParser String () Identity
 
 
 --------------------------------------------------------------------------------
@@ -46,28 +46,28 @@ type ABCLexer            = P.GenTokenParser String () Identity
 --------------------------------------------------------------------------------
 
 symbol              :: String -> ABCParser String
-symbol              = P.symbol score_lex
+symbol              = P.symbol abc_lex
 
 reservedOp          :: String -> ABCParser ()
-reservedOp          = P.reservedOp score_lex
+reservedOp          = P.reservedOp abc_lex
 
 int                 :: ABCParser Int
-int                 = fromIntegral <$> P.integer score_lex
+int                 = fromIntegral <$> P.integer abc_lex
 
 squares             :: ABCParser a -> ABCParser a
-squares             = P.squares score_lex
+squares             = P.squares abc_lex
 
 braces              :: ABCParser a -> ABCParser a
-braces              = P.braces score_lex
+braces              = P.braces abc_lex
 
 lexeme              :: ABCParser a -> ABCParser a
-lexeme              = P.lexeme score_lex
+lexeme              = P.lexeme abc_lex
 
 whiteSpace          :: ABCParser ()
-whiteSpace          = P.whiteSpace score_lex
+whiteSpace          = P.whiteSpace abc_lex
 
-score_lex           :: ABCLexer
-score_lex           = P.makeTokenParser $ 
+abc_lex             :: ABCLexer
+abc_lex             = P.makeTokenParser $ 
     emptyDef { P.reservedOpNames = ["|"]
              , P.reservedNames   = []
              }

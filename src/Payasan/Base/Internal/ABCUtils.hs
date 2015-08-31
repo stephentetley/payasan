@@ -102,8 +102,8 @@ pitch (Pitch a l o) = accidental a <> pitchLetter l <> octaveModifier o
 
 octaveModifier:: Octave -> Doc
 octaveModifier (OveDefault)     = empty
-octaveModifier (OvePos i)       = text $ replicate i '\''
-octaveModifier (OveNeg i)       = text $ replicate i ','
+octaveModifier (OveRaised i)    = text $ replicate i '\''
+octaveModifier (OveLowered i)   = text $ replicate i ','
 
 
 
@@ -190,14 +190,14 @@ recomposePitch (P.NoteLabel l a) lc i = Pitch a1 l1 om
 toOctaveP :: LetterCase -> Octave -> P.Octave
 toOctaveP lc ove = let base = if lc == UPPER then 4 else 5 in step base ove
   where
-    step i (OveDefault) = i
-    step i (OvePos n)   = i + n
-    step i (OveNeg n)   = i - n
+    step i (OveDefault)   = i
+    step i (OveRaised n)  = i + n
+    step i (OveLowered n) = i - n
 
 
 fromOctaveP :: P.Octave -> Octave
-fromOctaveP ove | ove < 4       = OveNeg (4 - ove)
-                | ove > 5       = OvePos (ove - 5)
+fromOctaveP ove | ove < 4       = OveLowered (4 - ove)
+                | ove > 5       = OveRaised  (ove - 5)
                 | otherwise     = OveDefault
 
 toLetterParts :: PitchLetter -> (P.PitchLetter, LetterCase)
