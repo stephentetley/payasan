@@ -56,7 +56,7 @@ import Data.Ratio
 -- at bar level. This a a global property as we must render
 -- in one mode only.
 
-data GlobalRenderInfo = GlobalREnderInfo
+data GlobalRenderInfo = GlobalRenderInfo
     { global_pitch_directive    :: !PitchDirective
     }
   deriving (Data,Eq,Show,Typeable)

@@ -34,7 +34,7 @@ import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as T
 
 data St = St { previous_duration   :: Duration 
-             , pitch_directive     :: PitchDirective
+             , previous_pitch      :: T.Pitch
              }
 
 type Mon a = Trans GlobalRenderInfo St a
@@ -46,17 +46,28 @@ previousDuration = gets previous_duration
 setPrevDuration :: Duration -> Mon ()
 setPrevDuration d = puts (\s -> s { previous_duration = d })
 
-pitchDirective :: Mon PitchDirective
-pitchDirective = gets pitch_directive
+previousPitch :: Mon (Maybe T.Pitch)
+previousPitch = fn <$> asks global_pitch_directive <*> gets previous_pitch
+  where
+    fn (AbsPitch) _    = Nothing
+    fn (RelPitch {}) p = Just p
+
+setPrevPitch :: T.Pitch -> Mon ()
+setPrevPitch p = puts (\s -> s { previous_pitch = p })
 
 translate :: GlobalRenderInfo -> LyPhrase -> T.Phrase T.Pitch Duration
 translate info ph = evalTrans (phraseT ph) info state_zero
   where
     -- The first duration should never match then we always start
     -- printing
-    state_zero = St { previous_duration = addDots 10 dMaxima 
-                    , pitch_directive   = RelPitch T.middle_c  
+    state_zero = St { previous_duration = dQuarter
+                    , previous_pitch    = pitch_zero
                     }
+    -- If AbsPitch then /previous pitch/ will never be used
+    pitch_zero = case global_pitch_directive info of
+                    RelPitch pch -> pch
+                    AbsPitch -> T.middle_c      
+
 
 phraseT :: LyPhrase -> Mon (T.Phrase T.Pitch Duration)
 phraseT (LyPhrase bs)          = T.Phrase <$> mapM barT bs
@@ -93,12 +104,12 @@ noteT :: Note -> Mon (T.Note T.Pitch Duration)
 noteT (Note pch drn)          = T.Note <$> pitchT pch <*> durationT drn
 
 
-
+-- No previous pitch indicates Absolute pitch mode
 pitchT :: Pitch -> Mon T.Pitch
-pitchT p1 = pitchDirective >>= step 
+pitchT p1 = previousPitch >>= step 
   where
-    step (AbsPitch)     = pure $ toPitchAbs p1
-    step (RelPitch _p0) = undefined
+    step (Nothing)   = pure $ toPitchAbs p1
+    step (Just p0)   = let tp1 = toPitchRel p1 p0 in setPrevPitch tp1 >> return tp1
                               
 
 

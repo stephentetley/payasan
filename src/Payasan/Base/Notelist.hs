@@ -22,6 +22,7 @@ module Payasan.Base.Notelist
   , ABCPhrase           -- * re-export
   , abc                 -- * re-export
 
+  , GlobalRenderInfo(..)
   , LocalRenderInfo(..)
   , UnitNoteLength(..)
   , default_local_info
@@ -29,6 +30,9 @@ module Payasan.Base.Notelist
 
   , fromABC
   , fromABCWith
+  , fromLilyPond
+  , fromLilyPondWith
+  
   , outputAsABC
   , printAsABC
 
@@ -44,6 +48,8 @@ import Payasan.Base.Internal.ABCOutput
 import Payasan.Base.Internal.ABCParser (abc)
 import Payasan.Base.Internal.ABCSyntax (ABCPhrase)
 import qualified Payasan.Base.Internal.BracketTrans     as BRKT
+import qualified Payasan.Base.Internal.LilyPondInTrans  as LYIn
+import Payasan.Base.Internal.LilyPondSyntax (LyPhrase)
 import Payasan.Base.Internal.MainSyntax
 import qualified Payasan.Base.Internal.MidiOutput       as MIDI
 import qualified Payasan.Base.Internal.MidiOutTrans     as MIDIOut
@@ -60,10 +66,18 @@ type StdPhrase = Phrase Pitch Duration
 
 
 fromABC :: ABCPhrase -> StdPhrase
-fromABC  = fromABCWith default_local_info
+fromABC = fromABCWith default_local_info
 
 fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
 fromABCWith ri = ABCIn.translate . ABCIn.pushLocalRenderInfo ri
+
+fromLilyPond :: GlobalRenderInfo -> LyPhrase -> StdPhrase
+fromLilyPond gi = fromLilyPondWith gi default_local_info
+
+fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase -> StdPhrase
+fromLilyPondWith gi ri = LYIn.translate gi . LYIn.pushLocalRenderInfo ri
+
+
 
 outputAsABC :: StdPhrase -> String
 outputAsABC = ppRender . abcOutput . ABCOut.translate . BRKT.transAndBeam id

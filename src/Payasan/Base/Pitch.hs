@@ -31,9 +31,11 @@ module Payasan.Base.Pitch
   , semitoneCountPL
   , semitoneCountA
 
+  , arithmeticDistanceNL
+  , arithmeticDistancePL
+
   , extractLabel 
 
-  , nearest
 
   )
   where
@@ -83,13 +85,19 @@ semitoneCountA SHARP     = 1
 semitoneCountA DBL_SHARP = 2
 
 
+arithmeticDistanceNL :: NoteLabel -> NoteLabel -> Int
+arithmeticDistanceNL (NoteLabel l1 _) (NoteLabel l2 _) = 
+    arithmeticDistancePL l1 l2
+
+arithmeticDistancePL :: PitchLetter -> PitchLetter -> Int
+arithmeticDistancePL start end = step (fromEnum start) (fromEnum end)
+  where
+    step i j | i < j            = 1 + (j-i)
+             | otherwise        = 1 + (i-j)
+
 extractLabel :: Pitch -> NoteLabel
 extractLabel (Pitch lbl _) = lbl
 
-
--- Need this fot LilyPond.
-nearest :: NoteLabel -> Pitch -> Pitch
-nearest _lbl _pch = error "Pitch.nearest"
 
 
 {-
