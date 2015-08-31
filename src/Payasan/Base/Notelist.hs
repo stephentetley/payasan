@@ -22,9 +22,9 @@ module Payasan.Base.Notelist
   , ABCPhrase           -- * re-export
   , abc                 -- * re-export
 
-  , RenderInfo(..)
+  , LocalRenderInfo(..)
   , UnitNoteLength(..)
-  , default_render_info
+  , default_local_info
 
 
   , fromABC
@@ -60,10 +60,10 @@ type StdPhrase = Phrase Pitch Duration
 
 
 fromABC :: ABCPhrase -> StdPhrase
-fromABC  = fromABCWith default_render_info
+fromABC  = fromABCWith default_local_info
 
-fromABCWith :: RenderInfo -> ABCPhrase -> StdPhrase
-fromABCWith ri = ABCIn.translate . ABCIn.pushRenderInfo ri
+fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
+fromABCWith ri = ABCIn.translate . ABCIn.pushLocalRenderInfo ri
 
 outputAsABC :: StdPhrase -> String
 outputAsABC = ppRender . abcOutput . ABCOut.translate . BRKT.transAndBeam id

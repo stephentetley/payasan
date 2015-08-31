@@ -70,7 +70,7 @@ phraseT td (Phrase bs) =
 barT :: Bar T.MidiPitch Duration -> Mon [T.MidiNote]
 barT (Bar info cs)           = concat <$> mapM (ctxElementT df) cs
   where
-    df = noteDuration (render_bpm info)
+    df = noteDuration (local_bpm info)
      
 
 

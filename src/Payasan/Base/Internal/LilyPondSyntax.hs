@@ -56,7 +56,7 @@ data LyPhrase = LyPhrase { phrase_bars :: [Bar] }
 
 
 data Bar = Bar 
-    { render_info       :: RenderInfo
+    { render_info       :: LocalRenderInfo
     , bar_elements      :: [CtxElement]
     }
   deriving (Data,Eq,Show,Typeable)

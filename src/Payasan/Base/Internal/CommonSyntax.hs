@@ -17,10 +17,12 @@
 
 module Payasan.Base.Internal.CommonSyntax
   ( 
-    RenderInfo(..)
-  , UnitNoteLength(..)
+
+    GlobalRenderInfo(..)
   , PitchDirective(..)
-  , default_render_info
+  , LocalRenderInfo(..)
+  , UnitNoteLength(..)
+  , default_local_info
 
   , KeySig(..)
   , Mode(..)
@@ -50,31 +52,40 @@ import Data.Data
 import Data.Ratio
 
 
+-- | Note don\'t store LilyPond Absolute / Relative pitch
+-- at bar level. This a a global property as we must render
+-- in one mode only.
 
-data RenderInfo = RenderInfo
-    { render_key_sig            :: !KeySig
-    , render_time_sig           :: !TimeSig
-    , render_meter_patn         :: !MeterPattern
-    , render_unit_note_len      :: !UnitNoteLength
-    , render_bpm                :: !BPM
-    , render_ly_pitch           :: !PitchDirective
+data GlobalRenderInfo = GlobalREnderInfo
+    { global_pitch_directive    :: !PitchDirective
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+data PitchDirective = AbsPitch 
+                    | RelPitch !Pitch
+  deriving (Data,Eq,Show,Typeable)
+
+
+data LocalRenderInfo = LocalRenderInfo
+    { local_key_sig             :: !KeySig
+    , local_time_sig            :: !TimeSig
+    , local_meter_patn          :: !MeterPattern
+    , local_unit_note_len       :: !UnitNoteLength
+    , local_bpm                 :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
 
 data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
-data PitchDirective = AbsPitch | RelPitch Pitch
-  deriving (Data,Eq,Show,Typeable)
 
-default_render_info :: RenderInfo
-default_render_info = RenderInfo 
-    { render_key_sig            = c_maj
-    , render_time_sig           = Meter 4 4 
-    , render_meter_patn         = [1%2,1%2]
-    , render_unit_note_len      = UNIT_NOTE_8
-    , render_bpm                = 120
-    , render_ly_pitch           = RelPitch middle_c
+default_local_info :: LocalRenderInfo
+default_local_info = LocalRenderInfo 
+    { local_key_sig             = c_maj
+    , local_time_sig            = Meter 4 4 
+    , local_meter_patn          = [1%2,1%2]
+    , local_unit_note_len       = UNIT_NOTE_8
+    , local_bpm                 = 120
     }
 
 

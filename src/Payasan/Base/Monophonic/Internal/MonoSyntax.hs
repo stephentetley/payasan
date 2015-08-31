@@ -61,7 +61,7 @@ type ABCMonoPhrase = MonoPhrase Pitch NoteLength
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn = Bar 
-    { render_info       :: RenderInfo
+    { render_info       :: LocalRenderInfo
     , bar_elements      :: [CtxElement pch drn]
     }
   deriving (Data,Eq,Show,Typeable)

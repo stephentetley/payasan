@@ -47,7 +47,7 @@ phraseT (Phrase bs)             = T.ABCPhrase $ map barT bs
 barT :: Bar Pitch -> T.Bar
 barT (Bar info cs)              = 
     let f = fromPitch           -- might need /context/ i.e. key
-        g = durationT (render_unit_note_len info)
+        g = durationT (local_unit_note_len info)
     in T.Bar info $ map (ctxElementT f g) cs
 
 ctxElementT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 

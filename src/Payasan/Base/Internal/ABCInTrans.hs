@@ -20,7 +20,7 @@
 module Payasan.Base.Internal.ABCInTrans
   (
     translate
-  , pushRenderInfo
+  , pushLocalRenderInfo
   ) where
 
 
@@ -44,7 +44,7 @@ phraseT (ABCPhrase bs)          = T.Phrase $ map barT bs
 
 barT :: Bar  -> T.Bar T.Pitch Duration
 barT (Bar info cs)              = 
-    let f = durationT (render_unit_note_len info) 
+    let f = durationT (local_unit_note_len info) 
     in T.Bar info $ concatMap (ctxElementT f) cs
 
 
@@ -84,7 +84,7 @@ durationT unl d =
 -- Push RenderInfo into bars.
 
 
-pushRenderInfo :: RenderInfo -> ABCPhrase -> ABCPhrase
-pushRenderInfo ri (ABCPhrase bs) = ABCPhrase $ map upd bs
+pushLocalRenderInfo :: LocalRenderInfo -> ABCPhrase -> ABCPhrase
+pushLocalRenderInfo ri (ABCPhrase bs) = ABCPhrase $ map upd bs
   where
     upd bar = bar { render_info = ri }

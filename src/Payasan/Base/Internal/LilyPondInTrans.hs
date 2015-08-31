@@ -20,7 +20,7 @@
 module Payasan.Base.Internal.LilyPondInTrans
   (
     translate
-  , pushRenderInfo
+  , pushLocalRenderInfo
   ) where
 
 
@@ -65,7 +65,7 @@ phraseT (LyPhrase bs)          = T.Phrase <$> mapM barT bs
 
 barT :: Bar  -> Mon (T.Bar T.Pitch Duration)
 barT (Bar info cs)              = 
-    -- TODO should update state if different
+    -- TODO - can info cause any change to State?
     do { css <- mapM ctxElementT cs
        ; return $ T.Bar info (concat css)
        }
@@ -120,8 +120,8 @@ wrapL a = [a]
 -- Push RenderInfo into bars.
 
 
-pushRenderInfo :: RenderInfo -> LyPhrase -> LyPhrase
-pushRenderInfo ri (LyPhrase bs) = LyPhrase $ map upd bs
+pushLocalRenderInfo :: LocalRenderInfo -> LyPhrase -> LyPhrase
+pushLocalRenderInfo ri (LyPhrase bs) = LyPhrase $ map upd bs
   where
     upd bar = bar { render_info = ri }
 

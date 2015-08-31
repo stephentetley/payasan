@@ -24,9 +24,9 @@ module Payasan.Base.Monophonic.Notelist
   , abc                     -- * re-export
 
 
-  , RenderInfo(..)
+  , LocalRenderInfo(..)
   , UnitNoteLength(..)
-  , default_render_info
+  , default_local_info
 
 
   , fromABC
@@ -51,10 +51,10 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 fromABC :: ABCMonoPhrase -> StdMonoPhrase
-fromABC  = fromABCWith default_render_info
+fromABC  = fromABCWith default_local_info
 
-fromABCWith :: RenderInfo -> ABCMonoPhrase -> StdMonoPhrase
-fromABCWith ri = ABCIn.translate . ABCIn.pushRenderInfo ri
+fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
+fromABCWith ri = ABCIn.translate . ABCIn.pushLocalRenderInfo ri
 
 
 outputAsABC :: StdMonoPhrase -> String

@@ -89,7 +89,7 @@ barline :: LilyPondParser ()
 barline = reservedOp "|"
 
 bar :: LilyPondParser Bar
-bar = Bar default_render_info <$> ctxElements 
+bar = Bar default_local_info <$> ctxElements 
 
 
 ctxElements :: LilyPondParser [CtxElement]

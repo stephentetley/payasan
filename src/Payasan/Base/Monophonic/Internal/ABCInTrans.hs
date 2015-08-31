@@ -20,7 +20,7 @@
 module Payasan.Base.Monophonic.Internal.ABCInTrans
   (
     translate
-  , pushRenderInfo
+  , pushLocalRenderInfo
   ) where
 
 
@@ -45,7 +45,7 @@ phraseT (MonoPhrase bs)          = MonoPhrase $ map barT bs
 
 barT :: Bar Pitch NoteLength -> Bar Pitch Duration
 barT (Bar info cs)              = 
-    let f = durationT (render_unit_note_len info) 
+    let f = durationT (local_unit_note_len info) 
     in Bar info $ concatMap (ctxElementT f) cs
 
 
@@ -74,7 +74,7 @@ durationT unl d =
 -- Push RenderInfo into bars.
 
 
-pushRenderInfo :: RenderInfo -> ABCMonoPhrase -> ABCMonoPhrase
-pushRenderInfo ri (MonoPhrase bs) = MonoPhrase $ map upd bs
+pushLocalRenderInfo :: LocalRenderInfo -> ABCMonoPhrase -> ABCMonoPhrase
+pushLocalRenderInfo ri (MonoPhrase bs) = MonoPhrase $ map upd bs
   where
     upd bar = bar { render_info = ri }

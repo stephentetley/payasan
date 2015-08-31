@@ -58,7 +58,7 @@ data Phrase pch = Phrase { phrase_bars :: [Bar pch] }
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch = Bar 
-    { render_info       :: RenderInfo
+    { render_info       :: LocalRenderInfo
     , bar_elements      :: [CtxElement pch]
     }
   deriving (Data,Eq,Show,Typeable)

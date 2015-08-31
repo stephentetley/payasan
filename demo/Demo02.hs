@@ -14,8 +14,8 @@ phrase01 = fromABCWith manual_ri $ [abc| c G2 E2 C/2 | c |]
 
 
 
-manual_ri :: RenderInfo
-manual_ri = default_render_info { render_unit_note_len = UNIT_NOTE_4 }
+manual_ri :: LocalRenderInfo
+manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
