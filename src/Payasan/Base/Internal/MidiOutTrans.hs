@@ -41,7 +41,7 @@ import Payasan.Base.Duration
 --
 
 translate :: T.TrackData -> Phrase T.MidiPitch Duration -> T.Track
-translate td ph = T.render $ evalState (phraseT td ph) 0
+translate td ph = T.render $ evalTrans (phraseT td ph) () 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.
@@ -49,7 +49,7 @@ translate td ph = T.render $ evalState (phraseT td ph) 0
 -- (swing).
 
 
-type Mon a = State Seconds a
+type Mon a = Trans () Seconds a
 
 
 advanceOnset :: Seconds -> Mon ()

@@ -31,7 +31,7 @@ type CatOp = Doc -> Doc -> Doc
 -- Generating output should be stateful so we can insert a 
 -- newline every four lines.
 
-type Mon a = State Int a
+type Mon a = Trans () Int a
 
 lineLen :: Mon Int
 lineLen = get
@@ -43,7 +43,7 @@ incrLineLen :: Mon ()
 incrLineLen = puts (+1)
 
 abcOutput :: ABCPhrase -> Doc
-abcOutput ph = evalState (oABCPhrase ph) 0
+abcOutput ph = evalTrans (oABCPhrase ph) () 0
 
 
 

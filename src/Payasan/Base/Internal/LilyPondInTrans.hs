@@ -37,7 +37,7 @@ data St = St { previous_duration   :: Duration
              , pitch_directive     :: PitchDirective
              }
 
-type Mon a = State St a
+type Mon a = Trans GlobalRenderInfo St a
 
 
 previousDuration :: Mon Duration
@@ -49,8 +49,8 @@ setPrevDuration d = puts (\s -> s { previous_duration = d })
 pitchDirective :: Mon PitchDirective
 pitchDirective = gets pitch_directive
 
-translate :: LyPhrase -> T.Phrase T.Pitch Duration
-translate ph = evalState (phraseT ph) state_zero
+translate :: GlobalRenderInfo -> LyPhrase -> T.Phrase T.Pitch Duration
+translate info ph = evalTrans (phraseT ph) info state_zero
   where
     -- The first duration should never match then we always start
     -- printing
@@ -65,7 +65,6 @@ phraseT (LyPhrase bs)          = T.Phrase <$> mapM barT bs
 
 barT :: Bar  -> Mon (T.Bar T.Pitch Duration)
 barT (Bar info cs)              = 
-    -- TODO - can info cause any change to State?
     do { css <- mapM ctxElementT cs
        ; return $ T.Bar info (concat css)
        }

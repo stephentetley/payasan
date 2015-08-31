@@ -22,12 +22,14 @@
 module Payasan.Base.Internal.Utils
   ( 
 
-    State
-  , evalState
+    Trans
+  , evalTrans
   , get
   , gets
   , put
   , puts
+  , ask 
+  , asks
 
   -- * Hughes list
   , H
@@ -65,38 +67,44 @@ import qualified Data.Traversable as T
 --------------------------------------------------------------------------------
 
 
+-- | Translation monad - Reader+State.
+newtype Trans r st a = Trans { getTrans :: r -> st -> (st, a) }
 
-newtype State st a = State { getState :: st -> (st, a) }
+instance Functor (Trans r st) where
+  fmap f ma = Trans $ \r s -> let (s1,a) = getTrans ma r s in (s1, f a)
 
-instance Functor (State st) where
-  fmap f ma = State $ \s -> let (s1,a) = getState ma s in (s1, f a)
+instance Applicative (Trans r st) where
+  pure a    = Trans $ \_ s -> (s,a)
+  mf <*> ma = Trans $ \r s -> 
+                let (s1,f) = getTrans mf r s
+                    (s2,a) = getTrans ma r s1
+                in (s2, f a)
 
-instance Applicative (State st) where
-  pure a    = State $ \s -> (s,a)
-  mf <*> ma = State $ \s -> let (s1,f) = getState mf s
-                                (s2,a) = getState ma s1
-                            in (s2, f a)
-
-instance Monad (State st) where
+instance Monad (Trans r st) where
   return    = pure
-  ma >>= k  = State $ \s -> let (s1,a) = getState ma s 
-                            in getState (k a) s1
+  ma >>= k  = Trans $ \r s -> 
+                let (s1,a) = getTrans ma r s in getTrans (k a) r s1
  
-evalState :: State st a -> st -> a
-evalState ma s = let (_,a) = getState ma s in a
+evalTrans :: Trans r st a -> r -> st -> a
+evalTrans ma r s = let (_,a) = getTrans ma r s in a
 
-get :: State st st
-get = State $ \s -> (s,s)
+get :: Trans r st st
+get = Trans $ \_ s -> (s,s)
 
-gets :: (st -> a) -> State st a
-gets f = State $ \s -> (s,f s)
+gets :: (st -> a) -> Trans r st a
+gets f = Trans $ \_ s -> (s,f s)
 
-put :: st -> State st ()
-put s = State $ \_ -> (s,())
+put :: st -> Trans r st ()
+put s = Trans $ \_ _ -> (s,())
 
-puts :: (st -> st) -> State st ()
-puts f = State $ \s -> (f s,())
+puts :: (st -> st) -> Trans r st ()
+puts f = Trans $ \_ s -> (f s,())
 
+ask :: Trans r st r
+ask = Trans $ \r s -> (s,r)
+
+asks :: (r -> a) -> Trans r st a
+asks f = Trans $ \r s -> (s,f r)
 
 
 --------------------------------------------------------------------------------
