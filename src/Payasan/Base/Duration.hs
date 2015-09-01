@@ -29,6 +29,7 @@ module Payasan.Base.Duration
   , dot
   , addDots
   , components
+  , lilyPondComponents
   , durationSize
   , rationalToDuration
 
@@ -104,6 +105,23 @@ components :: Duration -> (Rational,Int)
 components DZero        = (0,0)
 components (D1 n dc) = (toRat n,dc)
 
+
+lilyPondComponents :: Duration -> (Either String Int, Int)
+lilyPondComponents (DZero)    = (Right 0, 0)
+lilyPondComponents (D1 n dc)  = (fn n, dc)
+  where
+    fn N128      = Right 128
+    fn N64       = Right 64
+    fn N32       = Right 32
+    fn N16       = Right 16
+    fn N8        = Right 8
+    fn N4        = Right 4
+    fn N2        = Right 2
+    fn N1        = Right 1
+    fn Breve     = Left "breve"
+    fn Longa     = Left "longa"
+    fn Maxima    = Left "maxima"
+    
 
 -- | 'extent' - get the size of a Duration as a Rational 
 -- (DurationMeasure).

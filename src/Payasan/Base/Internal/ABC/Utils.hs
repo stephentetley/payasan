@@ -63,11 +63,11 @@ import Data.Ratio
 toPitch :: Pitch -> P.Pitch
 toPitch (Pitch a l om) = 
     let (l1,lcase) = toLetterParts l
-    in P.Pitch (P.NoteLabel l1 (toAlteration a)) (toOctaveP lcase om)
+    in P.Pitch (P.PitchSpelling l1 (toAlteration a)) (toOctaveP lcase om)
 
 
 fromPitch :: P.Pitch -> Pitch
-fromPitch (P.Pitch (P.NoteLabel l a) o) = 
+fromPitch (P.Pitch (P.PitchSpelling l a) o) = 
     Pitch (fromAlteration a) (fromLetterPartsOve l o) (fromOctaveP o)
 
 
@@ -76,15 +76,15 @@ data LetterCase = LOWER | UPPER
 
 -- | General function for decomposing pitch 
 -- 
-decomposePitch :: Pitch -> (P.NoteLabel,LetterCase,P.Octave)
-decomposePitch (Pitch a l om) = (P.NoteLabel l1 a1, lc, ove)
+decomposePitch :: Pitch -> (P.PitchSpelling,LetterCase,P.Octave)
+decomposePitch (Pitch a l om) = (P.PitchSpelling l1 a1, lc, ove)
   where
     a1          = toAlteration a
     (l1,lc)     = toLetterParts l
     ove         = toOctaveP lc om
 
-recomposePitch :: P.NoteLabel -> LetterCase -> P.Octave -> Pitch
-recomposePitch (P.NoteLabel l a) lc i = Pitch a1 l1 om
+recomposePitch :: P.PitchSpelling -> LetterCase -> P.Octave -> Pitch
+recomposePitch (P.PitchSpelling l a) lc i = Pitch a1 l1 om
   where
     a1 = fromAlteration a
     l1 = fromLetterParts l lc

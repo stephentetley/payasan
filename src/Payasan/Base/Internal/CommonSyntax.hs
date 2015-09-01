@@ -89,7 +89,7 @@ default_local_info = LocalRenderInfo
     }
 
 
-data KeySig = KeySig  NoteLabel Mode
+data KeySig = KeySig !PitchSpelling !Mode
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -136,8 +136,8 @@ abcKeySig (KeySig n m)  =
     let (l,a) = abcElements n in text l <> text a <> abcMode m
 
 
-abcElements :: NoteLabel -> (String,String)
-abcElements (NoteLabel l a) = (show l, altname a) 
+abcElements :: PitchSpelling -> (String,String)
+abcElements (PitchSpelling l a) = (show l, altname a) 
   where
     altname DBL_FLAT    = "bb"
     altname FLAT        = "b"
@@ -152,4 +152,4 @@ abcTimeSig (Meter n d)  = int n <> char '/' <> int d
 
 
 c_maj :: KeySig
-c_maj = KeySig (NoteLabel C NAT) MAJOR
+c_maj = KeySig (PitchSpelling C NAT) MAJOR

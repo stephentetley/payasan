@@ -22,8 +22,8 @@ module Payasan.Base.Internal.LilyPond.Utils
     toPitchAbs
   , fromPitchAbs
 
-  , toNoteLabel
-  , fromNoteLabel
+  , toPitchSpelling
+  , fromPitchSpelling
 
   , toPitchLetter
   , fromPitchLetter
@@ -62,23 +62,23 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 --
 toPitchAbs :: Pitch -> P.Pitch
 toPitchAbs (Pitch l a om) =
-    let lbl = P.NoteLabel (toPitchLetter l) (toAlteration a) 
+    let lbl = P.PitchSpelling (toPitchLetter l) (toAlteration a) 
     in P.Pitch lbl (toOctaveAbs om)
 
 
 
 fromPitchAbs :: P.Pitch -> Pitch
 fromPitchAbs (P.Pitch lbl o) = 
-    let (l,a) = fromNoteLabel lbl
+    let (l,a) = fromPitchSpelling lbl
     in Pitch l a (fromOctaveAbs o)
 
 
 
-toNoteLabel :: PitchLetter -> Accidental -> P.NoteLabel
-toNoteLabel l a = P.NoteLabel (toPitchLetter l) (toAlteration a)
+toPitchSpelling :: PitchLetter -> Accidental -> P.PitchSpelling
+toPitchSpelling l a = P.PitchSpelling (toPitchLetter l) (toAlteration a)
 
-fromNoteLabel :: P.NoteLabel -> (PitchLetter,Accidental)
-fromNoteLabel (P.NoteLabel p a) = (fromPitchLetter p, fromAlteration a)
+fromPitchSpelling :: P.PitchSpelling -> (PitchLetter,Accidental)
+fromPitchSpelling (P.PitchSpelling p a) = (fromPitchLetter p, fromAlteration a)
 
 
 -- | Middle c is 4. In LilyPond this is C raised 1
@@ -132,26 +132,26 @@ fromAlteration P.DBL_SHARP      = DBL_SHARP
 toPitchRel :: Pitch -> P.Pitch -> P.Pitch
 toPitchRel (Pitch l a om) p0@(P.Pitch lbl0 _) = octaveAdjust root om
   where
-    lbl1        = toNoteLabel l a
-    dist_up     = P.arithmeticDistanceNL lbl0 lbl1
-    dist_down   = P.arithmeticDistanceNL lbl1 lbl0
+    lbl1        = toPitchSpelling l a
+    dist_up     = P.arithmeticDistancePS lbl0 lbl1
+    dist_down   = P.arithmeticDistancePS lbl1 lbl0
     root        = if dist_up > dist_down 
                     then firstAbove lbl1 p0 else firstBelow lbl1 p0
 
 
-firstAbove :: P.NoteLabel -> P.Pitch -> P.Pitch
-firstAbove lbl1 (P.Pitch lbl0@(P.NoteLabel ltr0 _) o0) = 
+firstAbove :: P.PitchSpelling -> P.Pitch -> P.Pitch
+firstAbove lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) = 
     P.Pitch lbl1 ove
   where
-    dist = P.arithmeticDistanceNL lbl0 lbl1
+    dist = P.arithmeticDistancePS lbl0 lbl1
     om   = if fromEnum ltr0 + dist > 7 then 1 else 0
     ove = o0 + om
 
-firstBelow :: P.NoteLabel -> P.Pitch -> P.Pitch
-firstBelow lbl1 (P.Pitch lbl0@(P.NoteLabel ltr0 _) o0) = 
+firstBelow :: P.PitchSpelling -> P.Pitch -> P.Pitch
+firstBelow lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) = 
     P.Pitch lbl1 ove
   where
-    dist = P.arithmeticDistanceNL lbl0 lbl1
+    dist = P.arithmeticDistancePS lbl0 lbl1
     om   = if fromEnum ltr0 - dist > 0 then (-1) else 0
     ove = o0 + om
 
