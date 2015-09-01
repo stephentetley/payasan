@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCUtils
+-- Module      :  Payasan.Base.Internal.ABC.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCUtils
+module Payasan.Base.Internal.ABC.Utils
   ( 
 
   -- * Conversion
@@ -43,7 +43,7 @@ module Payasan.Base.Internal.ABCUtils
  
   ) where
 
-import Payasan.Base.Internal.ABCSyntax
+import Payasan.Base.Internal.ABC.Syntax
 
 import qualified Payasan.Base.Pitch as P
 import Payasan.Base.Duration

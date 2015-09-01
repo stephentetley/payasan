@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCParser
+-- Module      :  Payasan.Base.Internal.ABC.Parser
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCParser
+module Payasan.Base.Internal.ABC.Parser
   (
     abc
 
@@ -27,8 +27,8 @@ module Payasan.Base.Internal.ABCParser
   , tupletSpec
   ) where
 
-import Payasan.Base.Internal.ABCLexer
-import Payasan.Base.Internal.ABCSyntax
+import Payasan.Base.Internal.ABC.Lexer
+import Payasan.Base.Internal.ABC.Syntax
 
 import Text.Parsec                              -- package: parsec
 

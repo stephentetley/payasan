@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPondUtils
+-- Module      :  Payasan.Base.Internal.LilyPond.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPondUtils
+module Payasan.Base.Internal.LilyPond.Utils
   ( 
 
 
@@ -37,7 +37,7 @@ module Payasan.Base.Internal.LilyPondUtils
  
   ) where
 
-import Payasan.Base.Internal.LilyPondSyntax
+import Payasan.Base.Internal.LilyPond.Syntax
 
 import qualified Payasan.Base.Pitch as P
 
@@ -119,7 +119,7 @@ fromAlteration P.SHARP          = SHARP
 fromAlteration P.DBL_SHARP      = DBL_SHARP
 
 toPitchRel :: Pitch -> P.Pitch -> P.Pitch
-toPitchRel (Pitch l a om) p0@(P.Pitch lbl0 o0) = octaveAdjust root om
+toPitchRel (Pitch l a om) p0@(P.Pitch lbl0 _) = octaveAdjust root om
   where
     lbl1        = toNoteLabel l a
     dist_up     = P.arithmeticDistanceNL lbl0 lbl1

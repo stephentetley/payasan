@@ -1,9 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPondInTrans
+-- Module      :  Payasan.Base.Internal.LilyPondOutTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -17,21 +16,20 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPondInTrans
+module Payasan.Base.Internal.LilyPondOutTrans
   (
     translate
-  , pushLocalRenderInfo
   ) where
 
 
 
-import Payasan.Base.Internal.LilyPondSyntax
+import qualified Payasan.Base.Internal.LilyPondSyntax as T
 import Payasan.Base.Internal.LilyPondUtils
-import qualified Payasan.Base.Internal.MainSyntax as T
+import Payasan.Base.Internal.MainSyntax
 import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as T
+import Payasan.Base.Pitch
 
 data St = St { previous_duration   :: Duration 
              , previous_pitch      :: T.Pitch

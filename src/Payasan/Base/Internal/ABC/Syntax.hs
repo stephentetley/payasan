@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCSyntax
+-- Module      :  Payasan.Base.Internal.ABC.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCSyntax
+module Payasan.Base.Internal.ABC.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
 

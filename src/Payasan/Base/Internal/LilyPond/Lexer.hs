@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPondLexer
+-- Module      :  Payasan.Base.Internal.LilyPond.Lexer
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPondLexer
+module Payasan.Base.Internal.LilyPond.Lexer
   (
     LilyPondParser
   , LilyPondLexer

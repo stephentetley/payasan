@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCOutput
+-- Module      :  Payasan.Base.Internal.ABC.Output
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,13 +14,13 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCOutput
+module Payasan.Base.Internal.ABC.Output
   ( 
     abcOutput
   ) where
 
-import Payasan.Base.Internal.ABCSyntax
-import Payasan.Base.Internal.ABCUtils
+import Payasan.Base.Internal.ABC.Syntax
+import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.Utils
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty

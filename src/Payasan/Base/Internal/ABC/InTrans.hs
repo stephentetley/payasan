@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCInTrans
+-- Module      :  Payasan.Base.Internal.ABC.InTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCInTrans
+module Payasan.Base.Internal.ABC.InTrans
   (
     translate
   , pushLocalRenderInfo
@@ -25,8 +25,8 @@ module Payasan.Base.Internal.ABCInTrans
 
 
 
-import Payasan.Base.Internal.ABCSyntax
-import Payasan.Base.Internal.ABCUtils
+import Payasan.Base.Internal.ABC.Syntax
+import Payasan.Base.Internal.ABC.Utils
 import qualified Payasan.Base.Internal.MainSyntax as T
 
 import Payasan.Base.Duration

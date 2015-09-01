@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPondParser
+-- Module      :  Payasan.Base.Internal.LilyPond.Parser
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPondParser
+module Payasan.Base.Internal.LilyPond.Parser
   (
     lilypond
 
@@ -30,8 +30,8 @@ module Payasan.Base.Internal.LilyPondParser
   ) where
 
 
-import Payasan.Base.Internal.LilyPondLexer
-import Payasan.Base.Internal.LilyPondSyntax
+import Payasan.Base.Internal.LilyPond.Lexer
+import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec

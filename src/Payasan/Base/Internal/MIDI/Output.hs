@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MidiOutput
+-- Module      :  Payasan.Base.Internal.MIDI.Output
 -- Copyright   :  (c) Stephen Tetley 2014-2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MidiOutput
+module Payasan.Base.Internal.MIDI.Output
   ( 
     render
   , midiFileFormat0
@@ -24,12 +24,12 @@ module Payasan.Base.Internal.MidiOutput
 
   ) where
 
+import Payasan.Base.Internal.MIDI.Syntax
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.MidiSyntax
 import Payasan.Base.Internal.Utils
 
-import qualified ZMidi.Core as Z
+import qualified ZMidi.Core as Z                -- packahe: zmidi-core
 
 import Data.List ( sort )
 import Data.Word

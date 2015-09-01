@@ -3,7 +3,7 @@
 
 module Demo01 where
 
-import Payasan.Base.Internal.ABCOutput (abcOutput) -- temp
+import Payasan.Base.Internal.ABC.Output (abcOutput) -- temp
 import Payasan.Base.Notelist
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

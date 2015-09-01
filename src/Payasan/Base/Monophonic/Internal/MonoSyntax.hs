@@ -30,7 +30,7 @@ module Payasan.Base.Monophonic.Internal.MonoSyntax
 
   ) where
 
-import Payasan.Base.Internal.ABCSyntax (NoteLength(..))
+import Payasan.Base.Internal.ABC.Syntax (NoteLength(..))
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -52,7 +52,6 @@ data MonoPhrase pch drn = MonoPhrase { phrase_bars :: [Bar pch drn] }
   deriving (Data,Eq,Show,Typeable)
 
 type StdMonoPhrase = MonoPhrase Pitch Duration
-
 
 type ABCMonoPhrase = MonoPhrase Pitch NoteLength
 

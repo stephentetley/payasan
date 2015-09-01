@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MidiPitchTrans
+-- Module      :  Payasan.Base.Internal.MIDI.PitchTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,14 +14,14 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MidiPitchTrans
+module Payasan.Base.Internal.MIDI.PitchTrans
   ( 
     translate
   ) where
 
 
+import qualified Payasan.Base.Internal.MIDI.Syntax as T
 import Payasan.Base.Internal.MainSyntax
-import qualified Payasan.Base.Internal.MidiSyntax as T
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

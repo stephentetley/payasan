@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABCOutTrans
+-- Module      :  Payasan.Base.Internal.ABC.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,15 +16,16 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABCOutTrans
+module Payasan.Base.Internal.ABC.OutTrans
   (
     translate
   ) where
 
 
 
-import qualified Payasan.Base.Internal.ABCSyntax as T
-import Payasan.Base.Internal.ABCUtils
+import qualified Payasan.Base.Internal.ABC.Syntax as T
+import Payasan.Base.Internal.ABC.Utils
+
 import Payasan.Base.Internal.BracketSyntax
 
 import Payasan.Base.Duration

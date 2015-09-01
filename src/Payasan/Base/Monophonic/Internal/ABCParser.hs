@@ -22,10 +22,10 @@ module Payasan.Base.Monophonic.Internal.ABCParser
 
 import Payasan.Base.Monophonic.Internal.MonoSyntax
 
-import Payasan.Base.Internal.ABCLexer
-import qualified Payasan.Base.Internal.ABCParser as P
-import Payasan.Base.Internal.ABCSyntax (NoteLength(..))
-import Payasan.Base.Internal.ABCUtils ( toPitch )
+import Payasan.Base.Internal.ABC.Lexer
+import qualified Payasan.Base.Internal.ABC.Parser as P
+import Payasan.Base.Internal.ABC.Syntax (NoteLength(..))
+import Payasan.Base.Internal.ABC.Utils ( toPitch )
 
 import Payasan.Base.Pitch
 

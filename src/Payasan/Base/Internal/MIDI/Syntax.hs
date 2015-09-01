@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MidiSyntax
+-- Module      :  Payasan.Base.Internal.MIDI.Syntax
 -- Copyright   :  (c) Stephen Tetley 2014-2015
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MidiSyntax
+module Payasan.Base.Internal.MIDI.Syntax
   ( 
 
   -- * syntax

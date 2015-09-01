@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MidiOutTrans
+-- Module      :  Payasan.Base.Internal.MIDI.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,16 +14,16 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MidiOutTrans
+module Payasan.Base.Internal.MIDI.OutTrans
   ( 
     translate
   ) where
 
+import qualified Payasan.Base.Internal.MIDI.Output as T
+import qualified Payasan.Base.Internal.MIDI.Syntax as T
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.MainSyntax
-import qualified Payasan.Base.Internal.MidiOutput as T
-import qualified Payasan.Base.Internal.MidiSyntax as T
 import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Duration
