@@ -58,6 +58,7 @@ module Payasan.Base.Pitch
   , larger
   , octaveCount
   , addOctaves
+  , arithDistModulo
   , addInterval
 
   , simpleIntervalOf
@@ -234,6 +235,9 @@ addOctaves (Interval { interval_arith_dist = ad
              }
 
 
+arithDistModulo :: Int -> Int
+arithDistModulo ad = let x = ad-1 in 1+(x `mod` 7)
+
 addInterval :: Pitch -> Interval -> Pitch
 addInterval _ _ = error "Pitch.addInterval"
 
@@ -268,35 +272,38 @@ invertSimpleInterval (Interval { interval_arith_dist = ad
 
 
 
--- Has errors?
 description :: Interval -> (String,String,Int)
 description iv = (intervalColour iv, distanceName iv, octaveCount iv)
 
 
 
 distanceName :: Interval -> String
-distanceName (Interval {interval_arith_dist = ad}) = step $ (ad-1) `mod` 7
+distanceName (Interval {interval_arith_dist = ad}) 
+    | ad == 1   = "unison"
+    | otherwise = step $ arithDistModulo ad
   where
-    step 0 = "octave"
-    step 1 = "second"
-    step 2 = "third"
-    step 3 = "fourth"
-    step 4 = "fifth"
-    step 5 = "sixth"
-    step 6 = "seventh"
+    step 1 = "octave"
+    step 2 = "second"
+    step 3 = "third"
+    step 4 = "fourth"
+    step 5 = "fifth"
+    step 6 = "sixth"
+    step 7 = "seventh"
     step _ = "distanceName - unreachable"
 
 intervalColour :: Interval -> String
 intervalColour (Interval {interval_arith_dist = ad, interval_semitones = n}) = 
-    maybe "unknown" id $ case ad of
-      2 -> identify ["diminished", "minor", "major", "augmented"] (n+1)
-      3 -> identify ["minor", "major"] (n-2)
-      4 -> identify ["diminished", "perfect", "augmented"] (n-3)
-      5 -> identify ["diminished", "perfect", "augmented"] (n-5)
-      6 -> identify ["minor", "major", "augmented"] (n-7)
-      7 -> identify ["diminished", "minor", "major"] (n-8)
+    maybe "unknown" id $ case arithDistModulo ad of
+      1 -> identify ["perfect", "augmented"] nmod
+      2 -> identify ["diminished", "minor", "major", "augmented"] nmod
+      3 -> identify ["diminished", "minor", "major", "augmented"] (nmod-2)
+      4 -> identify ["diminished", "perfect", "augmented"] (nmod-4)
+      5 -> identify ["diminished", "perfect", "augmented"] (nmod-6)
+      6 -> identify ["diminished", "minor", "major", "augmented"] (nmod-7)
+      7 -> identify ["diminished", "minor", "major", "augmented"] (nmod-9)
       _ -> Nothing
   where
+    nmod     = n `mod` 12
     identify :: [String] -> Int -> Maybe String
     identify names ix | ix >= length names = Nothing
                       | otherwise          = Just $ names !! ix

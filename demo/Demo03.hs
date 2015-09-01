@@ -11,10 +11,6 @@ import Payasan.Base.Pitch
 import Payasan.Base.Internal.LilyPond.OutTrans
 import Payasan.Base.Internal.LilyPond.Output
 
-import Payasan.Base.Names.GeneralMidiDrums
-import Payasan.Base.Names.GeneralMidiInstruments
-import Payasan.Base.Names.Pitch
-import Payasan.Base.Names.Chord
 import Payasan.Base.Names.Interval
 
 phrase01 :: StdPhrase
