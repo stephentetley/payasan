@@ -31,17 +31,28 @@ module Payasan.Base.Internal.LilyPond.Utils
   , fromAlteration
 
   , toPitchRel
+  , fromPitchRel
 
   -- * Output
+  , command
+  , tupletSpec
 
+  , note
+  , rest
+  , chord
+  , graces
+
+ 
+  , beamForm
  
   ) where
 
 import Payasan.Base.Internal.LilyPond.Syntax
 
 import qualified Payasan.Base.Pitch as P
+import Payasan.Base.Duration
 
-
+import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 --------------------------------------------------------------------------------
 -- Conversion
@@ -154,6 +165,78 @@ octaveAdjust pch@(P.Pitch lbl o) om = case om of
     OveLowered i    -> P.Pitch lbl (o-i)
  
 
+fromPitchRel :: P.Pitch -> P.Pitch -> Pitch
+fromPitchRel _ _ = middle_c
 
 --------------------------------------------------------------------------------
 -- Pretty printing helpers
+
+
+command :: String -> Doc
+command = text . ('\\' :)
+
+tupletSpec :: TupletSpec -> Doc
+tupletSpec (TupletSpec { tuplet_num = n, tuplet_time = t}) = 
+    command "tuplet" <+> int n <> char '/' <> int t
+     
+
+note :: Note -> Doc 
+note (Note p d) = pitch p <> noteLength d
+
+rest :: NoteLength -> Doc
+rest d = char 'r' <> noteLength d
+
+chord :: [Pitch] -> NoteLength -> Doc
+chord ps d = chordForm (map pitch ps) <> noteLength d
+
+graces :: [Note] -> Doc
+graces ns = graceForm (map note ns)
+
+
+pitch :: Pitch -> Doc
+pitch (Pitch l a om)  = pitchLetter l <> accidental a <> octaveModifier om
+
+pitchLetter :: PitchLetter -> Doc
+pitchLetter CL  = char 'c'
+pitchLetter DL  = char 'd'
+pitchLetter EL  = char 'e'
+pitchLetter FL  = char 'f'
+pitchLetter GL  = char 'g'
+pitchLetter AL  = char 'a'
+pitchLetter BL  = char 'b'
+
+accidental :: Accidental -> Doc
+accidental NO_ACCIDENTAL        = empty
+accidental DBL_FLAT             = text "eses"
+accidental FLAT                 = text "es"
+accidental NATURAL              = text "!"
+accidental SHARP                = text "is"
+accidental DBL_SHARP            = text "isis"
+
+
+octaveModifier :: Octave -> Doc
+octaveModifier (OveDefault)   = empty
+octaveModifier (OveRaised i)  = text $ replicate i '\''
+octaveModifier (OveLowered i) = text $ replicate i ','
+
+
+noteLength :: NoteLength -> Doc
+noteLength (DrnDefault)     = empty
+noteLength (DrnExplicit d)  = duration d
+
+duration :: Duration -> Doc
+duration d = let (root,dc) = lilyPondComponents d
+                 dotd      = text $ replicate dc '.'
+             in either command int root <> dotd
+
+
+chordForm :: [Doc] -> Doc
+chordForm ds = char '<' <> hcat ds <> char '>'
+
+graceForm :: [Doc] -> Doc
+graceForm ds = command "grace" <+> braces (hsep ds)
+
+
+beamForm :: [Doc] -> Doc
+beamForm (d:ds) = d <> char '[' <> hsep ds <> char ']'
+beamForm []     = empty

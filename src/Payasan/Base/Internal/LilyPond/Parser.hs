@@ -100,7 +100,7 @@ ctxElement = tuplet <|> (Atom <$> element)
 
 
 element :: LilyPondParser Element
-element = lexeme (rest <|> noteElem ) -- <|> chord <|> graces)
+element = lexeme (rest <|> noteElem <|> chord <|> graces)
 
 
 
@@ -109,6 +109,16 @@ noteElem = NoteElem <$> note
 
 rest :: LilyPondParser Element
 rest = Rest <$> (char 'z' *> noteLength)
+
+chord :: LilyPondParser Element
+chord = Chord <$> angles (many1 pitch) <*> noteLength
+
+
+graces :: LilyPondParser Element
+graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
+  where
+    multi   = braces (many1 note)
+    single  = (\a -> [a]) <$> note
 
 
 tuplet :: LilyPondParser CtxElement

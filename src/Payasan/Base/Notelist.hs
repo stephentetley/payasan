@@ -40,6 +40,9 @@ module Payasan.Base.Notelist
   
   , outputAsABC
   , printAsABC
+  , outputAsLilyPond
+  , printAsLilyPond
+
 
   , ppRender
 
@@ -54,6 +57,8 @@ import Payasan.Base.Internal.ABC.Parser (abc)
 import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans     as LYIn
+import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
+import Payasan.Base.Internal.LilyPond.Output
 import Payasan.Base.Internal.LilyPond.Parser (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 
@@ -94,6 +99,12 @@ outputAsABC = ppRender . abcOutput . ABCOut.translate . BRKT.transAndBeam id
 
 printAsABC :: StdPhrase -> IO ()
 printAsABC = putStrLn . outputAsABC
+
+outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
+outputAsLilyPond gi = ppRender . lyOutput . LYOut.translate gi . BRKT.transAndBeam id
+
+printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
 ppRender :: Doc -> String

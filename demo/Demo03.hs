@@ -8,6 +8,9 @@ import Payasan.Base.Duration
 import Payasan.Base.Notelist
 import Payasan.Base.Pitch
 
+import Payasan.Base.Internal.LilyPond.OutTrans
+import Payasan.Base.Internal.LilyPond.Output
+
 
 phrase01 :: StdPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
@@ -25,5 +28,5 @@ manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = printAsABC phrase01
+demo01 = printAsLilyPond global_ri phrase01
 

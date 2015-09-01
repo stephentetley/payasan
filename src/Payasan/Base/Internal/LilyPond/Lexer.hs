@@ -24,6 +24,7 @@ module Payasan.Base.Internal.LilyPond.Lexer
   , reservedOp
   , int
   , braces
+  , angles
   , lexeme
   , whiteSpace
   ) where
@@ -65,6 +66,9 @@ int                 = fromIntegral <$> P.integer lilypond_lex
 braces              :: LilyPondParser a -> LilyPondParser a
 braces              = P.braces lilypond_lex
 
+angles              :: LilyPondParser a -> LilyPondParser a
+angles              = P.angles lilypond_lex
+
 lexeme              :: LilyPondParser a -> LilyPondParser a
 lexeme              = P.lexeme lilypond_lex
 
@@ -75,7 +79,7 @@ lilypond_lex        :: LilyPondLexer
 lilypond_lex        = P.makeTokenParser $ 
     emptyDef { P.reservedOpNames  = ["|", "/", "[", "]"]
              , P.reservedNames    = [ "\\maxima", "\\longa", "\\breve"
-                                    , "\\tuplet"
+                                    , "\\tuplet", "\\grace"
                                     ]
              }
 

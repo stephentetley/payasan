@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPondOutTrans
+-- Module      :  Payasan.Base.Internal.LilyPond.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,29 +10,50 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert ABC to Main Syntax, plus /pushing/ render info
--- into bars as this cannot be done during parsing / 
--- quasiquoting.
+-- Convert Bracket syntax to LilyPond prior to printing.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPondOutTrans
+module Payasan.Base.Internal.LilyPond.OutTrans
   (
     translate
   ) where
 
 
 
-import qualified Payasan.Base.Internal.LilyPondSyntax as T
-import Payasan.Base.Internal.LilyPondUtils
-import Payasan.Base.Internal.MainSyntax
+import qualified Payasan.Base.Internal.LilyPond.Syntax as T
+import Payasan.Base.Internal.LilyPond.Utils
+
+import Payasan.Base.Internal.BracketSyntax
 import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
+
+
+translate :: GlobalRenderInfo -> Phrase Pitch -> T.LyPhrase
+translate info ph = evalTrans (phraseT ph) info state_zero
+  where
+    -- The first duration should never match then we always start
+    -- printing
+    state_zero = St { previous_duration = dQuarter
+                    , previous_pitch    = pitch_zero
+                    }
+    -- If AbsPitch then /previous pitch/ will never be used
+    pitch_zero = case global_pitch_directive info of
+                    RelPitch pch -> pch
+                    AbsPitch -> middle_c
+
+
+
+--------------------------------------------------------------------------------
+-- Implementation
+
+
+
 data St = St { previous_duration   :: Duration 
-             , previous_pitch      :: T.Pitch
+             , previous_pitch      :: Pitch
              }
 
 type Mon a = Trans GlobalRenderInfo St a
@@ -44,35 +65,22 @@ previousDuration = gets previous_duration
 setPrevDuration :: Duration -> Mon ()
 setPrevDuration d = puts (\s -> s { previous_duration = d })
 
-previousPitch :: Mon (Maybe T.Pitch)
+previousPitch :: Mon (Maybe Pitch)
 previousPitch = fn <$> asks global_pitch_directive <*> gets previous_pitch
   where
     fn (AbsPitch) _    = Nothing
     fn (RelPitch {}) p = Just p
 
-setPrevPitch :: T.Pitch -> Mon ()
+setPrevPitch :: Pitch -> Mon ()
 setPrevPitch p = puts (\s -> s { previous_pitch = p })
 
-translate :: GlobalRenderInfo -> LyPhrase -> T.Phrase T.Pitch Duration
-translate info ph = evalTrans (phraseT ph) info state_zero
-  where
-    -- The first duration should never match then we always start
-    -- printing
-    state_zero = St { previous_duration = dQuarter
-                    , previous_pitch    = pitch_zero
-                    }
-    -- If AbsPitch then /previous pitch/ will never be used
-    pitch_zero = case global_pitch_directive info of
-                    RelPitch pch -> pch
-                    AbsPitch -> T.middle_c      
 
-
-phraseT :: LyPhrase -> Mon (T.Phrase T.Pitch Duration)
-phraseT (LyPhrase bs)          = T.Phrase <$> mapM barT bs
+phraseT :: Phrase Pitch -> Mon T.LyPhrase
+phraseT (Phrase bs)             = T.LyPhrase <$> mapM barT bs
 
 
 
-barT :: Bar  -> Mon (T.Bar T.Pitch Duration)
+barT :: Bar Pitch -> Mon T.Bar
 barT (Bar info cs)              = 
     do { css <- mapM ctxElementT cs
        ; return $ T.Bar info (concat css)
@@ -81,7 +89,7 @@ barT (Bar info cs)              =
 
 -- | Remember - a beamed CtxElement may generate 1+ elements
 --
-ctxElementT :: CtxElement -> Mon [T.CtxElement T.Pitch Duration]
+ctxElementT :: CtxElement Pitch -> Mon [T.CtxElement]
 ctxElementT (Atom e)            = (wrapL . T.Atom) <$> elementT e
 
 ctxElementT (Tuplet spec cs)    = 
@@ -91,31 +99,40 @@ ctxElementT (Beamed cs)         = concat <$> mapM ctxElementT cs
 
 
 
-elementT :: Element  -> Mon (T.Element T.Pitch Duration)
+elementT :: Element Pitch  -> Mon T.Element
 elementT (NoteElem a)           = T.NoteElem <$> noteT a
 elementT (Rest d)               = T.Rest   <$> durationT d
 elementT (Chord ps d)           = T.Chord  <$> mapM pitchT ps <*> durationT d
 elementT (Graces ns)            = T.Graces <$> mapM noteT ns
 
 
-noteT :: Note -> Mon (T.Note T.Pitch Duration)
+noteT :: Note Pitch -> Mon T.Note
 noteT (Note pch drn)          = T.Note <$> pitchT pch <*> durationT drn
+
 
 
 -- No previous pitch indicates Absolute pitch mode
 pitchT :: Pitch -> Mon T.Pitch
-pitchT p1 = previousPitch >>= step 
-  where
-    step (Nothing)   = pure $ toPitchAbs p1
-    step (Just p0)   = let tp1 = toPitchRel p1 p0 in setPrevPitch tp1 >> return tp1
-                              
+pitchT p1 = 
+    do { opt <- previousPitch
+       ; case opt of 
+           Nothing -> return $ fromPitchAbs p1
+           Just tp0 -> do { let tp1 = fromPitchRel p1 tp0
+                          ; setPrevPitch p1
+                          ; return tp1
+                          }
+       }
 
 
 
+durationT :: Duration -> Mon T.NoteLength
+durationT d1 =
+   do { d0 <- previousDuration 
+      ; if d1 == d0 
+          then return T.DrnDefault
+          else setPrevDuration d1 >> return (T.DrnExplicit d1)
+      }
 
-durationT :: NoteLength -> Mon Duration
-durationT (DrnDefault)    = previousDuration
-durationT (DrnExplicit d) = setPrevDuration d >> return d
 
 
 --------------------------------------------------------------------------------
@@ -123,14 +140,4 @@ durationT (DrnExplicit d) = setPrevDuration d >> return d
 
 wrapL :: a -> [a]
 wrapL a = [a]
-
---------------------------------------------------------------------------------
--- Push RenderInfo into bars.
-
-
-pushLocalRenderInfo :: LocalRenderInfo -> LyPhrase -> LyPhrase
-pushLocalRenderInfo ri (LyPhrase bs) = LyPhrase $ map upd bs
-  where
-    upd bar = bar { render_info = ri }
-
 

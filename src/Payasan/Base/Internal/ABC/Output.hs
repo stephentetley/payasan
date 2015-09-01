@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helper for ABC output (pretty printers)
+-- Output ABC.
 --
 --------------------------------------------------------------------------------
 

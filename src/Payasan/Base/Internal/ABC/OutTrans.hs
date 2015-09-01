@@ -11,8 +11,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Main syntax to Bracket syntax prior to translation
--- to ABC (or LilyPond...)
+-- Convert Bracket syntax to ABC prior to printing.
 --
 --------------------------------------------------------------------------------
 

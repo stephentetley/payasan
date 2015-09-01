@@ -34,6 +34,8 @@ module Payasan.Base.Internal.LilyPond.Syntax
   , Pitch(..)
   , NoteLength(..)
 
+  , middle_c
+
   ) where
 
 import Payasan.Base.Internal.CommonSyntax
@@ -121,3 +123,5 @@ data NoteLength = DrnDefault
 
 
 
+middle_c :: Pitch
+middle_c = Pitch CL NO_ACCIDENTAL (OveRaised 1)
