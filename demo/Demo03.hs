@@ -11,6 +11,11 @@ import Payasan.Base.Pitch
 import Payasan.Base.Internal.LilyPond.OutTrans
 import Payasan.Base.Internal.LilyPond.Output
 
+import Payasan.Base.Names.GeneralMidiDrums
+import Payasan.Base.Names.GeneralMidiInstruments
+import Payasan.Base.Names.Pitch
+import Payasan.Base.Names.Chord
+import Payasan.Base.Names.Interval
 
 phrase01 :: StdPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
@@ -29,4 +34,9 @@ manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 demo01 :: IO ()
 demo01 = printAsLilyPond global_ri phrase01
+
+test01 = octaveCount $ Interval 9 13
+test02 = octaveCount $ Interval 1 0
+test03 = octaveCount $ Interval 8 12
+test04 = simpleIntervalOf $ Interval 8 12
 

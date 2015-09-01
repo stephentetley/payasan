@@ -14,28 +14,57 @@
 -- Pitch type
 --
 -- Import directly if needed.
+-- 
+-- z- prefix on functions indicates they operate on PitchSpelling
+-- which has no notion of octave (c.f. Z12 modulo representation).
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Pitch
   ( 
+
+  -- * Pitch
     Pitch(..)
-  , NoteLabel(..)
+  , PitchSpelling(..)
   , PitchLetter(..)
   , Alteration(..)
   , Octave
 
+
   , middle_c
 
-  , semitoneCountNL
-  , semitoneCountPL
-  , semitoneCountA
+  , extractSpelling
+  , naturalOf
+  , sharpOf
+  , flatOf
+  , semitoneCount
+  , zsemitoneCount
+  , higher
+  , lower
+  , equivalent
+  , zequivalent
 
-  , arithmeticDistanceNL
-  , arithmeticDistancePL
+  
+  , arithmeticDistance
+  , zarithmeticDistance
 
-  , extractLabel 
+  , octaveDistance
 
+  -- * Intervals
+  , IntervalType(..)
+  , Interval(..)
+  , interval
+  , smaller
+  , larger
+  , octaveCount
+  , addOctaves
+  , addInterval
+
+  , simpleIntervalOf
+
+--  , reverseInterval
+
+  , description
 
   )
   where
@@ -45,10 +74,10 @@ import Data.Data
 
 
 -- | middle c is c4
-data Pitch = Pitch !NoteLabel !Octave 
+data Pitch = Pitch !PitchSpelling !Octave 
   deriving (Data,Eq,Ord,Show,Typeable)
 
-data NoteLabel = NoteLabel !PitchLetter !Alteration
+data PitchSpelling = PitchSpelling !PitchLetter !Alteration
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -61,11 +90,44 @@ data Alteration = DBL_FLAT | FLAT | NAT | SHARP | DBL_SHARP
 
 type Octave = Int
 
+-- | Middle C is octave 4 as per /scientific notation/.
+--
 middle_c :: Pitch
-middle_c = Pitch (NoteLabel C NAT) 4
+middle_c = Pitch (PitchSpelling C NAT) 4
 
-semitoneCountNL :: NoteLabel -> Int
-semitoneCountNL (NoteLabel pl a) = semitoneCountPL pl + semitoneCountA a
+
+--------------------------------------------------------------------------------
+-- Operations
+
+
+extractSpelling :: Pitch -> PitchSpelling
+extractSpelling (Pitch s _) = s
+
+
+naturalOf :: Pitch -> Pitch
+naturalOf (Pitch s o) = Pitch (znaturalOf s) o
+
+znaturalOf :: PitchSpelling -> PitchSpelling
+znaturalOf (PitchSpelling l _) = PitchSpelling l NAT
+
+sharpOf :: Pitch -> Pitch
+sharpOf (Pitch s o) = Pitch (zsharpOf s) o
+
+zsharpOf :: PitchSpelling -> PitchSpelling
+zsharpOf (PitchSpelling l _) = PitchSpelling l SHARP
+
+flatOf :: Pitch -> Pitch
+flatOf (Pitch s o) = Pitch (zflatOf s) o
+
+zflatOf :: PitchSpelling -> PitchSpelling
+zflatOf (PitchSpelling l _) = PitchSpelling l FLAT
+
+semitoneCount :: Pitch -> Int
+semitoneCount (Pitch s o) = zsemitoneCount s + 12 * (o+1)
+
+
+zsemitoneCount :: PitchSpelling -> Int
+zsemitoneCount (PitchSpelling pl a) = semitoneCountPL pl + semitoneCountA a
 
 
 semitoneCountPL :: PitchLetter -> Int
@@ -85,8 +147,30 @@ semitoneCountA SHARP     = 1
 semitoneCountA DBL_SHARP = 2
 
 
-arithmeticDistanceNL :: NoteLabel -> NoteLabel -> Int
-arithmeticDistanceNL (NoteLabel l1 _) (NoteLabel l2 _) = 
+higher :: Pitch -> Pitch -> Bool
+higher p q = semitoneCount p > semitoneCount q
+
+lower :: Pitch -> Pitch -> Bool
+lower p q = semitoneCount p < semitoneCount q
+
+equivalent :: Pitch -> Pitch -> Bool
+equivalent p q = semitoneCount p == semitoneCount q
+
+
+zequivalent :: PitchSpelling -> PitchSpelling -> Bool
+zequivalent p q = zsemitoneCount p == zsemitoneCount q
+
+arithmeticDistance :: Pitch -> Pitch -> Int
+arithmeticDistance p q 
+    | p `higher` q      = ad1 q p
+    | otherwise         = ad1 p q
+  where
+    ad1 a@(Pitch s1 _) b@(Pitch s2 _) = 
+        octaveDistance a b + zarithmeticDistance s1 s2
+                       
+
+zarithmeticDistance :: PitchSpelling -> PitchSpelling -> Int
+zarithmeticDistance (PitchSpelling l1 _) (PitchSpelling l2 _) = 
     arithmeticDistancePL l1 l2
 
 arithmeticDistancePL :: PitchLetter -> PitchLetter -> Int
@@ -95,37 +179,15 @@ arithmeticDistancePL start end = step (fromEnum start) (fromEnum end)
     step i j | i < j            = 1 + (j-i)
              | otherwise        = 1 + (i-j)
 
-extractLabel :: Pitch -> NoteLabel
-extractLabel (Pitch lbl _) = lbl
-
-
-
-{-
-equivalent :: NoteLabel -> NoteLabel -> Bool
-equivalent n1 n2 = semitoneCountN n1 == semitoneCountN n2
-
-
-sharpA :: Alteration -> Alteration
-sharpA DBL_FLAT  = FLAT
-sharpA FLAT      = NAT
-sharpA NAT       = SHARP
-sharpA SHARP     = DBL_SHARP
-sharpA DBL_SHARP = error "sharpA - DBL_SHARP"
-
-
-sharp :: NoteLabel -> NoteLabel
-sharp (NoteLabel pl a) = NoteLabel pl $ sharpA a
-
-flatA :: Alteration -> Alteration
-flatA DBL_FLAT  = error "flatA - DBL_FLAT"
-flatA FLAT      = DBL_FLAT
-flatA NAT       = FLAT
-flatA SHARP     = NAT
-flatA DBL_SHARP = SHARP
-
-flat :: NoteLabel -> NoteLabel 
-flat (NoteLabel pl a) = NoteLabel pl $ flatA a
-
+-- | Note - should always be positive.
+--
+octaveDistance :: Pitch -> Pitch -> Int
+octaveDistance p q
+    | p `higher` q      = fn q p
+    | otherwise         = fn p q
+  where
+    fn a b = let x = semitoneCount (naturalOf b) - semitoneCount (naturalOf a)
+             in x `div` 12
 
 --------------------------------------------------------------------------------
 -- Interval
@@ -133,36 +195,87 @@ flat (NoteLabel pl a) = NoteLabel pl $ flatA a
 
 data IntervalType = OCTAVE | SECOND | THIRD | FOURTH | FIFTH | SIXTH | SEVENTH
 
+
+-- | Note - intervals should be unsigned. If either of the
+-- component parts is a negative number the Interval is 
+-- ill-formed.
+--
 data Interval = Interval
-    { interval_type             :: !Int
-    , interval_semicount        :: !Int
+    { interval_arith_dist       :: !Int
+    , interval_semitones        :: !Int
     }
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
--- constructor examples
+interval :: Pitch -> Pitch -> Interval
+interval p q 
+    | p `higher` q      = fn q p
+    | otherwise         = fn p q
+  where
+    fn a b = Interval { interval_arith_dist = arithmeticDistance a b
+                      , interval_semitones  = semitoneCount b - semitoneCount a
+                      }
 
-fifth                   :: Interval
-fifth                   = Interval { interval_type        = 5
-                                   , interval_semicount   = 7
-                                   }
+smaller :: Interval -> Interval -> Bool
+smaller i1 i2 = interval_semitones i1 < interval_semitones i2
 
-diminishedSeventh       :: Interval
-diminishedSeventh       = Interval { interval_type        = 7
-                                   , interval_semicount   = 9
-                                   }
+larger :: Interval -> Interval -> Bool
+larger i1 i2 = interval_semitones i1 > interval_semitones i2
 
 
+octaveCount :: Interval -> Int
+octaveCount (Interval { interval_semitones = n }) = n `div` 12
 
-intervalName :: Interval -> String
-intervalName ivl = unwords [ distanceName ivl, intervalColour ivl ]
+addOctaves :: Interval -> Int -> Interval
+addOctaves (Interval { interval_arith_dist = ad
+                     , interval_semitones  = sc }) i = 
+    Interval { interval_arith_dist = ad + (i * 8)
+             , interval_semitones  = sc + (i * 12)
+             }
 
-identify :: [String] -> Int -> Maybe String
-identify names ix | ix >= length names = Nothing
-                  | otherwise          = Just $ names !! ix
+
+addInterval :: Pitch -> Interval -> Pitch
+addInterval _ _ = error "Pitch.addInterval"
+
+perfect_unison :: Interval
+perfect_unison = Interval { interval_arith_dist = 8
+                          , interval_semitones  = 12    
+                          }
+
+
+simpleIntervalOf :: Interval -> Interval
+simpleIntervalOf iv@(Interval { interval_arith_dist = ad
+                              , interval_semitones  = n  }) 
+    | iv `larger` perfect_unison = Interval { interval_arith_dist = ad1
+                                            , interval_semitones  = n1 }
+    | otherwise                   = iv
+  where
+    ad1 = let x0 = ad - 1 in 1 + (x0 `rem` 7)
+    n1  = n `rem` 12
+
+
+{-
+-- TODO - this doesn't handle ove+ intervals
+invertSimpleInterval :: Interval -> Interval
+invertSimpleInterval (Interval { interval_arith_dist = ad
+                               , interval_semitones  = n  }) = 
+    Interval { interval_arith_dist  = 9 - ad
+             , interval_semitones   = 12 - n
+             }
+
+
+-}
+
+
+
+-- Has errors?
+description :: Interval -> (String,String,Int)
+description iv = (intervalColour iv, distanceName iv, octaveCount iv)
+
+
 
 distanceName :: Interval -> String
-distanceName (Interval {interval_type = ty}) = step $ (ty-1) `mod` 7
+distanceName (Interval {interval_arith_dist = ad}) = step $ (ad-1) `mod` 7
   where
     step 0 = "octave"
     step 1 = "second"
@@ -171,11 +284,11 @@ distanceName (Interval {interval_type = ty}) = step $ (ty-1) `mod` 7
     step 4 = "fifth"
     step 5 = "sixth"
     step 6 = "seventh"
-    step _ = error $ "distanceName - unreachable"
+    step _ = "distanceName - unreachable"
 
 intervalColour :: Interval -> String
-intervalColour (Interval {interval_type = ty, interval_semicount = n}) = 
-    maybe "unknown colour" id $ case ty of
+intervalColour (Interval {interval_arith_dist = ad, interval_semitones = n}) = 
+    maybe "unknown" id $ case ad of
       2 -> identify ["diminished", "minor", "major", "augmented"] (n+1)
       3 -> identify ["minor", "major"] (n-2)
       4 -> identify ["diminished", "perfect", "augmented"] (n-3)
@@ -183,11 +296,9 @@ intervalColour (Interval {interval_type = ty, interval_semicount = n}) =
       6 -> identify ["minor", "major", "augmented"] (n-7)
       7 -> identify ["diminished", "minor", "major"] (n-8)
       _ -> Nothing
+  where
+    identify :: [String] -> Int -> Maybe String
+    identify names ix | ix >= length names = Nothing
+                      | otherwise          = Just $ names !! ix
 
-reverseInterval :: Interval -> Interval
-reverseInterval (Interval {interval_type = ty, interval_semicount = n}) = 
-    Interval { interval_type        = 9 - ty
-             , interval_semicount   = 12 - n
-             }
 
--}

@@ -133,8 +133,8 @@ toPitchRel :: Pitch -> P.Pitch -> P.Pitch
 toPitchRel (Pitch l a om) p0@(P.Pitch lbl0 _) = octaveAdjust root om
   where
     lbl1        = toPitchSpelling l a
-    dist_up     = P.arithmeticDistancePS lbl0 lbl1
-    dist_down   = P.arithmeticDistancePS lbl1 lbl0
+    dist_up     = P.zarithmeticDistance lbl0 lbl1
+    dist_down   = P.zarithmeticDistance lbl1 lbl0
     root        = if dist_up > dist_down 
                     then firstAbove lbl1 p0 else firstBelow lbl1 p0
 
@@ -143,7 +143,7 @@ firstAbove :: P.PitchSpelling -> P.Pitch -> P.Pitch
 firstAbove lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) = 
     P.Pitch lbl1 ove
   where
-    dist = P.arithmeticDistancePS lbl0 lbl1
+    dist = P.zarithmeticDistance lbl0 lbl1
     om   = if fromEnum ltr0 + dist > 7 then 1 else 0
     ove = o0 + om
 
@@ -151,7 +151,7 @@ firstBelow :: P.PitchSpelling -> P.Pitch -> P.Pitch
 firstBelow lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) = 
     P.Pitch lbl1 ove
   where
-    dist = P.arithmeticDistancePS lbl0 lbl1
+    dist = P.zarithmeticDistance lbl0 lbl1
     om   = if fromEnum ltr0 - dist > 0 then (-1) else 0
     ove = o0 + om
 

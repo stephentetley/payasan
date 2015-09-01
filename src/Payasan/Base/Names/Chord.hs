@@ -10,14 +10,18 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Equal temperament chords
+-- Chord names.
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Names.Chord
   ( 
 
-    major_triad
+
+    Chord(..)   -- To move
+  , chordNotes  -- To move
+
+  , major_triad
   , minor_triad
 
   , no_root
@@ -44,7 +48,7 @@ module Payasan.Base.Names.Chord
 
   ) where
 
-import Payasan.Base
+import Payasan.Base.Pitch
 import Payasan.Base.Names.Interval
 
 
@@ -52,8 +56,30 @@ import qualified Data.IntMap as IM
 
 
 
+type ChordIntervals = IM.IntMap Interval
+
+data Chord = Chord 
+    { chord_root   :: Pitch
+    , chord_ivals  :: ChordIntervals 
+    }
+  deriving (Eq,Show)
+
+chordNotes :: Chord -> [Pitch]
+chordNotes (Chord { chord_root = root
+                  , chord_ivals = ivals }) = map (root `addInterval`) $ IM.elems ivals
 
 
+chordF :: (ChordIntervals -> ChordIntervals) -> Chord -> Chord
+chordF f ch@(Chord { chord_ivals = ivals }) = ch { chord_ivals = f ivals}
+
+
+chordAdd                :: Int -> Interval -> Chord -> Chord
+chordAdd n inv          = chordF (IM.insert n inv)
+
+
+
+chordDelete             :: Int -> Chord -> Chord
+chordDelete n           = chordF (IM.delete n)
 
 major_triad         :: Pitch -> Chord
 major_triad root    =  
