@@ -129,6 +129,9 @@ fromAlteration P.NAT            = NO_ACCIDENTAL
 fromAlteration P.SHARP          = SHARP
 fromAlteration P.DBL_SHARP      = DBL_SHARP
 
+-- TODO - this can be simplified, now Pitch has useful 
+-- operations...
+--
 toPitchRel :: Pitch -> P.Pitch -> P.Pitch
 toPitchRel (Pitch l a om) p0@(P.Pitch lbl0 _) = octaveAdjust root om
   where
@@ -156,7 +159,11 @@ firstBelow lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) =
     ove = o0 + om
 
 
-
+makeOctaveModifier :: Int -> Octave
+makeOctaveModifier i 
+    | i == 0    = OveDefault
+    | i >  0    = OveRaised i
+    | otherwise = OveLowered (abs i)
 
 octaveAdjust :: P.Pitch -> Octave -> P.Pitch
 octaveAdjust pch@(P.Pitch lbl o) om = case om of
@@ -166,7 +173,12 @@ octaveAdjust pch@(P.Pitch lbl o) om = case om of
  
 
 fromPitchRel :: P.Pitch -> P.Pitch -> Pitch
-fromPitchRel _ _ = middle_c
+fromPitchRel p1 p_old = 
+    let om = makeOctaveModifier $ P.lyOctaveDistance p_old p1
+        (l,a) = fromPitchSpelling $ P.pitch_spelling p1        
+    in Pitch l a om
+
+                   
 
 --------------------------------------------------------------------------------
 -- Pretty printing helpers

@@ -56,6 +56,7 @@ module Payasan.Base.Pitch
   , semitonesToPrev
 
   , octaveDistance
+  , lyOctaveDistance
 
   -- * Intervals
   , IntervalType(..)
@@ -230,6 +231,17 @@ octaveDistance p q
   where
     fn a b = let x = semitoneCount (naturalOf b) - semitoneCount (naturalOf a)
              in x `div` 12
+
+lyOctaveDistance :: Pitch -> Pitch -> Int
+lyOctaveDistance root p1 
+    | root == p1         = 0
+    | root `isHigher` p1 = negate $ fn p1 root
+    | otherwise          = fn root p1
+  where
+    fn a b = let ad     = arithmeticDistance a b 
+                 ostep  = if ad >= 5 then 1 else 0
+                 ove    = octaveDistance a b
+             in ostep + ove
 
 --------------------------------------------------------------------------------
 -- Interval
