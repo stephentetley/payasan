@@ -53,6 +53,7 @@ module Payasan.Base.Pitch
 
   , semitoneDistance
   , semitonesToNext
+  , semitonesToPrev
 
   , octaveDistance
 
@@ -61,6 +62,7 @@ module Payasan.Base.Pitch
   , Interval(..)
   , intervalBetween
   , addInterval
+  , subInterval
 
   , isSmaller
   , isLarger
@@ -212,6 +214,12 @@ semitonesToNext s1 s2
     p = Pitch s1 1
     q = let q0 = Pitch s2 1 in if q0 `isLower` p then Pitch s2 2 else q0
 
+-- | Note - returns a positive number.
+semitonesToPrev :: PitchSpelling -> PitchSpelling -> Int
+semitonesToPrev s1 s2 
+    | s1 == s2  = 12 
+    | otherwise = 12 - semitonesToNext s1 s2
+
 
 -- | Note - should always be positive.
 --
@@ -261,6 +269,14 @@ addInterval (Pitch ss o) iv = Pitch ss1 ov1
     ov1   = o + ostep + octaveCount iv
 
 
+subInterval :: Pitch -> Interval -> Pitch
+subInterval (Pitch ss o) iv = Pitch ss1 ov1
+  where
+    ss1   = pachetSub ss iv
+    ostep = if crossesZero ss iv then -1 else 0
+    ov1   = o + ostep - octaveCount iv
+
+
 
 -- | The algorith provided by Francois Pachet in 
 --   An Object-Oriented Representation of Pitch-Classes, 
@@ -277,12 +293,23 @@ pachetAdd sp0 (Interval { interval_arith_dist = ad
     alt                         = alterationFromDiff $ sc - sc_next
 
 
+pachetSub :: PitchSpelling -> Interval -> PitchSpelling
+pachetSub sp0 (Interval { interval_arith_dist = ad
+                        , interval_semitones = sc }) = PitchSpelling l1 alt
+  where
+    (PitchSpelling l _)         = znaturalOf sp0
+    zprev@(PitchSpelling l1 _)  = PitchSpelling (downwardPL l ad) NAT
+    sc_prev                     = semitonesToPrev sp0 zprev
+    alt                         = alterationFromDiff $ sc - sc_prev
+
+
+
 -- | Step 2 in Pachet
 upwardPL :: PitchLetter -> Int -> PitchLetter
 upwardPL l ad = let n = fromEnum l in toEnum $ (n + (ad - 1)) `mod` 7
 
--- downwardPL :: PitchLetter -> Int -> PitchLetter
--- downwardPL l ad = let n = fromEnum l in toEnum $ (n - (ad - 1)) `mod` 7
+downwardPL :: PitchLetter -> Int -> PitchLetter
+downwardPL l ad = let n = fromEnum l in toEnum $ (n - (ad - 1)) `mod` 7
 
 
 alterationFromDiff :: Int -> Alteration
@@ -294,18 +321,35 @@ alterationFromDiff i
     | otherwise = DBL_FLAT
 
 
--- | Does the addition of the interval /cross/ into the next 
--- octave?
+-- | Does the addition of the interval result in a /crossing/ to 
+-- the next octave?
 -- e.g.
 --
---   > c(sc=0) => f(sc=5) does not cross
---   > f(sc=5) => c(sc=0) crosses
+--   > c(sc=0) `upto` f(sc=5) does not cross
+--   > f(sc=5) `upto` c(sc=0) crosses
+-- 
+-- Crossing here is (>=).
 --
 crossesTwelve :: PitchSpelling -> Interval -> Bool
 crossesTwelve ps iv = scount >= 12
   where
     scount = zsemitoneCount ps + interval_semitones (simpleIntervalOf iv)
-    
+   
+
+-- | Does the subtracion of the interval result in a /crossing/ to 
+-- the previous octave?
+-- e.g.
+--
+--   > c(sc=0) `downto` f(sc=5) crosses
+--   > f(sc=5) `downto` c(sc=0) does not cross
+-- 
+-- Crossing here is (>=).
+--
+crossesZero :: PitchSpelling -> Interval -> Bool
+crossesZero ps iv = scount < 0
+  where
+    scount = zsemitoneCount ps - interval_semitones (simpleIntervalOf iv)
+   
 
 --------------------------------------------------------------------------------
 -- More operations
