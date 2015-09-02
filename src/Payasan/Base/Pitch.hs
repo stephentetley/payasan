@@ -33,14 +33,17 @@ module Payasan.Base.Pitch
 
   , middle_c
 
-  , extractSpelling
   , naturalOf
+  , znaturalOf
   , sharpOf
+  , zsharpOf
   , flatOf
+  , zflatOf
   , semitoneCount
+  , midiSemitoneCount
   , zsemitoneCount
-  , higher
-  , lower
+  , isHigher
+  , isLower
   , equivalent
   , zequivalent
 
@@ -48,22 +51,26 @@ module Payasan.Base.Pitch
   , arithmeticDistance
   , zarithmeticDistance
 
+  , semitoneDistance
+  , semitonesToNext
+
   , octaveDistance
 
   -- * Intervals
   , IntervalType(..)
   , Interval(..)
-  , interval
-  , smaller
-  , larger
+  , intervalBetween
+  , addInterval
+
+  , isSmaller
+  , isLarger
   , octaveCount
   , addOctaves
   , arithDistModulo
-  , addInterval
 
   , simpleIntervalOf
 
---  , reverseInterval
+  , invertSimpleInterval
 
   , description
 
@@ -75,7 +82,10 @@ import Data.Data
 
 
 -- | middle c is c4
-data Pitch = Pitch !PitchSpelling !Octave 
+data Pitch = Pitch 
+    { pitch_spelling    :: !PitchSpelling 
+    , pitch_octave      :: !Octave 
+    }
   deriving (Data,Eq,Ord,Show,Typeable)
 
 data PitchSpelling = PitchSpelling !PitchLetter !Alteration
@@ -101,10 +111,6 @@ middle_c = Pitch (PitchSpelling C NAT) 4
 -- Operations
 
 
-extractSpelling :: Pitch -> PitchSpelling
-extractSpelling (Pitch s _) = s
-
-
 naturalOf :: Pitch -> Pitch
 naturalOf (Pitch s o) = Pitch (znaturalOf s) o
 
@@ -123,8 +129,17 @@ flatOf (Pitch s o) = Pitch (zflatOf s) o
 zflatOf :: PitchSpelling -> PitchSpelling
 zflatOf (PitchSpelling l _) = PitchSpelling l FLAT
 
+
+-- | Middle C is 48 - to get MIDI semitone count add 12
+--
 semitoneCount :: Pitch -> Int
-semitoneCount (Pitch s o) = zsemitoneCount s + 12 * (o+1)
+semitoneCount (Pitch s o) = zsemitoneCount s + (12 * o)
+
+-- | Middle C is 48 - to get MIDI semitone count add 12
+--
+midiSemitoneCount :: Pitch -> Int
+midiSemitoneCount p = 12 + semitoneCount p
+
 
 
 zsemitoneCount :: PitchSpelling -> Int
@@ -148,11 +163,11 @@ semitoneCountA SHARP     = 1
 semitoneCountA DBL_SHARP = 2
 
 
-higher :: Pitch -> Pitch -> Bool
-higher p q = semitoneCount p > semitoneCount q
+isHigher :: Pitch -> Pitch -> Bool
+isHigher p q = semitoneCount p > semitoneCount q
 
-lower :: Pitch -> Pitch -> Bool
-lower p q = semitoneCount p < semitoneCount q
+isLower :: Pitch -> Pitch -> Bool
+isLower p q = semitoneCount p < semitoneCount q
 
 equivalent :: Pitch -> Pitch -> Bool
 equivalent p q = semitoneCount p == semitoneCount q
@@ -163,7 +178,7 @@ zequivalent p q = zsemitoneCount p == zsemitoneCount q
 
 arithmeticDistance :: Pitch -> Pitch -> Int
 arithmeticDistance p q 
-    | p `higher` q      = ad1 q p
+    | p `isHigher` q    = ad1 q p
     | otherwise         = ad1 p q
   where
     ad1 a@(Pitch s1 _) b@(Pitch s2 _) = 
@@ -180,11 +195,29 @@ arithmeticDistancePL start end = step (fromEnum start) (fromEnum end)
     step i j | i < j            = 1 + (j-i)
              | otherwise        = 1 + (i-j)
 
+
+semitoneDistance :: Pitch -> Pitch -> Int
+semitoneDistance p q 
+    | p `isHigher` q    = sd1 q p
+    | otherwise         = sd1 p q
+  where
+    sd1 a b = semitoneCount b - semitoneCount a
+
+
+semitonesToNext :: PitchSpelling -> PitchSpelling -> Int
+semitonesToNext s1 s2
+    | s1 == s2  = 12
+    | otherwise = semitoneDistance p q
+  where
+    p = Pitch s1 1
+    q = let q0 = Pitch s2 1 in if q0 `isLower` p then Pitch s2 2 else q0
+
+
 -- | Note - should always be positive.
 --
 octaveDistance :: Pitch -> Pitch -> Int
 octaveDistance p q
-    | p `higher` q      = fn q p
+    | p `isHigher` q    = fn q p
     | otherwise         = fn p q
   where
     fn a b = let x = semitoneCount (naturalOf b) - semitoneCount (naturalOf a)
@@ -208,20 +241,80 @@ data Interval = Interval
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-interval :: Pitch -> Pitch -> Interval
-interval p q 
-    | p `higher` q      = fn q p
+intervalBetween :: Pitch -> Pitch -> Interval
+intervalBetween p q 
+    | p `isHigher` q    = fn q p
     | otherwise         = fn p q
   where
     fn a b = Interval { interval_arith_dist = arithmeticDistance a b
                       , interval_semitones  = semitoneCount b - semitoneCount a
                       }
 
-smaller :: Interval -> Interval -> Bool
-smaller i1 i2 = interval_semitones i1 < interval_semitones i2
+--------------------------------------------------------------------------------
+-- Adding intervals to pitches
 
-larger :: Interval -> Interval -> Bool
-larger i1 i2 = interval_semitones i1 > interval_semitones i2
+addInterval :: Pitch -> Interval -> Pitch
+addInterval (Pitch ss o) iv = Pitch ss1 ov1
+  where
+    ss1   = pachetAdd ss iv
+    ostep = if crossesTwelve ss iv then 1 else 0
+    ov1   = o + ostep + octaveCount iv
+
+
+
+-- | The algorith provided by Francois Pachet in 
+--   An Object-Oriented Representation of Pitch-Classes, 
+--   Intervals, Scales and Chords: The basic MusES
+-- does not account for octaves:
+--
+pachetAdd :: PitchSpelling -> Interval -> PitchSpelling
+pachetAdd sp0 (Interval { interval_arith_dist = ad
+                        , interval_semitones = sc }) = PitchSpelling l1 alt
+  where
+    (PitchSpelling l _)         = znaturalOf sp0
+    znext@(PitchSpelling l1 _)  = PitchSpelling (upwardPL l ad) NAT
+    sc_next                     = semitonesToNext sp0 znext
+    alt                         = alterationFromDiff $ sc - sc_next
+
+
+-- | Step 2 in Pachet
+upwardPL :: PitchLetter -> Int -> PitchLetter
+upwardPL l ad = let n = fromEnum l in toEnum $ (n + (ad - 1)) `mod` 7
+
+-- downwardPL :: PitchLetter -> Int -> PitchLetter
+-- downwardPL l ad = let n = fromEnum l in toEnum $ (n - (ad - 1)) `mod` 7
+
+
+alterationFromDiff :: Int -> Alteration
+alterationFromDiff i 
+    | i >= 2    = DBL_SHARP
+    | i == 1    = SHARP
+    | i == 0    = NAT
+    | i == (-1) = FLAT
+    | otherwise = DBL_FLAT
+
+
+-- | Does the addition of the interval /cross/ into the next 
+-- octave?
+-- e.g.
+--
+--   > c(sc=0) => f(sc=5) does not cross
+--   > f(sc=5) => c(sc=0) crosses
+--
+crossesTwelve :: PitchSpelling -> Interval -> Bool
+crossesTwelve ps iv = scount >= 12
+  where
+    scount = zsemitoneCount ps + interval_semitones (simpleIntervalOf iv)
+    
+
+--------------------------------------------------------------------------------
+-- More operations
+
+isSmaller :: Interval -> Interval -> Bool
+isSmaller i1 i2 = interval_semitones i1 < interval_semitones i2
+
+isLarger :: Interval -> Interval -> Bool
+isLarger i1 i2 = interval_semitones i1 > interval_semitones i2
 
 
 octaveCount :: Interval -> Int
@@ -238,39 +331,35 @@ addOctaves (Interval { interval_arith_dist = ad
 arithDistModulo :: Int -> Int
 arithDistModulo ad = let x = ad-1 in 1+(x `mod` 7)
 
-addInterval :: Pitch -> Interval -> Pitch
-addInterval _ _ = error "Pitch.addInterval"
 
-perfect_unison :: Interval
-perfect_unison = Interval { interval_arith_dist = 8
+perfect_octave :: Interval
+perfect_octave = Interval { interval_arith_dist = 8
                           , interval_semitones  = 12    
                           }
 
-
+-- | Simple intervals are smaller intervals than perfect_octave
+-- 
 simpleIntervalOf :: Interval -> Interval
 simpleIntervalOf iv@(Interval { interval_arith_dist = ad
                               , interval_semitones  = n  }) 
-    | iv `larger` perfect_unison = Interval { interval_arith_dist = ad1
-                                            , interval_semitones  = n1 }
-    | otherwise                   = iv
+    | iv `isSmaller` perfect_octave  = iv
+    | otherwise                      = Interval { interval_arith_dist = ad1
+                                                , interval_semitones  = n1 }
   where
-    ad1 = let x0 = ad - 1 in 1 + (x0 `rem` 7)
-    n1  = n `rem` 12
+    ad1 = arithDistModulo ad
+    n1  = n `mod` 12
 
 
-{-
--- TODO - this doesn't handle ove+ intervals
 invertSimpleInterval :: Interval -> Interval
-invertSimpleInterval (Interval { interval_arith_dist = ad
-                               , interval_semitones  = n  }) = 
-    Interval { interval_arith_dist  = 9 - ad
-             , interval_semitones   = 12 - n
-             }
+invertSimpleInterval = step . simpleIntervalOf 
+  where
+    step (Interval { interval_arith_dist = ad, interval_semitones = n }) = 
+        Interval { interval_arith_dist  = 9 - ad, interval_semitones   = 12 - n }
 
 
--}
 
-
+--------------------------------------------------------------------------------
+-- Description
 
 description :: Interval -> (String,String,Int)
 description iv = (intervalColour iv, distanceName iv, octaveCount iv)
