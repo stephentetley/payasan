@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.BracketSyntax
+-- Module      :  Payasan.Base.Internal.BeamSyntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -20,7 +20,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.BracketSyntax
+module Payasan.Base.Internal.BeamSyntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
   
@@ -50,24 +50,24 @@ import Data.Data
 -- | Bracket syntax must be parametric on pitch so it can
 -- handle nice LilyPond things like drums.
 --
-data Phrase pch = Phrase { phrase_bars :: [Bar pch] }
+data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
   deriving (Data,Eq,Show,Typeable)
 
 
 
 -- | Note Beaming is not captured in parsing.
 --
-data Bar pch = Bar 
+data Bar pch drn = Bar 
     { render_info       :: LocalRenderInfo
-    , bar_elements      :: [CtxElement pch]
+    , bar_elements      :: [CtxElement pch drn]
     }
   deriving (Data,Eq,Show,Typeable)
 
 -- | Note Beaming is not captured in parsing.
 --
-data CtxElement pch = Atom    (Element pch)
-                    | Beamed  [CtxElement pch]
-                    | Tuplet  TupletSpec        [CtxElement pch]
+data CtxElement pch drn = Atom    (Element pch drn)
+                        | Beamed  [CtxElement pch drn]
+                        | Tuplet  TupletSpec            [CtxElement pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -76,23 +76,23 @@ data CtxElement pch = Atom    (Element pch)
 --
 -- See old Neume code. 
 --
-data Element pch = NoteElem   (Note pch)
-                 | Rest       Duration
-                 | Chord      [pch]         Duration
-                 | Graces     [Note pch]
+data Element pch drn = NoteElem   (Note pch drn)
+                     | Rest       drn
+                     | Chord      [pch]           drn
+                     | Graces     [Note pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
-data Note pch = Note pch Duration
+data Note pch drn = Note pch drn
   deriving (Data,Eq,Show,Typeable)
 
 
-sizeCtxElement :: CtxElement pch -> RDuration
+sizeCtxElement :: CtxElement pch Duration -> RDuration
 sizeCtxElement (Atom e)            = sizeElement e
 sizeCtxElement (Beamed es)         = sum $ map sizeCtxElement es
 sizeCtxElement (Tuplet {})         = error "sizeCtxElement (Tuplet {})"
 
-sizeElement :: Element pch -> RDuration
+sizeElement :: Element pch Duration -> RDuration
 sizeElement (NoteElem (Note _ d))  = durationSize d
 sizeElement (Rest d)               = durationSize d
 sizeElement (Chord _ d)            = durationSize d

@@ -68,7 +68,7 @@ import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDIPch
 import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
 
 
-import qualified Payasan.Base.Internal.BracketTrans         as BRKT
+import qualified Payasan.Base.Internal.BeamTrans            as BEAM
 import Payasan.Base.Internal.MainSyntax
 
 import Payasan.Base.Duration
@@ -95,13 +95,13 @@ fromLilyPondWith gi ri = LYIn.translate gi . LYIn.pushLocalRenderInfo ri
 
 
 outputAsABC :: StdPhrase -> String
-outputAsABC = ppRender . abcOutput . ABCOut.translate . BRKT.transAndBeam id
+outputAsABC = ppRender . abcOutput . ABCOut.translate . BEAM.transAndBeam id
 
 printAsABC :: StdPhrase -> IO ()
 printAsABC = putStrLn . outputAsABC
 
 outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
-outputAsLilyPond gi = ppRender . lyOutput . LYOut.translate gi . BRKT.transAndBeam id
+outputAsLilyPond gi = ppRender . lyOutput . LYOut.translate gi . BEAM.transAndBeam id
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

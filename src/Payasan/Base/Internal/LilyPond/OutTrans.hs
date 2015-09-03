@@ -24,7 +24,7 @@ module Payasan.Base.Internal.LilyPond.OutTrans
 import qualified Payasan.Base.Internal.LilyPond.Syntax as T
 import Payasan.Base.Internal.LilyPond.Utils
 
-import Payasan.Base.Internal.BracketSyntax
+import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Duration
@@ -32,7 +32,7 @@ import Payasan.Base.Pitch
 
 
 
-translate :: GlobalRenderInfo -> Phrase Pitch -> T.LyPhrase
+translate :: GlobalRenderInfo -> Phrase Pitch Duration -> T.LyPhrase
 translate info ph = evalTrans (phraseT ph) info state_zero
   where
     -- The first duration should never match then we always start
@@ -75,12 +75,12 @@ setPrevPitch :: Pitch -> Mon ()
 setPrevPitch p = puts (\s -> s { previous_pitch = p })
 
 
-phraseT :: Phrase Pitch -> Mon T.LyPhrase
+phraseT :: Phrase Pitch Duration -> Mon T.LyPhrase
 phraseT (Phrase bs)             = T.LyPhrase <$> mapM barT bs
 
 
 
-barT :: Bar Pitch -> Mon T.Bar
+barT :: Bar Pitch Duration -> Mon T.Bar
 barT (Bar info cs)              = 
     do { css <- mapM ctxElementT cs
        ; return $ T.Bar info (concat css)
@@ -89,7 +89,7 @@ barT (Bar info cs)              =
 
 -- | Remember - a beamed CtxElement may generate 1+ elements
 --
-ctxElementT :: CtxElement Pitch -> Mon [T.CtxElement]
+ctxElementT :: CtxElement Pitch Duration -> Mon [T.CtxElement]
 ctxElementT (Atom e)            = (wrapL . T.Atom) <$> elementT e
 
 ctxElementT (Tuplet spec cs)    = 
@@ -99,14 +99,14 @@ ctxElementT (Beamed cs)         = concat <$> mapM ctxElementT cs
 
 
 
-elementT :: Element Pitch  -> Mon T.Element
+elementT :: Element Pitch Duration -> Mon T.Element
 elementT (NoteElem a)           = T.NoteElem <$> noteT a
 elementT (Rest d)               = T.Rest   <$> durationT d
 elementT (Chord ps d)           = T.Chord  <$> mapM pitchT ps <*> durationT d
 elementT (Graces ns)            = T.Graces <$> mapM noteT ns
 
 
-noteT :: Note Pitch -> Mon T.Note
+noteT :: Note Pitch Duration -> Mon T.Note
 noteT (Note pch drn)          = T.Note <$> pitchT pch <*> durationT drn
 
 
