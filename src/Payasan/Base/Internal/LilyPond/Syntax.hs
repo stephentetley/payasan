@@ -41,7 +41,12 @@ module Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
+
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
 import Data.Data
+
+
 
 --------------------------------------------------------------------------------
 -- Syntax
@@ -125,3 +130,37 @@ data NoteLength = DrnDefault
 
 middle_c :: Pitch
 middle_c = Pitch CL NO_ACCIDENTAL (OveRaised 1)
+
+--------------------------------------------------------------------------------
+-- Pretty instances are for debugging and do not correspond 
+-- to valid LilyPond
+
+instance Pretty Pitch where 
+  pPrint (Pitch l a om)         = pPrint l <> pPrint a <> pPrint om
+
+instance Pretty Accidental where
+  pPrint NO_ACCIDENTAL          = empty
+  pPrint DBL_FLAT               = text "eses"
+  pPrint FLAT                   = text "es"
+  pPrint NATURAL                = text "nat"
+  pPrint SHARP                  = text "is"
+  pPrint DBL_SHARP              = text "isis"
+
+instance Pretty PitchLetter where
+  pPrint CL                     = char 'c'
+  pPrint DL                     = char 'd'
+  pPrint EL                     = char 'e'
+  pPrint FL                     = char 'f'
+  pPrint GL                     = char 'g'
+  pPrint AL                     = char 'a'
+  pPrint AL                     = char 'b'
+
+instance Pretty Octave where
+  pPrint (OveDefault)           = empty
+  pPrint (OveRaised i)          = text (replicate i '\'')
+  pPrint (OveLowered i)         = text (replicate i ',')
+
+
+instance Pretty NoteLength where
+  pPrint (DrnDefault)           = char '.'
+  pPrint (DrnExplicit d)        = pPrint d

@@ -49,7 +49,8 @@ module Payasan.Base.Pitch
 
   
   , arithmeticDistance
-  , zarithmeticDistance
+  , zarithmeticDistanceUp
+  , zarithmeticDistanceDown
 
   , semitoneDistance
   , semitonesToNext
@@ -80,6 +81,7 @@ module Payasan.Base.Pitch
   )
   where
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 
@@ -103,6 +105,28 @@ data Alteration = DBL_FLAT | FLAT | NAT | SHARP | DBL_SHARP
 
 
 type Octave = Int
+
+instance Pretty Pitch where
+  pPrint (Pitch ss o)        = pPrint ss <> pPrint o
+
+instance Pretty PitchSpelling where
+  pPrint (PitchSpelling l a) = pPrint l <> pPrint a
+
+instance Pretty PitchLetter where
+  pPrint C              = char 'C'
+  pPrint D              = char 'D'
+  pPrint E              = char 'E'
+  pPrint F              = char 'F'
+  pPrint G              = char 'G'
+  pPrint A              = char 'A'
+  pPrint B              = char 'B'
+
+instance Pretty Alteration where
+  pPrint DBL_FLAT       = text "bb"
+  pPrint FLAT           = char 'b'
+  pPrint NAT            = empty
+  pPrint SHARP          = char '#'
+  pPrint DBL_SHARP      = text "##"
 
 -- | Middle C is octave 4 as per /scientific notation/.
 --
@@ -179,24 +203,40 @@ equivalent p q = semitoneCount p == semitoneCount q
 zequivalent :: PitchSpelling -> PitchSpelling -> Bool
 zequivalent p q = zsemitoneCount p == zsemitoneCount q
 
+
 arithmeticDistance :: Pitch -> Pitch -> Int
 arithmeticDistance p q 
-    | p `isHigher` q    = ad1 q p
-    | otherwise         = ad1 p q
+    | p == q            = 1
+    | q `isHigher` p    = adUp p q
+    | otherwise         = adDown p q
   where
-    ad1 a@(Pitch s1 _) b@(Pitch s2 _) = 
-        octaveDistance a b + zarithmeticDistance s1 s2
-                       
+    adUp   a@(Pitch s1 _) b@(Pitch s2 _) = 
+        octaveDistance a b + zarithmeticDistanceUp s1 s2
 
-zarithmeticDistance :: PitchSpelling -> PitchSpelling -> Int
-zarithmeticDistance (PitchSpelling l1 _) (PitchSpelling l2 _) = 
-    arithmeticDistancePL l1 l2
+    adDown a@(Pitch s1 _) b@(Pitch s2 _) = 
+       octaveDistance b a + zarithmeticDistanceDown s1 s2
 
-arithmeticDistancePL :: PitchLetter -> PitchLetter -> Int
-arithmeticDistancePL start end = step (fromEnum start) (fromEnum end)
+
+zarithmeticDistanceUp :: PitchSpelling -> PitchSpelling -> Int
+zarithmeticDistanceUp (PitchSpelling l1 _) (PitchSpelling l2 _) = 
+    adUpwardsPL l1 l2
+
+zarithmeticDistanceDown :: PitchSpelling -> PitchSpelling -> Int
+zarithmeticDistanceDown (PitchSpelling l1 _) (PitchSpelling l2 _) = 
+    adDownwardsPL l1 l2
+
+
+adUpwardsPL :: PitchLetter -> PitchLetter -> Int
+adUpwardsPL start end = step (fromEnum start) (fromEnum end)
   where
     step i j | i < j            = 1 + (j-i)
-             | otherwise        = 1 + (i-j)
+             | otherwise        = let hij = j+7 in 1 + (hij-i)
+
+adDownwardsPL :: PitchLetter -> PitchLetter -> Int
+adDownwardsPL start end = step (fromEnum start) (fromEnum end)
+  where
+    step i j | i > j            = 1 + (i-j)
+             | otherwise        = let hii = i+7 in 1 + (hii-j)
 
 
 semitoneDistance :: Pitch -> Pitch -> Int

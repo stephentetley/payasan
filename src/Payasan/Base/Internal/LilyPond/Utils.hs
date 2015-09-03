@@ -129,15 +129,46 @@ fromAlteration P.NAT            = NO_ACCIDENTAL
 fromAlteration P.SHARP          = SHARP
 fromAlteration P.DBL_SHARP      = DBL_SHARP
 
+
+makeOctaveModifier :: Int -> Octave
+makeOctaveModifier i 
+    | i == 0    = OveDefault
+    | i >  0    = OveRaised i
+    | otherwise = OveLowered (abs i)
+
+
+fromPitchRel :: P.Pitch -> P.Pitch -> Pitch
+fromPitchRel p1 p_old = 
+    let om    = makeOctaveModifier $ P.lyOctaveDistance p_old p1
+        (l,a) = fromPitchSpelling $ P.pitch_spelling p1        
+    in Pitch l a om
+
+
+toPitchRel :: Pitch -> P.Pitch -> P.Pitch
+toPitchRel (Pitch l a om) p0 = octaveAdjust root om
+  where
+    lbl   = toPitchSpelling l a
+    p1    = P.Pitch lbl (P.pitch_octave p0)
+    root  = if P.arithmeticDistance p0 p1 <= 5 
+              then p1 else P.Pitch lbl (P.pitch_octave p0 - 1)
+
+
+
+octaveAdjust :: P.Pitch -> Octave -> P.Pitch
+octaveAdjust pch@(P.Pitch lbl o) om = case om of
+    OveDefault      -> pch
+    OveRaised i     -> P.Pitch lbl (o+i)
+    OveLowered i    -> P.Pitch lbl (o-i)
+
 -- TODO - this can be simplified, now Pitch has useful 
 -- operations...
 --
-toPitchRel :: Pitch -> P.Pitch -> P.Pitch
-toPitchRel (Pitch l a om) p0@(P.Pitch lbl0 _) = octaveAdjust root om
+toPitchRel' :: Pitch -> P.Pitch -> P.Pitch
+toPitchRel' (Pitch l a om) p0@(P.Pitch lbl0 _) = octaveAdjust root om
   where
     lbl1        = toPitchSpelling l a
-    dist_up     = P.zarithmeticDistance lbl0 lbl1
-    dist_down   = P.zarithmeticDistance lbl1 lbl0
+    dist_up     = P.zarithmeticDistanceUp   lbl0 lbl1
+    dist_down   = P.zarithmeticDistanceDown lbl1 lbl0
     root        = if dist_up > dist_down 
                     then firstAbove lbl1 p0 else firstBelow lbl1 p0
 
@@ -146,7 +177,7 @@ firstAbove :: P.PitchSpelling -> P.Pitch -> P.Pitch
 firstAbove lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) = 
     P.Pitch lbl1 ove
   where
-    dist = P.zarithmeticDistance lbl0 lbl1
+    dist = P.zarithmeticDistanceUp lbl0 lbl1
     om   = if fromEnum ltr0 + dist > 7 then 1 else 0
     ove = o0 + om
 
@@ -154,29 +185,13 @@ firstBelow :: P.PitchSpelling -> P.Pitch -> P.Pitch
 firstBelow lbl1 (P.Pitch lbl0@(P.PitchSpelling ltr0 _) o0) = 
     P.Pitch lbl1 ove
   where
-    dist = P.zarithmeticDistance lbl0 lbl1
+    dist = P.zarithmeticDistanceDown lbl0 lbl1
     om   = if fromEnum ltr0 - dist > 0 then (-1) else 0
     ove = o0 + om
 
 
-makeOctaveModifier :: Int -> Octave
-makeOctaveModifier i 
-    | i == 0    = OveDefault
-    | i >  0    = OveRaised i
-    | otherwise = OveLowered (abs i)
-
-octaveAdjust :: P.Pitch -> Octave -> P.Pitch
-octaveAdjust pch@(P.Pitch lbl o) om = case om of
-    OveDefault      -> pch
-    OveRaised i     -> P.Pitch lbl (o+i)
-    OveLowered i    -> P.Pitch lbl (o-i)
  
 
-fromPitchRel :: P.Pitch -> P.Pitch -> Pitch
-fromPitchRel p1 p_old = 
-    let om = makeOctaveModifier $ P.lyOctaveDistance p_old p1
-        (l,a) = fromPitchSpelling $ P.pitch_spelling p1        
-    in Pitch l a om
 
                    
 
