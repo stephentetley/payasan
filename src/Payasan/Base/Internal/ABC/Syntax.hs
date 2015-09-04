@@ -21,6 +21,7 @@
 module Payasan.Base.Internal.ABC.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
+  , module Payasan.Base.Internal.BeamSyntax
 
   , ABCPhrase
   , ABCBar
@@ -28,21 +29,21 @@ module Payasan.Base.Internal.ABC.Syntax
   , ABCElement
   , ABCNote
 
-  , Phrase(..)
-  , Bar(..)
-  , CtxElement(..)
-  , Element(..)
-  , Note(..)
+
+  , Pitch(..)
   , Accidental(..)
   , PitchLetter(..)
   , Octave(..)
-  , Pitch(..)
   , NoteLength(..)
+
+  , middle_c
 
   ) where
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.CommonSyntax
+
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 
@@ -87,6 +88,53 @@ data NoteLength = DNL
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
+
+middle_c :: Pitch
+middle_c = Pitch NO_ACCIDENTAL CU OveDefault
+
+
+--------------------------------------------------------------------------------
+-- Pretty instances are for debugging and do not correspond 
+-- to valid LilyPond
+
+instance Pretty Pitch where 
+  pPrint (Pitch a l om)         = pPrint a <> pPrint l <> pPrint om
+
+instance Pretty Accidental where
+  pPrint NO_ACCIDENTAL          = empty
+  pPrint DBL_FLAT               = text "__"
+  pPrint FLAT                   = text "_"
+  pPrint NATURAL                = text "="
+  pPrint SHARP                  = text "^"
+  pPrint DBL_SHARP              = text "^^"
+
+instance Pretty PitchLetter where
+  pPrint CU                     = char 'C'
+  pPrint DU                     = char 'D'
+  pPrint EU                     = char 'E'
+  pPrint FU                     = char 'F'
+  pPrint GU                     = char 'G'
+  pPrint AU                     = char 'A'
+  pPrint BU                     = char 'B'
+  pPrint CL                     = char 'c'
+  pPrint DL                     = char 'd'
+  pPrint EL                     = char 'e'
+  pPrint FL                     = char 'f'
+  pPrint GL                     = char 'g'
+  pPrint AL                     = char 'a'
+  pPrint BL                     = char 'b'
+
+instance Pretty Octave where
+  pPrint (OveDefault)           = empty
+  pPrint (OveRaised i)          = text (replicate i '\'')
+  pPrint (OveLowered i)         = text (replicate i ',')
+
+
+instance Pretty NoteLength where
+  pPrint (DNL)                  = empty
+  pPrint (Mult n)               = int n <> text "/1"
+  pPrint (Divd d)               = text "1/"<> int d
+  pPrint (Frac n d)             = int n <> char '/' <> int d
 
 
 

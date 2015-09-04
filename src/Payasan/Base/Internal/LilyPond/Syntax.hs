@@ -21,6 +21,7 @@
 module Payasan.Base.Internal.LilyPond.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
+  , module Payasan.Base.Internal.BeamSyntax
 
   , LyPhrase
   , LyBar
@@ -28,16 +29,11 @@ module Payasan.Base.Internal.LilyPond.Syntax
   , LyElement
   , LyNote
 
-  , Phrase(..)
-  , Bar(..)
-  , CtxElement(..)
   , LyTupletSpec(..)
-  , Element(..)
-  , Note(..)
+  , Pitch(..)
   , Accidental(..)
   , PitchLetter(..)
   , Octave(..)
-  , Pitch(..)
   , NoteLength(..)
 
   , middle_c
@@ -135,3 +131,4 @@ instance Pretty Octave where
 instance Pretty NoteLength where
   pPrint (DrnDefault)           = char '.'
   pPrint (DrnExplicit d)        = pPrint d
+
