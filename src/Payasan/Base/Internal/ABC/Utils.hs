@@ -151,8 +151,6 @@ fromAlteration P.DBL_SHARP      = DBL_SHARP
 
 
 
--- UnitNoteLength = UNIT_NOTE_8 | UNIT_NOTE_16
-
 rduration :: UnitNoteLength -> NoteLength -> RDuration
 rduration unl (DNL)      = unitLength unl
 rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl

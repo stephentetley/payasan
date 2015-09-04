@@ -22,62 +22,94 @@ module Payasan.Base.Internal.ABC.OutTrans
 
 
 
-import qualified Payasan.Base.Internal.ABC.Syntax as T
+import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
 
-import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.BeamDurationTrafo as D
+import Payasan.Base.Internal.BeamPitchTrafo as P
+import Payasan.Base.Internal.Utils
+
 
 import Payasan.Base.Duration
-import Payasan.Base.Pitch (Pitch)
+import qualified Payasan.Base.Pitch as Pitch
 
 import Data.Ratio
 
 
 
-translate :: Phrase Pitch Duration -> T.ABCPhrase
-translate ph = phraseT ph
+
+translate :: Phrase Pitch.Pitch Duration -> Phrase Pitch NoteLength
+translate = P.transform pch_algo . D.transform drn_algo
+
+type DTMon a = D.Mon UnitNoteLength a
+type PTMon a = D.Mon () a
+
+--------------------------------------------------------------------------------
+-- Pitch translation
 
 
+-- TODO - This should be aware of keysig changes...
 
-phraseT :: Phrase Pitch Duration -> T.ABCPhrase
-phraseT (Phrase bs)             = T.Phrase $ map barT bs
-
--- | At this point acquire default note length.
---
-barT :: Bar Pitch Duration -> T.ABCBar
-barT (Bar info cs)              = 
-    let f = fromPitch           -- might need /context/ i.e. key
-        g = durationT (local_unit_note_len info)
-    in T.Bar info $ map (ctxElementT f g) cs
-
-ctxElementT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 
-            -> CtxElement pch Duration -> T.ABCCtxElement
-ctxElementT f g (Atom e)            = T.Atom $ elementT f g e
-ctxElementT f g (Tuplet spec cs)    = T.Tuplet spec $ map (ctxElementT f g) cs
-ctxElementT f g (Beamed cs)         = T.Beamed $ map (ctxElementT f g) cs
+pch_algo :: P.BeamPitchAlgo () Pitch.Pitch Pitch
+pch_algo = P.BeamPitchAlgo
+    { P.initial_state           = ()
+    , P.bar_info_action         = actionInfoP
+    , P.element_trafo           = elementP
+    }
 
 
+actionInfoP :: LocalRenderInfo -> PTMon ()
+actionInfoP _ = return ()
 
-elementT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 
-         -> Element pch Duration -> T.ABCElement
-elementT f g (NoteElem a)       = T.NoteElem $ noteT f g a
-elementT _ g (Rest d)           = T.Rest (g d)
-elementT f g (Chord ps d)       = T.Chord (map f ps) (g d)
-elementT f g (Graces ns)        = T.Graces $ map (noteT f g) ns
-
-
-noteT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 
-      -> Note pch Duration -> T.ABCNote
-noteT f g (Note pch drn)        = T.Note (f pch) (g drn)
+elementP :: Element Pitch.Pitch drn -> PTMon (Element Pitch drn)
+elementP (NoteElem a)           = NoteElem  <$> noteP a
+elementP (Rest d)               = pure $ Rest d
+elementP (Chord ps d)           = (Chord `flip` d) <$> mapM transPch ps
+elementP (Graces ns)            = Graces    <$> mapM noteP ns
 
 
+noteP :: Note Pitch.Pitch drn -> PTMon (Note Pitch drn)
+noteP (Note pch drn)        = (\p -> Note p drn) <$> transPch pch
 
-durationT :: UnitNoteLength -> Duration -> T.NoteLength
+-- likely to change wrt key sig...
+transPch :: Pitch.Pitch -> PTMon Pitch
+transPch = pure . fromPitch
+
+
+--------------------------------------------------------------------------------
+-- Translate duration
+
+drn_algo :: D.BeamDurationAlgo UnitNoteLength Duration NoteLength
+drn_algo = D.BeamDurationAlgo
+    { D.initial_state           = UNIT_NOTE_8
+    , D.bar_info_action         = actionInfoD
+    , D.element_trafo           = elementD
+    }
+
+
+actionInfoD :: LocalRenderInfo -> DTMon ()
+actionInfoD info = put (local_unit_note_len info)
+
+elementD :: Element pch Duration -> DTMon (Element pch NoteLength)
+elementD (NoteElem a)           = NoteElem  <$> noteD a
+elementD (Rest d)               = Rest      <$> transDrn d
+elementD (Chord ps d)           = Chord ps  <$> transDrn d
+elementD (Graces ns)            = Graces    <$> mapM noteD ns
+
+
+noteD :: Note pch Duration -> DTMon (Note pch NoteLength)
+noteD (Note pch drn)        = Note pch <$> transDrn drn
+
+
+transDrn :: Duration -> DTMon NoteLength
+transDrn d = (durationT `flip` d) <$> get
+
+durationT :: UnitNoteLength -> Duration ->  NoteLength
 durationT unl nd = 
     (fn . fork numerator denominator) $ (durationSize nd) / unitLength unl
   where  
     fork f g a = (f a, g a)
-    fn (1,1)   = T.DNL
-    fn (1,dn)  = T.Divd (fromIntegral dn)
-    fn (nm,1)  = T.Mult (fromIntegral nm)
-    fn (nm,dn) = T.Frac (fromIntegral nm) (fromIntegral dn)
+    fn (1,1)   = DNL
+    fn (1,dn)  = Divd (fromIntegral dn)
+    fn (nm,1)  = Mult (fromIntegral nm)
+    fn (nm,dn) = Frac (fromIntegral nm) (fromIntegral dn)

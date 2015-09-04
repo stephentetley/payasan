@@ -10,8 +10,8 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Main syntax to Beam syntax prior to translation
--- to ABC or LilyPond.
+-- Convert Main syntax to Beam syntax prior to outputting
+-- ABC or LilyPond.
 --
 --------------------------------------------------------------------------------
 

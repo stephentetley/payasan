@@ -18,6 +18,7 @@ import Payasan.Base.Names.Pitch
 import Payasan.Base.Internal.Tabular.Common
 import Payasan.Base.Internal.Tabular.OutputBeam
 import Payasan.Base.Internal.Tabular.OutputMain
+import Payasan.Base.Internal.BeamTrans
 import Payasan.Base.Internal.BeamPitchTrafo
 import Payasan.Base.Internal.BeamDurationTrafo
 
