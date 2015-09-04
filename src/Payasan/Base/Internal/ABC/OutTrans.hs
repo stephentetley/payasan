@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -11,7 +10,8 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Bracket syntax to ABC prior to printing.
+-- Convert pitch and duration to their ABC equivalents prior 
+-- to printing.
 --
 --------------------------------------------------------------------------------
 
@@ -31,14 +31,14 @@ import Payasan.Base.Internal.Utils
 
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as Pitch
+import qualified Payasan.Base.Pitch as PCH
 
-import Data.Ratio
-
-
+import Data.Ratio (numerator, denominator)
 
 
-translate :: Phrase Pitch.Pitch Duration -> Phrase Pitch NoteLength
+
+
+translate :: Phrase PCH.Pitch Duration -> Phrase Pitch NoteLength
 translate = P.transform pch_algo . D.transform drn_algo
 
 type DTMon a = D.Mon UnitNoteLength a
@@ -50,7 +50,7 @@ type PTMon a = D.Mon () a
 
 -- TODO - This should be aware of keysig changes...
 
-pch_algo :: P.BeamPitchAlgo () Pitch.Pitch Pitch
+pch_algo :: P.BeamPitchAlgo () PCH.Pitch Pitch
 pch_algo = P.BeamPitchAlgo
     { P.initial_state           = ()
     , P.bar_info_action         = actionInfoP
@@ -61,18 +61,18 @@ pch_algo = P.BeamPitchAlgo
 actionInfoP :: LocalRenderInfo -> PTMon ()
 actionInfoP _ = return ()
 
-elementP :: Element Pitch.Pitch drn -> PTMon (Element Pitch drn)
+elementP :: Element PCH.Pitch drn -> PTMon (Element Pitch drn)
 elementP (NoteElem a)           = NoteElem  <$> noteP a
 elementP (Rest d)               = pure $ Rest d
 elementP (Chord ps d)           = (Chord `flip` d) <$> mapM transPch ps
 elementP (Graces ns)            = Graces    <$> mapM noteP ns
 
 
-noteP :: Note Pitch.Pitch drn -> PTMon (Note Pitch drn)
-noteP (Note pch drn)        = (\p -> Note p drn) <$> transPch pch
+noteP :: Note PCH.Pitch drn -> PTMon (Note Pitch drn)
+noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
 -- likely to change wrt key sig...
-transPch :: Pitch.Pitch -> PTMon Pitch
+transPch :: PCH.Pitch -> PTMon Pitch
 transPch = pure . fromPitch
 
 
@@ -92,17 +92,17 @@ actionInfoD info = put (local_unit_note_len info)
 
 elementD :: Element pch Duration -> DTMon (Element pch NoteLength)
 elementD (NoteElem a)           = NoteElem  <$> noteD a
-elementD (Rest d)               = Rest      <$> transDrn d
-elementD (Chord ps d)           = Chord ps  <$> transDrn d
+elementD (Rest d)               = Rest      <$> changeDrn d
+elementD (Chord ps d)           = Chord ps  <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 
 noteD :: Note pch Duration -> DTMon (Note pch NoteLength)
-noteD (Note pch drn)        = Note pch <$> transDrn drn
+noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 
-transDrn :: Duration -> DTMon NoteLength
-transDrn d = (durationT `flip` d) <$> get
+changeDrn :: Duration -> DTMon NoteLength
+changeDrn d                     = (durationT `flip` d) <$> get
 
 durationT :: UnitNoteLength -> Duration ->  NoteLength
 durationT unl nd = 
