@@ -68,8 +68,9 @@ import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDIPch
 import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
 
 
+import Payasan.Base.Internal.AddBeams
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
-import qualified Payasan.Base.Internal.BeamTrans            as BEAM
+import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.MainSyntax
 
 import Payasan.Base.Duration
@@ -96,13 +97,13 @@ fromLilyPondWith gi ri = LYIn.translate gi . BEAM.pushLocalRenderInfo ri
 
 
 outputAsABC :: StdPhrase -> String
-outputAsABC = ppRender . abcOutput . ABCOut.translate . BEAM.transAndBeam id
+outputAsABC = ppRender . abcOutput . ABCOut.translate . addBeams . translateToBeam
 
 printAsABC :: StdPhrase -> IO ()
 printAsABC = putStrLn . outputAsABC
 
 outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
-outputAsLilyPond gi = ppRender . lyOutput . LYOut.translate gi . BEAM.transAndBeam id
+outputAsLilyPond gi = ppRender . lyOutput . LYOut.translate gi . addBeams . translateToBeam
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
