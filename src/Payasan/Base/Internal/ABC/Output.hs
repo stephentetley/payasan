@@ -48,8 +48,8 @@ abcOutput ph = evalTrans (oABCPhrase ph) () 0
 
 
 oABCPhrase :: ABCPhrase -> Mon Doc
-oABCPhrase (ABCPhrase [])       = return empty
-oABCPhrase (ABCPhrase (x:xs))   = step (oBar x) xs
+oABCPhrase (Phrase [])          = return empty
+oABCPhrase (Phrase (x:xs))      = step (oBar x) xs
   where
     step d []     = return d
     step d (b:bs) = do { i <- lineLen
@@ -60,18 +60,18 @@ oABCPhrase (ABCPhrase (x:xs))   = step (oBar x) xs
                        }
 
 
-oBar :: Bar -> Doc
+oBar :: ABCBar -> Doc
 oBar (Bar _info cs) = oCtxElementList (<+>) cs
 
-oCtxElementList :: CatOp -> [CtxElement] -> Doc
+oCtxElementList :: CatOp -> [ABCCtxElement] -> Doc
 oCtxElementList op xs = sepList op $ map (oCtxElement op) xs
 
-oCtxElement :: CatOp -> CtxElement -> Doc
+oCtxElement :: CatOp -> ABCCtxElement -> Doc
 oCtxElement _  (Atom e)         = oElement e
 oCtxElement _  (Beamed cs)      = oCtxElementList (<>) cs
 oCtxElement op (Tuplet spec cs) = tupletSpec spec <> oCtxElementList op cs
 
-oElement :: Element -> Doc
+oElement :: ABCElement -> Doc
 oElement (NoteElem n)         = note n
 oElement (Rest d)             = rest d 
 oElement (Chord ps d)         = chord ps d 

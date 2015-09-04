@@ -71,50 +71,50 @@ abcPhraseK :: ABCParser (ABCPhrase,SourcePos,String)
 abcPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 phrase :: ABCParser ABCPhrase
-phrase = ABCPhrase <$> bars
+phrase = Phrase <$> bars
 
-bars :: ABCParser [Bar]
+bars :: ABCParser [ABCBar]
 bars = sepBy bar barline
 
 barline :: ABCParser ()
 barline = reservedOp "|"
 
-bar :: ABCParser Bar
+bar :: ABCParser ABCBar
 bar = Bar default_local_info <$> ctxElements 
 
 
-ctxElements :: ABCParser [CtxElement]
+ctxElements :: ABCParser [ABCCtxElement]
 ctxElements = whiteSpace *> many ctxElement
 
 
-ctxElement :: ABCParser CtxElement
+ctxElement :: ABCParser ABCCtxElement
 ctxElement = tuplet <|> (Atom <$> element)
 
-element :: ABCParser Element
+element :: ABCParser ABCElement
 element = lexeme (rest <|> noteElem <|> chord <|> graces)
 
-rest :: ABCParser Element
+rest :: ABCParser ABCElement
 rest = Rest <$> (char 'z' *> noteLength)
 
-noteElem :: ABCParser Element
+noteElem :: ABCParser ABCElement
 noteElem = NoteElem <$> note
 
-chord :: ABCParser Element
+chord :: ABCParser ABCElement
 chord = Chord <$> squares (many1 pitch) <*> noteLength
 
-graces :: ABCParser Element
+graces :: ABCParser ABCElement
 graces = Graces <$> braces (many1 note)
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser CtxElement
+tuplet :: ABCParser ABCCtxElement
 tuplet = do 
    spec   <- tupletSpec
    notes  <- countedCtxElements (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedCtxElements :: Int -> ABCParser [CtxElement]
+countedCtxElements :: Int -> ABCParser [ABCCtxElement]
 countedCtxElements n 
     | n > 0       = do { e  <- ctxElement
                        ; es <- countedCtxElements (n - elementSize e)
@@ -124,7 +124,7 @@ countedCtxElements n
                        
     
 
-note :: ABCParser Note
+note :: ABCParser ABCNote
 note = Note <$> pitch <*> noteLength
     <?> "note"
 
@@ -217,7 +217,7 @@ tupletSpec = symbol "(" *> int >>= step1
 -- Helpers
 
 
-elementSize :: CtxElement -> Int
+elementSize :: ABCCtxElement -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
 elementSize (Beamed xs)     = sum $ map elementSize xs
 elementSize _               = 1

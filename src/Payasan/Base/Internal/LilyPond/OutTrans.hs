@@ -76,11 +76,11 @@ setPrevPitch p = puts (\s -> s { previous_pitch = p })
 
 
 phraseT :: Phrase Pitch Duration -> Mon T.LyPhrase
-phraseT (Phrase bs)             = T.LyPhrase <$> mapM barT bs
+phraseT (Phrase bs)             = T.Phrase <$> mapM barT bs
 
 
 
-barT :: Bar Pitch Duration -> Mon T.Bar
+barT :: Bar Pitch Duration -> Mon T.LyBar
 barT (Bar info cs)              = 
     do { css <- mapM ctxElementT cs
        ; return $ T.Bar info (concat css)
@@ -89,7 +89,7 @@ barT (Bar info cs)              =
 
 -- | Remember - a beamed CtxElement may generate 1+ elements
 --
-ctxElementT :: CtxElement Pitch Duration -> Mon [T.CtxElement]
+ctxElementT :: CtxElement Pitch Duration -> Mon [T.LyCtxElement]
 ctxElementT (Atom e)            = (wrapL . T.Atom) <$> elementT e
 
 ctxElementT (Tuplet spec cs)    = 
@@ -99,14 +99,14 @@ ctxElementT (Beamed cs)         = concat <$> mapM ctxElementT cs
 
 
 
-elementT :: Element Pitch Duration -> Mon T.Element
+elementT :: Element Pitch Duration -> Mon T.LyElement
 elementT (NoteElem a)           = T.NoteElem <$> noteT a
 elementT (Rest d)               = T.Rest   <$> durationT d
 elementT (Chord ps d)           = T.Chord  <$> mapM pitchT ps <*> durationT d
 elementT (Graces ns)            = T.Graces <$> mapM noteT ns
 
 
-noteT :: Note Pitch Duration -> Mon T.Note
+noteT :: Note Pitch Duration -> Mon T.LyNote
 noteT (Note pch drn)          = T.Note <$> pitchT pch <*> durationT drn
 
 

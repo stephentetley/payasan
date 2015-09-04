@@ -30,6 +30,7 @@ module Payasan.Base.Internal.BeamSyntax
   , Element(..)
   , Note(..)
 
+  , pushLocalRenderInfo
   , sizeCtxElement
 
   ) where
@@ -85,6 +86,13 @@ data Element pch drn = NoteElem   (Note pch drn)
 
 data Note pch drn = Note pch drn
   deriving (Data,Eq,Show,Typeable)
+
+
+
+pushLocalRenderInfo :: LocalRenderInfo -> Phrase pch drn -> Phrase pch drn
+pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
+  where
+    upd bar = bar { render_info = ri }
 
 
 sizeCtxElement :: CtxElement pch Duration -> RDuration

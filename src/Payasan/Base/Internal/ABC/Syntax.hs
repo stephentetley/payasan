@@ -22,7 +22,13 @@ module Payasan.Base.Internal.ABC.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
 
-  , ABCPhrase(..)
+  , ABCPhrase
+  , ABCBar
+  , ABCCtxElement
+  , ABCElement
+  , ABCNote
+
+  , Phrase(..)
   , Bar(..)
   , CtxElement(..)
   , Element(..)
@@ -35,6 +41,7 @@ module Payasan.Base.Internal.ABC.Syntax
 
   ) where
 
+import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.CommonSyntax
 
 import Data.Data
@@ -43,52 +50,13 @@ import Data.Data
 -- Syntax
 
 
--- | ABC is read from the quasiquoter with an initial
--- key sig and metrical information, but when it is used as 
--- an output format it might have diffrent key sigs and 
--- meter info from diferrent fragments.
---
--- We use the ABC- prefix here because the type may be exposed 
--- in user code and we don\'t want a name clash.
---
-data ABCPhrase = ABCPhrase { phrase_bars :: [Bar] }
-  deriving (Data,Eq,Show,Typeable)
+type ABCPhrase          = Phrase      Pitch NoteLength
+type ABCBar             = Bar         Pitch NoteLength
+type ABCCtxElement      = CtxElement  Pitch NoteLength
+type ABCElement         = Element     Pitch NoteLength
+type ABCNote            = Note        Pitch NoteLength
 
 
-
-
-data Bar = Bar 
-    { render_info       :: LocalRenderInfo
-    , bar_elements      :: [CtxElement]
-    }
-  deriving (Data,Eq,Show,Typeable)
-
-
-
-
--- | Note Beaming is not captured in parsing, but it is needed
--- in the syntax for output.
---
-data CtxElement = Atom    Element
-                | Beamed  [CtxElement]
-                | Tuplet  TupletSpec    [CtxElement]
-  deriving (Data,Eq,Show,Typeable)
-
-
--- | Note is should be quite easy to add ties (as write-only)
--- to get long notes after beaming.
---
--- See old Neume code. 
---
-data Element = NoteElem Note
-             | Rest     NoteLength
-             | Chord    [Pitch]     NoteLength
-             | Graces   [Note]
-  deriving (Data,Eq,Show,Typeable)
-
-
-data Note = Note Pitch NoteLength
-  deriving (Data,Eq,Show,Typeable)
 
 data Pitch = Pitch Accidental PitchLetter Octave
   deriving (Data,Eq,Ord,Show,Typeable)

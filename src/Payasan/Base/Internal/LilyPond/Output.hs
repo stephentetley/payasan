@@ -38,8 +38,8 @@ lyOutput ph = evalTrans (oLyPhrase ph) () 0
 
 
 oLyPhrase :: LyPhrase -> Mon Doc
-oLyPhrase (LyPhrase [])       = return empty
-oLyPhrase (LyPhrase (x:xs))   = step (oBar x) xs
+oLyPhrase (Phrase [])           = return empty
+oLyPhrase (Phrase (x:xs))       = step (oBar x) xs
   where
     step d []     = return d
     step d (b:bs) = do { let ac = d <+> char '|' $+$ oBar b
@@ -47,17 +47,17 @@ oLyPhrase (LyPhrase (x:xs))   = step (oBar x) xs
                        }
 
 
-oBar :: Bar -> Doc
+oBar :: LyBar -> Doc
 oBar (Bar _info cs) = hsep (map oCtxElement cs)
 
 
 
-oCtxElement :: CtxElement -> Doc
+oCtxElement :: LyCtxElement -> Doc
 oCtxElement (Atom e)            = oElement e
 oCtxElement (Beamed cs)         = beamForm $ map oCtxElement cs
 oCtxElement (Tuplet spec cs)    = tupletSpec spec <+> hsep (map oCtxElement cs)
 
-oElement :: Element -> Doc
+oElement :: LyElement -> Doc
 oElement (NoteElem n)           = note n
 oElement (Rest d)               = rest d 
 oElement (Chord ps d)           = chord ps d 

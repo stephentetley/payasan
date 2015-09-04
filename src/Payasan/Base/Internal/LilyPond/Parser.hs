@@ -80,48 +80,48 @@ lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 
 phrase :: LilyPondParser LyPhrase
-phrase = LyPhrase <$> bars
+phrase = Phrase <$> bars
 
-bars :: LilyPondParser [Bar]
+bars :: LilyPondParser [LyBar]
 bars = sepBy bar barline
 
 barline :: LilyPondParser ()
 barline = reservedOp "|"
 
-bar :: LilyPondParser Bar
+bar :: LilyPondParser LyBar
 bar = Bar default_local_info <$> ctxElements 
 
 
-ctxElements :: LilyPondParser [CtxElement]
+ctxElements :: LilyPondParser [LyCtxElement]
 ctxElements = whiteSpace *> many ctxElement
 
-ctxElement :: LilyPondParser CtxElement
+ctxElement :: LilyPondParser LyCtxElement
 ctxElement = tuplet <|> (Atom <$> element)
 
 
-element :: LilyPondParser Element
+element :: LilyPondParser LyElement
 element = lexeme (rest <|> noteElem <|> chord <|> graces)
 
 
 
-noteElem :: LilyPondParser Element
+noteElem :: LilyPondParser LyElement
 noteElem = NoteElem <$> note
 
-rest :: LilyPondParser Element
+rest :: LilyPondParser LyElement
 rest = Rest <$> (char 'z' *> noteLength)
 
-chord :: LilyPondParser Element
+chord :: LilyPondParser LyElement
 chord = Chord <$> angles (many1 pitch) <*> noteLength
 
 
-graces :: LilyPondParser Element
+graces :: LilyPondParser LyElement
 graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
   where
     multi   = braces (many1 note)
     single  = (\a -> [a]) <$> note
 
 
-tuplet :: LilyPondParser CtxElement
+tuplet :: LilyPondParser LyCtxElement
 tuplet = 
     (\spec notes -> Tuplet (transTupletSpec spec (length notes)) notes)
       <$> tupletSpec <*> braces (ctxElements)
@@ -132,7 +132,7 @@ tupletSpec = LyTupletSpec <$> (reserved "\\tuplet" *> int)
 
 
 
-note :: LilyPondParser Note
+note :: LilyPondParser LyNote
 note = Note <$> pitch <*> noteLength
     <?> "note"
 

@@ -40,18 +40,18 @@ translate ph = phraseT ph
 
 
 phraseT :: Phrase Pitch Duration -> T.ABCPhrase
-phraseT (Phrase bs)             = T.ABCPhrase $ map barT bs
+phraseT (Phrase bs)             = T.Phrase $ map barT bs
 
 -- | At this point acquire default note length.
 --
-barT :: Bar Pitch Duration -> T.Bar
+barT :: Bar Pitch Duration -> T.ABCBar
 barT (Bar info cs)              = 
     let f = fromPitch           -- might need /context/ i.e. key
         g = durationT (local_unit_note_len info)
     in T.Bar info $ map (ctxElementT f g) cs
 
 ctxElementT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 
-            -> CtxElement pch Duration -> T.CtxElement
+            -> CtxElement pch Duration -> T.ABCCtxElement
 ctxElementT f g (Atom e)            = T.Atom $ elementT f g e
 ctxElementT f g (Tuplet spec cs)    = T.Tuplet spec $ map (ctxElementT f g) cs
 ctxElementT f g (Beamed cs)         = T.Beamed $ map (ctxElementT f g) cs
@@ -59,7 +59,7 @@ ctxElementT f g (Beamed cs)         = T.Beamed $ map (ctxElementT f g) cs
 
 
 elementT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 
-         -> Element pch Duration -> T.Element
+         -> Element pch Duration -> T.ABCElement
 elementT f g (NoteElem a)       = T.NoteElem $ noteT f g a
 elementT _ g (Rest d)           = T.Rest (g d)
 elementT f g (Chord ps d)       = T.Chord (map f ps) (g d)
@@ -67,7 +67,7 @@ elementT f g (Graces ns)        = T.Graces $ map (noteT f g) ns
 
 
 noteT :: (pch -> T.Pitch) -> (Duration -> T.NoteLength) 
-      -> Note pch Duration -> T.Note
+      -> Note pch Duration -> T.ABCNote
 noteT f g (Note pch drn)        = T.Note (f pch) (g drn)
 
 

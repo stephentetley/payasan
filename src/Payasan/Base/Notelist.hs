@@ -68,6 +68,7 @@ import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDIPch
 import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
 
 
+import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
 import qualified Payasan.Base.Internal.BeamTrans            as BEAM
 import Payasan.Base.Internal.MainSyntax
 
@@ -84,13 +85,13 @@ fromABC :: ABCPhrase -> StdPhrase
 fromABC = fromABCWith default_local_info
 
 fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
-fromABCWith ri = ABCIn.translate . ABCIn.pushLocalRenderInfo ri
+fromABCWith ri = ABCIn.translate . BEAM.pushLocalRenderInfo ri
 
 fromLilyPond :: GlobalRenderInfo -> LyPhrase -> StdPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase -> StdPhrase
-fromLilyPondWith gi ri = LYIn.translate gi . LYIn.pushLocalRenderInfo ri
+fromLilyPondWith gi ri = LYIn.translate gi . BEAM.pushLocalRenderInfo ri
 
 
 

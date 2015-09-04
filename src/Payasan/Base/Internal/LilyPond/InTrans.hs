@@ -19,7 +19,6 @@
 module Payasan.Base.Internal.LilyPond.InTrans
   (
     translate
-  , pushLocalRenderInfo
   ) where
 
 
@@ -70,11 +69,11 @@ translate info ph = evalTrans (phraseT ph) info state_zero
 
 
 phraseT :: LyPhrase -> Mon (T.Phrase T.Pitch Duration)
-phraseT (LyPhrase bs)          = T.Phrase <$> mapM barT bs
+phraseT (Phrase bs)          = T.Phrase <$> mapM barT bs
 
 
 
-barT :: Bar  -> Mon (T.Bar T.Pitch Duration)
+barT :: LyBar  -> Mon (T.Bar T.Pitch Duration)
 barT (Bar info cs)              = 
     do { css <- mapM ctxElementT cs
        ; return $ T.Bar info (concat css)
@@ -83,7 +82,7 @@ barT (Bar info cs)              =
 
 -- | Remember - a beamed CtxElement may generate 1+ elements
 --
-ctxElementT :: CtxElement -> Mon [T.CtxElement T.Pitch Duration]
+ctxElementT :: LyCtxElement -> Mon [T.CtxElement T.Pitch Duration]
 ctxElementT (Atom e)            = (wrapL . T.Atom) <$> elementT e
 
 ctxElementT (Tuplet spec cs)    = 
@@ -93,14 +92,14 @@ ctxElementT (Beamed cs)         = concat <$> mapM ctxElementT cs
 
 
 
-elementT :: Element  -> Mon (T.Element T.Pitch Duration)
+elementT :: LyElement  -> Mon (T.Element T.Pitch Duration)
 elementT (NoteElem a)           = T.NoteElem <$> noteT a
 elementT (Rest d)               = T.Rest   <$> durationT d
 elementT (Chord ps d)           = T.Chord  <$> mapM pitchT ps <*> durationT d
 elementT (Graces ns)            = T.Graces <$> mapM noteT ns
 
 
-noteT :: Note -> Mon (T.Note T.Pitch Duration)
+noteT :: LyNote -> Mon (T.Note T.Pitch Duration)
 noteT (Note pch drn)          = T.Note <$> pitchT pch <*> durationT drn
 
 
@@ -126,13 +125,6 @@ durationT (DrnExplicit d) = setPrevDuration d >> return d
 wrapL :: a -> [a]
 wrapL a = [a]
 
---------------------------------------------------------------------------------
--- Push RenderInfo into bars.
 
-
-pushLocalRenderInfo :: LocalRenderInfo -> LyPhrase -> LyPhrase
-pushLocalRenderInfo ri (LyPhrase bs) = LyPhrase $ map upd bs
-  where
-    upd bar = bar { render_info = ri }
 
 

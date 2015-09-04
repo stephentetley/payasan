@@ -194,7 +194,7 @@ tupletSpec (TupletSpec { tuplet_num   = n
 -- | Print a note. Note that durations in ABC are multipliers of
 -- the /unit note length/ rather than absolute values. 
 --
-note :: Note -> Doc 
+note :: ABCNote -> Doc 
 note (Note p d) = pitch p <> noteLength d
 
 rest :: NoteLength -> Doc

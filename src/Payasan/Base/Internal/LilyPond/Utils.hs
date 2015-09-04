@@ -207,7 +207,7 @@ tupletSpec (TupletSpec { tuplet_num = n, tuplet_time = t}) =
     command "tuplet" <+> int n <> char '/' <> int t
      
 
-note :: Note -> Doc 
+note :: LyNote -> Doc 
 note (Note p d) = pitch p <> noteLength d
 
 rest :: NoteLength -> Doc
@@ -216,7 +216,7 @@ rest d = char 'r' <> noteLength d
 chord :: [Pitch] -> NoteLength -> Doc
 chord ps d = chordForm (map pitch ps) <> noteLength d
 
-graces :: [Note] -> Doc
+graces :: [LyNote] -> Doc
 graces ns = graceForm (map note ns)
 
 

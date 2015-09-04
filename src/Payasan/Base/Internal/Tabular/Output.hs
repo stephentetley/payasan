@@ -48,34 +48,34 @@ nextBar = do { i <- get; puts (1+); return $ bar i }
 
 
 oLyPhrase :: Ly.LyPhrase -> Mon Doc
-oLyPhrase (Ly.LyPhrase [])       = return empty
-oLyPhrase (Ly.LyPhrase (x:xs))   = do { d <- oBar x; step d xs }
+oLyPhrase (Ly.Phrase [])       = return empty
+oLyPhrase (Ly.Phrase (x:xs))   = do { d <- oBar x; step d xs }
   where
     step ac []      = return (ac $+$ endSpine <++> endSpine)
     step ac (b:bs)  = do { d <- oBar b; step (ac $+$ d) bs }
 
 
-oBar :: Ly.Bar -> Mon Doc
+oBar :: Ly.LyBar -> Mon Doc
 oBar (Ly.Bar _info cs) = ($+$) <$> nextBar <*> pure ( oCtxElementList cs)
 
 
-oCtxElementList :: [Ly.CtxElement] -> Doc
+oCtxElementList :: [Ly.LyCtxElement] -> Doc
 oCtxElementList xs = vcat $ map oCtxElement xs
 
 
-oCtxElement :: Ly.CtxElement -> Doc
+oCtxElement :: Ly.LyCtxElement -> Doc
 oCtxElement (Ly.Atom e)         = oElement e
 oCtxElement (Ly.Beamed cs)      = oCtxElementList cs
 oCtxElement (Ly.Tuplet _ cs)    = oCtxElementList cs
 
-oElement :: Ly.Element -> Doc
+oElement :: Ly.LyElement -> Doc
 oElement (Ly.NoteElem n)        = note n
 oElement (Ly.Rest d)            = rest <++> noteLength d 
 oElement (Ly.Chord ps d)        = pitches ps <+> noteLength d 
 oElement (Ly.Graces xs)         = vcat $ map note xs
 
 
-note :: Ly.Note -> Doc
+note :: Ly.LyNote -> Doc
 note (Ly.Note p d)              = pitch p <++> noteLength d
 
 
