@@ -15,8 +15,9 @@ import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Internal.Tabular.Output
-import Payasan.Base.Internal.Tabular.Utils
+import Payasan.Base.Internal.Tabular.Common
+import Payasan.Base.Internal.Tabular.OutputBeam
+import Payasan.Base.Internal.Tabular.OutputMain
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -52,4 +53,4 @@ test04 = simpleIntervalOf $ Interval 8 12
 
 test05 = fromPitchRel c_5 fs_4
 
-test06 = lyTabular $ [lilypond| c4 d e fis | c' |]
+test06 = beamTabular std_ly_output $ [lilypond| c4 d e fis | c' |]

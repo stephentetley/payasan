@@ -17,7 +17,9 @@
 module Payasan.Base.Internal.Tabular.Utils
   ( 
 
-    (<++>)
+    OutMon
+  , nextBar
+  , (<++>)
   , comment
   , tandem
   , exclusive
@@ -29,9 +31,19 @@ module Payasan.Base.Internal.Tabular.Utils
 
   ) where
 
+import Payasan.Base.Internal.Utils
 import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
+
+
+-- Generating output is stateful to track bar number
+
+type OutMon a = Trans () Int a
+
+
+nextBar :: OutMon Doc
+nextBar = do { i <- get; puts (1+); return $ bar i }
 
 
 
