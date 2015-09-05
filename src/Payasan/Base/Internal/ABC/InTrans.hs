@@ -31,8 +31,6 @@ import Payasan.Base.Internal.BeamDurationTrafo as D
 import Payasan.Base.Internal.BeamPitchTrafo as P
 import Payasan.Base.Internal.Utils
 
--- import qualified Payasan.Base.Internal.MainSyntax as T
-
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
 

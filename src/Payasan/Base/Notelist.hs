@@ -87,15 +87,15 @@ fromABC :: ABCPhrase -> StdPhrase
 fromABC = fromABCWith default_local_info
 
 fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
-fromABCWith ri = translateToMain .ABCIn.translate . BEAM.pushLocalRenderInfo ri
+fromABCWith ri = translateToMain . ABCIn.translate . BEAM.pushLocalRenderInfo ri
 
 fromLilyPond :: GlobalRenderInfo -> LyPhrase -> StdPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 
--- TODO - use translateToMain
 fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase -> StdPhrase
-fromLilyPondWith gi ri = LYIn.translate gi . BEAM.pushLocalRenderInfo ri
+fromLilyPondWith gi ri = 
+    translateToMain . LYIn.translate gi . BEAM.pushLocalRenderInfo ri
 
 
 
@@ -106,7 +106,8 @@ printAsABC :: StdPhrase -> IO ()
 printAsABC = putStrLn . outputAsABC
 
 outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
-outputAsLilyPond gi = ppRender . lyOutput . LYOut.translate gi . addBeams . translateToBeam
+outputAsLilyPond gi = 
+    ppRender . lyOutput . LYOut.translate gi . addBeams . translateToBeam
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

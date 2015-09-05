@@ -22,109 +22,133 @@ module Payasan.Base.Internal.LilyPond.InTrans
   ) where
 
 
-
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Internal.MainSyntax as T
+import Payasan.Base.Internal.BeamDurationTrafo as D
+import Payasan.Base.Internal.BeamPitchTrafo as P
 import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as T
-
-data St = St { previous_duration   :: Duration 
-             , previous_pitch      :: T.Pitch
-             }
-
-type Mon a = Trans GlobalRenderInfo St a
+import qualified Payasan.Base.Pitch as PCH
 
 
-previousDuration :: Mon Duration
-previousDuration = gets previous_duration
 
-setPrevDuration :: Duration -> Mon ()
-setPrevDuration d = puts (\s -> s { previous_duration = d })
-
-previousPitch :: Mon (Maybe T.Pitch)
-previousPitch = fn <$> asks global_pitch_directive <*> gets previous_pitch
+translate :: GlobalRenderInfo 
+          -> Phrase Pitch NoteLength -> Phrase PCH.Pitch Duration 
+translate info = pitchTrafo . D.transform drn_algo
   where
-    fn (AbsPitch) _    = Nothing
-    fn (RelPitch {}) p = Just p
-
-setPrevPitch :: T.Pitch -> Mon ()
-setPrevPitch p = puts (\s -> s { previous_pitch = p })
-
-translate :: GlobalRenderInfo -> LyPhrase -> T.Phrase T.Pitch Duration
-translate info ph = evalTrans (phraseT ph) info state_zero
-  where
-    -- The first duration should never match then we always start
-    -- printing
-    state_zero = St { previous_duration = dQuarter
-                    , previous_pitch    = pitch_zero
-                    }
     -- If AbsPitch then /previous pitch/ will never be used
-    pitch_zero = case global_pitch_directive info of
-                    RelPitch pch -> pch
-                    AbsPitch -> T.middle_c      
+    pitchTrafo = case global_pitch_directive info of
+                    RelPitch pch -> P.transform (rel_pch_algo pch)
+                    AbsPitch -> P.transform abs_pch_algo
 
 
-phraseT :: LyPhrase -> Mon (T.Phrase T.Pitch Duration)
-phraseT (Phrase bs)          = T.Phrase <$> mapM barT bs
+type DTMon a = D.Mon Duration a
+type RelPMon a = D.Mon PCH.Pitch a
+type AbsPMon a = D.Mon () a
 
 
 
-barT :: LyBar  -> Mon (T.Bar T.Pitch Duration)
-barT (Bar info cs)              = 
-    do { css <- mapM ctxElementT cs
-       ; return $ T.Bar info (concat css)
+--------------------------------------------------------------------------------
+-- Relative Pitch translation
+
+rel_pch_algo :: PCH.Pitch -> P.BeamPitchAlgo PCH.Pitch Pitch PCH.Pitch
+rel_pch_algo start = P.BeamPitchAlgo
+    { P.initial_state           = start
+    , P.bar_info_action         = \_ -> return ()
+    , P.element_trafo           = relElementP
+    }
+
+
+previousPitch :: RelPMon PCH.Pitch
+previousPitch = get
+
+setPrevPitch :: PCH.Pitch -> RelPMon ()
+setPrevPitch = put 
+
+
+relElementP :: Element Pitch drn -> RelPMon (Element PCH.Pitch drn)
+relElementP (NoteElem a)        = NoteElem <$> relNoteP a
+relElementP (Rest d)            = pure $ Rest d
+relElementP (Chord ps d)        = (Chord `flip` d)  <$> mapM changePitchRel ps
+relElementP (Graces ns)         = Graces <$> mapM relNoteP ns
+
+
+relNoteP :: Note Pitch drn -> RelPMon (Note PCH.Pitch drn)
+relNoteP (Note pch drn)         = (\p -> Note p drn) <$> changePitchRel pch
+
+
+changePitchRel :: Pitch -> RelPMon PCH.Pitch
+changePitchRel p1 = 
+    do { p0 <- previousPitch
+       ; let tp1 = toPitchRel p1 p0
+       ; setPrevPitch tp1
+       ; return tp1
        }
-
-
--- | Remember - a beamed CtxElement may generate 1+ elements
---
-ctxElementT :: LyCtxElement -> Mon [T.CtxElement T.Pitch Duration]
-ctxElementT (Atom e)            = (wrapL . T.Atom) <$> elementT e
-
-ctxElementT (Tuplet spec cs)    = 
-    (wrapL . T.Tuplet spec . concat) <$> mapM ctxElementT cs
-
-ctxElementT (Beamed cs)         = concat <$> mapM ctxElementT cs
-
-
-
-elementT :: LyElement  -> Mon (T.Element T.Pitch Duration)
-elementT (NoteElem a)           = T.NoteElem <$> noteT a
-elementT (Rest d)               = T.Rest   <$> durationT d
-elementT (Chord ps d)           = T.Chord  <$> mapM pitchT ps <*> durationT d
-elementT (Graces ns)            = T.Graces <$> mapM noteT ns
-
-
-noteT :: LyNote -> Mon (T.Note T.Pitch Duration)
-noteT (Note pch drn)          = T.Note <$> pitchT pch <*> durationT drn
-
-
--- No previous pitch indicates Absolute pitch mode
-pitchT :: Pitch -> Mon T.Pitch
-pitchT p1 = previousPitch >>= step 
-  where
-    step (Nothing)   = pure $ toPitchAbs p1
-    step (Just p0)   = let tp1 = toPitchRel p1 p0 in setPrevPitch tp1 >> return tp1
                               
 
 
 
+--------------------------------------------------------------------------------
+-- Abs Pitch translation
 
-durationT :: NoteLength -> Mon Duration
-durationT (DrnDefault)    = previousDuration
-durationT (DrnExplicit d) = setPrevDuration d >> return d
+
+abs_pch_algo :: P.BeamPitchAlgo () Pitch PCH.Pitch
+abs_pch_algo = P.BeamPitchAlgo
+    { P.initial_state           = ()
+    , P.bar_info_action         = \_ -> return ()
+    , P.element_trafo           = absElementP
+    }
+
+
+absElementP :: Element Pitch drn -> AbsPMon (Element PCH.Pitch drn)
+absElementP (NoteElem a)        = NoteElem <$> absNoteP a
+absElementP (Rest d)            = pure $ Rest d
+absElementP (Chord ps d)        = (Chord `flip` d)  <$> mapM changePitchAbs ps
+absElementP (Graces ns)         = Graces <$> mapM absNoteP ns
+
+
+absNoteP :: Note Pitch drn -> AbsPMon (Note PCH.Pitch drn)
+absNoteP (Note pch drn)         = (\p -> Note p drn) <$> changePitchAbs pch
+
+
+changePitchAbs :: Pitch -> AbsPMon PCH.Pitch
+changePitchAbs p1 = return $ toPitchAbs p1
+
+
 
 
 --------------------------------------------------------------------------------
--- Helpers
-
-wrapL :: a -> [a]
-wrapL a = [a]
+-- Duration translation
 
 
+drn_algo :: D.BeamDurationAlgo Duration NoteLength Duration 
+drn_algo = D.BeamDurationAlgo
+    { D.initial_state           = dQuarter
+    , D.bar_info_action         = \_ -> return ()
+    , D.element_trafo           = elementD
+    }
 
+previousDuration :: DTMon Duration
+previousDuration = get
+
+setPrevDuration :: Duration -> DTMon ()
+setPrevDuration d = put d
+
+
+elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
+elementD (NoteElem a)           = NoteElem  <$> noteD a
+elementD (Rest d)               = Rest      <$> changeDrn d
+elementD (Chord ps d)           = Chord ps  <$> changeDrn d
+elementD (Graces ns)            = Graces    <$> mapM noteD ns
+
+noteD :: Note pch NoteLength -> DTMon (Note pch Duration)
+noteD (Note pch drn)            = Note pch <$> changeDrn drn
+
+
+
+changeDrn :: NoteLength -> DTMon Duration
+changeDrn (DrnDefault)    = previousDuration
+changeDrn (DrnExplicit d) = setPrevDuration d >> return d
 
