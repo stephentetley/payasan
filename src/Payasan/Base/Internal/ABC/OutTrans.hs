@@ -41,8 +41,8 @@ import Data.Ratio (numerator, denominator)
 translate :: Phrase PCH.Pitch Duration -> Phrase Pitch NoteLength
 translate = P.transform pch_algo . D.transform drn_algo
 
-type DTMon a = D.Mon UnitNoteLength a
 type PTMon a = D.Mon () a
+type DTMon a = D.Mon UnitNoteLength a
 
 --------------------------------------------------------------------------------
 -- Pitch translation
@@ -103,6 +103,7 @@ noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 changeDrn :: Duration -> DTMon NoteLength
 changeDrn d                     = (durationT `flip` d) <$> get
+
 
 durationT :: UnitNoteLength -> Duration ->  NoteLength
 durationT unl nd = 

@@ -26,51 +26,81 @@ module Payasan.Base.Internal.ABC.InTrans
 
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
-import qualified Payasan.Base.Internal.MainSyntax as T
+
+import Payasan.Base.Internal.BeamDurationTrafo as D
+import Payasan.Base.Internal.BeamPitchTrafo as P
+import Payasan.Base.Internal.Utils
+
+-- import qualified Payasan.Base.Internal.MainSyntax as T
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as T
+import qualified Payasan.Base.Pitch as PCH
+
+
+translate :: Phrase Pitch NoteLength -> Phrase PCH.Pitch Duration
+translate = P.transform pch_algo . D.transform drn_algo
+
+type PTMon a = D.Mon () a
+type DTMon a = D.Mon UnitNoteLength a
+
+--------------------------------------------------------------------------------
+-- Pitch translation
+
+
+pch_algo :: P.BeamPitchAlgo () Pitch PCH.Pitch
+pch_algo = P.BeamPitchAlgo
+    { P.initial_state           = ()
+    , P.bar_info_action         = actionInfoP
+    , P.element_trafo           = elementP
+    }
+
+
+actionInfoP :: LocalRenderInfo -> PTMon ()
+actionInfoP _ = return ()
+
+elementP :: Element Pitch drn -> PTMon (Element PCH.Pitch drn)
+elementP (NoteElem a)           = NoteElem  <$> noteP a
+elementP (Rest d)               = pure $ Rest d
+elementP (Chord ps d)           = (Chord `flip` d) <$> mapM transPch ps
+elementP (Graces ns)            = Graces    <$> mapM noteP ns
+
+
+noteP :: Note Pitch drn -> PTMon (Note PCH.Pitch drn)
+noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
+
+-- likely to change wrt key sig...
+transPch :: Pitch -> PTMon PCH.Pitch
+transPch = pure . toPitch
 
 
 
-translate :: ABCPhrase -> T.Phrase T.Pitch Duration
-translate = phraseT
+--------------------------------------------------------------------------------
+-- Translate duration
+
+drn_algo :: D.BeamDurationAlgo UnitNoteLength NoteLength Duration
+drn_algo = D.BeamDurationAlgo
+    { D.initial_state           = UNIT_NOTE_8
+    , D.bar_info_action         = actionInfoD
+    , D.element_trafo           = elementD
+    }
+
+actionInfoD :: LocalRenderInfo -> DTMon ()
+actionInfoD info = put (local_unit_note_len info)
+
+elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
+elementD (NoteElem a)           = NoteElem  <$> noteD a
+elementD (Rest d)               = Rest      <$> changeDrn d
+elementD (Chord ps d)           = Chord ps  <$> changeDrn d
+elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 
-phraseT :: ABCPhrase -> T.Phrase T.Pitch Duration
-phraseT (Phrase bs)             = T.Phrase $ map barT bs
+noteD :: Note pch NoteLength -> DTMon (Note pch Duration)
+noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 
-barT :: ABCBar -> T.Bar T.Pitch Duration
-barT (Bar info cs)              = 
-    let f = durationT (local_unit_note_len info) 
-    in T.Bar info $ concatMap (ctxElementT f) cs
+changeDrn :: NoteLength -> DTMon Duration
+changeDrn d                     = (durationT `flip` d) <$> get
 
-
--- | Remember - a beamed CtxElement may generate 1+ elements
---
-ctxElementT :: (NoteLength -> Duration) 
-            -> ABCCtxElement -> [T.CtxElement T.Pitch Duration]
-ctxElementT f (Atom e)         = [T.Atom $ elementT f e]
-ctxElementT f (Tuplet spec cs) = [T.Tuplet spec $ concatMap (ctxElementT f) cs]
-ctxElementT f (Beamed cs)      = concatMap (ctxElementT f) cs
-
-
-elementT :: (NoteLength -> Duration) 
-         -> ABCElement  -> T.Element T.Pitch Duration
-elementT f (NoteElem a)       = T.NoteElem $ noteT f a
-elementT f (Rest d)           = T.Rest (f d)
-elementT f (Chord ps d)       = T.Chord (map pitchT ps) (f d)
-elementT f (Graces ns)        = T.Graces $ map (noteT f) ns
-
-
-noteT :: (NoteLength -> Duration) 
-      -> ABCNote -> T.Note T.Pitch Duration
-noteT f (Note pch drn)        = T.Note (pitchT pch) (f drn)
-
-
-pitchT :: Pitch -> T.Pitch
-pitchT = toPitch
 
 durationT :: UnitNoteLength -> NoteLength -> Duration
 durationT unl d = 

@@ -70,6 +70,7 @@ import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
 
 import Payasan.Base.Internal.AddBeams
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
+import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.MainSyntax
 
@@ -86,11 +87,13 @@ fromABC :: ABCPhrase -> StdPhrase
 fromABC = fromABCWith default_local_info
 
 fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
-fromABCWith ri = ABCIn.translate . BEAM.pushLocalRenderInfo ri
+fromABCWith ri = translateToMain .ABCIn.translate . BEAM.pushLocalRenderInfo ri
 
 fromLilyPond :: GlobalRenderInfo -> LyPhrase -> StdPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
+
+-- TODO - use translateToMain
 fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase -> StdPhrase
 fromLilyPondWith gi ri = LYIn.translate gi . BEAM.pushLocalRenderInfo ri
 
