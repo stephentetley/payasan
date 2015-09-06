@@ -31,12 +31,19 @@ module Payasan.Base.Internal.Tabular.Common
   , abcNoteLength
   , abcPitch
 
+  , pitch_duration_output
+
   ) where
 
 import Payasan.Base.Internal.Tabular.Utils
 
 import qualified Payasan.Base.Internal.LilyPond.Syntax as Ly
 import qualified Payasan.Base.Internal.ABC.Syntax as ABC
+
+import Payasan.Base.Duration
+import Payasan.Base.Pitch
+
+
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -71,3 +78,11 @@ abcNoteLength d                 = pPrint d
 
 abcPitch :: ABC.Pitch -> Doc
 abcPitch = pPrint
+
+
+pitch_duration_output :: LeafOutput Pitch Duration
+pitch_duration_output = LeafOutput { pp_pitch     = pPrint
+                                   , pp_duration  = pPrint
+                                   }
+
+
