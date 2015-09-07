@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monomorphic.Internal.MonoSyntax
+-- Module      :  Payasan.Base.Monomorphic.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -12,11 +12,11 @@
 -- Portability :  GHC
 --
 -- Very simple symbolic notelist with notes, rests, 
--- and triplets (no chords or triplets).
+-- and triplets (no chords or graces).
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.MonoSyntax
+module Payasan.Base.Monophonic.Internal.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
 
@@ -70,13 +70,15 @@ data Bar pch drn = Bar
 
 -- | Note Beaming is added in rendering.
 --
+-- Tuplets seem essential 
+--
 data CtxElement pch drn = Atom    (Element pch drn)
                         | Tuplet  TupletSpec          [CtxElement pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
--- | TODO - if we allow ties, there is a simple duration 
--- doubling transformation (unfortunately there isn\'t a 
+-- | TODO - if we allow ties, there is a simple duration
+-- doubling transformation (unfortunately there isn\'t a
 -- simple duration halving trafo).
 --
 --

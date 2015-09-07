@@ -20,7 +20,7 @@ module Payasan.Base.Monophonic.Internal.ABCParser
     abc
   ) where
 
-import Payasan.Base.Monophonic.Internal.MonoSyntax
+import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Lexer
 import qualified Payasan.Base.Internal.ABC.Parser as P

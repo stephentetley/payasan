@@ -25,7 +25,7 @@ module Payasan.Base.Monophonic.Internal.ABCInTrans
 
 
 
-import Payasan.Base.Monophonic.Internal.MonoSyntax
+import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.ABC.Syntax (NoteLength(..))

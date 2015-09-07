@@ -43,7 +43,7 @@ module Payasan.Base.Monophonic.Notelist
 import qualified Payasan.Base.Monophonic.Internal.ABCInTrans    as ABCIn
 import Payasan.Base.Monophonic.Internal.ABCParser (abc)
 import Payasan.Base.Monophonic.Internal.MonoOutTrans            as MonoOut
-import Payasan.Base.Monophonic.Internal.MonoSyntax
+import Payasan.Base.Monophonic.Internal.Syntax
 
 import qualified Payasan.Base.Notelist as MAIN
 

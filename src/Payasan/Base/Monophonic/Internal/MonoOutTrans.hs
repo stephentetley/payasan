@@ -22,7 +22,7 @@ module Payasan.Base.Monophonic.Internal.MonoOutTrans
 
 
 
-import Payasan.Base.Monophonic.Internal.MonoSyntax
+import Payasan.Base.Monophonic.Internal.Syntax
 
 import qualified Payasan.Base.Internal.MainSyntax as T
 
