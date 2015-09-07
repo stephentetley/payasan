@@ -1,9 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.MonoOutTrans
+-- Module      :  Payasan.Base.Monophonic.Internal.MonoToMain
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,30 +10,29 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Translate Monophonic syntax to Main syntax.
+-- Convert Monophonic syntax to Main syntax (pipline output 
+-- from Main syntax).
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.MonoOutTrans
+module Payasan.Base.Monophonic.Internal.MonoToMain
   (
-    translate
+    translateToMain
   ) where
 
 
 
+import qualified Payasan.Base.Internal.MainSyntax as T
 import Payasan.Base.Monophonic.Internal.Syntax
 
-import qualified Payasan.Base.Internal.MainSyntax as T
 
 
+translateToMain :: Phrase pch drn -> T.Phrase pch drn
+translateToMain = phraseT
 
 
-translate :: MonoPhrase pch drn -> T.Phrase pch drn
-translate = phraseT
-
-
-phraseT :: MonoPhrase pch drn -> T.Phrase pch drn
-phraseT (MonoPhrase bs)          = T.Phrase $ map barT bs
+phraseT :: Phrase pch drn -> T.Phrase pch drn
+phraseT (Phrase bs)             = T.Phrase $ map barT bs
 
 
 barT :: Bar pch drn -> T.Bar pch drn
@@ -51,4 +49,3 @@ ctxElementT (Tuplet spec cs)    = [T.Tuplet spec $ concatMap ctxElementT cs]
 elementT :: Element pch drn  -> T.Element pch drn
 elementT (Note p d)            = T.NoteElem (T.Note p  d)
 elementT (Rest d)              = T.Rest d
-

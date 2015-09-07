@@ -40,7 +40,7 @@ translate = phraseT
 
 
 phraseT :: ABCMonoPhrase -> StdMonoPhrase
-phraseT (MonoPhrase bs)          = MonoPhrase $ map barT bs
+phraseT (Phrase bs)             = Phrase $ map barT bs
 
 
 barT :: Bar Pitch NoteLength -> Bar Pitch Duration
@@ -75,6 +75,6 @@ durationT unl d =
 
 
 pushLocalRenderInfo :: LocalRenderInfo -> ABCMonoPhrase -> ABCMonoPhrase
-pushLocalRenderInfo ri (MonoPhrase bs) = MonoPhrase $ map upd bs
+pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
   where
     upd bar = bar { render_info = ri }

@@ -17,9 +17,8 @@
 module Payasan.Base.Monophonic.Notelist
   ( 
 
-    MonoPhrase
+    Phrase
   , StdMonoPhrase
-
   , ABCMonoPhrase           -- * re-export
   , abc                     -- * re-export
 
@@ -42,7 +41,7 @@ module Payasan.Base.Monophonic.Notelist
 
 import qualified Payasan.Base.Monophonic.Internal.ABCInTrans    as ABCIn
 import Payasan.Base.Monophonic.Internal.ABCParser (abc)
-import Payasan.Base.Monophonic.Internal.MonoOutTrans            as MonoOut
+import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.Syntax
 
 import qualified Payasan.Base.Notelist as MAIN
@@ -58,11 +57,11 @@ fromABCWith ri = ABCIn.translate . ABCIn.pushLocalRenderInfo ri
 
 
 outputAsABC :: StdMonoPhrase -> String
-outputAsABC = MAIN.outputAsABC . MonoOut.translate
+outputAsABC = MAIN.outputAsABC . translateToMain
 
 
 printAsABC :: StdMonoPhrase -> IO ()
-printAsABC = MAIN.printAsABC . MonoOut.translate
+printAsABC = MAIN.printAsABC . translateToMain
 
 
 ppRender :: Doc -> String
@@ -70,4 +69,4 @@ ppRender = MAIN.ppRender
 
 
 writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
-writeAsMIDI path = MAIN.writeAsMIDI path . MonoOut.translate
+writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain

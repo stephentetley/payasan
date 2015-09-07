@@ -20,7 +20,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
 
-  , MonoPhrase(..)
+  , Phrase(..)
   , StdMonoPhrase
   , ABCMonoPhrase
 
@@ -48,12 +48,12 @@ import Data.Data
 -- Parametric on duration so we can read ABC and decode duration
 -- multipliers in a post-parsing phase.
 --
-data MonoPhrase pch drn = MonoPhrase { phrase_bars :: [Bar pch drn] }
+data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
   deriving (Data,Eq,Show,Typeable)
 
-type StdMonoPhrase = MonoPhrase Pitch Duration
+type StdMonoPhrase = Phrase Pitch Duration
 
-type ABCMonoPhrase = MonoPhrase Pitch NoteLength
+type ABCMonoPhrase = Phrase Pitch NoteLength
 
 
 

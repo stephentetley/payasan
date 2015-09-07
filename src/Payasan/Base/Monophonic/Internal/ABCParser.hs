@@ -78,7 +78,7 @@ abcPhraseK :: ABCParser (ABCMonoPhrase,SourcePos,String)
 abcPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 phrase :: ABCParser ABCMonoPhrase 
-phrase = MonoPhrase <$> bars
+phrase = Phrase <$> bars
 
 bars :: ABCParser [Bar Pitch NoteLength]
 bars = sepBy bar barline
