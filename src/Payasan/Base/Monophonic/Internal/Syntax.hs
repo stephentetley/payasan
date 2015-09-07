@@ -28,9 +28,11 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , CtxElement(..)
   , Element(..)
 
+  , pushLocalRenderInfo
+
   ) where
 
-import Payasan.Base.Internal.ABC.Syntax (NoteLength(..))
+import qualified Payasan.Base.Internal.ABC.Syntax as ABC
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -53,7 +55,7 @@ data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
 
 type StdMonoPhrase = Phrase Pitch Duration
 
-type ABCMonoPhrase = Phrase Pitch NoteLength
+type ABCMonoPhrase = Phrase ABC.Pitch ABC.NoteLength
 
 
 
@@ -88,3 +90,11 @@ data Element pch drn = Note   pch   drn
 
 
 
+--------------------------------------------------------------------------------
+-- Push RenderInfo into bars.
+
+
+pushLocalRenderInfo :: LocalRenderInfo -> Phrase pch drn -> Phrase pch drn
+pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
+  where
+    upd bar = bar { render_info = ri }

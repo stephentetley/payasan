@@ -39,7 +39,7 @@ module Payasan.Base.Monophonic.Notelist
 
   ) where
 
-import qualified Payasan.Base.Monophonic.Internal.ABCInTrans    as ABCIn
+import Payasan.Base.Monophonic.Internal.InTrans
 import Payasan.Base.Monophonic.Internal.ABCParser (abc)
 import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.Syntax
@@ -53,7 +53,7 @@ fromABC :: ABCMonoPhrase -> StdMonoPhrase
 fromABC  = fromABCWith default_local_info
 
 fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
-fromABCWith ri = ABCIn.translate . ABCIn.pushLocalRenderInfo ri
+fromABCWith ri = abcTranslate . pushLocalRenderInfo ri
 
 
 outputAsABC :: StdMonoPhrase -> String

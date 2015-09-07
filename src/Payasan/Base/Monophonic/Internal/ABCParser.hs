@@ -24,10 +24,8 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Lexer
 import qualified Payasan.Base.Internal.ABC.Parser as P
-import Payasan.Base.Internal.ABC.Syntax (NoteLength(..))
-import Payasan.Base.Internal.ABC.Utils ( toPitch )
+import Payasan.Base.Internal.ABC.Syntax (NoteLength(..), Pitch)
 
-import Payasan.Base.Pitch
 
 import Text.Parsec                              -- package: parsec
 
@@ -127,7 +125,7 @@ countedCtxElements n
                        
 
 pitch :: ABCParser Pitch
-pitch = toPitch <$> P.pitch
+pitch = P.pitch
 
 
 --------------------------------------------------------------------------------

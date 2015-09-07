@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.BeamPitchTrafo
+-- Module      :  Payasan.Base.Monophonic.Internal.MonoDurationTrafo
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,42 +11,42 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Generic traversal of Beam syntax for pitch transformation.
+-- Generic traversal of Mono syntax for duration transformation.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.BeamPitchTrafo
+module Payasan.Base.Monophonic.Internal.MonoDurationTrafo
   (
     Mon 
-  , BeamPitchAlgo(..)
+  , MonoDurationAlgo(..)
   , transform
   ) where
 
 
+import Payasan.Base.Monophonic.Internal.Syntax
 
-import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.Utils ( Trans, evalTrans )
 
 
 type Mon st a = Trans () st a
 
-data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo 
+data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo 
     { initial_state     :: st
     , bar_info_action   :: LocalRenderInfo -> Mon st ()
-    , element_trafo     :: forall drn. Element pch1 drn  -> Mon st (Element pch2 drn)
+    , element_trafo     :: forall pch. Element pch drn1  -> Mon st (Element pch drn2)
     }
 
 
-transform :: BeamPitchAlgo st p1 p2 -> Phrase p1 drn -> Phrase p2 drn
+transform :: MonoDurationAlgo st d1 d2 -> Phrase pch d1 -> Phrase pch d2
 transform algo ph = evalTrans (phraseT algo ph) () (initial_state algo)
 
 
-phraseT :: BeamPitchAlgo st p1 p2 -> Phrase p1 drn -> Mon st (Phrase p2 drn)
+phraseT :: MonoDurationAlgo st d1 d2 -> Phrase pch d1 -> Mon st (Phrase pch d2)
 phraseT algo (Phrase bs)          = Phrase <$> mapM (barT algo) bs
 
 
 
-barT :: BeamPitchAlgo st p1 p2 -> Bar p1 drn -> Mon st (Bar p2 drn)
+barT :: MonoDurationAlgo st d1 d2 -> Bar pch d1 -> Mon st (Bar pch d2)
 barT algo (Bar info cs)           = 
     do { barInfo info
        ; cs1 <- mapM (ctxElementT algo) cs
@@ -54,12 +54,14 @@ barT algo (Bar info cs)           =
        }
   where
     barInfo = bar_info_action algo
+
+
   
-ctxElementT :: BeamPitchAlgo st p1 p2 
-            -> CtxElement p1 drn 
-            -> Mon st (CtxElement p2 drn)
+ctxElementT :: MonoDurationAlgo st d1 d2 
+            -> CtxElement pch d1
+            -> Mon st (CtxElement pch d2)
 ctxElementT algo (Atom e)         = let elemT = element_trafo algo
                                     in Atom <$> elemT e
-ctxElementT algo (Beamed cs)      = Beamed <$> mapM (ctxElementT algo) cs
 ctxElementT algo (Tuplet spec cs) = Tuplet spec <$> mapM (ctxElementT algo) cs
+
 
