@@ -20,7 +20,7 @@ import Payasan.Base.Internal.Tabular.OutputBeam
 import Payasan.Base.Internal.Tabular.OutputMain
 
 
-import Text.PrettyPrint.HughesPJ        -- package: pretty
+import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
 phrase01 :: StdPhrase
@@ -61,3 +61,6 @@ test04 = simpleIntervalOf $ Interval 8 12
 test05 = fromPitchRel c_5 fs_4
 
 test06 = beamTabular std_ly_output $ [lilypond| c4 d e fis | c' |]
+
+
+test07 = fromPitchRel e_4 ff_4

@@ -165,14 +165,17 @@ octaveModifier = raised <|> lowered <|> dfault
     lowered = OveLowered <$> counting1 (char ',')
     dfault  = pure OveDefault
 
+
+-- | Sharps = @is@, flats = @es@.
+--
 accidental :: LilyPondParser Accidental
 accidental = accdntl <|> return NO_ACCIDENTAL
   where
     accdntl  = choice [ dblsharp, dblflat, sharp, flat ]
     dblsharp = DBL_SHARP <$ try (symbol "isis")
     dblflat  = DBL_FLAT  <$ try (symbol "eses")
-    sharp    = SHARP     <$ symbol "es"
-    flat     = FLAT      <$ symbol "is"
+    sharp    = SHARP     <$ symbol "is"
+    flat     = FLAT      <$ symbol "es"
 
 counting1 :: LilyPondParser a -> LilyPondParser Int
 counting1 p = length <$> many1 p
