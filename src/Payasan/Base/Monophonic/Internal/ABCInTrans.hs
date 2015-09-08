@@ -1,9 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.InTrans
+-- Module      :  Payasan.Base.Monophonic.Internal.ABCInTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,13 +10,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert ABC to Main Syntax, plus /pushing/ render info
--- into bars as this cannot be done during parsing / 
--- quasiquoting.
+-- Convert ABC to Monophonic syntax.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.InTrans
+module Payasan.Base.Monophonic.Internal.ABCInTrans
   (
     abcTranslate
   ) where

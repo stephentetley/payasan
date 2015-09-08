@@ -27,6 +27,7 @@ module Payasan.Base.Internal.LilyPond.Parser
   , accidental
   , pitchLetter
   , noteLength
+  , transTupletSpec
   ) where
 
 
@@ -125,6 +126,7 @@ tuplet :: LilyPondParser LyCtxElement
 tuplet = 
     (\spec notes -> Tuplet (transTupletSpec spec (length notes)) notes)
       <$> tupletSpec <*> braces (ctxElements)
+
 
 tupletSpec :: LilyPondParser LyTupletSpec
 tupletSpec = LyTupletSpec <$> (reserved "\\tuplet" *> int)

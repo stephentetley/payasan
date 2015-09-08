@@ -23,6 +23,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , Phrase(..)
   , StdMonoPhrase
   , ABCMonoPhrase
+  , LilyPondMonoPhrase
 
   , Bar(..)
   , CtxElement(..)
@@ -34,6 +35,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
 
 import qualified Payasan.Base.Internal.ABC.Syntax as ABC
 import Payasan.Base.Internal.CommonSyntax
+import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
@@ -53,9 +55,10 @@ import Data.Data
 data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
   deriving (Data,Eq,Show,Typeable)
 
-type StdMonoPhrase = Phrase Pitch Duration
+type StdMonoPhrase          = Phrase Pitch Duration
 
-type ABCMonoPhrase = Phrase ABC.Pitch ABC.NoteLength
+type ABCMonoPhrase          = Phrase ABC.Pitch ABC.NoteLength
+type LilyPondMonoPhrase     = Phrase LY.Pitch  LY.NoteLength
 
 
 

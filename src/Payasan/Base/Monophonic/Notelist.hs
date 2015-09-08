@@ -19,8 +19,10 @@ module Payasan.Base.Monophonic.Notelist
 
     Phrase
   , StdMonoPhrase
-  , ABCMonoPhrase           -- * re-export
-  , abc                     -- * re-export
+  , ABCMonoPhrase
+  , abc
+  , LilyPondMonoPhrase
+  , lilypond
 
 
   , LocalRenderInfo(..)
@@ -30,8 +32,13 @@ module Payasan.Base.Monophonic.Notelist
 
   , fromABC
   , fromABCWith
+  , fromLilyPond
+  , fromLilyPondWith
+
   , outputAsABC
   , printAsABC
+  , outputAsLilyPond
+  , printAsLilyPond
 
   , ppRender
 
@@ -39,8 +46,10 @@ module Payasan.Base.Monophonic.Notelist
 
   ) where
 
-import Payasan.Base.Monophonic.Internal.InTrans
+import Payasan.Base.Monophonic.Internal.ABCInTrans
 import Payasan.Base.Monophonic.Internal.ABCParser (abc)
+import Payasan.Base.Monophonic.Internal.LilyPondInTrans
+import Payasan.Base.Monophonic.Internal.LilyPondParser (lilypond)
 import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.Syntax
 
@@ -56,6 +65,16 @@ fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
 fromABCWith ri = abcTranslate . pushLocalRenderInfo ri
 
 
+fromLilyPond :: GlobalRenderInfo -> LilyPondMonoPhrase -> StdMonoPhrase
+fromLilyPond gi = fromLilyPondWith gi default_local_info
+
+fromLilyPondWith :: GlobalRenderInfo 
+                 -> LocalRenderInfo 
+                 -> LilyPondMonoPhrase 
+                 -> StdMonoPhrase
+fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
+
+
 outputAsABC :: StdMonoPhrase -> String
 outputAsABC = MAIN.outputAsABC . translateToMain
 
@@ -63,6 +82,12 @@ outputAsABC = MAIN.outputAsABC . translateToMain
 printAsABC :: StdMonoPhrase -> IO ()
 printAsABC = MAIN.printAsABC . translateToMain
 
+outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
+
+
+printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
 
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
