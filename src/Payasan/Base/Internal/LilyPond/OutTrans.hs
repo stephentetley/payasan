@@ -55,7 +55,6 @@ type AbsPMon a = D.Mon () a
 rel_pch_algo :: PCH.Pitch -> P.BeamPitchAlgo PCH.Pitch PCH.Pitch Pitch
 rel_pch_algo start = P.BeamPitchAlgo
     { P.initial_state           = start
-    , P.bar_info_action         = \_ -> return ()
     , P.element_trafo           = relElementP
     }
 
@@ -93,7 +92,6 @@ changePitchRel p1 =
 abs_pch_algo :: P.BeamPitchAlgo () PCH.Pitch Pitch
 abs_pch_algo = P.BeamPitchAlgo
     { P.initial_state           = ()
-    , P.bar_info_action         = \_ -> return ()
     , P.element_trafo           = absElementP
     }
 
@@ -121,7 +119,6 @@ changePitchAbs p1 = return $ fromPitchAbs p1
 drn_algo :: D.BeamDurationAlgo Duration Duration NoteLength
 drn_algo = D.BeamDurationAlgo
     { D.initial_state           = dQuarter
-    , D.bar_info_action         = \_ -> return ()
     , D.element_trafo           = elementD
     }
 

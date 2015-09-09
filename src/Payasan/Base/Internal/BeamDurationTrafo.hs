@@ -32,7 +32,6 @@ type Mon st a = Rewrite st a
 
 data BeamDurationAlgo st drn1 drn2 = BeamDurationAlgo 
     { initial_state     :: st
-    , bar_info_action   :: LocalRenderInfo -> Mon st ()
     , element_trafo     :: forall pch. Element pch drn1  -> Mon st (Element pch drn2)
     }
 
@@ -47,13 +46,8 @@ phraseT algo (Phrase bs)          = Phrase <$> mapM (barT algo) bs
 
 
 barT :: BeamDurationAlgo st d1 d2 -> Bar pch d1 -> Mon st (Bar pch d2)
-barT algo (Bar info cs)           = 
-    do { barInfo info
-       ; cs1 <- mapM (ctxElementT algo) cs
-       ; return $ Bar info cs1 
-       }
-  where
-    barInfo = bar_info_action algo
+barT algo (Bar info cs)           = local info $
+    Bar info <$> mapM (ctxElementT algo) cs
 
 
   

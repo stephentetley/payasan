@@ -33,7 +33,6 @@ type Mon st a = Rewrite st a
 
 data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo 
     { initial_state     :: st
-    , bar_info_action   :: LocalRenderInfo -> Mon st ()
     , element_trafo     :: forall drn. Element pch1 drn  -> Mon st (Element pch2 drn)
     }
 
@@ -48,13 +47,9 @@ phraseT algo (Phrase bs)          = Phrase <$> mapM (barT algo) bs
 
 
 barT :: MonoPitchAlgo st p1 p2 -> Bar p1 drn -> Mon st (Bar p2 drn)
-barT algo (Bar info cs)           = 
-    do { barInfo info
-       ; cs1 <- mapM (ctxElementT algo) cs
-       ; return $ Bar info cs1 
-       }
-  where
-    barInfo = bar_info_action algo
+barT algo (Bar info cs)           = local info $ 
+    Bar info <$> mapM (ctxElementT algo) cs
+
   
 ctxElementT :: MonoPitchAlgo st p1 p2 
             -> CtxElement p1 drn 
@@ -72,7 +67,6 @@ mapPch :: (pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
 mapPch fn = transform algo 
   where
     algo  = MonoPitchAlgo { initial_state    = ()
-                          , bar_info_action  = \_ -> return ()
                           , element_trafo    = stepE 
                           }
 

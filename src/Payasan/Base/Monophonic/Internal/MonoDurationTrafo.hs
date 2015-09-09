@@ -33,7 +33,6 @@ type Mon st a = Rewrite st a
 
 data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo 
     { initial_state     :: st
-    , bar_info_action   :: LocalRenderInfo -> Mon st ()
     , element_trafo     :: forall pch. Element pch drn1  -> Mon st (Element pch drn2)
     }
 
@@ -48,13 +47,8 @@ phraseT algo (Phrase bs)          = Phrase <$> mapM (barT algo) bs
 
 
 barT :: MonoDurationAlgo st d1 d2 -> Bar pch d1 -> Mon st (Bar pch d2)
-barT algo (Bar info cs)           = 
-    do { barInfo info
-       ; cs1 <- mapM (ctxElementT algo) cs
-       ; return $ Bar info cs1 
-       }
-  where
-    barInfo = bar_info_action algo
+barT algo (Bar info cs)           = local info $ 
+    Bar info <$> mapM (ctxElementT algo) cs
 
 
   
@@ -76,7 +70,6 @@ mapDrn :: (drn1 -> drn2) -> Phrase pch drn1 -> Phrase pch drn2
 mapDrn fn = transform algo 
   where
     algo  = MonoDurationAlgo { initial_state    = ()
-                             , bar_info_action  = \_ -> return ()
                              , element_trafo    = stepE 
                              }
 

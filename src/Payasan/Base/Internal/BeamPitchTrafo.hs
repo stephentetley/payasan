@@ -32,7 +32,6 @@ type Mon st a = Rewrite st a
 
 data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo 
     { initial_state     :: st
-    , bar_info_action   :: LocalRenderInfo -> Mon st ()
     , element_trafo     :: forall drn. Element pch1 drn  -> Mon st (Element pch2 drn)
     }
 
@@ -47,13 +46,9 @@ phraseT algo (Phrase bs)          = Phrase <$> mapM (barT algo) bs
 
 
 barT :: BeamPitchAlgo st p1 p2 -> Bar p1 drn -> Mon st (Bar p2 drn)
-barT algo (Bar info cs)           = 
-    do { barInfo info
-       ; cs1 <- mapM (ctxElementT algo) cs
-       ; return $ Bar info cs1 
-       }
-  where
-    barInfo = bar_info_action algo
+barT algo (Bar info cs)           = local info $
+     Bar info <$> mapM (ctxElementT algo) cs
+
   
 ctxElementT :: BeamPitchAlgo st p1 p2 
             -> CtxElement p1 drn 

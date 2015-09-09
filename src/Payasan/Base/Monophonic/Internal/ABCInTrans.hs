@@ -46,13 +46,9 @@ type DTMon a = D.Mon UnitNoteLength a
 pch_algo :: P.MonoPitchAlgo () Pitch PCH.Pitch
 pch_algo = P.MonoPitchAlgo
     { P.initial_state           = ()
-    , P.bar_info_action         = actionInfoP
     , P.element_trafo           = elementP
     }
 
-
-actionInfoP :: LocalRenderInfo -> PTMon ()
-actionInfoP _ = return ()
 
 elementP :: Element Pitch drn -> PTMon (Element PCH.Pitch drn)
 elementP (Note p d)             = (\pch -> Note pch d) <$> transPch p
@@ -71,12 +67,9 @@ transPch = pure . toPitch
 drn_algo :: D.MonoDurationAlgo UnitNoteLength NoteLength Duration
 drn_algo = D.MonoDurationAlgo
     { D.initial_state           = UNIT_NOTE_8
-    , D.bar_info_action         = actionInfoD
     , D.element_trafo           = elementD
     }
 
-actionInfoD :: LocalRenderInfo -> DTMon ()
-actionInfoD info = put (local_unit_note_len info)
 
 elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
 elementD (Note p d)             = Note p  <$> changeDrn d
@@ -84,7 +77,7 @@ elementD (Rest d)               = Rest    <$> changeDrn d
 
 
 changeDrn :: NoteLength -> DTMon Duration
-changeDrn d                     = (durationT `flip` d) <$> get
+changeDrn d = (durationT `flip` d) <$> asksLocal local_unit_note_len
 
 
 durationT :: UnitNoteLength -> NoteLength -> Duration

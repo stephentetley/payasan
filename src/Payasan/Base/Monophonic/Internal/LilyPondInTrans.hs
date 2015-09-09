@@ -57,7 +57,6 @@ type AbsPMon a = D.Mon () a
 rel_pch_algo :: PCH.Pitch -> P.MonoPitchAlgo PCH.Pitch Pitch PCH.Pitch
 rel_pch_algo start = P.MonoPitchAlgo
     { P.initial_state           = start
-    , P.bar_info_action         = \_ -> return ()
     , P.element_trafo           = relElementP
     }
 
@@ -93,7 +92,6 @@ changePitchRel p1 =
 abs_pch_algo :: P.MonoPitchAlgo () Pitch PCH.Pitch
 abs_pch_algo = P.MonoPitchAlgo
     { P.initial_state           = ()
-    , P.bar_info_action         = \_ -> return ()
     , P.element_trafo           = absElementP
     }
 
@@ -116,7 +114,6 @@ changePitchAbs p1 = return $ toPitchAbs p1
 drn_algo :: D.MonoDurationAlgo Duration NoteLength Duration 
 drn_algo = D.MonoDurationAlgo
     { D.initial_state           = dQuarter
-    , D.bar_info_action         = \_ -> return ()
     , D.element_trafo           = elementD
     }
 
@@ -128,69 +125,11 @@ setPrevDuration d = put d
 
 
 elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
-elementD (Note pch drn)         = Note pch <$> changeDrn drn
-elementD (Rest d)               = Rest      <$> changeDrn d
+elementD (Note p d)             = Note p <$> changeDrn d
+elementD (Rest d)               = Rest   <$> changeDrn d
 
 
 changeDrn :: NoteLength -> DTMon Duration
 changeDrn (DrnDefault)    = previousDuration
 changeDrn (DrnExplicit d) = setPrevDuration d >> return d
 
-
-{-
-
---------------------------------------------------------------------------------
--- Pitch translation
-
-
-pch_algo :: P.MonoPitchAlgo () Pitch PCH.Pitch
-pch_algo = P.MonoPitchAlgo
-    { P.initial_state           = ()
-    , P.bar_info_action         = actionInfoP
-    , P.element_trafo           = elementP
-    }
-
-
-actionInfoP :: LocalRenderInfo -> PTMon ()
-actionInfoP _ = return ()
-
-elementP :: Element Pitch drn -> PTMon (Element PCH.Pitch drn)
-elementP (Note p d)             = (\pch -> Note pch d) <$> transPch p
-elementP (Rest d)               = pure $ Rest d
-
-
--- likely to change wrt key sig...
-transPch :: Pitch -> PTMon PCH.Pitch
-transPch = pure . toPitch
-
-
-
---------------------------------------------------------------------------------
--- Translate duration
-
-drn_algo :: D.MonoDurationAlgo UnitNoteLength NoteLength Duration
-drn_algo = D.MonoDurationAlgo
-    { D.initial_state           = UNIT_NOTE_8
-    , D.bar_info_action         = actionInfoD
-    , D.element_trafo           = elementD
-    }
-
-actionInfoD :: LocalRenderInfo -> DTMon ()
-actionInfoD info = put (local_unit_note_len info)
-
-elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
-elementD (Note p d)             = Note p  <$> changeDrn d
-elementD (Rest d)               = Rest    <$> changeDrn d
-
-
-changeDrn :: NoteLength -> DTMon Duration
-changeDrn d                     = (durationT `flip` d) <$> get
-
-
-durationT :: UnitNoteLength -> NoteLength -> Duration
-durationT unl d = 
-    let rat = rduration unl d in case rationalToDuration rat of
-      Nothing -> dLonga
-      Just ans -> ans
-
--}
