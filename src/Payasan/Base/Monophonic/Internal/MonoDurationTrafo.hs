@@ -26,10 +26,10 @@ module Payasan.Base.Monophonic.Internal.MonoDurationTrafo
 
 import Payasan.Base.Monophonic.Internal.Syntax
 
-import Payasan.Base.Internal.Utils ( Trans, evalTrans )
+import Payasan.Base.Internal.RewriteMonad
 
 
-type Mon st a = Trans () st a
+type Mon st a = Rewrite st a
 
 data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo 
     { initial_state     :: st
@@ -39,7 +39,7 @@ data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo
 
 
 transform :: MonoDurationAlgo st d1 d2 -> Phrase pch d1 -> Phrase pch d2
-transform algo ph = evalTrans (phraseT algo ph) () (initial_state algo)
+transform algo ph = evalRewriteDefault (phraseT algo ph) (initial_state algo)
 
 
 phraseT :: MonoDurationAlgo st d1 d2 -> Phrase pch d1 -> Mon st (Phrase pch d2)
@@ -68,6 +68,9 @@ ctxElementT algo (Tuplet spec cs) = Tuplet spec <$> mapM (ctxElementT algo) cs
 
 --------------------------------------------------------------------------------
 -- Transformation
+
+-- Note - increasing or decreasing duration would imply 
+-- recalculating bar lines.
 
 mapDrn :: (drn1 -> drn2) -> Phrase pch drn1 -> Phrase pch drn2
 mapDrn fn = transform algo 

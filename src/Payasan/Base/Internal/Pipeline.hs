@@ -27,6 +27,7 @@ module Payasan.Base.Internal.Pipeline
 
   , GlobalRenderInfo(..)
   , PitchDirective(..)
+  , default_global_info 
 
   , LocalRenderInfo(..)
   , UnitNoteLength(..)

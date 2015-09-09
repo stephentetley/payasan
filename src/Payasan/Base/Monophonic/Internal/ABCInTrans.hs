@@ -27,7 +27,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Syntax (Pitch,NoteLength)
 import Payasan.Base.Internal.ABC.Utils
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH

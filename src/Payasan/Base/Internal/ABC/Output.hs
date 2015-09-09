@@ -21,7 +21,7 @@ module Payasan.Base.Internal.ABC.Output
 
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -31,7 +31,7 @@ type CatOp = Doc -> Doc -> Doc
 -- Generating output should be stateful so we can insert a 
 -- newline every four lines.
 
-type Mon a = Trans () Int a
+type Mon a = Rewrite Int a
 
 lineLen :: Mon Int
 lineLen = get
@@ -43,7 +43,7 @@ incrLineLen :: Mon ()
 incrLineLen = puts (+1)
 
 abcOutput :: ABCPhrase -> Doc
-abcOutput ph = evalTrans (oABCPhrase ph) () 0
+abcOutput ph = evalRewriteDefault (oABCPhrase ph) 0
 
 
 

@@ -25,10 +25,10 @@ module Payasan.Base.Internal.BeamDurationTrafo
 
 
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 
-type Mon st a = Trans () st a
+type Mon st a = Rewrite st a
 
 data BeamDurationAlgo st drn1 drn2 = BeamDurationAlgo 
     { initial_state     :: st
@@ -38,7 +38,7 @@ data BeamDurationAlgo st drn1 drn2 = BeamDurationAlgo
 
 
 transform :: BeamDurationAlgo st d1 d2 -> Phrase pch d1 -> Phrase pch d2
-transform algo ph = evalTrans (phraseT algo ph) () (initial_state algo)
+transform algo ph = evalRewriteDefault (phraseT algo ph) (initial_state algo)
 
 
 phraseT :: BeamDurationAlgo st d1 d2 -> Phrase pch d1 -> Mon st (Phrase pch d2)

@@ -28,14 +28,14 @@ module Payasan.Base.Internal.Tabular.OutputBeam
 import Payasan.Base.Internal.Tabular.Common (LeafOutput(..))
 import Payasan.Base.Internal.Tabular.Utils
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
 beamTabular :: LeafOutput pch drn -> Phrase pch drn -> Doc
-beamTabular ppl ph = evalTrans (oPhrase ppl ph) () 1
+beamTabular ppl ph = evalRewriteDefault (oPhrase ppl ph) 1
 
 
 

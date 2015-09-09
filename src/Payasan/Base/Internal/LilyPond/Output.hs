@@ -21,7 +21,7 @@ module Payasan.Base.Internal.LilyPond.Output
 
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -29,11 +29,11 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 -- Do we need the monad? (code originally from ABC output where we did).
 
-type Mon a = Trans () Int a
+type Mon a = Rewrite Int a
 
 
 lyOutput :: LyPhrase -> Doc
-lyOutput ph = evalTrans (oLyPhrase ph) () 0
+lyOutput ph = evalRewriteDefault (oLyPhrase ph) 0
 
 
 

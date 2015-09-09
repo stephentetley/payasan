@@ -25,10 +25,10 @@ module Payasan.Base.Internal.BeamPitchTrafo
 
 
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 
-type Mon st a = Trans () st a
+type Mon st a = Rewrite st a
 
 data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo 
     { initial_state     :: st
@@ -38,7 +38,7 @@ data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo
 
 
 transform :: BeamPitchAlgo st p1 p2 -> Phrase p1 drn -> Phrase p2 drn
-transform algo ph = evalTrans (phraseT algo ph) () (initial_state algo)
+transform algo ph = evalRewriteDefault (phraseT algo ph) (initial_state algo)
 
 
 phraseT :: BeamPitchAlgo st p1 p2 -> Phrase p1 drn -> Mon st (Phrase p2 drn)

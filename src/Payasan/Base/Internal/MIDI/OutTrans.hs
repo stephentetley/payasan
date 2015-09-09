@@ -24,10 +24,10 @@ import qualified Payasan.Base.Internal.MIDI.Syntax as T
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.MainSyntax
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
--- import Payasan.Base.Pitch
+
 
 -- | Translate should operate on: 
 --
@@ -35,21 +35,23 @@ import Payasan.Base.Duration
 -- 
 -- Rather than:
 --
--- > Phrase T.MidiPitch Duration
+-- > Phrase T.Pitch Duration
 -- 
 -- So we can handle MIDI drums
 --
 
+
+type Mon a = Rewrite Seconds a
+
+
 translate :: T.TrackData -> Phrase T.MidiPitch Duration -> T.Track
-translate td ph = T.render $ evalTrans (phraseT td ph) () 0
+translate td ph = T.render $ evalRewriteDefault (phraseT td ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.
 -- It will be easier with seconds to extend with quantization
 -- (swing).
 
-
-type Mon a = Trans () Seconds a
 
 
 advanceOnset :: Seconds -> Mon ()

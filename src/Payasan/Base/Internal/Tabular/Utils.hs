@@ -31,7 +31,7 @@ module Payasan.Base.Internal.Tabular.Utils
 
   ) where
 
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
@@ -39,7 +39,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 -- Generating output is stateful to track bar number
 
-type OutMon a = Trans () Int a
+type OutMon a = Rewrite Int a
 
 
 nextBar :: OutMon Doc

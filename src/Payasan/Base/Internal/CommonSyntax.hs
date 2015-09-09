@@ -20,6 +20,8 @@ module Payasan.Base.Internal.CommonSyntax
 
     GlobalRenderInfo(..)
   , PitchDirective(..)
+  , default_global_info
+
   , LocalRenderInfo(..)
   , UnitNoteLength(..)
   , default_local_info
@@ -65,6 +67,10 @@ data PitchDirective = AbsPitch
                     | RelPitch !Pitch
   deriving (Data,Eq,Show,Typeable)
 
+default_global_info :: GlobalRenderInfo
+default_global_info = GlobalRenderInfo
+    { global_pitch_directive    = RelPitch middle_c
+    }
 
 data LocalRenderInfo = LocalRenderInfo
     { local_key_sig             :: !KeySig

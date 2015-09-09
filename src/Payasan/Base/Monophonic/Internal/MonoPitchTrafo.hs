@@ -26,10 +26,10 @@ module Payasan.Base.Monophonic.Internal.MonoPitchTrafo
 
 
 import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Internal.Utils ( Trans, evalTrans )
+import Payasan.Base.Internal.RewriteMonad
 
 
-type Mon st a = Trans () st a
+type Mon st a = Rewrite st a
 
 data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo 
     { initial_state     :: st
@@ -39,7 +39,7 @@ data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo
 
 
 transform :: MonoPitchAlgo st p1 p2 -> Phrase p1 drn -> Phrase p2 drn
-transform algo ph = evalTrans (phraseT algo ph) () (initial_state algo)
+transform algo ph = evalRewriteDefault (phraseT algo ph) (initial_state algo)
 
 
 phraseT :: MonoPitchAlgo st p1 p2 -> Phrase p1 drn -> Mon st (Phrase p2 drn)
@@ -78,3 +78,17 @@ mapPch fn = transform algo
 
     stepE (Note p d) = pure $ Note (fn p) d
     stepE (Rest d)   = pure $ Rest d
+
+{-
+
+ctxMapPch :: (KeySig -> pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
+ctxMapPch fn = transform algo 
+  where
+    algo  = MonoPitchAlgo { initial_state    = ()
+                          , bar_info_action  = \_ -> return ()
+                          , element_trafo    = stepE 
+                          }
+
+    stepE (Note p d) = (\ks -> Note (fn ks p) d) <$> gets local_key_sig
+    stepE (Rest d)   = pure $ Rest d
+-}

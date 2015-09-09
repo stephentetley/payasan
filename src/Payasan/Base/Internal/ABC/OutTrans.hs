@@ -27,7 +27,7 @@ import Payasan.Base.Internal.ABC.Utils
 
 import Payasan.Base.Internal.BeamDurationTrafo as D
 import Payasan.Base.Internal.BeamPitchTrafo as P
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 
 import Payasan.Base.Duration

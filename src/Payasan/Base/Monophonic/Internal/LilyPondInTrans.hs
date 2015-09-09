@@ -28,7 +28,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Syntax (Pitch,NoteLength(..))
 import Payasan.Base.Internal.LilyPond.Utils
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
