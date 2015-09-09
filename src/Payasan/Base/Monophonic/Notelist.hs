@@ -24,6 +24,8 @@ module Payasan.Base.Monophonic.Notelist
   , LilyPondMonoPhrase
   , lilypond
 
+  , GlobalRenderInfo(..)
+  , PitchDirective(..)
 
   , LocalRenderInfo(..)
   , UnitNoteLength(..)
@@ -44,6 +46,9 @@ module Payasan.Base.Monophonic.Notelist
 
   , writeAsMIDI
 
+  , mapPch
+  , mapDrn
+
   ) where
 
 import Payasan.Base.Monophonic.Internal.ABCInTrans
@@ -51,6 +56,8 @@ import Payasan.Base.Monophonic.Internal.ABCParser (abc)
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
 import Payasan.Base.Monophonic.Internal.LilyPondParser (lilypond)
 import Payasan.Base.Monophonic.Internal.MonoToMain
+import Payasan.Base.Monophonic.Internal.MonoDurationTrafo
+import Payasan.Base.Monophonic.Internal.MonoPitchTrafo
 import Payasan.Base.Monophonic.Internal.Syntax
 
 import qualified Payasan.Base.Notelist as MAIN

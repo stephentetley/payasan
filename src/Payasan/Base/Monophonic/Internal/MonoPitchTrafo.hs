@@ -20,6 +20,7 @@ module Payasan.Base.Monophonic.Internal.MonoPitchTrafo
     Mon 
   , MonoPitchAlgo(..)
   , transform
+  , mapPch
   ) where
 
 
@@ -62,3 +63,18 @@ ctxElementT algo (Atom e)         = let elemT = element_trafo algo
                                     in Atom <$> elemT e
 ctxElementT algo (Tuplet spec cs) = Tuplet spec <$> mapM (ctxElementT algo) cs
 
+
+
+--------------------------------------------------------------------------------
+-- Transformation
+
+mapPch :: (pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
+mapPch fn = transform algo 
+  where
+    algo  = MonoPitchAlgo { initial_state    = ()
+                          , bar_info_action  = \_ -> return ()
+                          , element_trafo    = stepE 
+                          }
+
+    stepE (Note p d) = pure $ Note (fn p) d
+    stepE (Rest d)   = pure $ Rest d

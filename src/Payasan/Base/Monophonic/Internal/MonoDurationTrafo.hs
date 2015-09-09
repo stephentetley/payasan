@@ -20,6 +20,7 @@ module Payasan.Base.Monophonic.Internal.MonoDurationTrafo
     Mon 
   , MonoDurationAlgo(..)
   , transform
+  , mapDrn
   ) where
 
 
@@ -65,3 +66,16 @@ ctxElementT algo (Atom e)         = let elemT = element_trafo algo
 ctxElementT algo (Tuplet spec cs) = Tuplet spec <$> mapM (ctxElementT algo) cs
 
 
+--------------------------------------------------------------------------------
+-- Transformation
+
+mapDrn :: (drn1 -> drn2) -> Phrase pch drn1 -> Phrase pch drn2
+mapDrn fn = transform algo 
+  where
+    algo  = MonoDurationAlgo { initial_state    = ()
+                             , bar_info_action  = \_ -> return ()
+                             , element_trafo    = stepE 
+                             }
+
+    stepE (Note p d) = pure $ Note p (fn d)
+    stepE (Rest d)   = pure $ Rest (fn d)
