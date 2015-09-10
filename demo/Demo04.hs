@@ -9,8 +9,11 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Interval
 
+import Payasan.Base.Monophonic.Internal.RecalcBars
+import Payasan.Base.Internal.CommonSyntax
 
--- INTERVALS -- 
+
+-- TRANSFORMATIONS -- 
 
 phrase01 :: StdMonoPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
@@ -34,4 +37,8 @@ demo01 = printAsLilyPond global_ri phrase01
 demo02 :: IO ()
 demo02 = printAsLilyPond global_ri $ mapPch (`addInterval` major_second) phrase01
 
+demo03 :: IO ()
+demo03 = printAsLilyPond global_ri $ augment phrase01
 
+
+test01 = barLength $ Meter 4 4

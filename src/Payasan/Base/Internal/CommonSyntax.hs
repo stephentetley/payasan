@@ -29,6 +29,8 @@ module Payasan.Base.Internal.CommonSyntax
   , KeySig(..)
   , Mode(..)
   , TimeSig(..)
+  , barLength
+
   , MeterPattern
   , TupletSpec(..)
 
@@ -72,6 +74,13 @@ default_global_info = GlobalRenderInfo
     { global_pitch_directive    = RelPitch middle_c
     }
 
+
+-- | Note - @LocalRenderInfo@ is stored as a header to a Bar. 
+-- This allows concatenating bars together. Generally outputting 
+-- should be sensitive to changes to LocalRenderInfo as a new bar
+-- is printed.
+-- 
+ 
 data LocalRenderInfo = LocalRenderInfo
     { local_key_sig             :: !KeySig
     , local_time_sig            :: !TimeSig
@@ -112,6 +121,11 @@ data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
 data TimeSig = Meter Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
 
+
+barLength :: TimeSig -> RDuration
+barLength (Meter n d) = (fromIntegral n) * fn d
+  where
+    fn i = 1 % fromIntegral i
 
 type MeterPattern = [RDuration]
 

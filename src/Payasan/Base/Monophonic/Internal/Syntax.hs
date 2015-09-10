@@ -30,6 +30,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , Element(..)
 
   , pushLocalRenderInfo
+  , sizeCtxElement
 
   ) where
 
@@ -65,7 +66,7 @@ type LilyPondMonoPhrase     = Phrase LY.Pitch  LY.NoteLength
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn = Bar 
-    { render_info       :: LocalRenderInfo
+    { bar_header        :: LocalRenderInfo
     , bar_elements      :: [CtxElement pch drn]
     }
   deriving (Data,Eq,Show,Typeable)
@@ -100,4 +101,14 @@ data Element pch drn = Note   pch   drn
 pushLocalRenderInfo :: LocalRenderInfo -> Phrase pch drn -> Phrase pch drn
 pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
   where
-    upd bar = bar { render_info = ri }
+    upd bar = bar { bar_header = ri }
+
+
+
+sizeCtxElement :: CtxElement pch Duration -> RDuration
+sizeCtxElement (Atom e)            = sizeElement e
+sizeCtxElement (Tuplet {})         = error "sizeCtxElement (Tuplet {})"
+
+sizeElement :: Element pch Duration -> RDuration
+sizeElement (Note _ d)          = durationSize d
+sizeElement (Rest d)            = durationSize d

@@ -29,6 +29,9 @@ module Payasan.Base.Duration
   , notDotted
   , dot
   , addDots
+  , doubleDuration
+  , halveDuration
+
   , components
   , symbolicComponents
   , lilyPondComponents
@@ -131,6 +134,49 @@ addDots _ (DZero)       = DZero
 addDots i (Drn n dc)    = Drn n (dc+i)
 
 
+-- | Double the duration.
+--
+-- @Maxima@ is /saturated/:
+--
+-- > doubleDuration Maxima = Maxima
+--
+doubleDuration :: Duration -> Duration
+doubleDuration (DZero)      = DZero
+doubleDuration (Drn n dc)   = Drn (fn n) dc
+  where
+    fn D128      = D64
+    fn D64       = D32
+    fn D32       = D16
+    fn D16       = D8
+    fn D8        = D4
+    fn D4        = D2
+    fn D2        = D1
+    fn D1        = Breve
+    fn Breve     = Longa
+    fn Longa     = Maxima
+    fn Maxima    = Maxima
+    
+-- | Halve the duration (diminution).
+-- 
+-- D128 is /saturated/:
+-- 
+-- > halveDuration D128 = D128
+--
+halveDuration :: Duration -> Duration
+halveDuration (DZero)      = DZero
+halveDuration (Drn n dc)   = Drn (fn n) dc
+  where
+    fn D128      = D128
+    fn D64       = D128
+    fn D32       = D64
+    fn D16       = D32
+    fn D8        = D16
+    fn D4        = D8
+    fn D2        = D4
+    fn D1        = D2
+    fn Breve     = D1
+    fn Longa     = Breve
+    fn Maxima    = Longa
 
 components :: Duration -> (Rational,Int)
 components (DZero)              = (0,0)

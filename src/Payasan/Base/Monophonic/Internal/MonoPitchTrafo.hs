@@ -21,6 +21,7 @@ module Payasan.Base.Monophonic.Internal.MonoPitchTrafo
   , MonoPitchAlgo(..)
   , transform
   , mapPch
+  , ctxMapPch   -- TEMP ?
   ) where
 
 
@@ -64,25 +65,16 @@ ctxElementT algo (Tuplet spec cs) = Tuplet spec <$> mapM (ctxElementT algo) cs
 -- Transformation
 
 mapPch :: (pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
-mapPch fn = transform algo 
-  where
-    algo  = MonoPitchAlgo { initial_state    = ()
-                          , element_trafo    = stepE 
-                          }
+mapPch fn = ctxMapPch (\_ p -> fn p)
 
-    stepE (Note p d) = pure $ Note (fn p) d
-    stepE (Rest d)   = pure $ Rest d
-
-{-
 
 ctxMapPch :: (KeySig -> pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
 ctxMapPch fn = transform algo 
   where
     algo  = MonoPitchAlgo { initial_state    = ()
-                          , bar_info_action  = \_ -> return ()
                           , element_trafo    = stepE 
                           }
 
-    stepE (Note p d) = (\ks -> Note (fn ks p) d) <$> gets local_key_sig
+    stepE (Note p d) = (\ks -> Note (fn ks p) d) <$> asksLocal local_key_sig
     stepE (Rest d)   = pure $ Rest d
--}
+

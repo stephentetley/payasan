@@ -17,7 +17,9 @@
 module Payasan.Base.Monophonic.Notelist
   ( 
 
-    Phrase
+    module Payasan.Base.Monophonic.Internal.Transform
+
+  , Phrase
   , StdMonoPhrase
   , ABCMonoPhrase
   , abc
@@ -59,6 +61,7 @@ import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.MonoDurationTrafo
 import Payasan.Base.Monophonic.Internal.MonoPitchTrafo
 import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Monophonic.Internal.Transform
 
 import qualified Payasan.Base.Notelist as MAIN
 
