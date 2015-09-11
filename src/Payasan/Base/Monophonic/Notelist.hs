@@ -28,6 +28,7 @@ module Payasan.Base.Monophonic.Notelist
 
   , GlobalRenderInfo(..)
   , PitchDirective(..)
+  , default_global_info
 
   , LocalRenderInfo(..)
   , UnitNoteLength(..)
@@ -85,12 +86,12 @@ fromLilyPondWith :: GlobalRenderInfo
 fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
 
 
-outputAsABC :: StdMonoPhrase -> String
-outputAsABC = MAIN.outputAsABC . translateToMain
+outputAsABC :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsABC gi = MAIN.outputAsABC gi . translateToMain
 
 
-printAsABC :: StdMonoPhrase -> IO ()
-printAsABC = MAIN.printAsABC . translateToMain
+printAsABC :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsABC gi = MAIN.printAsABC gi . translateToMain
 
 outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain

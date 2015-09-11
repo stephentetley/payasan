@@ -17,7 +17,7 @@ manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = printAsABC phrase01
+demo01 = printAsABC default_global_info phrase01
 
 demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01
@@ -28,14 +28,14 @@ phrase02 = fromABCWith manual_ri $
     [abc| c2 {d}c {c2d2}c|{dcd}c {ede}d {fef}e f| c/{gfef}d/e/f/ f/e/{gfedc}d/c/|c G E {cBAGFED}C| |]
 
 demo02 :: IO ()
-demo02 = printAsABC phrase02
+demo02 = printAsABC default_global_info phrase02
 
 phrase03 :: ABCPhrase
 phrase03 = [abc|
     (3cde e2 | (6cegczg (3czg | (3:2:2G4c2 | (3:2:4G2A2Bc | (3:2:6(3GGGA2Bc |]
 
 demo03:: IO ()
-demo03 = putStrLn $ ppRender $ abcOutput phrase03
+demo03 = putStrLn $ ppRender $ abcOutput default_global_info phrase03
 
 
 -- Beaming wrong - todo
@@ -44,7 +44,7 @@ testPh = fromABCWith manual_ri $
     [abc| c c//c//c//c//  c/4c/4c/4c/4 c |]
 
 test01 :: IO ()
-test01 = printAsABC testPh
+test01 = printAsABC default_global_info testPh
 
 
 testMiddleC :: StdPhrase

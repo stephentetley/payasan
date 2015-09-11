@@ -48,7 +48,7 @@ demo01 :: IO ()
 demo01 = printAsLilyPond global_ri phrase01
 
 demo01a :: IO ()
-demo01a = printAsABC phrase01
+demo01a = printAsABC global_ri phrase01
 
 
 test01,test02, test03 :: Int

@@ -61,7 +61,8 @@ import Data.Ratio
 -- in one mode only.
 
 data GlobalRenderInfo = GlobalRenderInfo
-    { global_pitch_directive    :: !PitchDirective
+    { global_temp_file_prefix   :: String
+    , global_pitch_directive    :: !PitchDirective
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -71,7 +72,8 @@ data PitchDirective = AbsPitch
 
 default_global_info :: GlobalRenderInfo
 default_global_info = GlobalRenderInfo
-    { global_pitch_directive    = RelPitch middle_c
+    { global_temp_file_prefix   = "output"
+    , global_pitch_directive    = RelPitch middle_c
     }
 
 

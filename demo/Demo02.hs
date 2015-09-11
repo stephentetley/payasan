@@ -21,7 +21,7 @@ manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = printAsABC phrase01
+demo01 = printAsABC default_global_info phrase01
 
 demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01

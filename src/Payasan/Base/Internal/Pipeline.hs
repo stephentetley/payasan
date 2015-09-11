@@ -167,15 +167,15 @@ fromLilyPondWithIO gi ri ph =
 
 
 
-outputAsABC :: StdPhrase -> String
-outputAsABC = ppRender . abcOutput . ABCOut.translate . addBeams . translateToBeam
+outputAsABC :: GlobalRenderInfo -> StdPhrase -> String
+outputAsABC gi = ppRender . abcOutput gi . ABCOut.translate . addBeams . translateToBeam
 
-printAsABC :: StdPhrase -> IO ()
-printAsABC = putStrLn . outputAsABC
+printAsABC :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsABC gi = putStrLn . outputAsABC gi
 
 outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
 outputAsLilyPond gi = 
-    ppRender . lyOutput . LYOut.translate gi . addBeams . translateToBeam
+    ppRender . lilyPondOutput gi . LYOut.translate gi . addBeams . translateToBeam
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

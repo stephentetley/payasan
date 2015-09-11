@@ -16,7 +16,7 @@
 
 module Payasan.Base.Internal.LilyPond.Output
   ( 
-    lyOutput
+    lilyPondOutput
   ) where
 
 import Payasan.Base.Internal.LilyPond.Syntax
@@ -32,8 +32,10 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 type Mon a = Rewrite Int a
 
 
-lyOutput :: LyPhrase -> Doc
-lyOutput ph = evalRewriteDefault (oLyPhrase ph) 0
+lilyPondOutput :: GlobalRenderInfo -> LyPhrase -> Doc
+lilyPondOutput _info ph = body 
+  where
+    body = evalRewriteDefault (oLyPhrase ph) 0
 
 
 

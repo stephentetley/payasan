@@ -9,8 +9,10 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Interval
 
+-- TEMP
 import Payasan.Base.Monophonic.Internal.RecalcBars
 import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.Shell
 
 
 -- TRANSFORMATIONS -- 
@@ -22,9 +24,7 @@ phrase01 = fromLilyPondWith global_ri manual_ri $
 
 
 global_ri :: GlobalRenderInfo
-global_ri = GlobalRenderInfo
-    { global_pitch_directive = RelPitch middle_c
-    }
+global_ri = default_global_info { global_pitch_directive = RelPitch middle_c  }
 
 
 manual_ri :: LocalRenderInfo
@@ -40,5 +40,7 @@ demo02 = printAsLilyPond global_ri $ mapPch (`addInterval` major_second) phrase0
 demo03 :: IO ()
 demo03 = printAsLilyPond global_ri $ augment phrase01
 
+demo04 :: IO ()
+demo04 = shellOutABC global_ri $ outputAsABC global_ri $ augment phrase01
 
-test01 = barLength $ Meter 4 4
+-- test01 = barLength $ Meter 4 4

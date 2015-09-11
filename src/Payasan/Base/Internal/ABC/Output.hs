@@ -42,8 +42,10 @@ resetLineLen = put 0
 incrLineLen :: Mon ()
 incrLineLen = puts (+1)
 
-abcOutput :: ABCPhrase -> Doc
-abcOutput ph = evalRewriteDefault (oABCPhrase ph) 0
+abcOutput :: GlobalRenderInfo -> ABCPhrase -> Doc
+abcOutput _info ph = body
+   where
+     body = evalRewriteDefault (oABCPhrase ph) 0
 
 
 

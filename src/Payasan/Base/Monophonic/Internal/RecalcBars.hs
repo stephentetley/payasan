@@ -23,7 +23,6 @@ module Payasan.Base.Monophonic.Internal.RecalcBars
 
 
 import Payasan.Base.Monophonic.Internal.Syntax
--- import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
 
