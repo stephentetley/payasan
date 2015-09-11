@@ -35,6 +35,10 @@ module Payasan.Base.Internal.ABC.Utils
   , field
 
   , tupletSpec
+  , meter
+  , unitNoteLength
+  , key
+  , mode
   , note
   , rest
   , chord
@@ -48,7 +52,7 @@ import Payasan.Base.Internal.ABC.Syntax
 import qualified Payasan.Base.Pitch as P
 import Payasan.Base.Duration
 
-import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
+import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
 import Data.Ratio
 
@@ -188,6 +192,40 @@ tupletSpec (TupletSpec { tuplet_num   = n
                        , tuplet_time  = t
                        , tuplet_len   = x }) = 
     char '(' <> int n <> char ':' <> int t <> char ':' <> int x
+
+
+
+meter :: TimeSig -> Doc
+meter (Meter n d)  = int n <> char '/' <> int d
+
+unitNoteLength :: UnitNoteLength -> Doc
+unitNoteLength UNIT_NOTE_4      = text "1/4"
+unitNoteLength UNIT_NOTE_8      = text "1/8" 
+unitNoteLength UNIT_NOTE_16     = text "1/16"
+
+key :: KeySig -> Doc
+key (KeySig n m)  = pitchSpelling n <> mode m
+
+
+mode :: Mode -> Doc
+mode MAJOR              = empty
+mode MINOR              = text "m"
+mode MIXOLYDIAN         = text "Mix"
+mode DORIAN             = text "Dor"
+mode PHRYGIAN           = text "Phr"
+mode LYDIAN             = text "Lyd"
+mode LOCRIAN            = text "Loc"
+
+
+pitchSpelling :: P.PitchSpelling -> Doc
+pitchSpelling (P.PitchSpelling l a) = text (show l) <> alt a
+  where
+    alt P.DBL_FLAT      = text "bb"
+    alt P.FLAT          = text "b"
+    alt P.NAT           = empty
+    alt P.SHARP         = text "#"
+    alt P.DBL_SHARP     = text "##"
+
 
 -- | Print a note. Note that durations in ABC are multipliers of
 -- the /unit note length/ rather than absolute values. 

@@ -30,8 +30,11 @@ module Payasan.Base.Internal.BeamSyntax
   , Element(..)
   , Note(..)
 
+  -- * Operations
   , pushLocalRenderInfo
   , sizeCtxElement
+  , firstRenderInfo 
+
 
   ) where
 
@@ -59,7 +62,7 @@ data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn = Bar 
-    { render_info       :: LocalRenderInfo
+    { bar_header        :: LocalRenderInfo
     , bar_elements      :: [CtxElement pch drn]
     }
   deriving (Data,Eq,Show,Typeable)
@@ -87,12 +90,13 @@ data Element pch drn = NoteElem   (Note pch drn)
 data Note pch drn = Note pch drn
   deriving (Data,Eq,Show,Typeable)
 
-
+--------------------------------------------------------------------------------
+-- Operations (maybe should be in another module)
 
 pushLocalRenderInfo :: LocalRenderInfo -> Phrase pch drn -> Phrase pch drn
 pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
   where
-    upd bar = bar { render_info = ri }
+    upd bar = bar { bar_header = ri }
 
 
 sizeCtxElement :: CtxElement pch Duration -> RDuration
@@ -105,3 +109,8 @@ sizeElement (NoteElem (Note _ d))  = durationSize d
 sizeElement (Rest d)               = durationSize d
 sizeElement (Chord _ d)            = durationSize d
 sizeElement (Graces {})            = 0
+
+
+firstRenderInfo :: Phrase pch drn -> Maybe LocalRenderInfo
+firstRenderInfo (Phrase [])    = Nothing
+firstRenderInfo (Phrase (b:_)) = Just $ bar_header b

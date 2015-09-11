@@ -20,24 +20,22 @@ module Payasan.Base.Internal.CommonSyntax
 
     GlobalRenderInfo(..)
   , PitchDirective(..)
+
   , default_global_info
 
   , LocalRenderInfo(..)
   , UnitNoteLength(..)
-  , default_local_info
-
   , KeySig(..)
   , Mode(..)
   , TimeSig(..)
+
+  , default_local_info
+
   , barLength
 
   , MeterPattern
   , TupletSpec(..)
 
-  -- * Pretty printing
-  , abcMode
-  , abcKeySig
-  , abcTimeSig
 
 
   -- * Keys
@@ -50,7 +48,6 @@ import Payasan.Base.Internal.Base
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 import Data.Data
 import Data.Ratio
@@ -61,7 +58,8 @@ import Data.Ratio
 -- in one mode only.
 
 data GlobalRenderInfo = GlobalRenderInfo
-    { global_temp_file_prefix   :: String
+    { global_temp_file_prefix   :: !String
+    , global_title              :: !String
     , global_pitch_directive    :: !PitchDirective
     }
   deriving (Data,Eq,Show,Typeable)
@@ -73,6 +71,7 @@ data PitchDirective = AbsPitch
 default_global_info :: GlobalRenderInfo
 default_global_info = GlobalRenderInfo
     { global_temp_file_prefix   = "output"
+    , global_title              = ""
     , global_pitch_directive    = RelPitch middle_c
     }
 
@@ -96,6 +95,26 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
+data KeySig = KeySig !PitchSpelling !Mode
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+
+data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+-- | CommonTime = 4/4
+--   CutTime = 2/4
+--
+-- TODO - add free metered.
+--
+data TimeSig = Meter Int Int
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+type MeterPattern = [RDuration]
+
+
+
+
 default_local_info :: LocalRenderInfo
 default_local_info = LocalRenderInfo 
     { local_key_sig             = c_maj
@@ -106,30 +125,14 @@ default_local_info = LocalRenderInfo
     }
 
 
-data KeySig = KeySig !PitchSpelling !Mode
-  deriving (Data,Eq,Ord,Show,Typeable)
 
 
-data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
-
-
-
--- | CommonTime = 4/4
---   CutTime = 2/4
---
--- TODO - add free metered.
---
-data TimeSig = Meter Int Int
-  deriving (Data,Eq,Ord,Show,Typeable)
 
 
 barLength :: TimeSig -> RDuration
 barLength (Meter n d) = (fromIntegral n) * fn d
   where
     fn i = 1 % fromIntegral i
-
-type MeterPattern = [RDuration]
 
 
 
@@ -142,34 +145,6 @@ data TupletSpec = TupletSpec
 
 
 
-
-abcMode :: Mode -> Doc
-abcMode MAJOR       = empty
-abcMode MINOR       = text "m"
-abcMode MIXOLYDIAN  = text "Mix"
-abcMode DORIAN      = text "Dor"
-abcMode PHRYGIAN    = text "Phr"
-abcMode LYDIAN      = text "Lyd"
-abcMode LOCRIAN     = text "Loc"
-
-
-abcKeySig :: KeySig -> Doc
-abcKeySig (KeySig n m)  = 
-    let (l,a) = abcElements n in text l <> text a <> abcMode m
-
-
-abcElements :: PitchSpelling -> (String,String)
-abcElements (PitchSpelling l a) = (show l, altname a) 
-  where
-    altname DBL_FLAT    = "bb"
-    altname FLAT        = "b"
-    altname NAT         = ""
-    altname SHARP       = "#"
-    altname DBL_SHARP   = "##"
-
-
-abcTimeSig :: TimeSig -> Doc
-abcTimeSig (Meter n d)  = int n <> char '/' <> int d
 
 
 

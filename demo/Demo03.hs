@@ -35,9 +35,8 @@ debug01 = fromLilyPondWithIO global_ri manual_ri $
 
 
 global_ri :: GlobalRenderInfo
-global_ri = GlobalRenderInfo
-    { global_pitch_directive = RelPitch middle_c
-    }
+global_ri = 
+    default_global_info { global_pitch_directive = RelPitch middle_c }
 
 
 manual_ri :: LocalRenderInfo
