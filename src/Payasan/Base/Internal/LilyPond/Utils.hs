@@ -35,6 +35,16 @@ module Payasan.Base.Internal.LilyPond.Utils
 
   -- * Output
   , command
+  , block 
+  , definition
+
+  , version
+  , title
+  , relative
+  , absolute
+  , key
+  , mode
+  , meter
   , tupletSpec
 
   , note
@@ -52,7 +62,7 @@ import Payasan.Base.Internal.LilyPond.Syntax
 import qualified Payasan.Base.Pitch as P
 import Payasan.Base.Duration
 
-import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
+import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
 --------------------------------------------------------------------------------
 -- Conversion
@@ -169,6 +179,51 @@ octaveAdjust pch@(P.Pitch lbl o) om = case om of
 
 command :: String -> Doc
 command = text . ('\\' :)
+
+block :: Maybe Doc -> Doc -> Doc
+block prefix body = maybe inner (\d -> d <+> inner) prefix
+  where
+    inner = let d1 = nest 2 body in lbrace $+$ d1 $+$ rbrace
+
+definition :: String -> Doc -> Doc 
+definition ss d = text ss <+> char '=' <+> doubleQuotes d
+
+
+version :: String -> Doc
+version ss = command "version" <+> doubleQuotes (text ss)
+
+title :: String -> Doc
+title ss = definition "title" (text ss)
+
+relative :: P.Pitch -> Doc
+relative pch = command "relative" <+> pitch (fromPitchAbs pch)
+
+absolute :: Doc
+absolute = command "absolute"
+
+
+key :: Key -> Doc
+key (Key ps m)          = command "key" <+> pitchSpelling ps <+> mode m
+
+pitchSpelling :: P.PitchSpelling -> Doc
+pitchSpelling (P.PitchSpelling l a) = 
+    pitchLetter (fromPitchLetter l) <> fn (fromAlteration a)
+  where
+    fn NATURAL = empty
+    fn x       = accidental x
+
+mode :: Mode -> Doc
+mode MAJOR              = command "major"
+mode MINOR              = command "minor"
+mode MIXOLYDIAN         = command "mixolydian"
+mode DORIAN             = command "dorian"
+mode PHRYGIAN           = command "phrygian"
+mode LYDIAN             = command "lydian"
+mode LOCRIAN            = command "locrian"
+
+
+meter :: Meter -> Doc
+meter (Meter n d) = command "time" <+> int n <> char '/' <> int d
 
 tupletSpec :: TupletSpec -> Doc
 tupletSpec (TupletSpec { tuplet_num = n, tuplet_time = t}) = 

@@ -26,7 +26,7 @@ module Payasan.Base.Internal.Pipeline
   , lilypond
 
   , GlobalRenderInfo(..)
-  , PitchDirective(..)
+  , OctaveMode(..)
   , default_global_info 
 
   , LocalRenderInfo(..)

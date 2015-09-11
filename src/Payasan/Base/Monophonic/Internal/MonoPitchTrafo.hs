@@ -68,13 +68,13 @@ mapPch :: (pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
 mapPch fn = ctxMapPch (\_ p -> fn p)
 
 
-ctxMapPch :: (KeySig -> pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
+ctxMapPch :: (Key -> pch1 -> pch2) -> Phrase pch1 drn -> Phrase pch2 drn
 ctxMapPch fn = transform algo 
   where
     algo  = MonoPitchAlgo { initial_state    = ()
                           , element_trafo    = stepE 
                           }
 
-    stepE (Note p d) = (\ks -> Note (fn ks p) d) <$> asksLocal local_key_sig
+    stepE (Note p d) = (\ks -> Note (fn ks p) d) <$> asksLocal local_key
     stepE (Rest d)   = pure $ Rest d
 

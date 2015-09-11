@@ -44,17 +44,17 @@ incrLineLen = puts (+1)
 
 abcOutput :: GlobalRenderInfo -> ABCPhrase -> Doc
 abcOutput info ph = header $+$ body
-   where
-     header = oHeader info (maybe default_local_info id $ firstRenderInfo ph)
-     body   = evalRewriteDefault (oABCPhrase ph) 0
+  where
+    header  = oHeader info (maybe default_local_info id $ firstRenderInfo ph)
+    body    = evalRewriteDefault (oABCPhrase ph) 0
 
 
 oHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
 oHeader globals locals = 
         field 'X' (int 1)
     $+$ field 'T' (text   $ global_title globals)
-    $+$ field 'K' (key    $ local_key_sig locals)
-    $+$ field 'M' (meter  $ local_time_sig locals)
+    $+$ field 'K' (key    $ local_key locals)
+    $+$ field 'M' (meter  $ local_meter locals)
     $+$ field 'L' (unitNoteLength $ local_unit_note_len locals)
 
 

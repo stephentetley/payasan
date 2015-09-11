@@ -64,7 +64,7 @@ remake = concatMap remake1
 
 remake1 :: Segment pch -> [Bar pch Duration]
 remake1 (Segment info es) = 
-    map (Bar info) $ split (barLength $ local_time_sig info) es
+    map (Bar info) $ split (barLength $ local_meter info) es
 
 split :: RDuration -> [CtxElement pch Duration] -> [[CtxElement pch Duration]]
 split _    [] = []

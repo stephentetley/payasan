@@ -195,7 +195,7 @@ tupletSpec (TupletSpec { tuplet_num   = n
 
 
 
-meter :: TimeSig -> Doc
+meter :: Meter -> Doc
 meter (Meter n d)  = int n <> char '/' <> int d
 
 unitNoteLength :: UnitNoteLength -> Doc
@@ -203,8 +203,8 @@ unitNoteLength UNIT_NOTE_4      = text "1/4"
 unitNoteLength UNIT_NOTE_8      = text "1/8" 
 unitNoteLength UNIT_NOTE_16     = text "1/16"
 
-key :: KeySig -> Doc
-key (KeySig n m)  = pitchSpelling n <> mode m
+key :: Key -> Doc
+key (Key n m)           = pitchSpelling n <> mode m
 
 
 mode :: Mode -> Doc

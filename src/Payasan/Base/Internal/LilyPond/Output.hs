@@ -33,10 +33,35 @@ type Mon a = Rewrite Int a
 
 
 lilyPondOutput :: GlobalRenderInfo -> LyPhrase -> Doc
-lilyPondOutput _info ph = body 
+lilyPondOutput globals ph = 
+        header 
+    $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where
-    body = evalRewriteDefault (oLyPhrase ph) 0
+    local1          = maybe default_local_info id $ firstRenderInfo ph
+    header          = oHeader globals local1
+    modeBlockF      = octaveModeBlock (global_ly_octave_mode globals)
+    notes_header    = oPhraseHeader globals local1
+    notes           = evalRewriteDefault (oLyPhrase ph) 0
 
+
+
+oHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
+oHeader globals _locals = 
+        version (global_ly_version globals)
+    $+$ block (Just $ command "header") (title $ global_title globals)
+
+oPhraseHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
+oPhraseHeader _globals locals = 
+        key   (local_key locals)
+    $+$ meter (local_meter locals)
+
+octaveModeBlock :: OctaveMode -> Doc -> Doc
+octaveModeBlock (AbsPitch)   d  = absolute $+$ d
+octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
+
+
+--------------------------------------------------------------------------------
+-- Notelist
 
 
 oLyPhrase :: LyPhrase -> Mon Doc

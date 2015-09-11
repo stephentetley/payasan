@@ -27,7 +27,7 @@ module Payasan.Base.Monophonic.Notelist
   , lilypond
 
   , GlobalRenderInfo(..)
-  , PitchDirective(..)
+  , OctaveMode(..)
   , default_global_info
 
   , LocalRenderInfo(..)

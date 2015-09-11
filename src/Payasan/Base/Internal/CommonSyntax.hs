@@ -19,15 +19,15 @@ module Payasan.Base.Internal.CommonSyntax
   ( 
 
     GlobalRenderInfo(..)
-  , PitchDirective(..)
+  , OctaveMode(..)
 
   , default_global_info
 
   , LocalRenderInfo(..)
   , UnitNoteLength(..)
-  , KeySig(..)
+  , Key(..)
   , Mode(..)
-  , TimeSig(..)
+  , Meter(..)
 
   , default_local_info
 
@@ -60,19 +60,21 @@ import Data.Ratio
 data GlobalRenderInfo = GlobalRenderInfo
     { global_temp_file_prefix   :: !String
     , global_title              :: !String
-    , global_pitch_directive    :: !PitchDirective
+    , global_ly_octave_mode     :: !OctaveMode
+    , global_ly_version         :: !String
     }
   deriving (Data,Eq,Show,Typeable)
 
-data PitchDirective = AbsPitch 
-                    | RelPitch !Pitch
+data OctaveMode = AbsPitch 
+                | RelPitch !Pitch
   deriving (Data,Eq,Show,Typeable)
 
 default_global_info :: GlobalRenderInfo
 default_global_info = GlobalRenderInfo
     { global_temp_file_prefix   = "output"
     , global_title              = ""
-    , global_pitch_directive    = RelPitch middle_c
+    , global_ly_octave_mode     = RelPitch middle_c
+    , global_ly_version         = "2.18.2"
     }
 
 
@@ -83,8 +85,8 @@ default_global_info = GlobalRenderInfo
 -- 
  
 data LocalRenderInfo = LocalRenderInfo
-    { local_key_sig             :: !KeySig
-    , local_time_sig            :: !TimeSig
+    { local_key                 :: !Key
+    , local_meter               :: !Meter
     , local_meter_patn          :: !MeterPattern
     , local_unit_note_len       :: !UnitNoteLength
     , local_bpm                 :: !BPM
@@ -95,7 +97,7 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
-data KeySig = KeySig !PitchSpelling !Mode
+data Key = Key !PitchSpelling !Mode
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -107,7 +109,7 @@ data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
 --
 -- TODO - add free metered.
 --
-data TimeSig = Meter Int Int
+data Meter = Meter Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
 
 type MeterPattern = [RDuration]
@@ -117,8 +119,8 @@ type MeterPattern = [RDuration]
 
 default_local_info :: LocalRenderInfo
 default_local_info = LocalRenderInfo 
-    { local_key_sig             = c_maj
-    , local_time_sig            = Meter 4 4 
+    { local_key                 = c_maj
+    , local_meter               = Meter 4 4 
     , local_meter_patn          = [1%2,1%2]
     , local_unit_note_len       = UNIT_NOTE_8
     , local_bpm                 = 120
@@ -129,7 +131,7 @@ default_local_info = LocalRenderInfo
 
 
 
-barLength :: TimeSig -> RDuration
+barLength :: Meter -> RDuration
 barLength (Meter n d) = (fromIntegral n) * fn d
   where
     fn i = 1 % fromIntegral i
@@ -148,5 +150,5 @@ data TupletSpec = TupletSpec
 
 
 
-c_maj :: KeySig
-c_maj = KeySig (PitchSpelling C NAT) MAJOR
+c_maj :: Key
+c_maj = Key (PitchSpelling C NAT) MAJOR

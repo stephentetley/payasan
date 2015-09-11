@@ -39,7 +39,7 @@ translate :: GlobalRenderInfo
 translate info = pitchTrafo . D.transform drn_algo
   where
     -- If AbsPitch then /previous pitch/ will never be used
-    pitchTrafo = case global_pitch_directive info of
+    pitchTrafo = case global_ly_octave_mode info of
                     RelPitch pch -> P.transform (rel_pch_algo pch)
                     AbsPitch -> P.transform abs_pch_algo
 

@@ -23,6 +23,7 @@ module Payasan.Base.Internal.Shell
   , showOutputDirectory
 
   , shellOutABC
+  , shellOutLilyPond
 
   ) where
 
@@ -87,5 +88,13 @@ shellOutABC info abc =
        ; return ()
        }
 
+
+shellOutLilyPond :: GlobalRenderInfo -> String -> IO ()
+shellOutLilyPond info ly = 
+    do { root <- outputDirectory
+       ; let outfile = root </> global_temp_file_prefix info <.> "ly"
+       ; writeFile outfile ly
+       ; return ()
+       }
 
 
