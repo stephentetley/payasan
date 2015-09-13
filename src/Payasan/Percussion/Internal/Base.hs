@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.DrumPitch
+-- Module      :  Payasan.Percussion.Internal.Base
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.DrumPitch
+module Payasan.Percussion.Internal.Base
   ( 
     DrumPitch(..)
   , shortName
@@ -25,6 +25,8 @@ module Payasan.Base.Internal.DrumPitch
 import Payasan.Base.Internal.MIDI.Syntax
 
 import Data.Data
+
+
 
 data DrumPitch = Acousticbassdrum
                | Bassdrum
@@ -102,7 +104,8 @@ data DrumPitch = Acousticbassdrum
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-
+-- | Short name for LilyPond output.
+--
 shortName :: DrumPitch -> String
 shortName Acousticbassdrum      = "bda"
 shortName Bassdrum              = "bd"
@@ -178,70 +181,76 @@ shortName Threedown             = "dc"
 shortName Fourdown              = "dd" 
 shortName Fivedown              = "de" 
 
+
+
+-- | Note - LilyPond has more durm pitches than MIDI and
+-- there does not always seem to be a correspondence when 
+-- they match.
+--
 toMidiPitch :: DrumPitch -> MidiPitch
-toMidiPitch Acousticbassdrum    = 35
-toMidiPitch Bassdrum            = 36
-toMidiPitch Hisidestick         = 0
-toMidiPitch Sidestick           = 37
-toMidiPitch Losidestick         = 0
-toMidiPitch Acousticsnare       = 38
-toMidiPitch Snare               = 0
-toMidiPitch Handclap            = 39
-toMidiPitch Electricsnare       = 40
-toMidiPitch Lowfloortom         = 41
-toMidiPitch Closedhihat         = 42
-toMidiPitch Hihat               = 0
-toMidiPitch Highfloortom        = 43
-toMidiPitch Pedalhihat          = 44
-toMidiPitch Lowtom              = 45
-toMidiPitch Openhihat           = 46
-toMidiPitch Halfopenhihat       = 0
-toMidiPitch Lowmidtom           = 47
-toMidiPitch Himidtom            = 48
-toMidiPitch Crashcymbala        = 49
-toMidiPitch Crashcymbal         = 49
-toMidiPitch Hightom             = 50
-toMidiPitch Ridecymbala         = 51
-toMidiPitch Ridecymbal          = 51
-toMidiPitch Chinesecymbal       = 52
-toMidiPitch Ridebell            = 53
-toMidiPitch Tambourine          = 54
-toMidiPitch Splashcymbal        = 55
-toMidiPitch Cowbell             = 56
-toMidiPitch Crashcymbalb        = 57
-toMidiPitch Vibraslap           = 58
-toMidiPitch Ridecymbalb         = 59
-toMidiPitch Mutehibongo         = 0
-toMidiPitch Hibongo             = 60
-toMidiPitch Openhibongo         = 0
-toMidiPitch Mutelobongo         = 0
-toMidiPitch Lobongo             = 61
-toMidiPitch Openlobongo         = 0
-toMidiPitch Mutehiconga         = 62
-toMidiPitch Muteloconga         = 0
-toMidiPitch Openhiconga         = 63
-toMidiPitch Hiconga             = 0
-toMidiPitch Openloconga         = 0
-toMidiPitch Loconga             = 64
-toMidiPitch Hitimbale           = 65
-toMidiPitch Lotimbale           = 66
-toMidiPitch Hiagogo             = 67
-toMidiPitch Loagogo             = 68
-toMidiPitch Cabasa              = 69
-toMidiPitch Maracas             = 70
-toMidiPitch Shortwhistle        = 71
-toMidiPitch Longwhistle         = 72
-toMidiPitch Shortguiro          = 73
-toMidiPitch Longguiro           = 74
-toMidiPitch Guiro               = 0
-toMidiPitch Claves              = 75
-toMidiPitch Hiwoodblock         = 76
-toMidiPitch Lowoodblock         = 77
-toMidiPitch Mutecuica           = 78
-toMidiPitch Opencuica           = 79 
-toMidiPitch Mutetriangle        = 80
-toMidiPitch Triangle            = 0
-toMidiPitch Opentriangle        = 81
+toMidiPitch Acousticbassdrum    = 35            -- MIDI B0
+toMidiPitch Bassdrum            = 36            -- MIDI C1
+toMidiPitch Hisidestick         = 37            -- use Sidestick
+toMidiPitch Sidestick           = 37            -- MIDI C#1
+toMidiPitch Losidestick         = 37            -- use Sidestick
+toMidiPitch Acousticsnare       = 38            -- MIDI D1
+toMidiPitch Snare               = 38            -- use Acousticksnare
+toMidiPitch Handclap            = 39            -- MIDI D#1
+toMidiPitch Electricsnare       = 40            -- MIDI E1
+toMidiPitch Lowfloortom         = 41            -- MIDI F1
+toMidiPitch Closedhihat         = 42            -- MIDI F#1
+toMidiPitch Hihat               = 42            -- use Closedhihat
+toMidiPitch Highfloortom        = 43            -- MIDI G1
+toMidiPitch Pedalhihat          = 44            -- MIDI G#1
+toMidiPitch Lowtom              = 45            -- MIDI A1
+toMidiPitch Openhihat           = 46            -- MIDI A#1
+toMidiPitch Halfopenhihat       = 46            -- use Halfopenhihat
+toMidiPitch Lowmidtom           = 47            -- MIDI B1
+toMidiPitch Himidtom            = 48            -- MIDI C2
+toMidiPitch Crashcymbala        = 49            -- MIDI C#2
+toMidiPitch Crashcymbal         = 49            -- use Crashcymbala
+toMidiPitch Hightom             = 50            -- MIDI D2
+toMidiPitch Ridecymbala         = 51            -- MIDI D#2
+toMidiPitch Ridecymbal          = 51            -- use Ridecymbala
+toMidiPitch Chinesecymbal       = 52            -- MIDI E2
+toMidiPitch Ridebell            = 53            -- MIDI F2
+toMidiPitch Tambourine          = 54            -- MIDI F#2
+toMidiPitch Splashcymbal        = 55            -- MIDI G2
+toMidiPitch Cowbell             = 56            -- MIDI G#2
+toMidiPitch Crashcymbalb        = 57            -- MIDI A2
+toMidiPitch Vibraslap           = 58            -- MIDI A#2
+toMidiPitch Ridecymbalb         = 59            -- MIDI B2
+toMidiPitch Mutehibongo         = 60            -- use Hibongo
+toMidiPitch Hibongo             = 60            -- MIDI C3
+toMidiPitch Openhibongo         = 60            -- use Hibongo
+toMidiPitch Mutelobongo         = 61            -- use Lobongo
+toMidiPitch Lobongo             = 61            -- MIDI C#3
+toMidiPitch Openlobongo         = 61            -- use Lobongo
+toMidiPitch Mutehiconga         = 62            -- MIDI D3
+toMidiPitch Muteloconga         = 62            -- use Muteloconga
+toMidiPitch Openhiconga         = 63            -- MIDI D#3
+toMidiPitch Hiconga             = 63            -- use Openhiconga
+toMidiPitch Openloconga         = 64            -- use Loconga
+toMidiPitch Loconga             = 64            -- MIDI E3
+toMidiPitch Hitimbale           = 65            -- MIDI F3
+toMidiPitch Lotimbale           = 66            -- MIDI F#3
+toMidiPitch Hiagogo             = 67            -- MIDI G3
+toMidiPitch Loagogo             = 68            -- MIDI G#3
+toMidiPitch Cabasa              = 69            -- MIDI A3
+toMidiPitch Maracas             = 70            -- MIDI A#3
+toMidiPitch Shortwhistle        = 71            -- MIDI B3
+toMidiPitch Longwhistle         = 72            -- MIDI C4
+toMidiPitch Shortguiro          = 73            -- MIDI C#4
+toMidiPitch Longguiro           = 74            -- MIDI D4
+toMidiPitch Guiro               = 74            -- Use Longguiro
+toMidiPitch Claves              = 75            -- MIDI D#4
+toMidiPitch Hiwoodblock         = 76            -- MIDI E4
+toMidiPitch Lowoodblock         = 77            -- MIDI F4
+toMidiPitch Mutecuica           = 78            -- MIDI F#4
+toMidiPitch Opencuica           = 79            -- MIDI G4
+toMidiPitch Mutetriangle        = 80            -- MIDI A#4
+toMidiPitch Triangle            = 80            -- Use Mutetriangle
+toMidiPitch Opentriangle        = 81            -- MIDI B4
 toMidiPitch Oneup               = 62            -- same as Mutehiconga
 toMidiPitch Twoup               = 64            -- same as Loconga
 toMidiPitch Threeup             = 65            -- same as Hitambale 

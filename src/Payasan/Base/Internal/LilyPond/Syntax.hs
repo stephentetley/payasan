@@ -29,6 +29,12 @@ module Payasan.Base.Internal.LilyPond.Syntax
   , LyElement
   , LyNote
 
+  , GenLyPhrase
+  , GenLyBar
+  , GenLyCtxElement
+  , GenLyElement
+  , GenLyNote
+
   , LyTupletSpec(..)
   , Pitch(..)
   , Accidental(..)
@@ -61,6 +67,12 @@ type LyCtxElement       = CtxElement  Pitch NoteLength
 type LyElement          = Element     Pitch NoteLength
 type LyNote             = Note        Pitch NoteLength
 
+
+type GenLyPhrase pch            = Phrase      pch NoteLength
+type GenLyBar pch               = Bar         pch NoteLength
+type GenLyCtxElement pch        = CtxElement  pch NoteLength
+type GenLyElement pch           = Element     pch NoteLength
+type GenLyNote pch              = Note        pch NoteLength
 
 
 -- | LilyPond has a simpler Tuplet spec than ABC which we 
