@@ -27,10 +27,8 @@ import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P
 
-import Payasan.Base.Internal.LilyPond.Syntax ( Pitch, NoteLength )
 
 import Text.Parsec                              -- package: parsec
-
 
 
 import Data.Char (isSpace)

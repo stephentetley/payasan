@@ -18,6 +18,7 @@
 module Payasan.Base.Internal.LilyPond.OutTrans
   (
     translate
+  , translateDurationOnly
   ) where
 
 
@@ -44,9 +45,13 @@ translate info = pitchTrafo . D.transform drn_algo
                     AbsPitch -> P.transform abs_pch_algo
 
 
-type DTMon a = D.Mon Duration a
-type RelPMon a = D.Mon PCH.Pitch a
-type AbsPMon a = D.Mon () a
+
+translateDurationOnly :: Phrase pch Duration -> Phrase pch NoteLength
+translateDurationOnly = D.transform drn_algo
+
+type DTMon   a      = D.Mon Duration a
+type RelPMon a      = D.Mon PCH.Pitch a
+type AbsPMon a      = D.Mon () a
 
 
 --------------------------------------------------------------------------------

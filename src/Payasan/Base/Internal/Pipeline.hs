@@ -46,7 +46,6 @@ module Payasan.Base.Internal.Pipeline
   , outputAsLilyPond
   , printAsLilyPond
 
-
   , ppRender
 
   , writeAsMIDI
@@ -55,13 +54,13 @@ module Payasan.Base.Internal.Pipeline
 
 import qualified Payasan.Base.Internal.ABC.InTrans          as ABCIn
 import qualified Payasan.Base.Internal.ABC.OutTrans         as ABCOut
-import Payasan.Base.Internal.ABC.Output
+import Payasan.Base.Internal.ABC.Output (abcOutput)
 import Payasan.Base.Internal.ABC.Parser (abc)
 import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans     as LYIn
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
-import Payasan.Base.Internal.LilyPond.Output
+import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput)
 import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 

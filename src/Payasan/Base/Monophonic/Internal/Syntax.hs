@@ -32,7 +32,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
   
   , StdMonoPhrase
   , ABCMonoPhrase
-  , LilyPondMonoPhrase
+  , LyMonoPhrase
 
 
   , Phrase(..)
@@ -81,7 +81,7 @@ data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
 type StdMonoPhrase          = Phrase Pitch Duration
 
 type ABCMonoPhrase          = Phrase ABC.Pitch ABC.NoteLength
-type LilyPondMonoPhrase     = Phrase LY.Pitch  LY.NoteLength
+type LyMonoPhrase           = Phrase LY.Pitch  LY.NoteLength
 
 
 

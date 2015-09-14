@@ -3,11 +3,9 @@
 
 module Demo05 where
 
-import Payasan.Base.Notelist
+import Payasan.Percussion.Notelist
 
 import Payasan.Base.Duration
-import Payasan.Base.Pitch
-import Payasan.Base.Names.Interval
 
 -- TEMP
 import Payasan.Percussion.Internal.Base
@@ -15,27 +13,29 @@ import Payasan.Percussion.Internal.Parser
 import Payasan.Base.Internal.LilyPond.Syntax hiding (middle_c)
 
 
+
 -- DRUMS -- 
 
-phrase01 :: GenLyPhrase DrumPitch
-phrase01 = id $ 
+phrase01 :: StdDrumPhrase
+phrase01 = fromLilyPondWith global_ri manual_ri $ 
     [drums| bda4 bd bd bda | bda |]
 
 
 
 global_ri :: GlobalRenderInfo
-global_ri = default_global_info { global_ly_octave_mode = RelPitch middle_c  }
+global_ri = default_global_info { global_ly_octave_mode = AbsPitch }
 
 
 manual_ri :: LocalRenderInfo
-manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
+manual_ri = default_local_info
 
 
-{-
+
 
 demo01 :: IO ()
 demo01 = printAsLilyPond global_ri phrase01
 
+{-
 demo02 :: IO ()
 demo02 = printAsLilyPond global_ri $ mapPch (`addInterval` major_second) phrase01
 

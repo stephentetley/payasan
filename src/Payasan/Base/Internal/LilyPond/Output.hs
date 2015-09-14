@@ -21,15 +21,10 @@ module Payasan.Base.Internal.LilyPond.Output
 
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
-import Payasan.Base.Internal.RewriteMonad
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
-
--- Do we need the monad? (code originally from ABC output where we did).
-
-type Mon a = Rewrite Int a
 
 
 lilyPondOutput :: GlobalRenderInfo -> LyPhrase -> Doc
@@ -41,7 +36,7 @@ lilyPondOutput globals ph =
     header          = oHeader globals local1
     modeBlockF      = octaveModeBlock (global_ly_octave_mode globals)
     notes_header    = oPhraseHeader globals local1
-    notes           = evalRewriteDefault (oLyPhrase ph) 0
+    notes           = oLyPhrase ph
 
 
 
@@ -64,14 +59,15 @@ octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
 -- Notelist
 
 
-oLyPhrase :: LyPhrase -> Mon Doc
-oLyPhrase (Phrase [])           = return empty
+
+
+oLyPhrase :: LyPhrase -> Doc
+oLyPhrase (Phrase [])           = empty
 oLyPhrase (Phrase (x:xs))       = step (oBar x) xs
   where
-    step d []     = return d
-    step d (b:bs) = do { let ac = d <+> char '|' $+$ oBar b
-                       ; step ac bs
-                       }
+    step d []     = d
+    step d (b:bs) = let ac = d <+> char '|' $+$ oBar b in step ac bs
+                     
 
 
 oBar :: LyBar -> Doc

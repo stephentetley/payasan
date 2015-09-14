@@ -23,7 +23,7 @@ module Payasan.Base.Monophonic.Notelist
   , StdMonoPhrase
   , ABCMonoPhrase
   , abc
-  , LilyPondMonoPhrase
+  , LyMonoPhrase
   , lilypond
 
   , GlobalRenderInfo(..)
@@ -76,12 +76,12 @@ fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
 fromABCWith ri = abcTranslate . pushLocalRenderInfo ri
 
 
-fromLilyPond :: GlobalRenderInfo -> LilyPondMonoPhrase -> StdMonoPhrase
+fromLilyPond :: GlobalRenderInfo -> LyMonoPhrase -> StdMonoPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 fromLilyPondWith :: GlobalRenderInfo 
                  -> LocalRenderInfo 
-                 -> LilyPondMonoPhrase 
+                 -> LyMonoPhrase 
                  -> StdMonoPhrase
 fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
 

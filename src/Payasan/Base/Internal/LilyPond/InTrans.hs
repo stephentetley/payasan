@@ -10,15 +10,14 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert ABC to Main Syntax, plus /pushing/ render info
--- into bars as this cannot be done during parsing / 
--- quasiquoting.
+-- Convert LilyPond to Main Syntax.
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.LilyPond.InTrans
   (
     translate
+  , translateDurationOnly
   ) where
 
 
@@ -44,9 +43,12 @@ translate info = pitchTrafo . D.transform drn_algo
                     AbsPitch -> P.transform abs_pch_algo
 
 
-type DTMon a = D.Mon Duration a
-type RelPMon a = D.Mon PCH.Pitch a
-type AbsPMon a = D.Mon () a
+translateDurationOnly :: Phrase pch NoteLength -> Phrase pch Duration 
+translateDurationOnly = D.transform drn_algo
+
+type DTMon   a      = D.Mon Duration a
+type RelPMon a      = D.Mon PCH.Pitch a
+type AbsPMon a      = D.Mon () a
 
 
 

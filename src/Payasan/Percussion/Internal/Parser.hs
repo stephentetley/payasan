@@ -19,27 +19,19 @@ module Payasan.Percussion.Internal.Parser
   (
     drums
 
-  -- * Elementary parsers
-  , note
-  , rest
-  , tupletSpec
-  , drumPitch
-  , noteLength
-  , transTupletSpec
   ) where
 
 import Payasan.Percussion.Internal.Base
 
 import Payasan.Base.Internal.LilyPond.Lexer
+import Payasan.Base.Internal.LilyPond.Parser
 import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec
 
 
 import Language.Haskell.TH.Quote
 
-import Data.Char (isSpace)
 
 
 --------------------------------------------------------------------------------
@@ -50,7 +42,7 @@ import Data.Char (isSpace)
 
 drums :: QuasiQuoter
 drums = QuasiQuoter
-    { quoteExp = \s -> case parseLyPhrase s of
+    { quoteExp = \s -> case parseLyDrums s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -63,82 +55,11 @@ drums = QuasiQuoter
 -- Parser
 
 
-
-
-
-parseLyPhrase :: String -> Either ParseError (GenLyPhrase DrumPitch)
-parseLyPhrase = runParser fullLyPhrase () ""
-
-fullLyPhrase :: LyParser (GenLyPhrase DrumPitch)
-fullLyPhrase = whiteSpace *> lyPhraseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-
-lyPhraseK :: LyParser (GenLyPhrase DrumPitch,SourcePos,String)
-lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
-
-
-phrase :: LyParser (GenLyPhrase DrumPitch)
-phrase = Phrase <$> bars
-
-bars :: LyParser [GenLyBar DrumPitch]
-bars = sepBy bar barline
-
-barline :: LyParser ()
-barline = reservedOp "|"
-
-bar :: LyParser (GenLyBar DrumPitch)
-bar = Bar default_local_info <$> ctxElements 
-
-
-ctxElements :: LyParser [GenLyCtxElement DrumPitch]
-ctxElements = whiteSpace *> many ctxElement
-
-ctxElement :: LyParser (GenLyCtxElement DrumPitch)
-ctxElement = tuplet <|> (Atom <$> element)
-
-
-element :: LyParser (GenLyElement DrumPitch)
-element = lexeme (rest <|> noteElem <|> chord <|> graces)
-
-
-
-noteElem :: LyParser (GenLyElement DrumPitch)
-noteElem = NoteElem <$> note
-
-rest :: LyParser (GenLyElement DrumPitch)
-rest = Rest <$> (char 'z' *> noteLength)
-
-chord :: LyParser (GenLyElement DrumPitch)
-chord = Chord <$> angles (many1 drumPitch) <*> noteLength
-
-
-graces :: LyParser (GenLyElement DrumPitch)
-graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
+parseLyDrums :: String -> Either ParseError (GenLyPhrase DrumPitch)
+parseLyDrums = parseLyPhrase parsedef
   where
-    multi   = braces (many1 note)
-    single  = (\a -> [a]) <$> note
+    parsedef = LyParserDef { pitchParser = drumPitch }
 
-
-tuplet :: LyParser (GenLyCtxElement DrumPitch)
-tuplet = 
-    (\spec notes -> Tuplet (transTupletSpec spec (length notes)) notes)
-      <$> tupletSpec <*> braces (ctxElements)
-
-
-tupletSpec :: LyParser LyTupletSpec
-tupletSpec = LyTupletSpec <$> (reserved "\\tuplet" *> int)
-                          <*> (reservedOp "/" *> int)
-
-
-
-note :: LyParser (GenLyNote DrumPitch)
-note = Note <$> drumPitch <*> noteLength
-    <?> "note"
 
 
 drumPitch :: LyParser DrumPitch
@@ -219,52 +140,3 @@ drumPitch = choice $ map try $
     ]
 
 
--- | Note - LilyPond has more drum pitches than MIDI and
--- there does not always seem to be a correspondence when 
--- they match.
-
--- counting1 :: LyParser a -> LyParser Int
--- counting1 p = length <$> many1 p
-
-
-noteLength :: LyParser NoteLength
-noteLength = (try explicit) <|> dfault
-  where
-    dfault   = pure DrnDefault
-    explicit = DrnExplicit <$> duration
-
-
-duration :: LyParser Duration
-duration = maxima <|> longa <|> breve <|> numeric
-        <?> "duration"
-  where
-    maxima  = dMaxima <$ reserved "\\maxima"
-    longa   = dLonga  <$ reserved "\\longa"
-    breve   = dBreve  <$ reserved "\\breve"
-    
-
-numeric :: LyParser Duration
-numeric = do { n <- int; ds <- many (char '.'); step n ds }
-  where
-    step 1   ds = return $ addDots (length ds) dWhole
-    step 2   ds = return $ addDots (length ds) dHalf
-    step 4   ds = return $ addDots (length ds) dQuarter
-    step 8   ds = return $ addDots (length ds) dEighth
-    step 16  ds = return $ addDots (length ds) dSixteenth
-    step 32  ds = return $ addDots (length ds) dThirtySecondth
-    step 64  ds = return $ addDots (length ds) dSixtyFourth
-    step 128 ds = return $ addDots (length ds) dOneHundredAndTwentyEighth
-    step n   _  = fail $ "Unrecognized duration length: " ++ show n
-
-
-
-
---------------------------------------------------------------------------------
--- Helpers
-
-transTupletSpec :: LyTupletSpec -> Int -> TupletSpec 
-transTupletSpec (LyTupletSpec n t) len = 
-    TupletSpec { tuplet_num   = n
-               , tuplet_time  = t
-               , tuplet_len   = len
-               }
