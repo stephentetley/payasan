@@ -69,7 +69,7 @@ drums = QuasiQuoter
 parseLyPhrase :: String -> Either ParseError (GenLyPhrase DrumPitch)
 parseLyPhrase = runParser fullLyPhrase () ""
 
-fullLyPhrase :: LilyPondParser (GenLyPhrase DrumPitch)
+fullLyPhrase :: LyParser (GenLyPhrase DrumPitch)
 fullLyPhrase = whiteSpace *> lyPhraseK >>= step
   where 
     isTrail             = all (isSpace)
@@ -78,70 +78,70 @@ fullLyPhrase = whiteSpace *> lyPhraseK >>= step
         | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-lyPhraseK :: LilyPondParser (GenLyPhrase DrumPitch,SourcePos,String)
+lyPhraseK :: LyParser (GenLyPhrase DrumPitch,SourcePos,String)
 lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 
-phrase :: LilyPondParser (GenLyPhrase DrumPitch)
+phrase :: LyParser (GenLyPhrase DrumPitch)
 phrase = Phrase <$> bars
 
-bars :: LilyPondParser [GenLyBar DrumPitch]
+bars :: LyParser [GenLyBar DrumPitch]
 bars = sepBy bar barline
 
-barline :: LilyPondParser ()
+barline :: LyParser ()
 barline = reservedOp "|"
 
-bar :: LilyPondParser (GenLyBar DrumPitch)
+bar :: LyParser (GenLyBar DrumPitch)
 bar = Bar default_local_info <$> ctxElements 
 
 
-ctxElements :: LilyPondParser [GenLyCtxElement DrumPitch]
+ctxElements :: LyParser [GenLyCtxElement DrumPitch]
 ctxElements = whiteSpace *> many ctxElement
 
-ctxElement :: LilyPondParser (GenLyCtxElement DrumPitch)
+ctxElement :: LyParser (GenLyCtxElement DrumPitch)
 ctxElement = tuplet <|> (Atom <$> element)
 
 
-element :: LilyPondParser (GenLyElement DrumPitch)
+element :: LyParser (GenLyElement DrumPitch)
 element = lexeme (rest <|> noteElem <|> chord <|> graces)
 
 
 
-noteElem :: LilyPondParser (GenLyElement DrumPitch)
+noteElem :: LyParser (GenLyElement DrumPitch)
 noteElem = NoteElem <$> note
 
-rest :: LilyPondParser (GenLyElement DrumPitch)
+rest :: LyParser (GenLyElement DrumPitch)
 rest = Rest <$> (char 'z' *> noteLength)
 
-chord :: LilyPondParser (GenLyElement DrumPitch)
+chord :: LyParser (GenLyElement DrumPitch)
 chord = Chord <$> angles (many1 drumPitch) <*> noteLength
 
 
-graces :: LilyPondParser (GenLyElement DrumPitch)
+graces :: LyParser (GenLyElement DrumPitch)
 graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
   where
     multi   = braces (many1 note)
     single  = (\a -> [a]) <$> note
 
 
-tuplet :: LilyPondParser (GenLyCtxElement DrumPitch)
+tuplet :: LyParser (GenLyCtxElement DrumPitch)
 tuplet = 
     (\spec notes -> Tuplet (transTupletSpec spec (length notes)) notes)
       <$> tupletSpec <*> braces (ctxElements)
 
 
-tupletSpec :: LilyPondParser LyTupletSpec
+tupletSpec :: LyParser LyTupletSpec
 tupletSpec = LyTupletSpec <$> (reserved "\\tuplet" *> int)
                           <*> (reservedOp "/" *> int)
 
 
 
-note :: LilyPondParser (GenLyNote DrumPitch)
+note :: LyParser (GenLyNote DrumPitch)
 note = Note <$> drumPitch <*> noteLength
     <?> "note"
 
 
-drumPitch :: LilyPondParser DrumPitch
+drumPitch :: LyParser DrumPitch
 drumPitch = choice $ map try $
     [ Hiagogo           <$ symbol "agh"
     , Loagogo           <$ symbol "agl"
@@ -223,18 +223,18 @@ drumPitch = choice $ map try $
 -- there does not always seem to be a correspondence when 
 -- they match.
 
--- counting1 :: LilyPondParser a -> LilyPondParser Int
+-- counting1 :: LyParser a -> LyParser Int
 -- counting1 p = length <$> many1 p
 
 
-noteLength :: LilyPondParser NoteLength
+noteLength :: LyParser NoteLength
 noteLength = (try explicit) <|> dfault
   where
     dfault   = pure DrnDefault
     explicit = DrnExplicit <$> duration
 
 
-duration :: LilyPondParser Duration
+duration :: LyParser Duration
 duration = maxima <|> longa <|> breve <|> numeric
         <?> "duration"
   where
@@ -243,7 +243,7 @@ duration = maxima <|> longa <|> breve <|> numeric
     breve   = dBreve  <$ reserved "\\breve"
     
 
-numeric :: LilyPondParser Duration
+numeric :: LyParser Duration
 numeric = do { n <- int; ds <- many (char '.'); step n ds }
   where
     step 1   ds = return $ addDots (length ds) dWhole

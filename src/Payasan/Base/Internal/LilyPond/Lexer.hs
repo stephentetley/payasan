@@ -17,8 +17,8 @@
 
 module Payasan.Base.Internal.LilyPond.Lexer
   (
-    LilyPondParser
-  , LilyPondLexer
+    LyParser
+  , LyLexer
   , symbol 
   , reserved
   , reservedOp
@@ -38,44 +38,44 @@ import qualified Text.Parsec.Token as P
 import Control.Monad.Identity
 
 
-type LilyPondParser a   = ParsecT String () Identity a
-type LilyPondLexer      = P.GenTokenParser String () Identity
+type LyParser a         = ParsecT String () Identity a
+type LyLexer            = P.GenTokenParser String () Identity
 
 
 --------------------------------------------------------------------------------
 -- Tokens
 --------------------------------------------------------------------------------
 
-whiteSpace          :: LilyPondParser ()
+whiteSpace          :: LyParser ()
 whiteSpace          = whiteSpace1 <|> reservedOp "[" <|> reservedOp "]"
 
 
-symbol              :: String -> LilyPondParser String
+symbol              :: String -> LyParser String
 symbol              = P.symbol lilypond_lex
 
-reserved            :: String -> LilyPondParser ()
+reserved            :: String -> LyParser ()
 reserved            = P.reserved lilypond_lex
 
-reservedOp          :: String -> LilyPondParser ()
+reservedOp          :: String -> LyParser ()
 reservedOp          = P.reservedOp lilypond_lex
 
-int                 :: LilyPondParser Int
+int                 :: LyParser Int
 int                 = fromIntegral <$> P.integer lilypond_lex
 
 
-braces              :: LilyPondParser a -> LilyPondParser a
+braces              :: LyParser a -> LyParser a
 braces              = P.braces lilypond_lex
 
-angles              :: LilyPondParser a -> LilyPondParser a
+angles              :: LyParser a -> LyParser a
 angles              = P.angles lilypond_lex
 
-lexeme              :: LilyPondParser a -> LilyPondParser a
+lexeme              :: LyParser a -> LyParser a
 lexeme              = P.lexeme lilypond_lex
 
-whiteSpace1         :: LilyPondParser ()
+whiteSpace1         :: LyParser ()
 whiteSpace1         = P.whiteSpace lilypond_lex
 
-lilypond_lex        :: LilyPondLexer
+lilypond_lex        :: LyLexer
 lilypond_lex        = P.makeTokenParser $ 
     emptyDef { P.reservedOpNames  = ["|", "/", "[", "]"]
              , P.reservedNames    = [ "\\maxima", "\\longa", "\\breve"

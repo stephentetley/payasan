@@ -62,7 +62,7 @@ import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 import qualified Payasan.Base.Internal.LilyPond.InTrans     as LYIn
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 import Payasan.Base.Internal.LilyPond.Output
-import Payasan.Base.Internal.LilyPond.Parser (lilypond)
+import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI

@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 
 module Payasan.Base.Monophonic.Internal.LilyPondParser
   (
-    lilypond
+    parseLyPhrase
 
   ) where
 
@@ -32,23 +32,8 @@ import Payasan.Base.Internal.LilyPond.Syntax ( Pitch, NoteLength )
 import Text.Parsec                              -- package: parsec
 
 
-import Language.Haskell.TH.Quote
 
 import Data.Char (isSpace)
-
-
---------------------------------------------------------------------------------
--- Quasiquote
-
-lilypond :: QuasiQuoter
-lilypond = QuasiQuoter
-    { quoteExp = \s -> case parseLyPhrase s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
 
 
 --------------------------------------------------------------------------------
@@ -58,59 +43,61 @@ lilypond = QuasiQuoter
 
 
 
-parseLyPhrase :: String -> Either ParseError LilyPondMonoPhrase
-parseLyPhrase = runParser fullLyPhrase () ""
-
-fullLyPhrase :: LilyPondParser LilyPondMonoPhrase
-fullLyPhrase = whiteSpace *> lyPhraseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
+parseLyPhrase :: P.LyParserDef pch 
+              -> String 
+              -> Either ParseError (GenMonoLyPhrase pch)
+parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
-lyPhraseK :: LilyPondParser (LilyPondMonoPhrase,SourcePos,String)
-lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
+makeLyParser :: forall pch. P.LyParserDef pch -> LyParser (GenMonoLyPhrase pch)
+makeLyParser def = fullLyPhrase
+  where
+    pPitch :: LyParser pch
+    pPitch = P.pitchParser def
+
+    fullLyPhrase :: LyParser (GenMonoLyPhrase pch)
+    fullLyPhrase = whiteSpace *> lyPhraseK >>= step
+      where 
+        isTrail             = all (isSpace)
+        step (ans,_,ss) 
+            | isTrail ss    = return ans
+            | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-phrase :: LilyPondParser LilyPondMonoPhrase
-phrase = Phrase <$> bars
-
-bars :: LilyPondParser [Bar Pitch NoteLength]
-bars = sepBy bar barline
-
-barline :: LilyPondParser ()
-barline = reservedOp "|"
-
-bar :: LilyPondParser (Bar Pitch NoteLength)
-bar = Bar default_local_info <$> ctxElements 
+    lyPhraseK :: LyParser (GenMonoLyPhrase pch,SourcePos,String)
+    lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 
-ctxElements :: LilyPondParser [CtxElement Pitch NoteLength]
-ctxElements = whiteSpace *> many ctxElement
+    phrase :: LyParser (GenMonoLyPhrase pch)
+    phrase = Phrase <$> bars
 
-ctxElement :: LilyPondParser (CtxElement Pitch NoteLength)
-ctxElement = tuplet <|> (Atom <$> element)
+    bars :: LyParser [GenMonoLyBar pch]
+    bars = sepBy bar P.barline
 
+    bar :: LyParser (GenMonoLyBar pch)
+    bar = Bar default_local_info <$> ctxElements 
 
-element :: LilyPondParser (Element Pitch NoteLength)
-element = lexeme (rest <|> note)
+    ctxElements :: LyParser [GenMonoLyCtxElement pch]
+    ctxElements = whiteSpace *> many ctxElement
 
+    ctxElement :: LyParser (GenMonoLyCtxElement pch)
+    ctxElement = tuplet <|> (Atom <$> element)
 
+    tuplet :: LyParser (GenMonoLyCtxElement pch)
+    tuplet = 
+        (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
+            <$> P.tupletSpec <*> braces (ctxElements)
 
-note :: LilyPondParser (Element Pitch NoteLength)
-note = Note <$> P.pitch <*> P.noteLength
-    <?> "note"
+    element :: LyParser (GenMonoLyElement pch)
+    element = lexeme (rest <|> note)
 
+    note :: LyParser (GenMonoLyElement pch)
+    note = Note <$> pPitch <*> P.noteLength
+        <?> "note"
 
-rest :: LilyPondParser (Element Pitch NoteLength)
-rest = Rest <$> (char 'z' *> P.noteLength)
+    rest :: LyParser (GenMonoLyElement pch)
+    rest = Rest <$> (char 'z' *> P.noteLength)
 
-tuplet :: LilyPondParser (CtxElement Pitch NoteLength)
-tuplet = 
-    (\spec notes -> Tuplet (P.transTupletSpec spec (length notes)) notes)
-      <$> P.tupletSpec <*> braces (ctxElements)
 
 
 

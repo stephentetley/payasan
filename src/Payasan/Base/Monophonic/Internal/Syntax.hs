@@ -20,10 +20,22 @@ module Payasan.Base.Monophonic.Internal.Syntax
   ( 
     module Payasan.Base.Internal.CommonSyntax
 
-  , Phrase(..)
+  , GenMonoPhrase
+  , GenMonoBar
+  , GenMonoCtxElement
+  , GenMonoElement
+
+  , GenMonoLyPhrase
+  , GenMonoLyBar
+  , GenMonoLyCtxElement
+  , GenMonoLyElement
+  
   , StdMonoPhrase
   , ABCMonoPhrase
   , LilyPondMonoPhrase
+
+
+  , Phrase(..)
 
   , Bar(..)
   , CtxElement(..)
@@ -46,6 +58,16 @@ import Data.Data
 -- Syntax
 
 
+
+type GenMonoPhrase pch          = Phrase pch Duration
+type GenMonoBar pch             = Bar pch Duration
+type GenMonoCtxElement pch      = CtxElement pch Duration
+type GenMonoElement pch         = Element pch Duration
+
+type GenMonoLyPhrase pch        = Phrase pch LY.NoteLength
+type GenMonoLyBar pch           = Bar pch LY.NoteLength
+type GenMonoLyCtxElement pch    = CtxElement pch LY.NoteLength
+type GenMonoLyElement pch       = Element pch LY.NoteLength
 
 -- | Parametric on pitch so we can have the same syntax to 
 -- represent scale degrees, drum notes, etc.

@@ -110,6 +110,8 @@ data NoteLength = DrnDefault
 middle_c :: Pitch
 middle_c = Pitch CL NO_ACCIDENTAL (OveRaised 1)
 
+
+
 --------------------------------------------------------------------------------
 -- Pretty instances are for debugging and do not correspond 
 -- to valid LilyPond

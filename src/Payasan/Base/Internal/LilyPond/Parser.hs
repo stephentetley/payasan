@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -11,23 +11,28 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Parser for subset of LilyPond.
+-- Parser for subset of LilyPond. Note - parser is parameteric
+-- to handle alternative pitch notations.
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.LilyPond.Parser
   (
-    lilypond
+    LyParserDef (..)
+  , parseLyPhrase
 
-  -- * Elementary parsers
-  , note
-  , rest
+  -- * Primitives
   , tupletSpec
+  , barline
+
   , pitch
   , accidental
   , pitchLetter
+
   , noteLength
-  , transTupletSpec
+
+  , makeTupletSpec
+
   ) where
 
 
@@ -38,23 +43,7 @@ import Payasan.Base.Duration
 import Text.Parsec                              -- package: parsec
 
 
-import Language.Haskell.TH.Quote
-
 import Data.Char (isSpace)
-
-
---------------------------------------------------------------------------------
--- Quasiquote
-
-lilypond :: QuasiQuoter
-lilypond = QuasiQuoter
-    { quoteExp = \s -> case parseLyPhrase s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
 
 
 --------------------------------------------------------------------------------
@@ -62,91 +51,106 @@ lilypond = QuasiQuoter
 
 
 
+data LyParserDef pch = LyParserDef 
+    { pitchParser :: LyParser pch
+    }
 
 
-parseLyPhrase :: String -> Either ParseError LyPhrase
-parseLyPhrase = runParser fullLyPhrase () ""
-
-fullLyPhrase :: LilyPondParser LyPhrase
-fullLyPhrase = whiteSpace *> lyPhraseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
+parseLyPhrase :: LyParserDef pch 
+              -> String 
+              -> Either ParseError (GenLyPhrase pch)
+parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
-lyPhraseK :: LilyPondParser (LyPhrase,SourcePos,String)
-lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
+
+makeLyParser :: forall pch. LyParserDef pch -> LyParser (GenLyPhrase pch)
+makeLyParser def = fullLyPhrase
+  where
+    pPitch :: LyParser pch
+    pPitch = pitchParser def
+
+    fullLyPhrase :: LyParser (GenLyPhrase pch)
+    fullLyPhrase = whiteSpace *> lyPhraseK >>= step
+      where 
+        isTrail             = all (isSpace)
+        step (ans,_,ss) 
+            | isTrail ss    = return ans
+            | otherwise     = fail $ "parseFail - remaining input: " ++ ss
+
+    
+    lyPhraseK :: LyParser (GenLyPhrase pch,SourcePos,String)
+    lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
+
+    
+    phrase :: LyParser (GenLyPhrase pch)
+    phrase = Phrase <$> bars
+
+    bars :: LyParser [GenLyBar pch]
+    bars = sepBy bar barline
 
 
-phrase :: LilyPondParser LyPhrase
-phrase = Phrase <$> bars
+    bar :: LyParser (GenLyBar pch)
+    bar = Bar default_local_info <$> ctxElements 
 
-bars :: LilyPondParser [LyBar]
-bars = sepBy bar barline
+    ctxElements :: LyParser [GenLyCtxElement pch]
+    ctxElements = whiteSpace *> many ctxElement
 
-barline :: LilyPondParser ()
+    ctxElement :: LyParser (GenLyCtxElement pch)
+    ctxElement = tuplet <|> (Atom <$> element)
+
+    -- | Unlike ABC, LilyPond does not need to count the number
+    -- of notes in the tuplet to parse (they are properly enclosed 
+    -- in braces).
+    --
+    tuplet :: LyParser (GenLyCtxElement pch)
+    tuplet = 
+        (\spec notes -> Tuplet (makeTupletSpec spec (length notes)) notes)
+            <$> tupletSpec <*> braces (ctxElements)
+
+
+    element :: LyParser (GenLyElement pch)
+    element = lexeme (rest <|> noteElem <|> chord <|> graces)
+
+
+    noteElem :: LyParser (GenLyElement pch)
+    noteElem = NoteElem <$> note
+
+    rest :: LyParser (GenLyElement pch)
+    rest = Rest <$> (char 'z' *> noteLength)
+
+    chord :: LyParser (GenLyElement pch)
+    chord = Chord <$> angles (many1 pPitch) <*> noteLength
+
+
+    graces :: LyParser (GenLyElement pch)
+    graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
+      where
+        multi   = braces (many1 note)
+        single  = (\a -> [a]) <$> note
+
+
+    note :: LyParser (GenLyNote pch)
+    note = Note <$> pPitch <*> noteLength
+        <?> "note"
+
+
+tupletSpec :: LyParser (Int,Int)
+tupletSpec = (,) <$> (reserved "\\tuplet" *> int) <*> (reservedOp "/" *> int)
+
+barline :: LyParser ()
 barline = reservedOp "|"
 
-bar :: LilyPondParser LyBar
-bar = Bar default_local_info <$> ctxElements 
 
-
-ctxElements :: LilyPondParser [LyCtxElement]
-ctxElements = whiteSpace *> many ctxElement
-
-ctxElement :: LilyPondParser LyCtxElement
-ctxElement = tuplet <|> (Atom <$> element)
-
-
-element :: LilyPondParser LyElement
-element = lexeme (rest <|> noteElem <|> chord <|> graces)
-
-
-
-noteElem :: LilyPondParser LyElement
-noteElem = NoteElem <$> note
-
-rest :: LilyPondParser LyElement
-rest = Rest <$> (char 'z' *> noteLength)
-
-chord :: LilyPondParser LyElement
-chord = Chord <$> angles (many1 pitch) <*> noteLength
-
-
-graces :: LilyPondParser LyElement
-graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
-  where
-    multi   = braces (many1 note)
-    single  = (\a -> [a]) <$> note
-
-
-tuplet :: LilyPondParser LyCtxElement
-tuplet = 
-    (\spec notes -> Tuplet (transTupletSpec spec (length notes)) notes)
-      <$> tupletSpec <*> braces (ctxElements)
-
-
-tupletSpec :: LilyPondParser LyTupletSpec
-tupletSpec = LyTupletSpec <$> (reserved "\\tuplet" *> int)
-                          <*> (reservedOp "/" *> int)
-
-
-
-note :: LilyPondParser LyNote
-note = Note <$> pitch <*> noteLength
-    <?> "note"
-
-
+--------------------------------------------------------------------------------
+-- Pitch Parser
 
 -- | Middle c is c'
 --
-pitch :: LilyPondParser Pitch
+pitch :: LyParser Pitch
 pitch = Pitch <$> pitchLetter <*> accidental <*> octaveModifier
 
 
-pitchLetter :: LilyPondParser PitchLetter
+pitchLetter :: LyParser PitchLetter
 pitchLetter = choice $
     [ CL <$ char 'c'
     , DL <$ char 'd'
@@ -160,17 +164,20 @@ pitchLetter = choice $
 
 
 
-octaveModifier :: LilyPondParser Octave
+octaveModifier :: LyParser Octave
 octaveModifier = raised <|> lowered <|> dfault
   where
-    raised  = OveRaised  <$> counting1 (char '\'')
-    lowered = OveLowered <$> counting1 (char ',')
+    raised  = OveRaised  <$> countOf (char '\'')
+    lowered = OveLowered <$> countOf (char ',')
     dfault  = pure OveDefault
+
+countOf :: LyParser a -> LyParser Int
+countOf p = length <$> many1 p
 
 
 -- | Sharps = @is@, flats = @es@.
 --
-accidental :: LilyPondParser Accidental
+accidental :: LyParser Accidental
 accidental = accdntl <|> return NO_ACCIDENTAL
   where
     accdntl  = choice [ dblsharp, dblflat, sharp, flat ]
@@ -179,18 +186,26 @@ accidental = accdntl <|> return NO_ACCIDENTAL
     sharp    = SHARP     <$ symbol "is"
     flat     = FLAT      <$ symbol "es"
 
-counting1 :: LilyPondParser a -> LilyPondParser Int
-counting1 p = length <$> many1 p
 
 
-noteLength :: LilyPondParser NoteLength
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+-- Note length parser
+
+
+noteLength :: LyParser NoteLength
 noteLength = (try explicit) <|> dfault
   where
     dfault   = pure DrnDefault
     explicit = DrnExplicit <$> duration
 
 
-duration :: LilyPondParser Duration
+duration :: LyParser Duration
 duration = maxima <|> longa <|> breve <|> numeric
         <?> "duration"
   where
@@ -199,7 +214,7 @@ duration = maxima <|> longa <|> breve <|> numeric
     breve   = dBreve  <$ reserved "\\breve"
     
 
-numeric :: LilyPondParser Duration
+numeric :: LyParser Duration
 numeric = do { n <- int; ds <- many (char '.'); step n ds }
   where
     step 1   ds = return $ addDots (length ds) dWhole
@@ -218,8 +233,9 @@ numeric = do { n <- int; ds <- many (char '.'); step n ds }
 --------------------------------------------------------------------------------
 -- Helpers
 
-transTupletSpec :: LyTupletSpec -> Int -> TupletSpec 
-transTupletSpec (LyTupletSpec n t) len = 
+
+makeTupletSpec :: (Int,Int) -> Int -> TupletSpec
+makeTupletSpec (n,t) len = 
     TupletSpec { tuplet_num   = n
                , tuplet_time  = t
                , tuplet_len   = len
