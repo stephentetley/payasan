@@ -50,7 +50,7 @@ import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.MainToBeam
 
 import Payasan.Base.Internal.LilyPond.InTrans
-import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput)
+import Payasan.Base.Internal.LilyPond.Output ( LyOutputDef(..), renderNotes )
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 
 import qualified Payasan.Base.Notelist as MAIN
@@ -74,7 +74,8 @@ fromLilyPondWith _gi ri =
 
 outputAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> String
 outputAsLilyPond gi = 
-    ppRender . lilyPondOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
+    ppRender . drumOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
+
 
 
 printAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> IO ()
@@ -84,6 +85,12 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
+
+drumOutput :: GlobalRenderInfo -> LyDrumPhrase -> Doc
+drumOutput _gi ph = notes    -- temp, needs directives etc.
+  where
+    notes           = renderNotes drum_def ph
+    drum_def        = LyOutputDef { pitchPrint = text . shortName }
 
 -- writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
 -- writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain

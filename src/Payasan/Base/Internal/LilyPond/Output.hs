@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -17,6 +18,9 @@
 module Payasan.Base.Internal.LilyPond.Output
   ( 
     lilyPondOutput
+
+  , LyOutputDef(..)
+  , renderNotes
   ) where
 
 import Payasan.Base.Internal.LilyPond.Syntax
@@ -36,8 +40,8 @@ lilyPondOutput globals ph =
     header          = oHeader globals local1
     modeBlockF      = octaveModeBlock (global_ly_octave_mode globals)
     notes_header    = oPhraseHeader globals local1
-    notes           = oLyPhrase ph
-
+    notes           = renderNotes std_def ph
+    std_def         = LyOutputDef { pitchPrint = pitch }
 
 
 oHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
@@ -58,30 +62,45 @@ octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
 --------------------------------------------------------------------------------
 -- Notelist
 
+-- Design note - we only want to write this once.
+-- Should allow different pch (standard, drum note, etc.)
+-- to be printed. 
 
 
+data LyOutputDef pch = LyOutputDef 
+    { pitchPrint    :: pch -> Doc
+    }
 
-oLyPhrase :: LyPhrase -> Doc
-oLyPhrase (Phrase [])           = empty
-oLyPhrase (Phrase (x:xs))       = step (oBar x) xs
+-- | Pitch should be \"context free\" at this point.
+--
+renderNotes :: forall pch. LyOutputDef pch -> GenLyPhrase pch -> Doc
+renderNotes def = oLyPhrase
   where
-    step d []     = d
-    step d (b:bs) = let ac = d <+> char '|' $+$ oBar b in step ac bs
-                     
+    pPitch :: pch -> Doc
+    pPitch = pitchPrint def
 
 
-oBar :: LyBar -> Doc
-oBar (Bar _info cs) = hsep (map oCtxElement cs)
+    oLyPhrase :: GenLyPhrase pch -> Doc
+    oLyPhrase (Phrase [])           = empty
+    oLyPhrase (Phrase (x:xs))       = step (oBar x) xs
+      where
+        step d []     = d
+        step d (b:bs) = let ac = d <+> char '|' $+$ oBar b in step ac bs
+
+    oBar :: GenLyBar pch -> Doc
+    oBar (Bar _info cs) = hsep (map oCtxElement cs)
+
+    oCtxElement :: GenLyCtxElement pch -> Doc
+    oCtxElement (Atom e)            = oElement e
+    oCtxElement (Beamed cs)         = beamForm $ map oCtxElement cs
+    oCtxElement (Tuplet spec cs)    = tupletSpec spec <+> hsep (map oCtxElement cs)
+
+    oElement :: GenLyElement pch -> Doc
+    oElement (NoteElem n)           = oNote n
+    oElement (Rest d)               = rest d 
+    oElement (Chord ps d)           = chordForm (map pPitch ps) <> noteLength d
+    oElement (Graces ns)            = graceForm (map oNote ns)
 
 
-
-oCtxElement :: LyCtxElement -> Doc
-oCtxElement (Atom e)            = oElement e
-oCtxElement (Beamed cs)         = beamForm $ map oCtxElement cs
-oCtxElement (Tuplet spec cs)    = tupletSpec spec <+> hsep (map oCtxElement cs)
-
-oElement :: LyElement -> Doc
-oElement (NoteElem n)           = note n
-oElement (Rest d)               = rest d 
-oElement (Chord ps d)           = chord ps d 
-oElement (Graces xs)            = graces xs
+    oNote :: GenLyNote pch -> Doc
+    oNote (Note p d)               = pPitch p <> noteLength d
