@@ -34,4 +34,6 @@ demo01 = printAsLilyPond global_ri phrase01
 demo02 :: IO ()
 demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01
 
--- test01 = barLength $ Meter 4 4
+demo03 :: IO ()
+demo03 = writeAsMIDI "out/drums01.mid" phrase01
+

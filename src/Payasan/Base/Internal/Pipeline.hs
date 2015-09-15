@@ -189,5 +189,5 @@ writeAsMIDI path notes =
    let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhrase -> Phrase MIDI.MidiPitch Duration
-noteTrans = MIDI.translate 
+noteTrans :: StdPhrase -> BEAM.Phrase MIDI.MidiPitch Duration
+noteTrans = MIDI.translate . translateToBeam

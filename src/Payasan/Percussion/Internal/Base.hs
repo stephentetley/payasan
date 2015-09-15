@@ -31,7 +31,7 @@ import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import qualified Payasan.Base.Internal.MainSyntax as Main
 
 import Payasan.Base.Internal.LilyPond.Syntax (NoteLength)
-import Payasan.Base.Internal.MIDI.Syntax
+import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch)
 
 import Payasan.Base.Duration
 

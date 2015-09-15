@@ -39,28 +39,28 @@ module Payasan.Percussion.Notelist
 
   , ppRender
 
+  , writeAsMIDI
 
   ) where
 
 import Payasan.Percussion.Internal.Base
 import Payasan.Percussion.Internal.Output
 import Payasan.Percussion.Internal.Parser (drums)  -- to re-export
+import qualified Payasan.Percussion.Internal.PitchTrans    as PERC
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.MainToBeam
-import qualified Payasan.Base.Internal.MainSyntax as MAIN
 import Payasan.Base.Internal.Shell
 
 import Payasan.Base.Internal.LilyPond.InTrans
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
-import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDIOut
-import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDIPch
-import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
+import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
+import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration
@@ -97,8 +97,8 @@ ppRender = MAIN.ppRender
 
 writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
 writeAsMIDI path notes = 
-   let trk = MIDIOut.translate (MIDI.simpleTrackData 1) (noteTrans notes)
+   let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdDrumPhrase -> MAIN.Phrase MIDI.MidiPitch Duration
-noteTrans = undefined -- MIDIPch.translate 
+noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch Duration
+noteTrans = PERC.translate . translateToBeam
