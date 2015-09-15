@@ -37,20 +37,20 @@ lilyPondOutput globals ph =
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where
     local1          = maybe default_local_info id $ firstRenderInfo ph
-    header          = oHeader globals local1
+    header          = oHeader globals
     modeBlockF      = octaveModeBlock (global_ly_octave_mode globals)
-    notes_header    = oPhraseHeader globals local1
+    notes_header    = oPhraseHeader local1
     notes           = renderNotes std_def ph
     std_def         = LyOutputDef { pitchPrint = pitch }
 
 
-oHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
-oHeader globals _locals = 
+oHeader :: GlobalRenderInfo -> Doc
+oHeader globals = 
         version (global_ly_version globals)
     $+$ block (Just $ command "header") (title $ global_title globals)
 
-oPhraseHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
-oPhraseHeader _globals locals = 
+oPhraseHeader :: LocalRenderInfo -> Doc
+oPhraseHeader locals = 
         key   (local_key locals)
     $+$ meter (local_meter locals)
 

@@ -18,7 +18,9 @@ module Payasan.Base.Notelist
   ( 
 
     module Payasan.Base.Internal.Pipeline
+  , module Payasan.Base.Internal.Shell
 
   ) where
 
 import Payasan.Base.Internal.Pipeline
+import Payasan.Base.Internal.Shell

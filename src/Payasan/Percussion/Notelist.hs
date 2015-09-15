@@ -17,7 +17,9 @@
 module Payasan.Percussion.Notelist
   ( 
 
-    StdDrumPhrase
+    module Payasan.Base.Internal.Shell
+
+  , StdDrumPhrase
   , drums
 
   , GlobalRenderInfo(..)
@@ -41,6 +43,7 @@ module Payasan.Percussion.Notelist
   ) where
 
 import Payasan.Percussion.Internal.Base
+import Payasan.Percussion.Internal.Output
 import Payasan.Percussion.Internal.Parser (drums)  -- to re-export
 
 import Payasan.Base.Internal.AddBeams
@@ -48,9 +51,9 @@ import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.MainToBeam
+import Payasan.Base.Internal.Shell
 
 import Payasan.Base.Internal.LilyPond.InTrans
-import Payasan.Base.Internal.LilyPond.Output ( LyOutputDef(..), renderNotes )
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 
 import qualified Payasan.Base.Notelist as MAIN
@@ -74,7 +77,7 @@ fromLilyPondWith _gi ri =
 
 outputAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> String
 outputAsLilyPond gi = 
-    ppRender . drumOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
+    ppRender . drumsOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
 
 
 
@@ -85,12 +88,6 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
-
-drumOutput :: GlobalRenderInfo -> LyDrumPhrase -> Doc
-drumOutput _gi ph = notes    -- temp, needs directives etc.
-  where
-    notes           = renderNotes drum_def ph
-    drum_def        = LyOutputDef { pitchPrint = text . shortName }
 
 -- writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
 -- writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
