@@ -51,13 +51,19 @@ import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.MainToBeam
+import qualified Payasan.Base.Internal.MainSyntax as MAIN
 import Payasan.Base.Internal.Shell
 
 import Payasan.Base.Internal.LilyPond.InTrans
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 
-import qualified Payasan.Base.Notelist as MAIN
+import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
+import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDIOut
+import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDIPch
+import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
 
+import qualified Payasan.Base.Notelist as MAIN
+import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -89,5 +95,10 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
--- writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
--- writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
+writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
+writeAsMIDI path notes = 
+   let trk = MIDIOut.translate (MIDI.simpleTrackData 1) (noteTrans notes)
+   in MIDI.writeMF1 path [trk]
+
+noteTrans :: StdDrumPhrase -> MAIN.Phrase MIDI.MidiPitch Duration
+noteTrans = undefined -- MIDIPch.translate 

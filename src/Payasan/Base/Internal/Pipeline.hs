@@ -65,9 +65,9 @@ import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
-import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDIOut
-import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDIPch
-import qualified Payasan.Base.Internal.MIDI.Syntax          as MIDI
+import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
+import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDI
+import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
 
 import Payasan.Base.Internal.AddBeams
@@ -186,8 +186,8 @@ ppRender = renderStyle (style {lineLength=500})
 
 writeAsMIDI :: FilePath -> StdPhrase -> IO ()
 writeAsMIDI path notes = 
-   let trk = MIDIOut.translate (MIDI.simpleTrackData 1) (noteTrans notes)
+   let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
 noteTrans :: StdPhrase -> Phrase MIDI.MidiPitch Duration
-noteTrans = MIDIPch.translate 
+noteTrans = MIDI.translate 
