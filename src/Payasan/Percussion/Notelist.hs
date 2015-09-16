@@ -44,7 +44,7 @@ module Payasan.Percussion.Notelist
   ) where
 
 import Payasan.Percussion.Internal.Base
-import Payasan.Percussion.Internal.Output
+import Payasan.Percussion.Internal.Output (drumsOutput)
 import Payasan.Percussion.Internal.Parser (drums)  -- to re-export
 import qualified Payasan.Percussion.Internal.PitchTrans    as PERC
 

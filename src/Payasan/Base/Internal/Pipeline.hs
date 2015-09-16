@@ -60,9 +60,10 @@ import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans     as LYIn
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
-import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput)
+import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput, LyOutputDef(..))
 import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
+import Payasan.Base.Internal.LilyPond.Utils (pitch)
 
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
 import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
@@ -178,7 +179,12 @@ printAsABC gi = putStrLn . outputAsABC gi
 
 outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
 outputAsLilyPond gi = 
-    ppRender . lilyPondOutput gi . LYOut.translate gi . addBeams . translateToBeam
+    ppRender . lilyPondOutput gi std_def 
+             . LYOut.translate gi 
+             . addBeams 
+             . translateToBeam
+  where
+    std_def = LyOutputDef { printPitch = pitch, printAnno = \_ -> empty }
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

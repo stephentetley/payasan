@@ -33,8 +33,10 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-lilyPondOutput :: GlobalRenderInfo -> LyPhrase anno -> Doc
-lilyPondOutput globals ph = 
+lilyPondOutput :: GlobalRenderInfo 
+               -> LyOutputDef Pitch anno 
+               -> LyPhrase anno -> Doc
+lilyPondOutput globals def ph = 
         header 
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where
@@ -42,8 +44,7 @@ lilyPondOutput globals ph =
     header          = oHeader globals
     modeBlockF      = octaveModeBlock (global_ly_octave_mode globals)
     notes_header    = oPhraseHeader local1
-    notes           = renderNotes std_def ph
-    std_def         = LyOutputDef { pitchPrint = pitch }
+    notes           = renderNotes def ph
 
 
 oHeader :: GlobalRenderInfo -> Doc
@@ -69,18 +70,21 @@ octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
 -- to be printed. 
 
 
-data LyOutputDef pch = LyOutputDef 
-    { pitchPrint    :: pch -> Doc
+data LyOutputDef pch anno = LyOutputDef 
+    { printPitch    :: pch -> Doc
+    , printAnno     :: anno -> Doc
     }
 
 -- | Pitch should be \"context free\" at this point.
 --
-renderNotes :: forall pch anno. LyOutputDef pch -> GenLyPhrase pch anno -> Doc
+renderNotes :: forall pch anno. LyOutputDef pch anno -> GenLyPhrase pch anno -> Doc
 renderNotes def = oLyPhrase
   where
     pPitch :: pch -> Doc
-    pPitch = pitchPrint def
+    pPitch = printPitch def
 
+    pAnno  :: anno -> Doc
+    pAnno  = printAnno def
 
     oLyPhrase :: GenLyPhrase pch anno -> Doc
     oLyPhrase (Phrase [])           = empty
@@ -98,9 +102,11 @@ renderNotes def = oLyPhrase
     oNoteGroup (Tuplet spec cs)     = tupletSpec spec <+> hsep (map oNoteGroup cs)
 
     oElement :: GenLyElement pch anno -> Doc
-    oElement (NoteElem n _)         = oNote n
+    oElement (NoteElem n a)         = oNote n <> pAnno a
     oElement (Rest d)               = rest d 
-    oElement (Chord ps d _)         = chordForm (map pPitch ps) <> noteLength d
+    oElement (Chord ps d a)         = 
+        chordForm (map pPitch ps) <> noteLength d <> pAnno a
+
     oElement (Graces ns)            = graceForm (map oNote ns)
 
 

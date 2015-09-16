@@ -37,7 +37,8 @@ drumsOutput globals ph =
   where
     header          = oHeader globals
     notes           = renderNotes drum_def ph
-    drum_def        = LyOutputDef { pitchPrint = text . shortName }
+    drum_def        = LyOutputDef { printPitch = text . shortName
+                                  , printAnno  = ppAccent }
 
 
 
@@ -50,5 +51,8 @@ oHeader globals  =
 drumsBlock :: Doc -> Doc
 drumsBlock doc  = block (Just $ command "drums") doc
 
+ppAccent :: Accent -> Doc
+ppAccent NO_ACCENT = empty
+ppAccent ACCENT    = text "->"
 
 -- TODO support percussion-style, bongos-style etc.
