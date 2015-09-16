@@ -85,15 +85,15 @@ barline :: ABCParser ()
 barline = reservedOp "|"
 
 bar :: ABCParser (Bar Pitch NoteLength)
-bar = Bar default_local_info <$> ctxElements 
+bar = Bar default_local_info <$> noteGroups 
 
 
-ctxElements :: ABCParser [CtxElement Pitch NoteLength]
-ctxElements = whiteSpace *> many ctxElement
+noteGroups :: ABCParser [NoteGroup Pitch NoteLength]
+noteGroups = whiteSpace *> many noteGroup
 
 
-ctxElement :: ABCParser (CtxElement Pitch NoteLength)
-ctxElement = tuplet <|> (Atom <$> element)
+noteGroup :: ABCParser (NoteGroup Pitch NoteLength)
+noteGroup = tuplet <|> (Atom <$> element)
 
 element :: ABCParser (Element Pitch NoteLength)
 element = lexeme (rest <|> note)
@@ -109,16 +109,16 @@ note = Note <$> pitch <*> P.noteLength
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser (CtxElement Pitch NoteLength)
+tuplet :: ABCParser (NoteGroup Pitch NoteLength)
 tuplet = do 
    spec   <- P.tupletSpec
-   notes  <- countedCtxElements (tuplet_len spec)
+   notes  <- countedNoteGroups (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedCtxElements :: Int -> ABCParser [CtxElement Pitch NoteLength]
-countedCtxElements n 
-    | n > 0       = do { e  <- ctxElement
-                       ; es <- countedCtxElements (n - elementSize e)
+countedNoteGroups :: Int -> ABCParser [NoteGroup Pitch NoteLength]
+countedNoteGroups n 
+    | n > 0       = do { e  <- noteGroup
+                       ; es <- countedNoteGroups (n - elementSize e)
                        ; return $ e:es
                        }
     | otherwise   = return []
@@ -131,6 +131,6 @@ pitch = P.pitch
 --------------------------------------------------------------------------------
 -- Helpers
 
-elementSize :: CtxElement pch drn -> Int
+elementSize :: NoteGroup pch drn -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
 elementSize _               = 1

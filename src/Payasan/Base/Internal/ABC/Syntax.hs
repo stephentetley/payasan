@@ -20,12 +20,10 @@
 
 module Payasan.Base.Internal.ABC.Syntax
   ( 
-    module Payasan.Base.Internal.CommonSyntax
-  , module Payasan.Base.Internal.BeamSyntax
 
-  , ABCPhrase
+    ABCPhrase
   , ABCBar
-  , ABCCtxElement
+  , ABCNoteGroup
   , ABCElement
   , ABCNote
 
@@ -41,7 +39,6 @@ module Payasan.Base.Internal.ABC.Syntax
   ) where
 
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.CommonSyntax
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -53,7 +50,7 @@ import Data.Data
 
 type ABCPhrase          = Phrase      Pitch NoteLength
 type ABCBar             = Bar         Pitch NoteLength
-type ABCCtxElement      = CtxElement  Pitch NoteLength
+type ABCNoteGroup       = NoteGroup  Pitch NoteLength
 type ABCElement         = Element     Pitch NoteLength
 type ABCNote            = Note        Pitch NoteLength
 

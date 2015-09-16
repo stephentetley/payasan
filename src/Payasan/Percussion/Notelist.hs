@@ -97,7 +97,7 @@ ppRender = MAIN.ppRender
 
 writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
 writeAsMIDI path notes = 
-   let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
+   let trk = MIDI.midiOutput (MIDI.simpleTrackData 9) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
 noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch Duration

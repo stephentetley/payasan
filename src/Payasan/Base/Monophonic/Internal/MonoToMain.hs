@@ -36,16 +36,16 @@ phraseT (Phrase bs)             = T.Phrase $ map barT bs
 
 
 barT :: Bar pch drn -> T.Bar pch drn
-barT (Bar info cs)              = T.Bar info $ concatMap ctxElementT cs
+barT (Bar info cs)              = T.Bar info $ concatMap noteGroupT cs
 
 
--- | Remember - a beamed CtxElement may generate 1+ elements
+-- | Remember - a beamed NoteGroup may generate 1+ elements
 --
-ctxElementT :: CtxElement pch drn -> [T.CtxElement pch drn]
-ctxElementT (Atom e)            = [T.Atom $ elementT e]
-ctxElementT (Tuplet spec cs)    = [T.Tuplet spec $ concatMap ctxElementT cs]
+noteGroupT :: NoteGroup pch drn -> [T.NoteGroup pch drn]
+noteGroupT (Atom e)             = [T.Atom $ elementT e]
+noteGroupT (Tuplet spec cs)     = [T.Tuplet spec $ concatMap noteGroupT cs]
 
 
 elementT :: Element pch drn  -> T.Element pch drn
-elementT (Note p d)            = T.NoteElem (T.Note p  d)
-elementT (Rest d)              = T.Rest d
+elementT (Note p d)             = T.NoteElem (T.Note p  d)
+elementT (Rest d)               = T.Rest d

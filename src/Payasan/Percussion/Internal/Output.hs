@@ -16,9 +16,7 @@
 
 module Payasan.Percussion.Internal.Output
   ( 
-
     drumsOutput
-
   ) where
 
 import Payasan.Percussion.Internal.Base
@@ -52,3 +50,5 @@ oHeader globals  =
 drumsBlock :: Doc -> Doc
 drumsBlock doc  = block (Just $ command "drums") doc
 
+
+-- TODO support percussion-style, bongos-style etc.

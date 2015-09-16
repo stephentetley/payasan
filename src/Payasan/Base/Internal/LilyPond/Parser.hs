@@ -38,6 +38,8 @@ module Payasan.Base.Internal.LilyPond.Parser
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import Payasan.Base.Internal.LilyPond.Syntax
+import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec
@@ -90,22 +92,22 @@ makeLyParser def = fullLyPhrase
 
 
     bar :: LyParser (GenLyBar pch)
-    bar = Bar default_local_info <$> ctxElements 
+    bar = Bar default_local_info <$> noteGroups 
 
-    ctxElements :: LyParser [GenLyCtxElement pch]
-    ctxElements = whiteSpace *> many ctxElement
+    noteGroups :: LyParser [GenLyNoteGroup pch]
+    noteGroups = whiteSpace *> many noteGroup
 
-    ctxElement :: LyParser (GenLyCtxElement pch)
-    ctxElement = tuplet <|> (Atom <$> element)
+    noteGroup :: LyParser (GenLyNoteGroup pch)
+    noteGroup = tuplet <|> (Atom <$> element)
 
     -- | Unlike ABC, LilyPond does not need to count the number
     -- of notes in the tuplet to parse (they are properly enclosed 
     -- in braces).
     --
-    tuplet :: LyParser (GenLyCtxElement pch)
+    tuplet :: LyParser (GenLyNoteGroup pch)
     tuplet = 
         (\spec notes -> Tuplet (makeTupletSpec spec (length notes)) notes)
-            <$> tupletSpec <*> braces (ctxElements)
+            <$> tupletSpec <*> braces (noteGroups)
 
 
     element :: LyParser (GenLyElement pch)

@@ -20,18 +20,16 @@
 
 module Payasan.Base.Internal.LilyPond.Syntax
   ( 
-    module Payasan.Base.Internal.CommonSyntax
-  , module Payasan.Base.Internal.BeamSyntax
 
-  , LyPhrase
+    LyPhrase
   , LyBar
-  , LyCtxElement
+  , LyNoteGroup
   , LyElement
   , LyNote
 
   , GenLyPhrase
   , GenLyBar
-  , GenLyCtxElement
+  , GenLyNoteGroup
   , GenLyElement
   , GenLyNote
 
@@ -47,7 +45,6 @@ module Payasan.Base.Internal.LilyPond.Syntax
   ) where
 
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
 
@@ -63,14 +60,14 @@ import Data.Data
 
 type LyPhrase           = Phrase      Pitch NoteLength
 type LyBar              = Bar         Pitch NoteLength
-type LyCtxElement       = CtxElement  Pitch NoteLength
+type LyNoteGroup        = NoteGroup   Pitch NoteLength
 type LyElement          = Element     Pitch NoteLength
 type LyNote             = Note        Pitch NoteLength
 
 
 type GenLyPhrase pch            = Phrase      pch NoteLength
 type GenLyBar pch               = Bar         pch NoteLength
-type GenLyCtxElement pch        = CtxElement  pch NoteLength
+type GenLyNoteGroup pch         = NoteGroup   pch NoteLength
 type GenLyElement pch           = Element     pch NoteLength
 type GenLyNote pch              = Note        pch NoteLength
 

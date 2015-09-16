@@ -73,18 +73,18 @@ makeLyParser def = fullLyPhrase
     bars = sepBy bar P.barline
 
     bar :: LyParser (GenMonoLyBar pch)
-    bar = Bar default_local_info <$> ctxElements 
+    bar = Bar default_local_info <$> noteGroups 
 
-    ctxElements :: LyParser [GenMonoLyCtxElement pch]
-    ctxElements = whiteSpace *> many ctxElement
+    noteGroups :: LyParser [GenMonoLyNoteGroup pch]
+    noteGroups = whiteSpace *> many noteGroup
 
-    ctxElement :: LyParser (GenMonoLyCtxElement pch)
-    ctxElement = tuplet <|> (Atom <$> element)
+    noteGroup :: LyParser (GenMonoLyNoteGroup pch)
+    noteGroup = tuplet <|> (Atom <$> element)
 
-    tuplet :: LyParser (GenMonoLyCtxElement pch)
+    tuplet :: LyParser (GenMonoLyNoteGroup pch)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
-            <$> P.tupletSpec <*> braces (ctxElements)
+            <$> P.tupletSpec <*> braces (noteGroups)
 
     element :: LyParser (GenMonoLyElement pch)
     element = lexeme (rest <|> note)

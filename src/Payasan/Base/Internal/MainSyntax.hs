@@ -20,11 +20,10 @@
 
 module Payasan.Base.Internal.MainSyntax
   ( 
-    module Payasan.Base.Internal.CommonSyntax
-  
-  , Phrase(..)
+   
+    Phrase(..)
   , Bar(..)
-  , CtxElement(..)
+  , NoteGroup(..)
   , Element(..)
   , Note(..)
 
@@ -50,14 +49,14 @@ data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
 --
 data Bar pch drn = Bar 
     { render_info       :: LocalRenderInfo
-    , bar_elements      :: [CtxElement pch drn]
+    , bar_elements      :: [NoteGroup pch drn]
     }
   deriving (Data,Eq,Show,Typeable)
 
 -- | Note Beaming is not captured in parsing.
 --
-data CtxElement pch drn = Atom    (Element pch drn)
-                        | Tuplet  TupletSpec        [CtxElement pch drn]
+data NoteGroup pch drn = Atom     (Element pch drn)
+                       | Tuplet   TupletSpec        [NoteGroup pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 

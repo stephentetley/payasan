@@ -22,12 +22,12 @@ module Payasan.Base.Monophonic.Internal.Syntax
 
   , GenMonoPhrase
   , GenMonoBar
-  , GenMonoCtxElement
+  , GenMonoNoteGroup
   , GenMonoElement
 
   , GenMonoLyPhrase
   , GenMonoLyBar
-  , GenMonoLyCtxElement
+  , GenMonoLyNoteGroup
   , GenMonoLyElement
   
   , StdMonoPhrase
@@ -38,11 +38,11 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , Phrase(..)
 
   , Bar(..)
-  , CtxElement(..)
+  , NoteGroup(..)
   , Element(..)
 
   , pushLocalRenderInfo
-  , sizeCtxElement
+  , sizeNoteGroup
 
   ) where
 
@@ -61,12 +61,12 @@ import Data.Data
 
 type GenMonoPhrase pch          = Phrase pch Duration
 type GenMonoBar pch             = Bar pch Duration
-type GenMonoCtxElement pch      = CtxElement pch Duration
+type GenMonoNoteGroup pch       = NoteGroup pch Duration
 type GenMonoElement pch         = Element pch Duration
 
 type GenMonoLyPhrase pch        = Phrase pch LY.NoteLength
 type GenMonoLyBar pch           = Bar pch LY.NoteLength
-type GenMonoLyCtxElement pch    = CtxElement pch LY.NoteLength
+type GenMonoLyNoteGroup pch     = NoteGroup pch LY.NoteLength
 type GenMonoLyElement pch       = Element pch LY.NoteLength
 
 -- | Parametric on pitch so we can have the same syntax to 
@@ -89,7 +89,7 @@ type LyMonoPhrase           = Phrase LY.Pitch  LY.NoteLength
 --
 data Bar pch drn = Bar 
     { bar_header        :: LocalRenderInfo
-    , bar_elements      :: [CtxElement pch drn]
+    , bar_elements      :: [NoteGroup pch drn]
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -100,8 +100,8 @@ data Bar pch drn = Bar
 --
 -- Tuplets seem essential 
 --
-data CtxElement pch drn = Atom    (Element pch drn)
-                        | Tuplet  TupletSpec          [CtxElement pch drn]
+data NoteGroup pch drn = Atom    (Element pch drn)
+                       | Tuplet  TupletSpec         [NoteGroup pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -127,9 +127,9 @@ pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
 
 
 
-sizeCtxElement :: CtxElement pch Duration -> RDuration
-sizeCtxElement (Atom e)            = sizeElement e
-sizeCtxElement (Tuplet {})         = error "sizeCtxElement (Tuplet {})"
+sizeNoteGroup :: NoteGroup pch Duration -> RDuration
+sizeNoteGroup (Atom e)          = sizeElement e
+sizeNoteGroup (Tuplet {})       = error "sizeNoteGroup (Tuplet {})"
 
 sizeElement :: Element pch Duration -> RDuration
 sizeElement (Note _ d)          = durationSize d

@@ -23,6 +23,7 @@ module Payasan.Base.Internal.AddBeams
 
 
 import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
 
@@ -49,14 +50,14 @@ beamBar (Bar info cs) =
 -- Due to /straddling/ ther may be more candidate groups than 
 -- meter pattern divisions.
 
-data InputRest pch drn = GoodSplit [CtxElement pch drn]
-                       | Straddle  RDuration  (CtxElement pch drn)   [CtxElement pch drn]
+data InputRest pch drn = GoodSplit [NoteGroup pch drn]
+                       | Straddle  RDuration  (NoteGroup pch drn)   [NoteGroup pch drn]
 
 
 
 segment :: MeterPattern 
-        -> [CtxElement pch Duration] 
-        -> [[CtxElement pch Duration]]
+        -> [NoteGroup pch Duration] 
+        -> [[NoteGroup pch Duration]]
 segment []     xs = runOut xs
 segment (d:ds) xs = let (seg1, rest) = segment1 d xs in
     case rest of 
@@ -65,13 +66,13 @@ segment (d:ds) xs = let (seg1, rest) = segment1 d xs in
 
 
 segment1 :: RDuration 
-         -> [CtxElement pch Duration] 
-         -> ([CtxElement pch Duration], InputRest pch Duration)
+         -> [NoteGroup pch Duration] 
+         -> ([NoteGroup pch Duration], InputRest pch Duration)
 segment1 _   []     = ([], GoodSplit [])
-segment1 drn (x:xs) = step [] drn (x,sizeCtxElement x) xs
+segment1 drn (x:xs) = step [] drn (x,sizeNoteGroup x) xs
   where
     step ac d (a,d1) cs@(b:bs) 
-         | d1 <  d       = step (a:ac) (d - d1) (b, sizeCtxElement b) bs
+         | d1 <  d       = step (a:ac) (d - d1) (b, sizeNoteGroup b) bs
          | d1 == d      = (reverse (a:ac), GoodSplit cs)
          | otherwise    = (reverse ac,     Straddle (d1 - d) a cs)
 
@@ -79,7 +80,7 @@ segment1 drn (x:xs) = step [] drn (x,sizeCtxElement x) xs
          | d1 <= d      = (reverse (a:ac), GoodSplit [])
          | otherwise    = (reverse ac,     Straddle (d1 - d) a [])
 
-runOut :: [CtxElement pch Duration] -> [[CtxElement pch Duration]]
+runOut :: [NoteGroup pch Duration] -> [[NoteGroup pch Duration]]
 runOut = map (\a -> [a])
 
 
@@ -94,10 +95,10 @@ decrease r (d:ds)
 -- Single out long notes (quater notes or longer)
 
 
-singleout :: [[CtxElement pch Duration]] -> [[CtxElement pch Duration]]
+singleout :: [[NoteGroup pch Duration]] -> [[NoteGroup pch Duration]]
 singleout = concatMap singleout1
 
-singleout1 :: [CtxElement pch Duration] -> [[CtxElement pch Duration]]
+singleout1 :: [NoteGroup pch Duration] -> [[NoteGroup pch Duration]]
 singleout1 [] = []
 singleout1 (x:xs) = step [] x xs
   where
@@ -110,8 +111,8 @@ singleout1 (x:xs) = step [] x xs
         | otherwise     = (reverse ac) : [a] : step [] y ys
 
 
-isSmall :: CtxElement pch Duration -> Bool
-isSmall a = sizeCtxElement a < qtrnote_len
+isSmall :: NoteGroup pch Duration -> Bool
+isSmall a = sizeNoteGroup a < qtrnote_len
 
 qtrnote_len :: RDuration 
 qtrnote_len = (1%4)
@@ -124,17 +125,17 @@ qtrnote_len = (1%4)
 -- (and spacers if we add them).
 --
 
--- | Lists of CtxElement are so short in Bars that 
+-- | Lists of NoteGroup are so short in Bars that 
 -- we dont care about (++).
 --
 
-detachExtremities :: [[CtxElement pch Duration]] 
-                  -> [[CtxElement pch Duration]]
+detachExtremities :: [[NoteGroup pch Duration]] 
+                  -> [[NoteGroup pch Duration]]
 detachExtremities = concatMap detachBeamed
 
 
-detachBeamed :: [CtxElement pch Duration] 
-             -> [[CtxElement pch Duration]]
+detachBeamed :: [NoteGroup pch Duration] 
+             -> [[NoteGroup pch Duration]]
 detachBeamed xs = 
     let (as,rest)       = frontAndRest xs
         (csr,middler)   = frontAndRest $ reverse rest
@@ -146,7 +147,7 @@ detachBeamed xs =
 -- | If we already have a Tuplet or Beam group at the left or right
 -- of the beam group we assume they are well formed
 -- 
-detachable :: CtxElement pch drn -> Bool
+detachable :: NoteGroup pch drn -> Bool
 detachable (Atom e) = detachableE e
 detachable _        = False
 
@@ -161,7 +162,7 @@ detachableE (Graces {})   = False
 
 -- | Beam segments with 2 or more members.
 --
-beamSegments :: [[CtxElement pch Duration]] -> [CtxElement pch Duration]
+beamSegments :: [[NoteGroup pch Duration]] -> [NoteGroup pch Duration]
 beamSegments []              = []
 beamSegments ([]:xss)        = beamSegments xss
 beamSegments ([x]:xss)       = x : beamSegments xss

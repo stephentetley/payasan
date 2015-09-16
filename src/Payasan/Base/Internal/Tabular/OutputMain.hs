@@ -47,16 +47,16 @@ oPhrase ppl (Phrase (x:xs))   = do { d <- oBar ppl x; step d xs }
 
 
 oBar :: LeafOutput pch drn -> Bar pch drn -> OutMon Doc
-oBar ppl (Bar _info cs) = ($+$) <$> nextBar <*> pure (oCtxElementList ppl cs)
+oBar ppl (Bar _info cs) = ($+$) <$> nextBar <*> pure (oNoteGroupList ppl cs)
 
 
-oCtxElementList :: LeafOutput pch drn -> [CtxElement pch drn] -> Doc
-oCtxElementList ppl xs = vcat $ map (oCtxElement ppl) xs
+oNoteGroupList :: LeafOutput pch drn -> [NoteGroup pch drn] -> Doc
+oNoteGroupList ppl xs = vcat $ map (oNoteGroup ppl) xs
 
 
-oCtxElement :: LeafOutput pch drn -> CtxElement pch drn -> Doc
-oCtxElement ppl (Atom e)         = oElement ppl e
-oCtxElement ppl (Tuplet _ cs)    = oCtxElementList ppl cs
+oNoteGroup :: LeafOutput pch drn -> NoteGroup pch drn -> Doc
+oNoteGroup ppl (Atom e)         = oElement ppl e
+oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
 
 oElement :: LeafOutput pch drn -> Element pch drn -> Doc
 oElement ppl elt = case elt of

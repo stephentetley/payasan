@@ -36,11 +36,11 @@ phraseT (Phrase bs)             = T.Phrase $ map barT bs
 
 
 barT :: Bar pch drn -> T.Bar pch drn
-barT (Bar info cs)              = T.Bar info $ map ctxElementT cs
+barT (Bar info cs)              = T.Bar info $ map noteGroupT cs
 
-ctxElementT :: CtxElement pch drn -> T.CtxElement pch drn
-ctxElementT (Atom e)            = T.Atom $ elementT e
-ctxElementT (Tuplet spec cs)    = T.Tuplet spec $ map ctxElementT cs
+noteGroupT :: NoteGroup pch drn -> T.NoteGroup pch drn
+noteGroupT (Atom e)             = T.Atom $ elementT e
+noteGroupT (Tuplet spec cs)     = T.Tuplet spec $ map noteGroupT cs
 
 elementT :: Element pch drn -> T.Element pch drn
 elementT (NoteElem a)           = T.NoteElem $ noteT a

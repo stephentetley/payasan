@@ -25,6 +25,8 @@ module Payasan.Base.Internal.LilyPond.Output
 
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -88,12 +90,12 @@ renderNotes def = oLyPhrase
         step d (b:bs) = let ac = d <+> char '|' $+$ oBar b in step ac bs
 
     oBar :: GenLyBar pch -> Doc
-    oBar (Bar _info cs) = hsep (map oCtxElement cs)
+    oBar (Bar _info cs) = hsep (map oNoteGroup cs)
 
-    oCtxElement :: GenLyCtxElement pch -> Doc
-    oCtxElement (Atom e)            = oElement e
-    oCtxElement (Beamed cs)         = beamForm $ map oCtxElement cs
-    oCtxElement (Tuplet spec cs)    = tupletSpec spec <+> hsep (map oCtxElement cs)
+    oNoteGroup :: GenLyNoteGroup pch -> Doc
+    oNoteGroup (Atom e)             = oElement e
+    oNoteGroup (Beamed cs)          = beamForm $ map oNoteGroup cs
+    oNoteGroup (Tuplet spec cs)     = tupletSpec spec <+> hsep (map oNoteGroup cs)
 
     oElement :: GenLyElement pch -> Doc
     oElement (NoteElem n)           = oNote n

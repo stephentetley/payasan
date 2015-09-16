@@ -29,6 +29,8 @@ module Payasan.Base.Internal.ABC.Parser
 
 import Payasan.Base.Internal.ABC.Lexer
 import Payasan.Base.Internal.ABC.Syntax
+import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
 
 import Text.Parsec                              -- package: parsec
 
@@ -80,15 +82,15 @@ barline :: ABCParser ()
 barline = reservedOp "|"
 
 bar :: ABCParser ABCBar
-bar = Bar default_local_info <$> ctxElements 
+bar = Bar default_local_info <$> noteGroups 
 
 
-ctxElements :: ABCParser [ABCCtxElement]
-ctxElements = whiteSpace *> many ctxElement
+noteGroups :: ABCParser [ABCNoteGroup]
+noteGroups = whiteSpace *> many noteGroup
 
 
-ctxElement :: ABCParser ABCCtxElement
-ctxElement = tuplet <|> (Atom <$> element)
+noteGroup :: ABCParser ABCNoteGroup
+noteGroup = tuplet <|> (Atom <$> element)
 
 element :: ABCParser ABCElement
 element = lexeme (rest <|> noteElem <|> chord <|> graces)
@@ -108,16 +110,16 @@ graces = Graces <$> braces (many1 note)
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser ABCCtxElement
+tuplet :: ABCParser ABCNoteGroup
 tuplet = do 
    spec   <- tupletSpec
-   notes  <- countedCtxElements (tuplet_len spec)
+   notes  <- countedNoteGroups (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedCtxElements :: Int -> ABCParser [ABCCtxElement]
-countedCtxElements n 
-    | n > 0       = do { e  <- ctxElement
-                       ; es <- countedCtxElements (n - elementSize e)
+countedNoteGroups :: Int -> ABCParser [ABCNoteGroup]
+countedNoteGroups n 
+    | n > 0       = do { e  <- noteGroup
+                       ; es <- countedNoteGroups (n - elementSize e)
                        ; return $ e:es
                        }
     | otherwise   = return []
@@ -217,7 +219,7 @@ tupletSpec = symbol "(" *> int >>= step1
 -- Helpers
 
 
-elementSize :: ABCCtxElement -> Int
+elementSize :: ABCNoteGroup -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
 elementSize (Beamed xs)     = sum $ map elementSize xs
 elementSize _               = 1

@@ -73,6 +73,7 @@ import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 import Payasan.Base.Internal.AddBeams
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
 import Payasan.Base.Internal.BeamToMain
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.MainSyntax
 

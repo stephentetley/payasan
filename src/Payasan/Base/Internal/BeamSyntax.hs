@@ -22,17 +22,16 @@
 
 module Payasan.Base.Internal.BeamSyntax
   ( 
-    module Payasan.Base.Internal.CommonSyntax
-  
-  , Phrase(..)
+
+    Phrase(..)
   , Bar(..)
-  , CtxElement(..)
+  , NoteGroup(..)
   , Element(..)
   , Note(..)
 
   -- * Operations
   , pushLocalRenderInfo
-  , sizeCtxElement
+  , sizeNoteGroup
   , firstRenderInfo 
 
 
@@ -63,15 +62,18 @@ data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
 --
 data Bar pch drn = Bar 
     { bar_header        :: LocalRenderInfo
-    , bar_elements      :: [CtxElement pch drn]
+    , bar_elements      :: [NoteGroup pch drn]
     }
   deriving (Data,Eq,Show,Typeable)
 
--- | Note Beaming is not captured in parsing.
+-- | Note - Beaming is not captured in parsing, but it is 
+-- synthesized again for output.
 --
-data CtxElement pch drn = Atom    (Element pch drn)
-                        | Beamed  [CtxElement pch drn]
-                        | Tuplet  TupletSpec            [CtxElement pch drn]
+-- Beams must allow nesting 
+--
+data NoteGroup pch drn = Atom     (Element pch drn)
+                       | Beamed   [NoteGroup pch drn]
+                       | Tuplet   TupletSpec            [NoteGroup pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -99,10 +101,10 @@ pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
     upd bar = bar { bar_header = ri }
 
 
-sizeCtxElement :: CtxElement pch Duration -> RDuration
-sizeCtxElement (Atom e)            = sizeElement e
-sizeCtxElement (Beamed es)         = sum $ map sizeCtxElement es
-sizeCtxElement (Tuplet {})         = error "sizeCtxElement (Tuplet {})"
+sizeNoteGroup :: NoteGroup pch Duration -> RDuration
+sizeNoteGroup (Atom e)            = sizeElement e
+sizeNoteGroup (Beamed es)         = sum $ map sizeNoteGroup es
+sizeNoteGroup (Tuplet {})         = error "sizeNoteGroup (Tuplet {})"
 
 sizeElement :: Element pch Duration -> RDuration
 sizeElement (NoteElem (Note _ d))  = durationSize d

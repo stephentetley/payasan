@@ -48,16 +48,16 @@ phraseT algo (Phrase bs)          = Phrase <$> mapM (barT algo) bs
 
 barT :: MonoDurationAlgo st d1 d2 -> Bar pch d1 -> Mon st (Bar pch d2)
 barT algo (Bar info cs)           = local info $ 
-    Bar info <$> mapM (ctxElementT algo) cs
+    Bar info <$> mapM (noteGroupT algo) cs
 
 
   
-ctxElementT :: MonoDurationAlgo st d1 d2 
-            -> CtxElement pch d1
-            -> Mon st (CtxElement pch d2)
-ctxElementT algo (Atom e)         = let elemT = element_trafo algo
+noteGroupT :: MonoDurationAlgo st d1 d2 
+            -> NoteGroup pch d1
+            -> Mon st (NoteGroup pch d2)
+noteGroupT algo (Atom e)          = let elemT = element_trafo algo
                                     in Atom <$> elemT e
-ctxElementT algo (Tuplet spec cs) = Tuplet spec <$> mapM (ctxElementT algo) cs
+noteGroupT algo (Tuplet spec cs)  = Tuplet spec <$> mapM (noteGroupT algo) cs
 
 
 --------------------------------------------------------------------------------

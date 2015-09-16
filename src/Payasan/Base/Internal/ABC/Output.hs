@@ -21,6 +21,8 @@ module Payasan.Base.Internal.ABC.Output
 
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
+import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
@@ -72,18 +74,18 @@ oABCPhrase (Phrase (x:xs))      = step (oBar x) xs
 
 
 oBar :: ABCBar -> Doc
-oBar (Bar _info cs) = oCtxElementList (<+>) cs
+oBar (Bar _info cs)             = oNoteGroupList (<+>) cs
 
-oCtxElementList :: CatOp -> [ABCCtxElement] -> Doc
-oCtxElementList op xs = sepList op $ map (oCtxElement op) xs
+oNoteGroupList :: CatOp -> [ABCNoteGroup] -> Doc
+oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
 
-oCtxElement :: CatOp -> ABCCtxElement -> Doc
-oCtxElement _  (Atom e)         = oElement e
-oCtxElement _  (Beamed cs)      = oCtxElementList (<>) cs
-oCtxElement op (Tuplet spec cs) = tupletSpec spec <> oCtxElementList op cs
+oNoteGroup :: CatOp -> ABCNoteGroup -> Doc
+oNoteGroup _  (Atom e)          = oElement e
+oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
+oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 
 oElement :: ABCElement -> Doc
-oElement (NoteElem n)         = note n
-oElement (Rest d)             = rest d 
-oElement (Chord ps d)         = chord ps d 
-oElement (Graces xs)          = graceForm $ map note xs
+oElement (NoteElem n)           = note n
+oElement (Rest d)               = rest d 
+oElement (Chord ps d)           = chord ps d 
+oElement (Graces xs)            = graceForm $ map note xs

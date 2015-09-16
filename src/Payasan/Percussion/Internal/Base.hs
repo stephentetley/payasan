@@ -28,7 +28,7 @@ module Payasan.Percussion.Internal.Base
   ) where
 
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
-import qualified Payasan.Base.Internal.MainSyntax as Main
+import qualified Payasan.Base.Internal.MainSyntax as MAIN
 
 import Payasan.Base.Internal.LilyPond.Syntax (NoteLength)
 import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch)
@@ -39,7 +39,7 @@ import Data.Data
 
 
 type LyDrumPhrase       = BEAM.Phrase DrumPitch NoteLength
-type StdDrumPhrase      = Main.Phrase DrumPitch Duration
+type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration
 
 data DrumPitch = Acousticbassdrum
                | Bassdrum

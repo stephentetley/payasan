@@ -34,7 +34,7 @@ recalcBars (Phrase { phrase_bars = bs }) =
 
 data Segment pch = Segment 
     { _segment_header   :: LocalRenderInfo
-    , _segment_notes    :: [CtxElement pch Duration]
+    , _segment_notes    :: [NoteGroup pch Duration]
     }
 
 
@@ -66,14 +66,14 @@ remake1 :: Segment pch -> [Bar pch Duration]
 remake1 (Segment info es) = 
     map (Bar info) $ split (barLength $ local_meter info) es
 
-split :: RDuration -> [CtxElement pch Duration] -> [[CtxElement pch Duration]]
+split :: RDuration -> [NoteGroup pch Duration] -> [[NoteGroup pch Duration]]
 split _    [] = []
 split dbar cs = let (bar1,rest) = breakBar dbar cs in bar1 : split dbar rest
 
 
 breakBar :: RDuration 
-         -> [CtxElement pch Duration] 
-         -> ([CtxElement pch Duration], [CtxElement pch Duration])
+         -> [NoteGroup pch Duration] 
+         -> ([NoteGroup pch Duration], [NoteGroup pch Duration])
 breakBar _    [] = ([],[])
 breakBar dbar cs = step 0 [] cs
   where
@@ -82,9 +82,9 @@ breakBar dbar cs = step 0 [] cs
     -- Special case always generate non-empty bars even if note 
     -- length of of a singleton is too big.
     step _ [] (x:xs)  
-         | sizeCtxElement x >= dbar     = ([x],xs)
+         | sizeNoteGroup x >= dbar     = ([x],xs)
 
     step n ac xs@(x:_)
-         | n + sizeCtxElement x > dbar  = (ac,xs)
+         | n + sizeNoteGroup x > dbar  = (ac,xs)
 
-    step n ac (x:xs)                    = step (n+sizeCtxElement x) (ac++[x]) xs
+    step n ac (x:xs)                    = step (n+sizeNoteGroup x) (ac++[x]) xs

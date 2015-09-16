@@ -24,6 +24,7 @@ import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as T
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
@@ -70,16 +71,16 @@ phraseT td (Phrase bs) =
 
 
 barT :: Bar T.MidiPitch Duration -> Mon [T.MidiNote]
-barT (Bar info cs)           = concat <$> mapM (ctxElementT df) cs
+barT (Bar info cs)           = concat <$> mapM (noteGroupT df) cs
   where
     df = noteDuration (local_bpm info)
      
 
 
-ctxElementT :: (Duration -> Seconds) -> CtxElement T.MidiPitch Duration -> Mon [T.MidiNote]
-ctxElementT df (Atom e)         = elementT df e
-ctxElementT df (Beamed es)      = concat <$> mapM (ctxElementT df) es
-ctxElementT _  (Tuplet {})      = return []
+noteGroupT :: (Duration -> Seconds) -> NoteGroup T.MidiPitch Duration -> Mon [T.MidiNote]
+noteGroupT df (Atom e)          = elementT df e
+noteGroupT df (Beamed es)       = concat <$> mapM (noteGroupT df) es
+noteGroupT _  (Tuplet {})       = return []
 
 elementT :: (Duration -> Seconds) 
          -> Element T.MidiPitch Duration -> Mon [T.MidiNote]
