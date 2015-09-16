@@ -53,5 +53,5 @@ lilypond = QuasiQuoter
 parseLilyPond :: String -> Either ParseError (LyPhrase ())
 parseLilyPond = parseLyPhrase parsedef
   where
-    parsedef = LyParserDef { pitchParser = pitch }
+    parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 

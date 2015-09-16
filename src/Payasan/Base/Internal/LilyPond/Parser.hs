@@ -31,6 +31,8 @@ module Payasan.Base.Internal.LilyPond.Parser
 
   , noteLength
 
+  , noAnno
+
   , makeTupletSpec
 
   ) where
@@ -53,23 +55,27 @@ import Data.Char (isSpace)
 
 
 
-data LyParserDef pch = LyParserDef 
+data LyParserDef pch anno = LyParserDef 
     { pitchParser :: LyParser pch
+    , annoParser  :: LyParser anno
     }
 
 
-parseLyPhrase :: LyParserDef pch 
+parseLyPhrase :: LyParserDef pch anno
               -> String 
               -> Either ParseError (GenLyPhrase pch anno)
 parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 
-makeLyParser :: forall pch anno. LyParserDef pch -> LyParser (GenLyPhrase pch anno)
+makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (GenLyPhrase pch anno)
 makeLyParser def = fullLyPhrase
   where
     pPitch :: LyParser pch
     pPitch = pitchParser def
+
+    pAnno  :: LyParser anno
+    pAnno  = annoParser def
 
     fullLyPhrase :: LyParser (GenLyPhrase pch anno)
     fullLyPhrase = whiteSpace *> lyPhraseK >>= step
@@ -115,13 +121,13 @@ makeLyParser def = fullLyPhrase
 
 
     noteElem :: LyParser (GenLyElement pch anno)
-    noteElem = (\e -> NoteElem e undefined) <$> note
+    noteElem = NoteElem <$> note <*> pAnno
 
     rest :: LyParser (GenLyElement pch anno)
     rest = Rest <$> (char 'z' *> noteLength)
 
     chord :: LyParser (GenLyElement pch anno)
-    chord = (\ps d -> Chord ps d undefined) <$> angles (many1 pPitch) <*> noteLength
+    chord = Chord <$> angles (many1 pPitch) <*> noteLength <*> pAnno
 
 
     graces :: LyParser (GenLyElement pch anno)
@@ -231,6 +237,9 @@ numeric = do { n <- int; ds <- many (char '.'); step n ds }
 
 
 
+
+noAnno :: LyParser ()
+noAnno = return ()
 
 --------------------------------------------------------------------------------
 -- Helpers

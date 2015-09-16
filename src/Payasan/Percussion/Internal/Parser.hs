@@ -58,7 +58,7 @@ drums = QuasiQuoter
 parseLyDrums :: String -> Either ParseError (GenLyPhrase DrumPitch ())
 parseLyDrums = parseLyPhrase parsedef
   where
-    parsedef = LyParserDef { pitchParser = drumPitch }
+    parsedef = LyParserDef { pitchParser = drumPitch, annoParser = noAnno }
 
 
 

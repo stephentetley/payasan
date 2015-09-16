@@ -39,18 +39,21 @@ import Data.Char (isSpace)
 -- Parser
 
 
-parseLyPhrase :: P.LyParserDef pch 
+parseLyPhrase :: P.LyParserDef pch anno
               -> String 
               -> Either ParseError (GenLyMonoPhrase pch anno)
 parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. 
-                P.LyParserDef pch -> LyParser (GenLyMonoPhrase pch anno)
+                P.LyParserDef pch anno -> LyParser (GenLyMonoPhrase pch anno)
 makeLyParser def = fullLyPhrase
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
+
+    pAnno  :: LyParser anno
+    pAnno  = P.annoParser def
 
     fullLyPhrase :: LyParser (GenLyMonoPhrase pch anno)
     fullLyPhrase = whiteSpace *> lyPhraseK >>= step
@@ -89,7 +92,7 @@ makeLyParser def = fullLyPhrase
     element = lexeme (rest <|> note)
 
     note :: LyParser (GenLyMonoElement pch anno)
-    note = (\p d -> Note p d undefined) <$> pPitch <*> P.noteLength
+    note = Note <$> pPitch <*> P.noteLength <*> pAnno
         <?> "note"
 
     rest :: LyParser (GenLyMonoElement pch anno)

@@ -25,7 +25,7 @@ module Payasan.Base.Monophonic.Internal.LilyPondQuasiquote
 import Payasan.Base.Monophonic.Internal.LilyPondParser
 import Payasan.Base.Monophonic.Internal.Syntax
 
-import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..) , pitch)
+import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..), pitch, noAnno)
 
 
 import Text.Parsec                              -- package: parsec
@@ -55,4 +55,4 @@ lilypond = QuasiQuoter
 parseLilyPond :: String -> Either ParseError (LyMonoPhrase ())
 parseLilyPond = parseLyPhrase parsedef
   where
-    parsedef = LyParserDef { pitchParser = pitch }
+    parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }

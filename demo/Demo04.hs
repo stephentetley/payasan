@@ -17,7 +17,7 @@ import Payasan.Base.Internal.Shell
 
 -- TRANSFORMATIONS -- 
 
-phrase01 :: StdMonoPhrase
+phrase01 :: StdMonoPhrase ()
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
     [lilypond| d2 a | f d |]
 
