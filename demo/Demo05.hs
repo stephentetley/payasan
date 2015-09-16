@@ -11,9 +11,9 @@ import Payasan.Percussion.Notelist
 
 -- DRUMS -- 
 
-phrase01 :: StdDrumPhrase ()
+phrase01 :: StdDrumPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
-    [drums| bda4 bd bd bda | hh hh |]
+    [drums| bda4-> bd bd bda | hh-> hh |]
 
 
 

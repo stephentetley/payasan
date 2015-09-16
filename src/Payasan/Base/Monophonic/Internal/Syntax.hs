@@ -39,7 +39,6 @@ module Payasan.Base.Monophonic.Internal.Syntax
 
 
   , Phrase(..)
-
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -77,6 +76,10 @@ type ABCMonoBar                     = Bar       ABC.Pitch ABC.NoteLength ()
 type ABCMonoNoteGroup               = NoteGroup ABC.Pitch ABC.NoteLength ()
 type ABCMonoElement                 = Element   ABC.Pitch ABC.NoteLength ()
 
+type StdMonoPhrase                  = Phrase Pitch Duration ()
+
+type LyMonoPhrase anno              = Phrase LY.Pitch  LY.NoteLength anno
+
 
 -- | Parametric on pitch so we can have the same syntax to 
 -- represent scale degrees, drum notes, etc.
@@ -87,9 +90,6 @@ type ABCMonoElement                 = Element   ABC.Pitch ABC.NoteLength ()
 data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
-type StdMonoPhrase anno     = Phrase Pitch Duration anno
-
-type LyMonoPhrase anno      = Phrase LY.Pitch  LY.NoteLength anno
 
 
 

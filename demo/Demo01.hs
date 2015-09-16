@@ -7,7 +7,7 @@ import Payasan.Base.Internal.ABC.Output (abcOutput) -- temp
 import Payasan.Base.Notelist
 
 
-phrase01 :: StdPhrase ()
+phrase01 :: StdPhrase
 phrase01 = fromABC $ [abc| [cg] G2 E2 C/2 | c |]
 
 manual_ri :: LocalRenderInfo
@@ -21,7 +21,7 @@ demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01
 
 -- Be care to judge on beaming - manual may be non-standard
-phrase02 :: StdPhrase ()
+phrase02 :: StdPhrase
 phrase02 = fromABCWith manual_ri $ 
     [abc| c2 {d}c {c2d2}c|{dcd}c {ede}d {fef}e f| c/{gfef}d/e/f/ f/e/{gfedc}d/c/|c G E {cBAGFED}C| |]
 
@@ -37,7 +37,7 @@ demo03 = putStrLn $ ppRender $ abcOutput default_global_info phrase03
 
 
 -- Beaming wrong - todo
-testPh :: StdPhrase ()
+testPh :: StdPhrase
 testPh = fromABCWith manual_ri $ 
     [abc| c c//c//c//c//  c/4c/4c/4c/4 c |]
 
@@ -45,6 +45,6 @@ test01 :: IO ()
 test01 = printAsABC default_global_info testPh
 
 
-testMiddleC :: StdPhrase ()
+testMiddleC :: StdPhrase
 testMiddleC = fromABCWith manual_ri $ 
     [abc| C |]

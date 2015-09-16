@@ -70,40 +70,40 @@ import qualified Payasan.Base.Notelist as MAIN
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
-fromABC :: ABCMonoPhrase -> StdMonoPhrase ()
+fromABC :: ABCMonoPhrase -> StdMonoPhrase
 fromABC  = fromABCWith default_local_info
 
-fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase ()
+fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
 fromABCWith ri = abcTranslate . pushLocalRenderInfo ri
 
 
-fromLilyPond :: GlobalRenderInfo -> LyMonoPhrase anno -> StdMonoPhrase anno
+fromLilyPond :: GlobalRenderInfo -> LyMonoPhrase () -> StdMonoPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 fromLilyPondWith :: GlobalRenderInfo 
                  -> LocalRenderInfo 
-                 -> LyMonoPhrase anno
-                 -> StdMonoPhrase anno
+                 -> LyMonoPhrase ()
+                 -> StdMonoPhrase
 fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
 
 
-outputAsABC :: GlobalRenderInfo -> StdMonoPhrase () -> String
+outputAsABC :: GlobalRenderInfo -> StdMonoPhrase -> String
 outputAsABC gi = MAIN.outputAsABC gi . translateToMain
 
 
-printAsABC :: GlobalRenderInfo -> StdMonoPhrase () -> IO ()
+printAsABC :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
 printAsABC gi = MAIN.printAsABC gi . translateToMain
 
-outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase anno -> String
+outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
 
 
-printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase anno -> IO ()
+printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
 printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
 
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdMonoPhrase anno -> IO ()
+writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
 writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain

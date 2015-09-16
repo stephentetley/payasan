@@ -23,12 +23,12 @@ import Payasan.Base.Internal.Tabular.OutputMain
 import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
-phrase01 :: (StdPhrase ())
+phrase01 :: StdPhrase 
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
     [lilypond| c4 d e fis | c' |]
 
 
-debug01 :: IO (StdPhrase ())
+debug01 :: IO StdPhrase
 debug01 = fromLilyPondWithIO global_ri manual_ri $ 
     [lilypond| c4 d e fis | c' |]
 

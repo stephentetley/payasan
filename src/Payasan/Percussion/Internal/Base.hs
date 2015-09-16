@@ -21,6 +21,7 @@ module Payasan.Percussion.Internal.Base
     LyDrumPhrase
   , StdDrumPhrase
 
+  , Accent(..)
   , DrumPitch(..)
   , shortName
   , toMidiPitch
@@ -38,8 +39,11 @@ import Payasan.Base.Duration
 import Data.Data
 
 
-type LyDrumPhrase       = BEAM.Phrase DrumPitch NoteLength
-type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration
+type LyDrumPhrase       = BEAM.Phrase DrumPitch NoteLength Accent
+type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration   Accent
+
+data Accent = ACCENT | NO_ACCENT
+  deriving (Data,Eq,Ord,Show,Typeable)
 
 data DrumPitch = Acousticbassdrum
                | Bassdrum
