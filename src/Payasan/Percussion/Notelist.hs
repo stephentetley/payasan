@@ -69,25 +69,25 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-fromLilyPond :: GlobalRenderInfo -> LyDrumPhrase -> StdDrumPhrase
+fromLilyPond :: GlobalRenderInfo -> LyDrumPhrase anno -> StdDrumPhrase anno
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 fromLilyPondWith :: GlobalRenderInfo 
                  -> LocalRenderInfo 
-                 -> LyDrumPhrase 
-                 -> StdDrumPhrase
+                 -> LyDrumPhrase anno
+                 -> StdDrumPhrase anno
 fromLilyPondWith _gi ri = 
     translateToMain . translateDurationOnly . BEAM.pushLocalRenderInfo ri
 
 
 
-outputAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> String
+outputAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase anno -> String
 outputAsLilyPond gi = 
     ppRender . drumsOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
 
 
 
-printAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> IO ()
+printAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase anno -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
@@ -95,10 +95,11 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdDrumPhrase anno -> IO ()
 writeAsMIDI path notes = 
    let trk = MIDI.midiOutput (MIDI.simpleTrackData 9) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch Duration
+noteTrans :: StdDrumPhrase anno -> BEAM.Phrase MIDI.MidiPitch Duration anno
 noteTrans = PERC.translate . translateToBeam
+

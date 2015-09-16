@@ -128,14 +128,14 @@ debug f a = tell (f a) >> return a
 --------------------------------------------------------------------------------
 -- 
 
-fromABC :: ABCPhrase -> StdPhrase
+fromABC :: ABCPhrase -> StdPhrase ()
 fromABC = fromABCWith default_local_info
 
-fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
+fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase ()
 fromABCWith ri = translateToMain . ABCIn.translate . BEAM.pushLocalRenderInfo ri
 
 
-fromABCWithIO :: LocalRenderInfo -> ABCPhrase -> IO StdPhrase
+fromABCWithIO :: LocalRenderInfo -> ABCPhrase -> IO (StdPhrase ())
 fromABCWithIO ri ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -147,15 +147,18 @@ fromABCWithIO ri ph =
 
 
 
-fromLilyPond :: GlobalRenderInfo -> LyPhrase -> StdPhrase
+fromLilyPond :: GlobalRenderInfo -> LyPhrase anno -> StdPhrase anno
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 
-fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase -> StdPhrase
+fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase anno -> StdPhrase anno
 fromLilyPondWith gi ri = 
     translateToMain . LYIn.translate gi . BEAM.pushLocalRenderInfo ri
 
-fromLilyPondWithIO :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase -> IO StdPhrase
+fromLilyPondWithIO :: GlobalRenderInfo 
+                   -> LocalRenderInfo 
+                   -> LyPhrase anno 
+                   -> IO (StdPhrase anno)
 fromLilyPondWithIO gi ri ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -167,17 +170,17 @@ fromLilyPondWithIO gi ri ph =
 
 
 
-outputAsABC :: GlobalRenderInfo -> StdPhrase -> String
+outputAsABC :: GlobalRenderInfo -> StdPhrase () -> String
 outputAsABC gi = ppRender . abcOutput gi . ABCOut.translate . addBeams . translateToBeam
 
-printAsABC :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsABC :: GlobalRenderInfo -> StdPhrase () -> IO ()
 printAsABC gi = putStrLn . outputAsABC gi
 
-outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
+outputAsLilyPond :: GlobalRenderInfo -> StdPhrase anno -> String
 outputAsLilyPond gi = 
     ppRender . lilyPondOutput gi . LYOut.translate gi . addBeams . translateToBeam
 
-printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsLilyPond :: GlobalRenderInfo -> StdPhrase anno -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
@@ -185,10 +188,10 @@ ppRender :: Doc -> String
 ppRender = renderStyle (style {lineLength=500})
 
 
-writeAsMIDI :: FilePath -> StdPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdPhrase anno -> IO ()
 writeAsMIDI path notes = 
    let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhrase -> BEAM.Phrase MIDI.MidiPitch Duration
+noteTrans :: StdPhrase anno -> BEAM.Phrase MIDI.MidiPitch Duration anno
 noteTrans = MIDI.translate . translateToBeam

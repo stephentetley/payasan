@@ -27,13 +27,14 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Syntax (Pitch,NoteLength)
 import Payasan.Base.Internal.ABC.Utils
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
 
 
-abcTranslate :: Phrase Pitch NoteLength -> Phrase PCH.Pitch Duration
+abcTranslate :: ABCMonoPhrase -> Phrase PCH.Pitch Duration ()
 abcTranslate = P.transform pch_algo . D.transform drn_algo
 
 type PTMon a = D.Mon () a
@@ -50,8 +51,8 @@ pch_algo = P.MonoPitchAlgo
     }
 
 
-elementP :: Element Pitch drn -> PTMon (Element PCH.Pitch drn)
-elementP (Note p d)             = (\pch -> Note pch d) <$> transPch p
+elementP :: Element Pitch drn anno -> PTMon (Element PCH.Pitch drn anno) 
+elementP (Note p d a)           = (\p1 -> Note p1 d a) <$> transPch p
 elementP (Rest d)               = pure $ Rest d
 
 
@@ -71,8 +72,8 @@ drn_algo = D.MonoDurationAlgo
     }
 
 
-elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
-elementD (Note p d)             = Note p  <$> changeDrn d
+elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
+elementD (Note p d a)           = (\d1 -> Note p d1 a) <$> changeDrn d
 elementD (Rest d)               = Rest    <$> changeDrn d
 
 

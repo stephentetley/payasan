@@ -85,7 +85,7 @@ oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 
 oElement :: ABCElement -> Doc
-oElement (NoteElem n)           = note n
+oElement (NoteElem n _)         = note n
 oElement (Rest d)               = rest d 
-oElement (Chord ps d)           = chord ps d 
+oElement (Chord ps d _)         = chord ps d 
 oElement (Graces xs)            = graceForm $ map note xs

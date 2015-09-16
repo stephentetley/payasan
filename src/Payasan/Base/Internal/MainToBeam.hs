@@ -27,25 +27,25 @@ import Payasan.Base.Internal.MainSyntax
 
 
 
-translateToBeam :: Phrase pch drn -> T.Phrase pch drn
+translateToBeam :: Phrase pch drn anno -> T.Phrase pch drn anno
 translateToBeam                 = phraseT
 
 
-phraseT :: Phrase pch drn -> T.Phrase pch drn
+phraseT :: Phrase pch drn anno -> T.Phrase pch drn anno
 phraseT (Phrase bs)             = T.Phrase $ map barT bs
 
 
-barT :: Bar pch drn -> T.Bar pch drn
+barT :: Bar pch drn anno -> T.Bar pch drn anno
 barT (Bar info cs)              = T.Bar info $ map noteGroupT cs
 
-noteGroupT :: NoteGroup pch drn -> T.NoteGroup pch drn
+noteGroupT :: NoteGroup pch drn anno -> T.NoteGroup pch drn anno
 noteGroupT (Atom e)             = T.Atom $ elementT e
 noteGroupT (Tuplet spec cs)     = T.Tuplet spec $ map noteGroupT cs
 
-elementT :: Element pch drn -> T.Element pch drn
-elementT (NoteElem a)           = T.NoteElem $ noteT a
+elementT :: Element pch drn anno -> T.Element pch drn anno
+elementT (NoteElem e a)         = T.NoteElem (noteT e) a
 elementT (Rest d)               = T.Rest d
-elementT (Chord ps d)           = T.Chord ps d
+elementT (Chord ps d a)         = T.Chord ps d a
 elementT (Graces ns)            = T.Graces $ map noteT ns
 
 

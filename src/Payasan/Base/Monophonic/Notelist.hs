@@ -64,45 +64,46 @@ import Payasan.Base.Monophonic.Internal.MonoPitchTrafo
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Transform
 
+import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Notelist as MAIN
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
-fromABC :: ABCMonoPhrase -> StdMonoPhrase
+fromABC :: ABCMonoPhrase -> StdMonoPhrase ()
 fromABC  = fromABCWith default_local_info
 
-fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
+fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase ()
 fromABCWith ri = abcTranslate . pushLocalRenderInfo ri
 
 
-fromLilyPond :: GlobalRenderInfo -> LyMonoPhrase -> StdMonoPhrase
+fromLilyPond :: GlobalRenderInfo -> LyMonoPhrase anno -> StdMonoPhrase anno
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 fromLilyPondWith :: GlobalRenderInfo 
                  -> LocalRenderInfo 
-                 -> LyMonoPhrase 
-                 -> StdMonoPhrase
+                 -> LyMonoPhrase anno
+                 -> StdMonoPhrase anno
 fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
 
 
-outputAsABC :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsABC :: GlobalRenderInfo -> StdMonoPhrase () -> String
 outputAsABC gi = MAIN.outputAsABC gi . translateToMain
 
 
-printAsABC :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsABC :: GlobalRenderInfo -> StdMonoPhrase () -> IO ()
 printAsABC gi = MAIN.printAsABC gi . translateToMain
 
-outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase anno -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
 
 
-printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase anno -> IO ()
 printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
 
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdMonoPhrase anno -> IO ()
 writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain

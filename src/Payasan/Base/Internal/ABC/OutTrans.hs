@@ -40,7 +40,7 @@ import Data.Ratio (numerator, denominator)
 
 
 
-translate :: Phrase PCH.Pitch Duration -> Phrase Pitch NoteLength
+translate :: Phrase PCH.Pitch Duration anno -> Phrase Pitch NoteLength anno
 translate = P.transform pch_algo . D.transform drn_algo
 
 type PTMon a = D.Mon () a
@@ -60,10 +60,12 @@ pch_algo = P.BeamPitchAlgo
 
 
 
-elementP :: Element PCH.Pitch drn -> PTMon (Element Pitch drn)
-elementP (NoteElem a)           = NoteElem  <$> noteP a
+elementP :: Element PCH.Pitch drn anno -> PTMon (Element Pitch drn anno)
+elementP (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
-elementP (Chord ps d)           = (Chord `flip` d) <$> mapM transPch ps
+elementP (Chord ps d a)         = 
+    (\ps1 -> Chord ps1 d a) <$> mapM transPch ps
+
 elementP (Graces ns)            = Graces    <$> mapM noteP ns
 
 
@@ -86,10 +88,10 @@ drn_algo = D.BeamDurationAlgo
 
 
 
-elementD :: Element pch Duration -> DTMon (Element pch NoteLength)
-elementD (NoteElem a)           = NoteElem  <$> noteD a
+elementD :: Element pch Duration anno -> DTMon (Element pch NoteLength anno)
+elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
-elementD (Chord ps d)           = Chord ps  <$> changeDrn d
+elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 

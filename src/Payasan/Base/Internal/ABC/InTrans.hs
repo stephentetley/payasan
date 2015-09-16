@@ -37,7 +37,7 @@ import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
 
 
-translate :: Phrase Pitch NoteLength -> Phrase PCH.Pitch Duration
+translate :: Phrase Pitch NoteLength anno -> Phrase PCH.Pitch Duration anno
 translate = P.transform pch_algo . D.transform drn_algo
 
 type PTMon a = D.Mon () a
@@ -55,10 +55,12 @@ pch_algo = P.BeamPitchAlgo
 
 
 
-elementP :: Element Pitch drn -> PTMon (Element PCH.Pitch drn)
-elementP (NoteElem a)           = NoteElem  <$> noteP a
+elementP :: Element Pitch drn anno -> PTMon (Element PCH.Pitch drn anno)
+elementP (NoteElem e a)         = (\e1 -> NoteElem e1 a)  <$> noteP e
 elementP (Rest d)               = pure $ Rest d
-elementP (Chord ps d)           = (Chord `flip` d) <$> mapM transPch ps
+elementP (Chord ps d a)         = 
+    (\ps1 -> Chord ps1 d a) <$> mapM transPch ps
+
 elementP (Graces ns)            = Graces    <$> mapM noteP ns
 
 
@@ -83,10 +85,10 @@ drn_algo = D.BeamDurationAlgo
 -- actionInfoD :: LocalRenderInfo -> DTMon ()
 -- actionInfoD info = put (local_unit_note_len info)
 
-elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
-elementD (NoteElem a)           = NoteElem  <$> noteD a
+elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
+elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
-elementD (Chord ps d)           = Chord ps  <$> changeDrn d
+elementD (Chord ps d a)         = (\d1 -> Chord ps  d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 

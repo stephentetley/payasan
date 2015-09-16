@@ -18,20 +18,23 @@
 
 module Payasan.Base.Monophonic.Internal.Syntax
   ( 
-    module Payasan.Base.Internal.CommonSyntax
 
-  , GenMonoPhrase
+    GenMonoPhrase
   , GenMonoBar
   , GenMonoNoteGroup
   , GenMonoElement
 
-  , GenMonoLyPhrase
-  , GenMonoLyBar
-  , GenMonoLyNoteGroup
-  , GenMonoLyElement
+  , GenLyMonoPhrase
+  , GenLyMonoBar
+  , GenLyMonoNoteGroup
+  , GenLyMonoElement
+
+  , ABCMonoPhrase
+  , ABCMonoBar
+  , ABCMonoNoteGroup
+  , ABCMonoElement
   
   , StdMonoPhrase
-  , ABCMonoPhrase
   , LyMonoPhrase
 
 
@@ -59,15 +62,21 @@ import Data.Data
 
 
 
-type GenMonoPhrase pch          = Phrase pch Duration
-type GenMonoBar pch             = Bar pch Duration
-type GenMonoNoteGroup pch       = NoteGroup pch Duration
-type GenMonoElement pch         = Element pch Duration
+type GenMonoPhrase pch anno         = Phrase    pch Duration anno
+type GenMonoBar pch anno            = Bar       pch Duration anno
+type GenMonoNoteGroup pch anno      = NoteGroup pch Duration anno
+type GenMonoElement pch anno        = Element   pch Duration anno
 
-type GenMonoLyPhrase pch        = Phrase pch LY.NoteLength
-type GenMonoLyBar pch           = Bar pch LY.NoteLength
-type GenMonoLyNoteGroup pch     = NoteGroup pch LY.NoteLength
-type GenMonoLyElement pch       = Element pch LY.NoteLength
+type GenLyMonoPhrase pch anno       = Phrase    pch LY.NoteLength anno
+type GenLyMonoBar pch anno          = Bar       pch LY.NoteLength anno
+type GenLyMonoNoteGroup pch anno    = NoteGroup pch LY.NoteLength anno
+type GenLyMonoElement pch anno      = Element   pch LY.NoteLength anno
+
+type ABCMonoPhrase                  = Phrase    ABC.Pitch ABC.NoteLength ()
+type ABCMonoBar                     = Bar       ABC.Pitch ABC.NoteLength ()
+type ABCMonoNoteGroup               = NoteGroup ABC.Pitch ABC.NoteLength ()
+type ABCMonoElement                 = Element   ABC.Pitch ABC.NoteLength ()
+
 
 -- | Parametric on pitch so we can have the same syntax to 
 -- represent scale degrees, drum notes, etc.
@@ -75,21 +84,20 @@ type GenMonoLyElement pch       = Element pch LY.NoteLength
 -- Parametric on duration so we can read ABC and decode duration
 -- multipliers in a post-parsing phase.
 --
-data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
+data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
-type StdMonoPhrase          = Phrase Pitch Duration
+type StdMonoPhrase anno     = Phrase Pitch Duration anno
 
-type ABCMonoPhrase          = Phrase ABC.Pitch ABC.NoteLength
-type LyMonoPhrase           = Phrase LY.Pitch  LY.NoteLength
+type LyMonoPhrase anno      = Phrase LY.Pitch  LY.NoteLength anno
 
 
 
 -- | Note Beaming is not captured in parsing.
 --
-data Bar pch drn = Bar 
+data Bar pch drn anno = Bar 
     { bar_header        :: LocalRenderInfo
-    , bar_elements      :: [NoteGroup pch drn]
+    , bar_elements      :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -100,8 +108,9 @@ data Bar pch drn = Bar
 --
 -- Tuplets seem essential 
 --
-data NoteGroup pch drn = Atom    (Element pch drn)
-                       | Tuplet  TupletSpec         [NoteGroup pch drn]
+data NoteGroup pch drn anno = 
+      Atom    (Element pch drn anno)
+    | Tuplet  TupletSpec         [NoteGroup pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -110,8 +119,9 @@ data NoteGroup pch drn = Atom    (Element pch drn)
 -- simple duration halving trafo).
 --
 --
-data Element pch drn = Note   pch   drn
-                     | Rest   drn
+data Element pch drn anno = 
+      Note   pch   drn   anno
+    | Rest   drn
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -120,17 +130,19 @@ data Element pch drn = Note   pch   drn
 -- Push RenderInfo into bars.
 
 
-pushLocalRenderInfo :: LocalRenderInfo -> Phrase pch drn -> Phrase pch drn
+pushLocalRenderInfo :: LocalRenderInfo 
+                    -> Phrase pch drn anno 
+                    -> Phrase pch drn anno
 pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
   where
     upd bar = bar { bar_header = ri }
 
 
 
-sizeNoteGroup :: NoteGroup pch Duration -> RDuration
+sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
 sizeNoteGroup (Atom e)          = sizeElement e
 sizeNoteGroup (Tuplet {})       = error "sizeNoteGroup (Tuplet {})"
 
-sizeElement :: Element pch Duration -> RDuration
-sizeElement (Note _ d)          = durationSize d
+sizeElement :: Element pch Duration anno -> RDuration
+sizeElement (Note _ d _)        = durationSize d
 sizeElement (Rest d)            = durationSize d

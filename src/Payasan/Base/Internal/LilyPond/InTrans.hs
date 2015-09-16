@@ -36,7 +36,8 @@ import qualified Payasan.Base.Pitch as PCH
 
 
 translate :: GlobalRenderInfo 
-          -> Phrase Pitch NoteLength -> Phrase PCH.Pitch Duration 
+          -> Phrase Pitch NoteLength anno 
+          -> Phrase PCH.Pitch Duration anno
 translate info = pitchTrafo . D.transform drn_algo
   where
     -- If AbsPitch then /previous pitch/ will never be used
@@ -45,7 +46,8 @@ translate info = pitchTrafo . D.transform drn_algo
                     AbsPitch -> P.transform abs_pch_algo
 
 
-translateDurationOnly :: Phrase pch NoteLength -> Phrase pch Duration 
+translateDurationOnly :: Phrase pch NoteLength anno 
+                      -> Phrase pch Duration anno
 translateDurationOnly = D.transform drn_algo
 
 type DTMon   a      = D.Mon Duration a
@@ -71,10 +73,12 @@ setPrevPitch :: PCH.Pitch -> RelPMon ()
 setPrevPitch = put 
 
 
-relElementP :: Element Pitch drn -> RelPMon (Element PCH.Pitch drn)
-relElementP (NoteElem a)        = NoteElem <$> relNoteP a
+relElementP :: Element Pitch drn anno -> RelPMon (Element PCH.Pitch drn anno)
+relElementP (NoteElem e a)      = (\e1 -> NoteElem e1 a) <$> relNoteP e
 relElementP (Rest d)            = pure $ Rest d
-relElementP (Chord ps d)        = (Chord `flip` d)  <$> mapM changePitchRel ps
+relElementP (Chord ps d a)      = 
+    (\ps1 -> Chord ps1 d a) <$> mapM changePitchRel ps
+
 relElementP (Graces ns)         = Graces <$> mapM relNoteP ns
 
 
@@ -104,10 +108,12 @@ abs_pch_algo = P.BeamPitchAlgo
     }
 
 
-absElementP :: Element Pitch drn -> AbsPMon (Element PCH.Pitch drn)
-absElementP (NoteElem a)        = NoteElem <$> absNoteP a
+absElementP :: Element Pitch drn anno -> AbsPMon (Element PCH.Pitch drn anno)
+absElementP (NoteElem e a)      = (\e1 -> NoteElem e1 a) <$> absNoteP e
 absElementP (Rest d)            = pure $ Rest d
-absElementP (Chord ps d)        = (Chord `flip` d)  <$> mapM changePitchAbs ps
+absElementP (Chord ps d a)      = 
+    (\ps1 -> Chord ps1 d a) <$> mapM changePitchAbs ps
+
 absElementP (Graces ns)         = Graces <$> mapM absNoteP ns
 
 
@@ -138,10 +144,10 @@ setPrevDuration :: Duration -> DTMon ()
 setPrevDuration d = put d
 
 
-elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
-elementD (NoteElem a)           = NoteElem  <$> noteD a
+elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
+elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
-elementD (Chord ps d)           = Chord ps  <$> changeDrn d
+elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 noteD :: Note pch NoteLength -> DTMon (Note pch Duration)

@@ -47,11 +47,12 @@ import Data.Data
 --------------------------------------------------------------------------------
 -- Syntax
 
+-- | ABC is not annotated
 
-type ABCPhrase          = Phrase      Pitch NoteLength
-type ABCBar             = Bar         Pitch NoteLength
-type ABCNoteGroup       = NoteGroup  Pitch NoteLength
-type ABCElement         = Element     Pitch NoteLength
+type ABCPhrase          = Phrase      Pitch NoteLength ()
+type ABCBar             = Bar         Pitch NoteLength ()
+type ABCNoteGroup       = NoteGroup   Pitch NoteLength ()
+type ABCElement         = Element     Pitch NoteLength ()
 type ABCNote            = Note        Pitch NoteLength
 
 

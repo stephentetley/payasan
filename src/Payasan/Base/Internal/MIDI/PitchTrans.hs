@@ -28,7 +28,7 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-translate :: Phrase Pitch Duration -> Phrase MidiPitch Duration
+translate :: Phrase Pitch Duration anno -> Phrase MidiPitch Duration anno
 translate = P.transform pch_algo
 
 
@@ -46,10 +46,10 @@ pch_algo = P.BeamPitchAlgo
     }
 
 
-elementP :: Element Pitch drn -> PTMon (Element MidiPitch drn)
-elementP (NoteElem a)           = NoteElem <$> noteP a
+elementP :: Element Pitch drn anno -> PTMon (Element MidiPitch drn anno)
+elementP (NoteElem e a)         = (\n -> NoteElem n a) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
-elementP (Chord ps d)           = pure $ Chord (map pitchToMidi ps) d
+elementP (Chord ps d a)         = pure $ Chord (map pitchToMidi ps) d a
 elementP (Graces ns)            = Graces <$> mapM noteP ns
 
 

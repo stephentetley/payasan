@@ -58,17 +58,17 @@ import Data.Data
 -- Syntax
 
 
-type LyPhrase           = Phrase      Pitch NoteLength
-type LyBar              = Bar         Pitch NoteLength
-type LyNoteGroup        = NoteGroup   Pitch NoteLength
-type LyElement          = Element     Pitch NoteLength
-type LyNote             = Note        Pitch NoteLength
+type LyPhrase anno              = Phrase      Pitch NoteLength anno
+type LyBar anno                 = Bar         Pitch NoteLength anno
+type LyNoteGroup anno           = NoteGroup   Pitch NoteLength anno
+type LyElement anno             = Element     Pitch NoteLength anno
+type LyNote                     = Note        Pitch NoteLength
 
 
-type GenLyPhrase pch            = Phrase      pch NoteLength
-type GenLyBar pch               = Bar         pch NoteLength
-type GenLyNoteGroup pch         = NoteGroup   pch NoteLength
-type GenLyElement pch           = Element     pch NoteLength
+type GenLyPhrase pch anno       = Phrase      pch NoteLength anno
+type GenLyBar pch anno          = Bar         pch NoteLength anno
+type GenLyNoteGroup pch anno    = NoteGroup   pch NoteLength anno
+type GenLyElement pch anno      = Element     pch NoteLength anno
 type GenLyNote pch              = Note        pch NoteLength
 
 

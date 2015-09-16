@@ -33,7 +33,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-lilyPondOutput :: GlobalRenderInfo -> LyPhrase -> Doc
+lilyPondOutput :: GlobalRenderInfo -> LyPhrase anno -> Doc
 lilyPondOutput globals ph = 
         header 
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
@@ -75,32 +75,32 @@ data LyOutputDef pch = LyOutputDef
 
 -- | Pitch should be \"context free\" at this point.
 --
-renderNotes :: forall pch. LyOutputDef pch -> GenLyPhrase pch -> Doc
+renderNotes :: forall pch anno. LyOutputDef pch -> GenLyPhrase pch anno -> Doc
 renderNotes def = oLyPhrase
   where
     pPitch :: pch -> Doc
     pPitch = pitchPrint def
 
 
-    oLyPhrase :: GenLyPhrase pch -> Doc
+    oLyPhrase :: GenLyPhrase pch anno -> Doc
     oLyPhrase (Phrase [])           = empty
     oLyPhrase (Phrase (x:xs))       = step (oBar x) xs
       where
         step d []     = d
         step d (b:bs) = let ac = d <+> char '|' $+$ oBar b in step ac bs
 
-    oBar :: GenLyBar pch -> Doc
+    oBar :: GenLyBar pch anno -> Doc
     oBar (Bar _info cs) = hsep (map oNoteGroup cs)
 
-    oNoteGroup :: GenLyNoteGroup pch -> Doc
+    oNoteGroup :: GenLyNoteGroup pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e
     oNoteGroup (Beamed cs)          = beamForm $ map oNoteGroup cs
     oNoteGroup (Tuplet spec cs)     = tupletSpec spec <+> hsep (map oNoteGroup cs)
 
-    oElement :: GenLyElement pch -> Doc
-    oElement (NoteElem n)           = oNote n
+    oElement :: GenLyElement pch anno -> Doc
+    oElement (NoteElem n _)         = oNote n
     oElement (Rest d)               = rest d 
-    oElement (Chord ps d)           = chordForm (map pPitch ps) <> noteLength d
+    oElement (Chord ps d _)         = chordForm (map pPitch ps) <> noteLength d
     oElement (Graces ns)            = graceForm (map oNote ns)
 
 

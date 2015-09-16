@@ -60,18 +60,18 @@ data LyParserDef pch = LyParserDef
 
 parseLyPhrase :: LyParserDef pch 
               -> String 
-              -> Either ParseError (GenLyPhrase pch)
+              -> Either ParseError (GenLyPhrase pch anno)
 parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 
-makeLyParser :: forall pch. LyParserDef pch -> LyParser (GenLyPhrase pch)
+makeLyParser :: forall pch anno. LyParserDef pch -> LyParser (GenLyPhrase pch anno)
 makeLyParser def = fullLyPhrase
   where
     pPitch :: LyParser pch
     pPitch = pitchParser def
 
-    fullLyPhrase :: LyParser (GenLyPhrase pch)
+    fullLyPhrase :: LyParser (GenLyPhrase pch anno)
     fullLyPhrase = whiteSpace *> lyPhraseK >>= step
       where 
         isTrail             = all (isSpace)
@@ -80,51 +80,51 @@ makeLyParser def = fullLyPhrase
             | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
     
-    lyPhraseK :: LyParser (GenLyPhrase pch,SourcePos,String)
+    lyPhraseK :: LyParser (GenLyPhrase pch anno, SourcePos, String)
     lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
     
-    phrase :: LyParser (GenLyPhrase pch)
+    phrase :: LyParser (GenLyPhrase pch anno)
     phrase = Phrase <$> bars
 
-    bars :: LyParser [GenLyBar pch]
+    bars :: LyParser [GenLyBar pch anno]
     bars = sepBy bar barline
 
 
-    bar :: LyParser (GenLyBar pch)
+    bar :: LyParser (GenLyBar pch anno)
     bar = Bar default_local_info <$> noteGroups 
 
-    noteGroups :: LyParser [GenLyNoteGroup pch]
+    noteGroups :: LyParser [GenLyNoteGroup pch anno]
     noteGroups = whiteSpace *> many noteGroup
 
-    noteGroup :: LyParser (GenLyNoteGroup pch)
+    noteGroup :: LyParser (GenLyNoteGroup pch anno)
     noteGroup = tuplet <|> (Atom <$> element)
 
     -- | Unlike ABC, LilyPond does not need to count the number
     -- of notes in the tuplet to parse (they are properly enclosed 
     -- in braces).
     --
-    tuplet :: LyParser (GenLyNoteGroup pch)
+    tuplet :: LyParser (GenLyNoteGroup pch anno)
     tuplet = 
         (\spec notes -> Tuplet (makeTupletSpec spec (length notes)) notes)
             <$> tupletSpec <*> braces (noteGroups)
 
 
-    element :: LyParser (GenLyElement pch)
+    element :: LyParser (GenLyElement pch anno)
     element = lexeme (rest <|> noteElem <|> chord <|> graces)
 
 
-    noteElem :: LyParser (GenLyElement pch)
-    noteElem = NoteElem <$> note
+    noteElem :: LyParser (GenLyElement pch anno)
+    noteElem = (\e -> NoteElem e undefined) <$> note
 
-    rest :: LyParser (GenLyElement pch)
+    rest :: LyParser (GenLyElement pch anno)
     rest = Rest <$> (char 'z' *> noteLength)
 
-    chord :: LyParser (GenLyElement pch)
-    chord = Chord <$> angles (many1 pPitch) <*> noteLength
+    chord :: LyParser (GenLyElement pch anno)
+    chord = (\ps d -> Chord ps d undefined) <$> angles (many1 pPitch) <*> noteLength
 
 
-    graces :: LyParser (GenLyElement pch)
+    graces :: LyParser (GenLyElement pch anno)
     graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
       where
         multi   = braces (many1 note)

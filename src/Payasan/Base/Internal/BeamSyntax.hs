@@ -53,16 +53,16 @@ import Data.Data
 -- | Bracket syntax must be parametric on pitch so it can
 -- handle nice LilyPond things like drums.
 --
-data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
+data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
 
 
 -- | Note Beaming is not captured in parsing.
 --
-data Bar pch drn = Bar 
+data Bar pch drn anno = Bar 
     { bar_header        :: LocalRenderInfo
-    , bar_elements      :: [NoteGroup pch drn]
+    , bar_elements      :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -71,9 +71,10 @@ data Bar pch drn = Bar
 --
 -- Beams must allow nesting 
 --
-data NoteGroup pch drn = Atom     (Element pch drn)
-                       | Beamed   [NoteGroup pch drn]
-                       | Tuplet   TupletSpec            [NoteGroup pch drn]
+data NoteGroup pch drn anno = 
+      Atom     (Element pch drn anno)
+    | Beamed   [NoteGroup pch drn anno]
+    | Tuplet   TupletSpec            [NoteGroup pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -82,10 +83,11 @@ data NoteGroup pch drn = Atom     (Element pch drn)
 --
 -- See old Neume code. 
 --
-data Element pch drn = NoteElem   (Note pch drn)
-                     | Rest       drn
-                     | Chord      [pch]           drn
-                     | Graces     [Note pch drn]
+data Element pch drn anno = 
+      NoteElem   (Note pch drn)  anno
+    | Rest       drn
+    | Chord      [pch]           drn    anno
+    | Graces     [Note pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -95,24 +97,26 @@ data Note pch drn = Note pch drn
 --------------------------------------------------------------------------------
 -- Operations (maybe should be in another module)
 
-pushLocalRenderInfo :: LocalRenderInfo -> Phrase pch drn -> Phrase pch drn
+pushLocalRenderInfo :: LocalRenderInfo 
+                    -> Phrase pch drn anno 
+                    -> Phrase pch drn anno
 pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
   where
     upd bar = bar { bar_header = ri }
 
 
-sizeNoteGroup :: NoteGroup pch Duration -> RDuration
-sizeNoteGroup (Atom e)            = sizeElement e
-sizeNoteGroup (Beamed es)         = sum $ map sizeNoteGroup es
-sizeNoteGroup (Tuplet {})         = error "sizeNoteGroup (Tuplet {})"
+sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
+sizeNoteGroup (Atom e)              = sizeElement e
+sizeNoteGroup (Beamed es)           = sum $ map sizeNoteGroup es
+sizeNoteGroup (Tuplet {})           = error "sizeNoteGroup (Tuplet {})"
 
-sizeElement :: Element pch Duration -> RDuration
-sizeElement (NoteElem (Note _ d))  = durationSize d
-sizeElement (Rest d)               = durationSize d
-sizeElement (Chord _ d)            = durationSize d
-sizeElement (Graces {})            = 0
+sizeElement :: Element pch Duration anno -> RDuration
+sizeElement (NoteElem (Note _ d) _) = durationSize d
+sizeElement (Rest d)                = durationSize d
+sizeElement (Chord _ d _)           = durationSize d
+sizeElement (Graces {})             = 0
 
 
-firstRenderInfo :: Phrase pch drn -> Maybe LocalRenderInfo
+firstRenderInfo :: Phrase pch drn anno -> Maybe LocalRenderInfo
 firstRenderInfo (Phrase [])    = Nothing
 firstRenderInfo (Phrase (b:_)) = Just $ bar_header b

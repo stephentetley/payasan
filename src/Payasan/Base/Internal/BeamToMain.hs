@@ -25,33 +25,33 @@ import qualified Payasan.Base.Internal.MainSyntax as T
 
 
 
-translateToMain :: Phrase pch drn -> T.Phrase pch drn
+translateToMain :: Phrase pch drn anno -> T.Phrase pch drn anno
 translateToMain                 = phraseT
 
 
-phraseT :: Phrase pch drn -> T.Phrase pch drn
+phraseT :: Phrase pch drn anno -> T.Phrase pch drn anno
 phraseT (Phrase bs)          = T.Phrase $ map barT bs
 
 
 
-barT :: Bar pch drn  -> T.Bar pch drn
+barT :: Bar pch drn anno  -> T.Bar pch drn anno
 barT (Bar info cs)              = T.Bar info $ concatMap noteGroupT cs
        
 
 
 -- | Remember - a beamed NoteGroup may generate 1+ elements
 --
-noteGroupT :: NoteGroup pch drn -> [T.NoteGroup pch drn]
+noteGroupT :: NoteGroup pch drn anno -> [T.NoteGroup pch drn anno]
 noteGroupT (Atom e)             = [T.Atom $ elementT e]
 noteGroupT (Tuplet spec cs)     = [T.Tuplet spec $ concatMap noteGroupT cs]
 noteGroupT (Beamed cs)          = concatMap noteGroupT cs
 
 
 
-elementT :: Element pch drn  -> T.Element pch drn
-elementT (NoteElem a)           = T.NoteElem $ noteT a
+elementT :: Element pch drn anno  -> T.Element pch drn anno
+elementT (NoteElem e a)         = T.NoteElem (noteT e) a 
 elementT (Rest d)               = T.Rest d 
-elementT (Chord ps d)           = T.Chord ps d
+elementT (Chord ps d a)         = T.Chord ps d a
 elementT (Graces ns)            = T.Graces $ map noteT ns
 
 

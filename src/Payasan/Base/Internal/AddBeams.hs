@@ -31,10 +31,10 @@ import Data.Ratio
 
 
 
-addBeams :: Phrase pch Duration -> Phrase pch Duration
+addBeams :: Phrase pch Duration anno -> Phrase pch Duration anno
 addBeams (Phrase { phrase_bars = bs }) = Phrase $ map beamBar bs
 
-beamBar :: Bar pch Duration -> Bar pch Duration
+beamBar :: Bar pch Duration anno -> Bar pch Duration anno
 beamBar (Bar info cs) = 
     let mpat  = local_meter_patn info
         segs1 = detachExtremities $ singleout $ segment mpat cs
@@ -50,14 +50,15 @@ beamBar (Bar info cs) =
 -- Due to /straddling/ ther may be more candidate groups than 
 -- meter pattern divisions.
 
-data InputRest pch drn = GoodSplit [NoteGroup pch drn]
-                       | Straddle  RDuration  (NoteGroup pch drn)   [NoteGroup pch drn]
+data InputRest pch drn anno = 
+      GoodSplit [NoteGroup pch drn anno]
+    | Straddle  RDuration  (NoteGroup pch drn anno)   [NoteGroup pch drn anno]
 
 
 
 segment :: MeterPattern 
-        -> [NoteGroup pch Duration] 
-        -> [[NoteGroup pch Duration]]
+        -> [NoteGroup pch Duration anno] 
+        -> [[NoteGroup pch Duration anno]]
 segment []     xs = runOut xs
 segment (d:ds) xs = let (seg1, rest) = segment1 d xs in
     case rest of 
@@ -66,8 +67,8 @@ segment (d:ds) xs = let (seg1, rest) = segment1 d xs in
 
 
 segment1 :: RDuration 
-         -> [NoteGroup pch Duration] 
-         -> ([NoteGroup pch Duration], InputRest pch Duration)
+         -> [NoteGroup pch Duration anno] 
+         -> ([NoteGroup pch Duration anno], InputRest pch Duration anno)
 segment1 _   []     = ([], GoodSplit [])
 segment1 drn (x:xs) = step [] drn (x,sizeNoteGroup x) xs
   where
@@ -80,7 +81,7 @@ segment1 drn (x:xs) = step [] drn (x,sizeNoteGroup x) xs
          | d1 <= d      = (reverse (a:ac), GoodSplit [])
          | otherwise    = (reverse ac,     Straddle (d1 - d) a [])
 
-runOut :: [NoteGroup pch Duration] -> [[NoteGroup pch Duration]]
+runOut :: [NoteGroup pch Duration anno] -> [[NoteGroup pch Duration anno]]
 runOut = map (\a -> [a])
 
 
@@ -95,10 +96,10 @@ decrease r (d:ds)
 -- Single out long notes (quater notes or longer)
 
 
-singleout :: [[NoteGroup pch Duration]] -> [[NoteGroup pch Duration]]
+singleout :: [[NoteGroup pch Duration anno]] -> [[NoteGroup pch Duration anno]]
 singleout = concatMap singleout1
 
-singleout1 :: [NoteGroup pch Duration] -> [[NoteGroup pch Duration]]
+singleout1 :: [NoteGroup pch Duration anno] -> [[NoteGroup pch Duration anno]]
 singleout1 [] = []
 singleout1 (x:xs) = step [] x xs
   where
@@ -111,7 +112,7 @@ singleout1 (x:xs) = step [] x xs
         | otherwise     = (reverse ac) : [a] : step [] y ys
 
 
-isSmall :: NoteGroup pch Duration -> Bool
+isSmall :: NoteGroup pch Duration anno -> Bool
 isSmall a = sizeNoteGroup a < qtrnote_len
 
 qtrnote_len :: RDuration 
@@ -129,13 +130,13 @@ qtrnote_len = (1%4)
 -- we dont care about (++).
 --
 
-detachExtremities :: [[NoteGroup pch Duration]] 
-                  -> [[NoteGroup pch Duration]]
+detachExtremities :: [[NoteGroup pch Duration anno]] 
+                  -> [[NoteGroup pch Duration anno]]
 detachExtremities = concatMap detachBeamed
 
 
-detachBeamed :: [NoteGroup pch Duration] 
-             -> [[NoteGroup pch Duration]]
+detachBeamed :: [NoteGroup pch Duration anno] 
+             -> [[NoteGroup pch Duration anno]]
 detachBeamed xs = 
     let (as,rest)       = frontAndRest xs
         (csr,middler)   = frontAndRest $ reverse rest
@@ -147,11 +148,11 @@ detachBeamed xs =
 -- | If we already have a Tuplet or Beam group at the left or right
 -- of the beam group we assume they are well formed
 -- 
-detachable :: NoteGroup pch drn -> Bool
+detachable :: NoteGroup pch drn anno -> Bool
 detachable (Atom e) = detachableE e
 detachable _        = False
 
-detachableE :: Element pch drn -> Bool
+detachableE :: Element pch drn anno -> Bool
 detachableE (Rest {})     = True
 detachableE (NoteElem {}) = False
 detachableE (Chord {})    = False
@@ -162,7 +163,7 @@ detachableE (Graces {})   = False
 
 -- | Beam segments with 2 or more members.
 --
-beamSegments :: [[NoteGroup pch Duration]] -> [NoteGroup pch Duration]
+beamSegments :: [[NoteGroup pch Duration anno]] -> [NoteGroup pch Duration anno]
 beamSegments []              = []
 beamSegments ([]:xss)        = beamSegments xss
 beamSegments ([x]:xss)       = x : beamSegments xss

@@ -34,11 +34,11 @@ import Payasan.Base.Internal.RewriteMonad
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-mainTabular :: LeafOutput pch drn -> Phrase pch drn -> Doc
+mainTabular :: LeafOutput pch drn -> Phrase pch drn anno -> Doc
 mainTabular ppl ph = evalRewriteDefault (oPhrase ppl ph) 1
 
 
-oPhrase :: LeafOutput pch drn -> Phrase pch drn -> OutMon Doc
+oPhrase :: LeafOutput pch drn -> Phrase pch drn anno -> OutMon Doc
 oPhrase _   (Phrase [])       = return empty
 oPhrase ppl (Phrase (x:xs))   = do { d <- oBar ppl x; step d xs }
   where
@@ -46,24 +46,24 @@ oPhrase ppl (Phrase (x:xs))   = do { d <- oBar ppl x; step d xs }
     step ac (b:bs)  = do { d <- oBar ppl b; step (ac $+$ d) bs }
 
 
-oBar :: LeafOutput pch drn -> Bar pch drn -> OutMon Doc
+oBar :: LeafOutput pch drn -> Bar pch drn anno -> OutMon Doc
 oBar ppl (Bar _info cs) = ($+$) <$> nextBar <*> pure (oNoteGroupList ppl cs)
 
 
-oNoteGroupList :: LeafOutput pch drn -> [NoteGroup pch drn] -> Doc
+oNoteGroupList :: LeafOutput pch drn -> [NoteGroup pch drn anno] -> Doc
 oNoteGroupList ppl xs = vcat $ map (oNoteGroup ppl) xs
 
 
-oNoteGroup :: LeafOutput pch drn -> NoteGroup pch drn -> Doc
+oNoteGroup :: LeafOutput pch drn -> NoteGroup pch drn anno -> Doc
 oNoteGroup ppl (Atom e)         = oElement ppl e
 oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
 
-oElement :: LeafOutput pch drn -> Element pch drn -> Doc
+oElement :: LeafOutput pch drn -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of
-    NoteElem n -> oNote ppl n
-    Rest d     -> rest <++> ppD d 
-    Chord ps d -> oPitches ppl ps <+> ppD d 
-    Graces xs  -> vcat $ map (oNote ppl) xs
+    NoteElem n _    -> oNote ppl n
+    Rest d          -> rest <++> ppD d 
+    Chord ps d _    -> oPitches ppl ps <+> ppD d 
+    Graces xs       -> vcat $ map (oNote ppl) xs
   where
     ppD = pp_duration ppl
 

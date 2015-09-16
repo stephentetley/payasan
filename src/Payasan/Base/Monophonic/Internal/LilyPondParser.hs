@@ -26,6 +26,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P
+import Payasan.Base.Internal.CommonSyntax
 
 
 import Text.Parsec                              -- package: parsec
@@ -38,22 +39,20 @@ import Data.Char (isSpace)
 -- Parser
 
 
-
-
-
 parseLyPhrase :: P.LyParserDef pch 
               -> String 
-              -> Either ParseError (GenMonoLyPhrase pch)
+              -> Either ParseError (GenLyMonoPhrase pch anno)
 parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
-makeLyParser :: forall pch. P.LyParserDef pch -> LyParser (GenMonoLyPhrase pch)
+makeLyParser :: forall pch anno. 
+                P.LyParserDef pch -> LyParser (GenLyMonoPhrase pch anno)
 makeLyParser def = fullLyPhrase
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
 
-    fullLyPhrase :: LyParser (GenMonoLyPhrase pch)
+    fullLyPhrase :: LyParser (GenLyMonoPhrase pch anno)
     fullLyPhrase = whiteSpace *> lyPhraseK >>= step
       where 
         isTrail             = all (isSpace)
@@ -62,38 +61,38 @@ makeLyParser def = fullLyPhrase
             | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-    lyPhraseK :: LyParser (GenMonoLyPhrase pch,SourcePos,String)
+    lyPhraseK :: LyParser (GenLyMonoPhrase pch anno, SourcePos, String)
     lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 
-    phrase :: LyParser (GenMonoLyPhrase pch)
+    phrase :: LyParser (GenLyMonoPhrase pch anno)
     phrase = Phrase <$> bars
 
-    bars :: LyParser [GenMonoLyBar pch]
+    bars :: LyParser [GenLyMonoBar pch anno]
     bars = sepBy bar P.barline
 
-    bar :: LyParser (GenMonoLyBar pch)
+    bar :: LyParser (GenLyMonoBar pch anno)
     bar = Bar default_local_info <$> noteGroups 
 
-    noteGroups :: LyParser [GenMonoLyNoteGroup pch]
+    noteGroups :: LyParser [GenLyMonoNoteGroup pch anno]
     noteGroups = whiteSpace *> many noteGroup
 
-    noteGroup :: LyParser (GenMonoLyNoteGroup pch)
+    noteGroup :: LyParser (GenLyMonoNoteGroup pch anno)
     noteGroup = tuplet <|> (Atom <$> element)
 
-    tuplet :: LyParser (GenMonoLyNoteGroup pch)
+    tuplet :: LyParser (GenLyMonoNoteGroup pch anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
             <$> P.tupletSpec <*> braces (noteGroups)
 
-    element :: LyParser (GenMonoLyElement pch)
+    element :: LyParser (GenLyMonoElement pch anno)
     element = lexeme (rest <|> note)
 
-    note :: LyParser (GenMonoLyElement pch)
-    note = Note <$> pPitch <*> P.noteLength
+    note :: LyParser (GenLyMonoElement pch anno)
+    note = (\p d -> Note p d undefined) <$> pPitch <*> P.noteLength
         <?> "note"
 
-    rest :: LyParser (GenMonoLyElement pch)
+    rest :: LyParser (GenLyMonoElement pch anno)
     rest = Rest <$> (char 'z' *> P.noteLength)
 
 

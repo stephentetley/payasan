@@ -11,7 +11,7 @@ import Payasan.Base.Monophonic.Notelist
 
 
 
-phrase01 :: StdMonoPhrase
+phrase01 :: StdMonoPhrase ()
 phrase01 = fromABCWith manual_ri $ [abc| c G2 E2 C/2 | c |]
 
 

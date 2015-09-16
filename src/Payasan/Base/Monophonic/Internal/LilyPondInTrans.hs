@@ -28,6 +28,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Syntax (Pitch,NoteLength(..))
 import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
@@ -36,7 +37,8 @@ import qualified Payasan.Base.Pitch as PCH
 
 
 lilyPondTranslate :: GlobalRenderInfo 
-                  -> Phrase Pitch NoteLength -> Phrase PCH.Pitch Duration 
+                  -> GenLyMonoPhrase Pitch anno 
+                  -> Phrase PCH.Pitch Duration anno
 lilyPondTranslate info = pitchTrafo . D.transform drn_algo
   where
     -- If AbsPitch then /previous pitch/ will never be used
@@ -68,8 +70,8 @@ setPrevPitch :: PCH.Pitch -> RelPMon ()
 setPrevPitch = put 
 
 
-relElementP :: Element Pitch drn -> RelPMon (Element PCH.Pitch drn)
-relElementP (Note p d)          = (\pch -> Note pch d) <$> changePitchRel p
+relElementP :: Element Pitch drn anno -> RelPMon (Element PCH.Pitch drn anno)
+relElementP (Note p d a)        = (\p1 -> Note p1 d a) <$> changePitchRel p
 relElementP (Rest d)            = pure $ Rest d
 
 
@@ -96,8 +98,8 @@ abs_pch_algo = P.MonoPitchAlgo
     }
 
 
-absElementP :: Element Pitch drn -> AbsPMon (Element PCH.Pitch drn)
-absElementP (Note p d)          = (\pch -> Note pch d) <$> changePitchAbs p
+absElementP :: Element Pitch drn anno -> AbsPMon (Element PCH.Pitch drn anno)
+absElementP (Note p d a)        = (\p1 -> Note p1 d a) <$> changePitchAbs p
 absElementP (Rest d)            = pure $ Rest d
 
 
@@ -124,8 +126,8 @@ setPrevDuration :: Duration -> DTMon ()
 setPrevDuration d = put d
 
 
-elementD :: Element pch NoteLength -> DTMon (Element pch Duration)
-elementD (Note p d)             = Note p <$> changeDrn d
+elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
+elementD (Note p d a)           = (\d1 -> Note p d1 a) <$> changeDrn d
 elementD (Rest d)               = Rest   <$> changeDrn d
 
 

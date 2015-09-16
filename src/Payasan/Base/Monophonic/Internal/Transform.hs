@@ -27,8 +27,8 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Duration
 
-augment :: Phrase pch Duration -> Phrase pch Duration
+augment :: Phrase pch Duration anno -> Phrase pch Duration anno
 augment = recalcBars . mapDrn doubleDuration
 
-diminute :: Phrase pch Duration -> Phrase pch Duration
+diminute :: Phrase pch Duration anno -> Phrase pch Duration anno
 diminute = recalcBars . mapDrn halveDuration

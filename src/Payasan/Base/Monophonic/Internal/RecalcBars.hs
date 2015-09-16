@@ -23,18 +23,19 @@ module Payasan.Base.Monophonic.Internal.RecalcBars
 
 
 import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
 
-recalcBars :: Phrase pch Duration -> Phrase pch Duration
+recalcBars :: Phrase pch Duration anno -> Phrase pch Duration anno
 recalcBars (Phrase { phrase_bars = bs }) = 
     let ss = segment bs in Phrase $ remake ss
 
 
 
-data Segment pch = Segment 
+data Segment pch anno = Segment 
     { _segment_header   :: LocalRenderInfo
-    , _segment_notes    :: [NoteGroup pch Duration]
+    , _segment_notes    :: [NoteGroup pch Duration anno]
     }
 
 
@@ -42,7 +43,7 @@ data Segment pch = Segment
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-segment :: [Bar pch Duration] -> [Segment pch]
+segment :: [Bar pch Duration anno] -> [Segment pch anno]
 segment []     = []
 segment (b:bs) = step (bar_header b) [] [] b bs
   where
@@ -59,21 +60,23 @@ segment (b:bs) = step (bar_header b) [] [] b bs
 
 
 
-remake :: [Segment pch] -> [Bar pch Duration]
+remake :: [Segment pch anno] -> [Bar pch Duration anno]
 remake = concatMap remake1
 
-remake1 :: Segment pch -> [Bar pch Duration]
+remake1 :: Segment pch anno -> [Bar pch Duration anno]
 remake1 (Segment info es) = 
     map (Bar info) $ split (barLength $ local_meter info) es
 
-split :: RDuration -> [NoteGroup pch Duration] -> [[NoteGroup pch Duration]]
+split :: RDuration 
+      -> [NoteGroup pch Duration anno]
+      -> [[NoteGroup pch Duration anno]]
 split _    [] = []
 split dbar cs = let (bar1,rest) = breakBar dbar cs in bar1 : split dbar rest
 
 
 breakBar :: RDuration 
-         -> [NoteGroup pch Duration] 
-         -> ([NoteGroup pch Duration], [NoteGroup pch Duration])
+         -> [NoteGroup pch Duration anno] 
+         -> ([NoteGroup pch Duration anno], [NoteGroup pch Duration anno])
 breakBar _    [] = ([],[])
 breakBar dbar cs = step 0 [] cs
   where

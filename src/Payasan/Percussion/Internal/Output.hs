@@ -30,7 +30,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-drumsOutput :: GlobalRenderInfo -> LyDrumPhrase -> Doc
+drumsOutput :: GlobalRenderInfo -> LyDrumPhrase anno -> Doc
 drumsOutput globals ph = 
         header
     $+$ drumsBlock notes

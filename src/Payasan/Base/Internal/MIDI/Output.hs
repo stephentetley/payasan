@@ -45,7 +45,7 @@ import Payasan.Base.Duration
 type Mon a = Rewrite Seconds a
 
 
-midiOutput :: T.TrackData -> Phrase T.MidiPitch Duration -> T.Track
+midiOutput :: T.TrackData -> Phrase T.MidiPitch Duration anno -> T.Track
 midiOutput td ph = T.render $ evalRewriteDefault (phraseT td ph) 0
 
 
@@ -61,7 +61,7 @@ advanceOnset d = puts (\s -> s+d)
 onset :: Mon Seconds
 onset = get
 
-phraseT :: T.TrackData -> Phrase T.MidiPitch Duration -> Mon T.InterimTrack
+phraseT :: T.TrackData -> Phrase T.MidiPitch Duration anno -> Mon T.InterimTrack
 phraseT td (Phrase bs) = 
     (\nss -> T.InterimTrack { T.track_config = td
                             , T.track_notes  = concat nss
@@ -70,21 +70,22 @@ phraseT td (Phrase bs) =
  
 
 
-barT :: Bar T.MidiPitch Duration -> Mon [T.MidiNote]
+barT :: Bar T.MidiPitch Duration anno -> Mon [T.MidiNote]
 barT (Bar info cs)           = concat <$> mapM (noteGroupT df) cs
   where
     df = noteDuration (local_bpm info)
      
 
 
-noteGroupT :: (Duration -> Seconds) -> NoteGroup T.MidiPitch Duration -> Mon [T.MidiNote]
+noteGroupT :: (Duration -> Seconds) 
+           -> NoteGroup T.MidiPitch Duration anno -> Mon [T.MidiNote]
 noteGroupT df (Atom e)          = elementT df e
 noteGroupT df (Beamed es)       = concat <$> mapM (noteGroupT df) es
 noteGroupT _  (Tuplet {})       = return []
 
 elementT :: (Duration -> Seconds) 
-         -> Element T.MidiPitch Duration -> Mon [T.MidiNote]
-elementT df (NoteElem a)        = (\x -> [x]) <$> noteT df a
+         -> Element T.MidiPitch Duration anno -> Mon [T.MidiNote]
+elementT df (NoteElem e _)      = (\x -> [x]) <$> noteT df e
 
 elementT df (Rest d)            = 
     do { let d1 = df d
@@ -92,7 +93,7 @@ elementT df (Rest d)            =
        ; return []
        }
 
-elementT df (Chord ps d)        = 
+elementT df (Chord ps d _)      = 
     do { ot <- onset
        ; let d1 = df d
        ; advanceOnset d1

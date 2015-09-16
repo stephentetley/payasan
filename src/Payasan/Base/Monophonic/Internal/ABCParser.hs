@@ -26,6 +26,8 @@ import Payasan.Base.Internal.ABC.Lexer
 import qualified Payasan.Base.Internal.ABC.Parser as P
 import Payasan.Base.Internal.ABC.Syntax (NoteLength(..), Pitch)
 
+import Payasan.Base.Internal.CommonSyntax
+
 
 import Text.Parsec                              -- package: parsec
 
@@ -78,44 +80,44 @@ abcPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 phrase :: ABCParser ABCMonoPhrase 
 phrase = Phrase <$> bars
 
-bars :: ABCParser [Bar Pitch NoteLength]
+bars :: ABCParser [ABCMonoBar]
 bars = sepBy bar barline
 
 barline :: ABCParser ()
 barline = reservedOp "|"
 
-bar :: ABCParser (Bar Pitch NoteLength)
+bar :: ABCParser ABCMonoBar
 bar = Bar default_local_info <$> noteGroups 
 
 
-noteGroups :: ABCParser [NoteGroup Pitch NoteLength]
+noteGroups :: ABCParser [ABCMonoNoteGroup]
 noteGroups = whiteSpace *> many noteGroup
 
 
-noteGroup :: ABCParser (NoteGroup Pitch NoteLength)
+noteGroup :: ABCParser ABCMonoNoteGroup
 noteGroup = tuplet <|> (Atom <$> element)
 
-element :: ABCParser (Element Pitch NoteLength)
+element :: ABCParser ABCMonoElement
 element = lexeme (rest <|> note)
 
-rest :: ABCParser (Element Pitch NoteLength)
+rest :: ABCParser ABCMonoElement
 rest = Rest <$> (char 'z' *> P.noteLength)
 
-note :: ABCParser (Element Pitch NoteLength)
-note = Note <$> pitch <*> P.noteLength
+note :: ABCParser ABCMonoElement
+note = (\p d -> Note p d ()) <$> pitch <*> P.noteLength
     <?> "note"
 
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser (NoteGroup Pitch NoteLength)
+tuplet :: ABCParser ABCMonoNoteGroup
 tuplet = do 
    spec   <- P.tupletSpec
    notes  <- countedNoteGroups (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedNoteGroups :: Int -> ABCParser [NoteGroup Pitch NoteLength]
+countedNoteGroups :: Int -> ABCParser [ABCMonoNoteGroup]
 countedNoteGroups n 
     | n > 0       = do { e  <- noteGroup
                        ; es <- countedNoteGroups (n - elementSize e)
@@ -131,6 +133,6 @@ pitch = P.pitch
 --------------------------------------------------------------------------------
 -- Helpers
 
-elementSize :: NoteGroup pch drn -> Int
+elementSize :: NoteGroup pch drn anno -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
 elementSize _               = 1

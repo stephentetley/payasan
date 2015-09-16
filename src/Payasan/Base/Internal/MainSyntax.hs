@@ -40,23 +40,24 @@ import Data.Data
 -- Syntax
 
 
-data Phrase pch drn = Phrase { phrase_bars :: [Bar pch drn] }
+data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
 
 
 -- | Note Beaming is not captured in parsing.
 --
-data Bar pch drn = Bar 
+data Bar pch drn anno = Bar 
     { render_info       :: LocalRenderInfo
-    , bar_elements      :: [NoteGroup pch drn]
+    , bar_elements      :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
 -- | Note Beaming is not captured in parsing.
 --
-data NoteGroup pch drn = Atom     (Element pch drn)
-                       | Tuplet   TupletSpec        [NoteGroup pch drn]
+data NoteGroup pch drn anno = 
+      Atom     (Element pch drn anno)
+    | Tuplet   TupletSpec        [NoteGroup pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -65,10 +66,11 @@ data NoteGroup pch drn = Atom     (Element pch drn)
 --
 -- See old Neume code. 
 --
-data Element pch drn = NoteElem   (Note pch drn)
-                     | Rest       drn
-                     | Chord      [pch]             drn
-                     | Graces     [Note pch drn]
+data Element pch drn anno = 
+      NoteElem   (Note pch drn) anno
+    | Rest       drn
+    | Chord      [pch]          drn     anno
+    | Graces     [Note pch drn]
   deriving (Data,Eq,Show,Typeable)
 
 
