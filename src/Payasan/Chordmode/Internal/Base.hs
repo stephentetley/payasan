@@ -19,6 +19,9 @@ module Payasan.Chordmode.Internal.Base
   ( 
    
     LyChordPhrase
+  , OutChordPhrase
+  , LyChordRoot
+
   , StdChordPhrase
 
   , Chord(..)
@@ -31,9 +34,11 @@ module Payasan.Chordmode.Internal.Base
 
   ) where
 
-import Payasan.Base.Monophonic.Internal.Syntax
+import qualified Payasan.Base.Monophonic.Internal.Syntax    as MONO
 
-import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
+import qualified Payasan.Base.Internal.LilyPond.Syntax      as LY
+import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
+
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -41,8 +46,15 @@ import Payasan.Base.Pitch
 import Data.Data
 
 
-type LyChordPhrase       = Phrase LyChord LY.NoteLength ChordSuffix
-type StdChordPhrase      = Phrase Chord   Duration      ()
+-- LilyPond is input as a Monophonic note list, but output as
+-- beam syntax (with bars).
+
+type LyChordPhrase       = MONO.Phrase LyChordRoot LY.NoteLength ChordSuffix
+type OutChordPhrase      = BEAM.Phrase LyChordRoot LY.NoteLength ChordSuffix
+
+type LyChordRoot         = LY.Pitch
+
+type StdChordPhrase      = MONO.Phrase Chord   Duration      ()
 
 
 -- Design note - Chord seems too fundamental and LyChord
@@ -58,8 +70,14 @@ data Chord = Chord
 data LyChord = LyChord LY.Pitch ChordSuffix
   deriving (Data,Eq,Ord,Show,Typeable)
 
-data ChordSuffix = ChordSuffix ChordModifier Steps
-                 | NO_SUFFIX
+
+-- | Use a more limited subset than LilyPond supports - 
+-- either a named modifier or a set of steps.
+--
+-- @empty@ is e.g. default maj5 is @SuffixModifier NO_MOD@
+--
+data ChordSuffix = NamedModifier ChordModifier 
+                 | ChordSteps    Steps
   deriving (Data,Eq,Ord,Show,Typeable)
 
 data Steps = Steps 

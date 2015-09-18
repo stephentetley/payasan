@@ -17,7 +17,10 @@
 
 module Payasan.Base.Monophonic.Internal.LilyPondParser
   (
-    parseLyPhrase
+
+    LyParserDef (..)    -- re-export
+  , parseLyPhrase
+  , pitch
 
   ) where
 
@@ -26,6 +29,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P
+import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..), pitch)
 import Payasan.Base.Internal.CommonSyntax
 
 

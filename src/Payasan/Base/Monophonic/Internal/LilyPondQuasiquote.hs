@@ -22,7 +22,7 @@ module Payasan.Base.Monophonic.Internal.LilyPondQuasiquote
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.LilyPondParser
+import Payasan.Base.Monophonic.Internal.LilyPondParser ( parseLyPhrase )
 import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..), pitch, noAnno)

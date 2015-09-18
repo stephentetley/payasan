@@ -22,9 +22,10 @@ module Payasan.Chordmode.Internal.Parser
 
 import Payasan.Chordmode.Internal.Base
 
+import Payasan.Base.Monophonic.Internal.LilyPondParser
+
 import Payasan.Base.Internal.LilyPond.Lexer
-import Payasan.Base.Internal.LilyPond.Parser
-import Payasan.Base.Internal.LilyPond.Syntax
+import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
 
 import Text.Parsec                              -- package: parsec
 
@@ -44,24 +45,25 @@ chordmode = QuasiQuoter
 
 
 
-parseChordMode :: String -> Either ParseError (GenLyPhrase Pitch ChordSuffix)
+parseChordMode :: String -> Either ParseError LyChordPhrase
 parseChordMode = parseLyPhrase parsedef
   where
     parsedef = LyParserDef { pitchParser = chordRoot
                            , annoParser  = chordSuffix }
 
 
-chordRoot :: LyParser Pitch
+chordRoot :: LyParser LY.Pitch
 chordRoot = pitch
 
 chordSuffix :: LyParser ChordSuffix
-chordSuffix = (symbol ":" *> body) <|> pure NO_SUFFIX
+chordSuffix = (symbol ":" *> body) <|> dfault
   where
-    body = ChordSuffix <$> chordModifier <*> steps
+    dfault = pure $ NamedModifier NO_MOD
+    body   =  (try $ NamedModifier <$> chordModifier)
+          <|> (try $ ChordSteps    <$> steps)
 
 chordModifier :: LyParser ChordModifier
-chordModifier = (try chordModifier1) <|> pure NO_MOD
-             <?> "chordModifier"
+chordModifier = chordModifier1 <?> "chordModifier"
  
 
 chordModifier1 :: LyParser ChordModifier
@@ -77,7 +79,7 @@ chordModifier1 = choice $
     , MIN11     <$ symbol "m11"
     , MIN9      <$ symbol "m9"
     , MIN7      <$ symbol "m7"
-    , MIN7      <$ symbol "m6"
+    , MIN6      <$ symbol "m6"
     , MIN5      <$ symbol "m"
     , DIM7      <$ symbol "dim7"
     , DIM5      <$ symbol "dim"
@@ -93,12 +95,11 @@ chordModifier1 = choice $
     ] 
  
 steps :: LyParser Steps
-steps = (try body) <|> pure no_steps
-     <?> "steps"
+steps = body <?> "steps"
   where
     body        = Steps <$> steps1 <*> rest
     rest        = (try $ (symbol "^" *> steps1)) <|> pure []
-    no_steps    = Steps [] []
+
 
 steps1 :: LyParser [Step]
 steps1 = sepBy step (symbol ".")

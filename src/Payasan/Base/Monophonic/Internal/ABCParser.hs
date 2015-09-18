@@ -24,7 +24,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Lexer
 import qualified Payasan.Base.Internal.ABC.Parser as P
-import Payasan.Base.Internal.ABC.Syntax (NoteLength(..), Pitch)
+import Payasan.Base.Internal.ABC.Syntax (Pitch)
 
 import Payasan.Base.Internal.CommonSyntax
 

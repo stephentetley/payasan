@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.BeamPitchTrafo
+-- Module      :  Payasan.Base.Monophonic.Internal.MonoPitchTrafo
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --

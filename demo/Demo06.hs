@@ -4,12 +4,11 @@
 module Demo06 where
 
 import Payasan.Chordmode.Internal.Base
+import Payasan.Chordmode.Internal.Output
 import Payasan.Chordmode.Internal.Parser
 
 
--- import Payasan.Chordmode.Notelist
-
-import Payasan.Base.Internal.CommonSyntax       -- TEMP
+import Payasan.Chordmode.Notelist
 
 
 
@@ -18,12 +17,12 @@ import Payasan.Base.Internal.CommonSyntax       -- TEMP
 
 test01 = [chordmode| c2 f4:1.3+.5 g:dim7 |]
 
-{-
+
 
 phrase01 :: StdChordPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
-    [chordmode| c2 f4 g |]
--}
+    [chordmode| c2 f4:1.3+.5 g:dim7 |]
+
 
 
 
@@ -36,11 +35,12 @@ manual_ri :: LocalRenderInfo
 manual_ri = default_local_info
 
 
-{-
+
 
 demo01 :: IO ()
 demo01 = printAsLilyPond global_ri phrase01
 
+{-
 
 demo02 :: IO ()
 demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01

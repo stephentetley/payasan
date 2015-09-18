@@ -18,6 +18,11 @@
 module Payasan.Base.Monophonic.Internal.LilyPondInTrans
   (
     lilyPondTranslate
+
+  , trafoRelPitch
+  , trafoAbsPitch
+  , trafoDuration
+
   ) where
 
 
@@ -32,23 +37,23 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as PCH
+import qualified Payasan.Base.Pitch as BASE
 
 
 
 lilyPondTranslate :: GlobalRenderInfo 
                   -> GenLyMonoPhrase Pitch anno 
-                  -> Phrase PCH.Pitch Duration anno
-lilyPondTranslate info = pitchTrafo . D.transform drn_algo
+                  -> Phrase BASE.Pitch Duration anno
+lilyPondTranslate info = pitchTrafo . trafoDuration
   where
     -- If AbsPitch then /previous pitch/ will never be used
     pitchTrafo = case global_ly_octave_mode info of
-                    RelPitch pch -> P.transform (rel_pch_algo pch)
-                    AbsPitch -> P.transform abs_pch_algo
+                    RelPitch pch -> trafoRelPitch pch
+                    AbsPitch -> trafoAbsPitch
 
 
 type DTMon a = D.Mon Duration a
-type RelPMon a = D.Mon PCH.Pitch a
+type RelPMon a = D.Mon BASE.Pitch a
 type AbsPMon a = D.Mon () a
 
 
@@ -56,27 +61,30 @@ type AbsPMon a = D.Mon () a
 --------------------------------------------------------------------------------
 -- Relative Pitch translation
 
-rel_pch_algo :: PCH.Pitch -> P.MonoPitchAlgo PCH.Pitch Pitch PCH.Pitch
+trafoRelPitch :: BASE.Pitch -> Phrase Pitch drn anno -> Phrase BASE.Pitch drn anno
+trafoRelPitch p0 = P.transform (rel_pch_algo p0)
+
+rel_pch_algo :: BASE.Pitch -> P.MonoPitchAlgo BASE.Pitch Pitch BASE.Pitch
 rel_pch_algo start = P.MonoPitchAlgo
     { P.initial_state           = start
     , P.element_trafo           = relElementP
     }
 
 
-previousPitch :: RelPMon PCH.Pitch
+previousPitch :: RelPMon BASE.Pitch
 previousPitch = get
 
-setPrevPitch :: PCH.Pitch -> RelPMon ()
+setPrevPitch :: BASE.Pitch -> RelPMon ()
 setPrevPitch = put 
 
 
-relElementP :: Element Pitch drn anno -> RelPMon (Element PCH.Pitch drn anno)
+relElementP :: Element Pitch drn anno -> RelPMon (Element BASE.Pitch drn anno)
 relElementP (Note p d a)        = (\p1 -> Note p1 d a) <$> changePitchRel p
 relElementP (Rest d)            = pure $ Rest d
 
 
 
-changePitchRel :: Pitch -> RelPMon PCH.Pitch
+changePitchRel :: Pitch -> RelPMon BASE.Pitch
 changePitchRel p1 = 
     do { p0 <- previousPitch
        ; let tp1 = toPitchRel p1 p0
@@ -90,20 +98,23 @@ changePitchRel p1 =
 --------------------------------------------------------------------------------
 -- Abs Pitch translation
 
+trafoAbsPitch :: Phrase Pitch drn anno -> Phrase BASE.Pitch drn anno
+trafoAbsPitch = P.transform abs_pch_algo
 
-abs_pch_algo :: P.MonoPitchAlgo () Pitch PCH.Pitch
+
+abs_pch_algo :: P.MonoPitchAlgo () Pitch BASE.Pitch
 abs_pch_algo = P.MonoPitchAlgo
     { P.initial_state           = ()
     , P.element_trafo           = absElementP
     }
 
 
-absElementP :: Element Pitch drn anno -> AbsPMon (Element PCH.Pitch drn anno)
+absElementP :: Element Pitch drn anno -> AbsPMon (Element BASE.Pitch drn anno)
 absElementP (Note p d a)        = (\p1 -> Note p1 d a) <$> changePitchAbs p
 absElementP (Rest d)            = pure $ Rest d
 
 
-changePitchAbs :: Pitch -> AbsPMon PCH.Pitch
+changePitchAbs :: Pitch -> AbsPMon BASE.Pitch
 changePitchAbs p1 = return $ toPitchAbs p1
 
 
@@ -111,6 +122,9 @@ changePitchAbs p1 = return $ toPitchAbs p1
 
 --------------------------------------------------------------------------------
 -- Duration translation
+
+trafoDuration :: Phrase pch NoteLength anno -> Phrase pch Duration anno
+trafoDuration = D.transform drn_algo
 
 
 drn_algo :: D.MonoDurationAlgo Duration NoteLength Duration 
