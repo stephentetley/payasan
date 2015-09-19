@@ -26,9 +26,8 @@ module Payasan.Base.Internal.LilyPond.OutTrans
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import Payasan.Base.Internal.BeamDurationTrafo as D
-import Payasan.Base.Internal.BeamPitchTrafo as P
 import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
@@ -40,31 +39,31 @@ import qualified Payasan.Base.Pitch as PCH
 translate :: GlobalRenderInfo 
           -> Phrase PCH.Pitch Duration anno 
           -> Phrase Pitch NoteLength anno
-translate info = pitchTrafo . D.transform drn_algo
+translate info = pitchTrafo . transformD drn_algo
   where
     -- If AbsPitch then /previous pitch/ will never be used
     pitchTrafo = case global_ly_octave_mode info of
-                    RelPitch pch -> P.transform (rel_pch_algo pch)
-                    AbsPitch -> P.transform abs_pch_algo
+                    RelPitch pch -> transformP (rel_pch_algo pch)
+                    AbsPitch -> transformP abs_pch_algo
 
 
 
 translateDurationOnly :: Phrase pch Duration anno 
                       -> Phrase pch NoteLength anno
-translateDurationOnly = D.transform drn_algo
+translateDurationOnly = transformD drn_algo
 
-type DTMon   a      = D.Mon Duration a
-type RelPMon a      = D.Mon PCH.Pitch a
-type AbsPMon a      = D.Mon () a
+type DTMon   a      = Mon Duration a
+type RelPMon a      = Mon PCH.Pitch a
+type AbsPMon a      = Mon () a
 
 
 --------------------------------------------------------------------------------
 -- Relative Pitch translation
 
-rel_pch_algo :: PCH.Pitch -> P.BeamPitchAlgo PCH.Pitch PCH.Pitch Pitch
-rel_pch_algo start = P.BeamPitchAlgo
-    { P.initial_state           = start
-    , P.element_trafo           = relElementP
+rel_pch_algo :: PCH.Pitch -> BeamPitchAlgo PCH.Pitch PCH.Pitch Pitch
+rel_pch_algo start = BeamPitchAlgo
+    { initial_stateP    = start
+    , element_trafoP    = relElementP
     }
 
 
@@ -100,10 +99,10 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 
-abs_pch_algo :: P.BeamPitchAlgo () PCH.Pitch Pitch
-abs_pch_algo = P.BeamPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = absElementP
+abs_pch_algo :: BeamPitchAlgo () PCH.Pitch Pitch
+abs_pch_algo = BeamPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = absElementP
     }
 
 
@@ -129,10 +128,10 @@ changePitchAbs p1 = return $ fromPitchAbs p1
 -- Duration translation
 
 
-drn_algo :: D.BeamDurationAlgo Duration Duration NoteLength
-drn_algo = D.BeamDurationAlgo
-    { D.initial_state           = dQuarter
-    , D.element_trafo           = elementD
+drn_algo :: BeamDurationAlgo Duration Duration NoteLength
+drn_algo = BeamDurationAlgo
+    { initial_stateD    = dQuarter
+    , element_trafoD    = elementD
     }
 
 previousDuration :: DTMon Duration

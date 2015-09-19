@@ -27,9 +27,8 @@ module Payasan.Base.Internal.ABC.InTrans
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
 
-import Payasan.Base.Internal.BeamDurationTrafo as D
-import Payasan.Base.Internal.BeamPitchTrafo as P
 import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
@@ -38,19 +37,19 @@ import qualified Payasan.Base.Pitch as PCH
 
 
 translate :: Phrase Pitch NoteLength anno -> Phrase PCH.Pitch Duration anno
-translate = P.transform pch_algo . D.transform drn_algo
+translate = transformP pch_algo . transformD drn_algo
 
-type PTMon a = D.Mon () a
-type DTMon a = D.Mon UnitNoteLength a
+type PTMon a = Mon () a
+type DTMon a = Mon UnitNoteLength a
 
 --------------------------------------------------------------------------------
 -- Pitch translation
 
 
-pch_algo :: P.BeamPitchAlgo () Pitch PCH.Pitch
-pch_algo = P.BeamPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = elementP
+pch_algo :: BeamPitchAlgo () Pitch PCH.Pitch
+pch_algo = BeamPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = elementP
     }
 
 
@@ -76,10 +75,10 @@ transPch = pure . toPitch
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: D.BeamDurationAlgo UnitNoteLength NoteLength Duration
-drn_algo = D.BeamDurationAlgo
-    { D.initial_state           = UNIT_NOTE_8
-    , D.element_trafo           = elementD
+drn_algo :: BeamDurationAlgo UnitNoteLength NoteLength Duration
+drn_algo = BeamDurationAlgo
+    { initial_stateD    = UNIT_NOTE_8
+    , element_trafoD    = elementD
     }
 
 -- actionInfoD :: LocalRenderInfo -> DTMon ()

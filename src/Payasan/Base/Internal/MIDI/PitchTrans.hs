@@ -22,27 +22,27 @@ module Payasan.Base.Internal.MIDI.PitchTrans
 
 import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch, pitchToMidi)
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamPitchTrafo as P
+import Payasan.Base.Internal.BeamTraversals
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
 translate :: Phrase Pitch Duration anno -> Phrase MidiPitch Duration anno
-translate = P.transform pch_algo
+translate = transformP pch_algo
 
 
-type PTMon   a      = P.Mon () a
+type PTMon   a      = Mon () a
 
 
 --------------------------------------------------------------------------------
 -- Pitch translation
 
 
-pch_algo :: P.BeamPitchAlgo () Pitch MidiPitch
-pch_algo = P.BeamPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = elementP
+pch_algo :: BeamPitchAlgo () Pitch MidiPitch
+pch_algo = BeamPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = elementP
     }
 
 

@@ -25,9 +25,8 @@ module Payasan.Base.Internal.ABC.OutTrans
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
 
-import Payasan.Base.Internal.BeamDurationTrafo as D
-import Payasan.Base.Internal.BeamPitchTrafo as P
 import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
@@ -41,10 +40,10 @@ import Data.Ratio (numerator, denominator)
 
 
 translate :: Phrase PCH.Pitch Duration anno -> Phrase Pitch NoteLength anno
-translate = P.transform pch_algo . D.transform drn_algo
+translate = transformP pch_algo . transformD drn_algo
 
-type PTMon a = D.Mon () a
-type DTMon a = D.Mon UnitNoteLength a
+type PTMon a = Mon () a
+type DTMon a = Mon UnitNoteLength a
 
 --------------------------------------------------------------------------------
 -- Pitch translation
@@ -52,10 +51,10 @@ type DTMon a = D.Mon UnitNoteLength a
 
 -- TODO - This should be aware of keysig changes...
 
-pch_algo :: P.BeamPitchAlgo () PCH.Pitch Pitch
-pch_algo = P.BeamPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = elementP
+pch_algo :: BeamPitchAlgo () PCH.Pitch Pitch
+pch_algo = BeamPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = elementP
     }
 
 
@@ -80,10 +79,10 @@ transPch = pure . fromPitch
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: D.BeamDurationAlgo UnitNoteLength Duration NoteLength
-drn_algo = D.BeamDurationAlgo
-    { D.initial_state           = UNIT_NOTE_8
-    , D.element_trafo           = elementD
+drn_algo :: BeamDurationAlgo UnitNoteLength Duration NoteLength
+drn_algo = BeamDurationAlgo
+    { initial_stateD    = UNIT_NOTE_8
+    , element_trafoD    = elementD
     }
 
 

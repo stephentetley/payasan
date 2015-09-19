@@ -23,26 +23,26 @@ import Payasan.Percussion.Internal.Base
 
 import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch)
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamPitchTrafo as P
+import Payasan.Base.Internal.BeamTraversals
 
 import Payasan.Base.Duration
 
 
 translate :: Phrase DrumPitch Duration anno -> Phrase MidiPitch Duration anno
-translate = P.transform pch_algo
+translate = transformP pch_algo
 
 
-type PTMon   a      = P.Mon () a
+type PTMon   a      = Mon () a
 
 
 --------------------------------------------------------------------------------
 -- Pitch translation
 
 
-pch_algo :: P.BeamPitchAlgo () DrumPitch MidiPitch
-pch_algo = P.BeamPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = elementP
+pch_algo :: BeamPitchAlgo () DrumPitch MidiPitch
+pch_algo = BeamPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = elementP
     }
 
 
