@@ -27,9 +27,8 @@ module Payasan.Base.Monophonic.Internal.LilyPondInTrans
 
 
 
-import Payasan.Base.Monophonic.Internal.MonoDurationTrafo as D
-import Payasan.Base.Monophonic.Internal.MonoPitchTrafo as P
 import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.LilyPond.Syntax (Pitch,NoteLength(..))
 import Payasan.Base.Internal.LilyPond.Utils
@@ -52,9 +51,9 @@ lilyPondTranslate info = pitchTrafo . trafoDuration
                     AbsPitch -> trafoAbsPitch
 
 
-type DTMon a = D.Mon Duration a
-type RelPMon a = D.Mon BASE.Pitch a
-type AbsPMon a = D.Mon () a
+type DMon a    = Mon Duration a
+type RelPMon a = Mon BASE.Pitch a
+type AbsPMon a = Mon () a
 
 
 
@@ -62,12 +61,12 @@ type AbsPMon a = D.Mon () a
 -- Relative Pitch translation
 
 trafoRelPitch :: BASE.Pitch -> Phrase Pitch drn anno -> Phrase BASE.Pitch drn anno
-trafoRelPitch p0 = P.transform (rel_pch_algo p0)
+trafoRelPitch p0 = transformP (rel_pch_algo p0)
 
-rel_pch_algo :: BASE.Pitch -> P.MonoPitchAlgo BASE.Pitch Pitch BASE.Pitch
-rel_pch_algo start = P.MonoPitchAlgo
-    { P.initial_state           = start
-    , P.element_trafo           = relElementP
+rel_pch_algo :: BASE.Pitch -> MonoPitchAlgo BASE.Pitch Pitch BASE.Pitch
+rel_pch_algo start = MonoPitchAlgo
+    { initial_stateP    = start
+    , element_trafoP    = relElementP
     }
 
 
@@ -99,13 +98,13 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 trafoAbsPitch :: Phrase Pitch drn anno -> Phrase BASE.Pitch drn anno
-trafoAbsPitch = P.transform abs_pch_algo
+trafoAbsPitch = transformP abs_pch_algo
 
 
-abs_pch_algo :: P.MonoPitchAlgo () Pitch BASE.Pitch
-abs_pch_algo = P.MonoPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = absElementP
+abs_pch_algo :: MonoPitchAlgo () Pitch BASE.Pitch
+abs_pch_algo = MonoPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = absElementP
     }
 
 
@@ -124,28 +123,28 @@ changePitchAbs p1 = return $ toPitchAbs p1
 -- Duration translation
 
 trafoDuration :: Phrase pch NoteLength anno -> Phrase pch Duration anno
-trafoDuration = D.transform drn_algo
+trafoDuration = transformD drn_algo
 
 
-drn_algo :: D.MonoDurationAlgo Duration NoteLength Duration 
-drn_algo = D.MonoDurationAlgo
-    { D.initial_state           = dQuarter
-    , D.element_trafo           = elementD
+drn_algo :: MonoDurationAlgo Duration NoteLength Duration 
+drn_algo = MonoDurationAlgo
+    { initial_stateD    = dQuarter
+    , element_trafoD    = elementD
     }
 
-previousDuration :: DTMon Duration
+previousDuration :: DMon Duration
 previousDuration = get
 
-setPrevDuration :: Duration -> DTMon ()
+setPrevDuration :: Duration -> DMon ()
 setPrevDuration d = put d
 
 
-elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
-elementD (Note p d a)           = (\d1 -> Note p d1 a) <$> changeDrn d
-elementD (Rest d)               = Rest   <$> changeDrn d
+elementD :: Element pch NoteLength anno -> DMon (Element pch Duration anno)
+elementD (Note p d a)   = (\d1 -> Note p d1 a) <$> changeDrn d
+elementD (Rest d)       = Rest   <$> changeDrn d
 
 
-changeDrn :: NoteLength -> DTMon Duration
+changeDrn :: NoteLength -> DMon Duration
 changeDrn (DrnDefault)    = previousDuration
 changeDrn (DrnExplicit d) = setPrevDuration d >> return d
 

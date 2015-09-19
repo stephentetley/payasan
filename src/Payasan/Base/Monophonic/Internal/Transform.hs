@@ -21,9 +21,9 @@ module Payasan.Base.Monophonic.Internal.Transform
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.MonoDurationTrafo
 import Payasan.Base.Monophonic.Internal.RecalcBars
 import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Duration
 

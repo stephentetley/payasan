@@ -20,7 +20,7 @@ module Payasan.Chordmode.Internal.OutTrans
   ) where
 
 import Payasan.Chordmode.Internal.Base
-import Payasan.Base.Monophonic.Internal.MonoPitchAnnoTrafo
+import Payasan.Base.Monophonic.Internal.Traversals
 import Payasan.Base.Monophonic.Internal.Syntax as MONO
 
 import qualified Payasan.Base.Internal.LilyPond.Syntax as LY

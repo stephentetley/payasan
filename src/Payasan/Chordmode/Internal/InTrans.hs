@@ -21,7 +21,7 @@ module Payasan.Chordmode.Internal.InTrans
 
 import Payasan.Chordmode.Internal.Base
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
-import Payasan.Base.Monophonic.Internal.MonoPitchAnnoTrafo
+import Payasan.Base.Monophonic.Internal.Traversals
 import Payasan.Base.Monophonic.Internal.Syntax
 
 import qualified Payasan.Base.Internal.LilyPond.Syntax as LY

@@ -59,10 +59,9 @@ import Payasan.Base.Monophonic.Internal.ABCParser (abc)
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
 import Payasan.Base.Monophonic.Internal.LilyPondQuasiquote (lilypond)
 import Payasan.Base.Monophonic.Internal.MonoToMain
-import Payasan.Base.Monophonic.Internal.MonoDurationTrafo
-import Payasan.Base.Monophonic.Internal.MonoPitchTrafo
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Transform
+import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Notelist as MAIN

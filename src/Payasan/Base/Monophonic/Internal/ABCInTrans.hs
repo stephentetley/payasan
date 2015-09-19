@@ -21,9 +21,8 @@ module Payasan.Base.Monophonic.Internal.ABCInTrans
 
 
 
-import Payasan.Base.Monophonic.Internal.MonoDurationTrafo as D
-import Payasan.Base.Monophonic.Internal.MonoPitchTrafo as P
 import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.ABC.Syntax (Pitch,NoteLength)
 import Payasan.Base.Internal.ABC.Utils
@@ -35,29 +34,28 @@ import qualified Payasan.Base.Pitch as PCH
 
 
 abcTranslate :: ABCMonoPhrase -> Phrase PCH.Pitch Duration ()
-abcTranslate = P.transform pch_algo . D.transform drn_algo
+abcTranslate = transformP pch_algo . transformD drn_algo
 
-type PTMon a = D.Mon () a
-type DTMon a = D.Mon UnitNoteLength a
 
 --------------------------------------------------------------------------------
 -- Pitch translation
 
+type PMon a = Mon () a
 
-pch_algo :: P.MonoPitchAlgo () Pitch PCH.Pitch
-pch_algo = P.MonoPitchAlgo
-    { P.initial_state           = ()
-    , P.element_trafo           = elementP
+pch_algo :: MonoPitchAlgo () Pitch PCH.Pitch
+pch_algo = MonoPitchAlgo
+    { initial_stateP    = ()
+    , element_trafoP    = elementP
     }
 
 
-elementP :: Element Pitch drn anno -> PTMon (Element PCH.Pitch drn anno) 
+elementP :: Element Pitch drn anno -> PMon (Element PCH.Pitch drn anno) 
 elementP (Note p d a)           = (\p1 -> Note p1 d a) <$> transPch p
 elementP (Rest d)               = pure $ Rest d
 
 
 -- likely to change wrt key sig...
-transPch :: Pitch -> PTMon PCH.Pitch
+transPch :: Pitch -> PMon PCH.Pitch
 transPch = pure . toPitch
 
 
@@ -65,19 +63,21 @@ transPch = pure . toPitch
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: D.MonoDurationAlgo UnitNoteLength NoteLength Duration
-drn_algo = D.MonoDurationAlgo
-    { D.initial_state           = UNIT_NOTE_8
-    , D.element_trafo           = elementD
+type DMon a = Mon UnitNoteLength a
+
+drn_algo :: MonoDurationAlgo UnitNoteLength NoteLength Duration
+drn_algo = MonoDurationAlgo
+    { initial_stateD    = UNIT_NOTE_8
+    , element_trafoD    = elementD
     }
 
 
-elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
+elementD :: Element pch NoteLength anno -> DMon (Element pch Duration anno)
 elementD (Note p d a)           = (\d1 -> Note p d1 a) <$> changeDrn d
 elementD (Rest d)               = Rest    <$> changeDrn d
 
 
-changeDrn :: NoteLength -> DTMon Duration
+changeDrn :: NoteLength -> DMon Duration
 changeDrn d = (durationT `flip` d) <$> asksLocal local_unit_note_len
 
 
