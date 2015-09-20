@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Chordmode.Internal.Output
+-- Module      :  Payasan.LilyPond.Chordmode.Internal.Output
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,12 +14,12 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Chordmode.Internal.Output
+module Payasan.LilyPond.Chordmode.Internal.Output
   ( 
     chordmodeOutput
   ) where
 
-import Payasan.Chordmode.Internal.Base
+import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Output ( LyOutputDef(..), renderNotes )

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Percussion.Internal.PitchTrans
+-- Module      :  Payasan.LilyPond.Percussion.Internal.PitchTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,12 +14,12 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Percussion.Internal.PitchTrans
+module Payasan.LilyPond.Percussion.Internal.PitchTrans
   ( 
     translate
   ) where
 
-import Payasan.Percussion.Internal.Base
+import Payasan.LilyPond.Percussion.Internal.Base
 
 import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch)
 import Payasan.Base.Internal.BeamSyntax

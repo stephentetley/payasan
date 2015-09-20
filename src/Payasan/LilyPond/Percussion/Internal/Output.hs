@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Percussion.Internal.Output
+-- Module      :  Payasan.LilyPond.Percussion.Internal.Output
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,12 +14,12 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Percussion.Internal.Output
+module Payasan.LilyPond.Percussion.Internal.Output
   ( 
     drumsOutput
   ) where
 
-import Payasan.Percussion.Internal.Base
+import Payasan.LilyPond.Percussion.Internal.Base
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Output ( LyOutputDef(..), renderNotes )

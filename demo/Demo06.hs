@@ -3,20 +3,13 @@
 
 module Demo06 where
 
-import Payasan.Chordmode.Internal.Base
-import Payasan.Chordmode.Internal.Output
-import Payasan.Chordmode.Internal.Parser
 
-
-import Payasan.Chordmode.Notelist
+import Payasan.LilyPond.Chordmode.Notelist
 
 
 
 
 -- CHORDS -- 
-
-test01 = [chordmode| c2 f4:1.3+.5 g:dim7 |]
-
 
 
 phrase01 :: StdChordPhrase

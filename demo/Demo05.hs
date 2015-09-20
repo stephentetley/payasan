@@ -3,7 +3,7 @@
 
 module Demo05 where
 
-import Payasan.Percussion.Notelist
+import Payasan.LilyPond.Percussion.Notelist
 
 
 

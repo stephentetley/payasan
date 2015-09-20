@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Percussion.Internal.Parser
+-- Module      :  Payasan.LilyPond.Percussion.Internal.Parser
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,17 +11,17 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Parser for subset of LilyPond.
+-- Parser for LilyPond drum mode.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Percussion.Internal.Parser
+module Payasan.LilyPond.Percussion.Internal.Parser
   (
     drums
 
   ) where
 
-import Payasan.Percussion.Internal.Base
+import Payasan.LilyPond.Percussion.Internal.Base
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import Payasan.Base.Internal.LilyPond.Parser

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Chordmode.Internal.InTrans
+-- Module      :  Payasan.LilyPond.Chordmode.Internal.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,21 +14,21 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Chordmode.Internal.InTrans
+module Payasan.LilyPond.Chordmode.Internal.OutTrans
   ( 
-    translateInput      -- name problem
+    translateOutput      -- name problem
   ) where
 
-import Payasan.Chordmode.Internal.Base
-import Payasan.Base.Monophonic.Internal.LilyPondInTrans
+import Payasan.LilyPond.Chordmode.Internal.Base
+
 import Payasan.Base.Monophonic.Internal.Traversals
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Monophonic.Internal.Syntax as MONO
 
 import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
 import Payasan.Base.Internal.LilyPond.Utils
 
-translateInput :: LyChordPhrase -> StdChordPhrase
-translateInput = trafoAnnos . trafoDuration
+translateOutput :: MONO.Phrase Chord drn anno -> MONO.Phrase LY.Pitch drn ChordSuffix
+translateOutput = trafoAnnos 
 
-trafoAnnos :: Phrase LY.Pitch drn ChordSuffix -> Phrase Chord drn ()
-trafoAnnos = mapPitchAnno $ \p a -> (Chord (toPitchAbs p) a, ())
+trafoAnnos :: MONO.Phrase Chord drn anno -> MONO.Phrase LY.Pitch drn ChordSuffix
+trafoAnnos = mapPitchAnno $ \ch _ -> (fromPitchAbs $ chord_root ch, chord_suffix ch)

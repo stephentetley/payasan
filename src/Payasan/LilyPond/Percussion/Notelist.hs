@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Percussion.Notelist
+-- Module      :  Payasan.LilyPond.Percussion.Notelist
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Percussion.Notelist
+module Payasan.LilyPond.Percussion.Notelist
   ( 
 
     module Payasan.Base.Internal.Shell
@@ -43,10 +43,10 @@ module Payasan.Percussion.Notelist
 
   ) where
 
-import Payasan.Percussion.Internal.Base
-import Payasan.Percussion.Internal.Output (drumsOutput)
-import Payasan.Percussion.Internal.Parser (drums)  -- to re-export
-import qualified Payasan.Percussion.Internal.PitchTrans    as PERC
+import Payasan.LilyPond.Percussion.Internal.Base
+import Payasan.LilyPond.Percussion.Internal.Output (drumsOutput)
+import Payasan.LilyPond.Percussion.Internal.Parser (drums)  -- to re-export
+import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.BeamToMain

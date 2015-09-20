@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Chordmode.Notelist
+-- Module      :  Payasan.LilyPond.Chordmode.Notelist
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Chordmode.Notelist
+module Payasan.LilyPond.Chordmode.Notelist
   ( 
 
     module Payasan.Base.Internal.Shell
@@ -44,11 +44,11 @@ module Payasan.Chordmode.Notelist
 
   ) where
 
-import Payasan.Chordmode.Internal.Base
-import Payasan.Chordmode.Internal.InTrans
-import Payasan.Chordmode.Internal.Output
-import Payasan.Chordmode.Internal.OutTrans
-import Payasan.Chordmode.Internal.Parser (chordmode)  -- to re-export
+import Payasan.LilyPond.Chordmode.Internal.Base
+import Payasan.LilyPond.Chordmode.Internal.InTrans
+import Payasan.LilyPond.Chordmode.Internal.Output
+import Payasan.LilyPond.Chordmode.Internal.OutTrans
+import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 
 
 import qualified Payasan.Base.Monophonic.Internal.MonoToMain as MONO

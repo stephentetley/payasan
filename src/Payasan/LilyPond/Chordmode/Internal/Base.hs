@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Chordmode.Internal.Base
+-- Module      :  Payasan.LilyPond.Chordmode.Internal.Base
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Chordmode.Internal.Base
+module Payasan.LilyPond.Chordmode.Internal.Base
   ( 
    
     LyChordPhrase

@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Percussion.Internal.Base
+-- Module      :  Payasan.LilyPond.Percussion.Internal.Base
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Percussion.Internal.Base
+module Payasan.LilyPond.Percussion.Internal.Base
   ( 
    
     LyDrumPhrase

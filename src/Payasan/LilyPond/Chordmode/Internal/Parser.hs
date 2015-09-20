@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Chordmode.Internal.Parser
+-- Module      :  Payasan.LilyPond.Chordmode.Internal.Parser
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,17 +10,17 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Chordmode for LilyPond.
+-- Parser for LilyPond @chordmode@.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Chordmode.Internal.Parser
+module Payasan.LilyPond.Chordmode.Internal.Parser
   ( 
      chordmode
 
   ) where
 
-import Payasan.Chordmode.Internal.Base
+import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.Base.Monophonic.Internal.LilyPondParser
 
