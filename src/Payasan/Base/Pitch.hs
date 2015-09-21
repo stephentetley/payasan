@@ -62,9 +62,15 @@ module Payasan.Base.Pitch
   -- * Intervals
   , IntervalType(..)
   , Interval(..)
+  , intervalPlus
+  , (^+^)
+
+  , makeCompound
   , intervalBetween
   , addInterval
   , subInterval
+
+  , (.+^) 
 
   , isSmaller
   , isLarger
@@ -76,7 +82,7 @@ module Payasan.Base.Pitch
 
   , invertSimpleInterval
 
-  , description
+  , intervalDescription
 
   )
   where
@@ -295,10 +301,28 @@ data IntervalType = OCTAVE | SECOND | THIRD | FOURTH | FIFTH | SIXTH | SEVENTH
 -- ill-formed.
 --
 data Interval = Interval
-    { interval_arith_dist       :: !Int
+    { interval_distance         :: !Int
     , interval_semitones        :: !Int
     }
   deriving (Data,Eq,Ord,Show,Typeable)
+
+
+intervalPlus :: Interval -> Interval -> Interval
+intervalPlus a b = 
+    let ad = (interval_distance a + interval_distance b) - 1
+        sc = interval_semitones a + interval_semitones b
+    in Interval { interval_distance = ad, interval_semitones = sc }
+
+
+infixl 6 ^+^
+
+-- | Alias for intervalPlus. Name and fixity follows vector-space
+-- library but we don\'t depend on it.
+--
+-- (This may change.)
+--
+(^+^) :: Interval -> Interval -> Interval
+(^+^) = intervalPlus
 
 
 intervalBetween :: Pitch -> Pitch -> Interval
@@ -306,9 +330,20 @@ intervalBetween p q
     | p `isHigher` q    = fn q p
     | otherwise         = fn p q
   where
-    fn a b = Interval { interval_arith_dist = arithmeticDistance a b
-                      , interval_semitones  = semitoneCount b - semitoneCount a
-                      }
+    fn a b = let sc = semitoneCount b - semitoneCount a
+             in Interval { interval_distance  = arithmeticDistance a b
+                         , interval_semitones = sc 
+                         }
+
+
+makeCompound :: Int -> Interval -> Interval
+makeCompound i ivl = fn $ simpleIntervalOf ivl
+  where
+    fn (Interval { interval_distance  = d
+                 , interval_semitones = sc }) = 
+        let d1 = d - 1 + 8 * i
+            sc1 = sc + 12 * i
+        in Interval { interval_distance  = d1, interval_semitones = sc1 }
 
 --------------------------------------------------------------------------------
 -- Adding intervals to pitches
@@ -320,6 +355,17 @@ addInterval (Pitch ss o) iv = Pitch ss1 ov1
     ostep = if crossesTwelve ss iv then 1 else 0
     ov1   = o + ostep + octaveCount iv
 
+
+
+infixl 6 .+^
+
+-- | Alias for addInterval. Name and fixity follows vector-space
+-- library but we don\'t depend on it.
+--
+-- (This may change.)
+--
+(.+^) :: Pitch -> Interval -> Pitch
+(.+^) = addInterval
 
 subInterval :: Pitch -> Interval -> Pitch
 subInterval (Pitch ss o) iv = Pitch ss1 ov1
@@ -336,7 +382,7 @@ subInterval (Pitch ss o) iv = Pitch ss1 ov1
 -- does not account for octaves:
 --
 pachetAdd :: PitchSpelling -> Interval -> PitchSpelling
-pachetAdd sp0 (Interval { interval_arith_dist = ad
+pachetAdd sp0 (Interval { interval_distance  = ad
                         , interval_semitones = sc }) = PitchSpelling l1 alt
   where
     (PitchSpelling l _)         = znaturalOf sp0
@@ -346,7 +392,7 @@ pachetAdd sp0 (Interval { interval_arith_dist = ad
 
 
 pachetSub :: PitchSpelling -> Interval -> PitchSpelling
-pachetSub sp0 (Interval { interval_arith_dist = ad
+pachetSub sp0 (Interval { interval_distance = ad
                         , interval_semitones = sc }) = PitchSpelling l1 alt
   where
     (PitchSpelling l _)         = znaturalOf sp0
@@ -417,9 +463,9 @@ octaveCount :: Interval -> Int
 octaveCount (Interval { interval_semitones = n }) = n `div` 12
 
 addOctaves :: Interval -> Int -> Interval
-addOctaves (Interval { interval_arith_dist = ad
+addOctaves (Interval { interval_distance = ad
                      , interval_semitones  = sc }) i = 
-    Interval { interval_arith_dist = ad + (i * 8)
+    Interval { interval_distance = ad + (i * 8)
              , interval_semitones  = sc + (i * 12)
              }
 
@@ -429,17 +475,17 @@ arithDistModulo ad = let x = ad-1 in 1+(x `mod` 7)
 
 
 perfect_octave :: Interval
-perfect_octave = Interval { interval_arith_dist = 8
+perfect_octave = Interval { interval_distance = 8
                           , interval_semitones  = 12    
                           }
 
 -- | Simple intervals are smaller intervals than perfect_octave
 -- 
 simpleIntervalOf :: Interval -> Interval
-simpleIntervalOf iv@(Interval { interval_arith_dist = ad
+simpleIntervalOf iv@(Interval { interval_distance = ad
                               , interval_semitones  = n  }) 
     | iv `isSmaller` perfect_octave  = iv
-    | otherwise                      = Interval { interval_arith_dist = ad1
+    | otherwise                      = Interval { interval_distance = ad1
                                                 , interval_semitones  = n1 }
   where
     ad1 = arithDistModulo ad
@@ -449,21 +495,21 @@ simpleIntervalOf iv@(Interval { interval_arith_dist = ad
 invertSimpleInterval :: Interval -> Interval
 invertSimpleInterval = step . simpleIntervalOf 
   where
-    step (Interval { interval_arith_dist = ad, interval_semitones = n }) = 
-        Interval { interval_arith_dist  = 9 - ad, interval_semitones   = 12 - n }
+    step (Interval { interval_distance = ad, interval_semitones = n }) = 
+        Interval { interval_distance  = 9 - ad, interval_semitones   = 12 - n }
 
 
 
 --------------------------------------------------------------------------------
 -- Description
 
-description :: Interval -> (String,String,Int)
-description iv = (intervalColour iv, distanceName iv, octaveCount iv)
+intervalDescription :: Interval -> (String,String,Int)
+intervalDescription iv = (intervalColour iv, distanceName iv, octaveCount iv)
 
 
 
 distanceName :: Interval -> String
-distanceName (Interval {interval_arith_dist = ad}) 
+distanceName (Interval {interval_distance = ad}) 
     | ad == 1   = "unison"
     | otherwise = step $ arithDistModulo ad
   where
@@ -477,7 +523,7 @@ distanceName (Interval {interval_arith_dist = ad})
     step _ = "distanceName - unreachable"
 
 intervalColour :: Interval -> String
-intervalColour (Interval {interval_arith_dist = ad, interval_semitones = n}) = 
+intervalColour (Interval {interval_distance = ad, interval_semitones = n}) = 
     maybe "unknown" id $ case arithDistModulo ad of
       1 -> identify ["perfect", "augmented"] nmod
       2 -> identify ["diminished", "minor", "major", "augmented"] nmod

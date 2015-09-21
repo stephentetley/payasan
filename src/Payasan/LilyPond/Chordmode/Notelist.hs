@@ -39,20 +39,22 @@ module Payasan.LilyPond.Chordmode.Notelist
 
   , ppRender
 
---  , writeAsMIDI
+  , writeAsMIDI
 
 
   ) where
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 import Payasan.LilyPond.Chordmode.Internal.InTrans
+import Payasan.LilyPond.Chordmode.Internal.Interpret
 import Payasan.LilyPond.Chordmode.Internal.Output
 import Payasan.LilyPond.Chordmode.Internal.OutTrans
 import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 
 
-import qualified Payasan.Base.Monophonic.Internal.MonoToMain as MONO
-import qualified Payasan.Base.Monophonic.Internal.Syntax     as MONO
+import qualified Payasan.Base.Monophonic.Internal.MonoToMain    as MONO
+import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
+import qualified Payasan.Base.Monophonic.Internal.Traversals    as MONO
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
@@ -69,6 +71,7 @@ import qualified Payasan.Base.Internal.LilyPond.Syntax      as LY
 
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -97,6 +100,8 @@ outputAsLilyPond gi =
 toMain ::  StdChordPhrase -> MAIN.Phrase LY.Pitch Duration ChordSuffix
 toMain = MONO.translateToMain . translateOutput
 
+
+
 printAsLilyPond :: GlobalRenderInfo -> StdChordPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
@@ -104,14 +109,21 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
-{-
-writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
-writeAsMIDI path notes = 
-   let trk = MIDI.midiOutput (MIDI.simpleTrackData 9) (noteTrans notes)
-   in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch Duration
-noteTrans = PERC.translate . translateToBeam
+writeAsMIDI :: FilePath -> StdChordPhrase -> IO ()
+writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes 
 
 
--}
+-- midiTrans :: StdChordPhrase -> MAIN.
+-- The MONO to MAIN translation is actually shape changing 
+-- for MIDI - notes become chords...
+
+midiTrans :: StdChordPhrase -> MAIN.Phrase Pitch Duration ()
+midiTrans = MONO.chordTranslateToMain . chordTrans
+
+
+
+chordTrans :: StdChordPhrase -> MONO.Phrase [Pitch] Duration ()
+chordTrans = MONO.mapPch buildNotes
+
+

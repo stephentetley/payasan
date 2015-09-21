@@ -7,8 +7,6 @@ import Payasan.LilyPond.Percussion.Notelist
 
 
 
-
-
 -- DRUMS -- 
 
 phrase01 :: StdDrumPhrase

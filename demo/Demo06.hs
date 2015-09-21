@@ -7,6 +7,8 @@ module Demo06 where
 import Payasan.LilyPond.Chordmode.Notelist
 
 
+import Payasan.LilyPond.Chordmode.Internal.Interpret  -- TEMP
+
 
 
 -- CHORDS -- 
@@ -33,12 +35,11 @@ manual_ri = default_local_info
 demo01 :: IO ()
 demo01 = printAsLilyPond global_ri phrase01
 
-{-
+
 
 demo02 :: IO ()
 demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01
 
 demo03 :: IO ()
-demo03 = writeAsMIDI "out/drums01.mid" phrase01
+demo03 = writeAsMIDI "out/chords01.mid" phrase01
 
--}
