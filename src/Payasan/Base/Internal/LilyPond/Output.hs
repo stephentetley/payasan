@@ -27,11 +27,41 @@ import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.RewriteMonad
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
+type Mon a = Rewrite State a
 
+data State = State { prev_info  :: !LocalRenderInfo }
+
+stateZero :: LocalRenderInfo -> State
+stateZero info = State { prev_info  = info }
+
+
+setInfo :: LocalRenderInfo -> Mon () 
+setInfo info = puts (\s -> s { prev_info = info })
+
+
+deltaMetrical :: LocalRenderInfo -> Mon (Maybe Meter)
+deltaMetrical (LocalRenderInfo { local_meter = m1 }) = 
+    fn <$> gets prev_info
+  where
+    fn prev 
+        | local_meter prev == m1 = Nothing
+        | otherwise              = Just m1
+
+deltaKey :: LocalRenderInfo -> Mon (Maybe Key)
+deltaKey (LocalRenderInfo { local_key = k1 }) = 
+    fn <$> gets prev_info
+  where
+    fn prev 
+        | local_key prev == k1 = Nothing
+        | otherwise            = Just k1
+
+
+--------------------------------------------------------------------------------
 
 lilyPondOutput :: GlobalRenderInfo 
                -> LyOutputDef Pitch anno 
@@ -78,23 +108,40 @@ data LyOutputDef pch anno = LyOutputDef
 -- | Pitch should be \"context free\" at this point.
 --
 renderNotes :: forall pch anno. LyOutputDef pch anno -> GenLyPhrase pch anno -> Doc
-renderNotes def = oLyPhrase
+renderNotes def ph = evalRewriteDefault (oLyPhrase ph) (stateZero first_info)
   where
+    first_info :: LocalRenderInfo
+    first_info  = maybe default_local_info id $ firstRenderInfo ph
+
     pPitch :: pch -> Doc
     pPitch = printPitch def
 
     pAnno  :: anno -> Doc
     pAnno  = printAnno def
 
-    oLyPhrase :: GenLyPhrase pch anno -> Doc
-    oLyPhrase (Phrase [])           = empty
-    oLyPhrase (Phrase (x:xs))       = step (oBar x) xs
+    oLyPhrase :: GenLyPhrase pch anno -> Mon Doc
+    oLyPhrase (Phrase [])           = return empty
+    oLyPhrase (Phrase (x:xs))       = do { d <- oBar x; step d xs }
       where
-        step d []     = d
-        step d (b:bs) = let ac = d <+> char '|' $+$ oBar b in step ac bs
+        step d []     = return d
+        step d (b:bs) = do { d1    <- oBar b
+                           ; let ac = d <+> char '|' $+$ d1
+                           ; step ac bs 
+                           }
 
-    oBar :: GenLyBar pch anno -> Doc
-    oBar (Bar _info cs) = hsep (map oNoteGroup cs)
+    oBar :: GenLyBar pch anno -> Mon Doc
+    oBar (Bar info cs)              = 
+          do { dkey    <- deltaKey info
+             ; dmeter  <- deltaMetrical info
+             ; let ans = hsep (map oNoteGroup cs)
+             ; setInfo info
+             ; return $ prefixM dmeter $ prefixK dkey $ ans
+             }
+        where
+          prefixK Nothing   = (empty <>)
+          prefixK (Just k)  = (key k $+$)
+          prefixM Nothing   = (empty <>)
+          prefixM (Just m)  = (meter m $+$)
 
     oNoteGroup :: GenLyNoteGroup pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e

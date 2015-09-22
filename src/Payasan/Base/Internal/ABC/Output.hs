@@ -36,7 +36,7 @@ type CatOp = Doc -> Doc -> Doc
 type Mon a = Rewrite State a
 
 data State = State { bar_column :: !Int
-                   , prev_info :: !LocalRenderInfo
+                   , prev_info  :: !LocalRenderInfo
                    }
 
 stateZero :: LocalRenderInfo -> State
@@ -114,7 +114,7 @@ oABCPhrase (Phrase (x:xs))      = do { d <- oBar x; step d xs }
 oBar :: ABCBar -> Mon Doc
 oBar (Bar info cs)              = 
     do { dkey    <- deltaKey info
-       ; dmeter  <- deltaMetrical info                            
+       ; dmeter  <- deltaMetrical info
        ; let ans = oNoteGroupList (<+>) cs
        ; setInfo info
        ; return $ prefixM dmeter $ prefixK dkey $ ans
