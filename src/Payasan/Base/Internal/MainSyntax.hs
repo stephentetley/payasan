@@ -43,6 +43,9 @@ import Data.Data
 data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
+instance Monoid (Phrase pch drn anno) where
+  mempty = Phrase []
+  Phrase xs `mappend` Phrase ys = Phrase $ xs ++ ys
 
 
 -- | Note Beaming is not captured in parsing.

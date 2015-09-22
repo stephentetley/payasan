@@ -33,6 +33,7 @@ module Payasan.Base.Internal.ABC.Utils
   , vsep
   , sepList
   , field
+  , midtuneField
 
   , tupletSpec
   , meter
@@ -187,6 +188,9 @@ sepList op (x:xs) = step x xs
 
 field :: Char -> Doc -> Doc
 field c d = char c <> colon <> d
+
+midtuneField :: Char -> Doc -> Doc
+midtuneField c d = char '[' <> field c d <> char ']'
 
 
 tupletSpec :: TupletSpec -> Doc
