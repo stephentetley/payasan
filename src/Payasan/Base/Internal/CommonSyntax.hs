@@ -35,7 +35,7 @@ module Payasan.Base.Internal.CommonSyntax
 
   , MeterPattern
   , TupletSpec(..)
-
+  , tupletUnitRDuration 
 
 
   -- * Keys
@@ -137,15 +137,20 @@ barLength (Meter n d) = (fromIntegral n) * fn d
     fn i = 1 % fromIntegral i
 
 
-
+-- | @tuplet_time_mult@ is the multipler of the note 
+-- length (ideally all notes _should_ be the same length).
+--
 data TupletSpec = TupletSpec
-     { tuplet_num   :: Int
-     , tuplet_time  :: Int
-     , tuplet_len   :: Int
+     { tuplet_num       :: !Int
+     , tuplet_time_mult :: !Int
+     , tuplet_len       :: !Int
      }
   deriving (Data,Eq,Show,Typeable)
 
 
+tupletUnitRDuration :: TupletSpec -> RDuration -> RDuration 
+tupletUnitRDuration (TupletSpec { tuplet_time_mult = m }) unitd = 
+    unitd * realToFrac m
 
 
 

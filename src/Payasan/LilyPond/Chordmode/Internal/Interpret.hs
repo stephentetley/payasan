@@ -13,8 +13,9 @@
 -- Interpret chordmode definitions.
 -- 
 -- Note - LilyPond step notation is possibly underspecified with
--- respect to pitch spelling. Potentially LilyPond does some extra
--- interpretation.
+-- respect to pitch spelling. Potentially LilyPond does some 
+-- extrainterpretation (e.g. to make diminished 7th chords which 
+-- have doubled flattened 7).
 --
 --------------------------------------------------------------------------------
 
@@ -83,7 +84,7 @@ modifierSteps MIN13     =
     fromAddSteps [ nat 1, flat 3, nat 5, flat 7, nat 9, nat 11, nat 13 ]
 
 modifierSteps DIM5      = fromAddSteps [ nat 1, flat 3, flat 5 ]
-modifierSteps DIM7      = undefined -- doubleflat 7th
+modifierSteps DIM7      = fromAddSteps []
 
 modifierSteps AUG5      = fromAddSteps [ nat 1, nat 3, sharp 5 ]
 modifierSteps AUG7      = fromAddSteps [ nat 1, nat 3, sharp 5, flat 7 ]
@@ -108,9 +109,9 @@ modifierSteps NO_MOD    = fromAddSteps [ nat 1, nat 3, nat 5 ]
 
 buildSteps :: Pitch -> Steps -> [Pitch]
 buildSteps r (Steps adds rems) = 
-    let steps = foldr delete adds rems 
-    in catMaybes $ map (\s -> fmap (r .+^) $ intervalFrom s) steps
+    catMaybes $ map (\s -> fmap (r .+^) $ intervalFrom s) steps
   where
+    steps = foldr delete adds rems 
 
 intervalFrom :: Step -> Maybe Interval
 intervalFrom (Step 1  NO_ALT)   = Just perfect_unison

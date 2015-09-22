@@ -227,7 +227,7 @@ meter :: Meter -> Doc
 meter (Meter n d) = command "time" <+> int n <> char '/' <> int d
 
 tupletSpec :: TupletSpec -> Doc
-tupletSpec (TupletSpec { tuplet_num = n, tuplet_time = t}) = 
+tupletSpec (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) = 
     command "tuplet" <+> int n <> char '/' <> int t
      
 

@@ -247,7 +247,7 @@ noAnno = return ()
 
 makeTupletSpec :: (Int,Int) -> Int -> TupletSpec
 makeTupletSpec (n,t) len = 
-    TupletSpec { tuplet_num   = n
-               , tuplet_time  = t
-               , tuplet_len   = len
+    TupletSpec { tuplet_num         = n
+               , tuplet_time_mult   = t
+               , tuplet_len         = len
                }

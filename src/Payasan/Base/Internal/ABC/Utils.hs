@@ -190,9 +190,9 @@ field c d = char c <> colon <> d
 
 
 tupletSpec :: TupletSpec -> Doc
-tupletSpec (TupletSpec { tuplet_num   = n
-                       , tuplet_time  = t
-                       , tuplet_len   = x }) = 
+tupletSpec (TupletSpec { tuplet_num       = n
+                       , tuplet_time_mult = t
+                       , tuplet_len       = x }) = 
     char '(' <> int n <> char ':' <> int t <> char ':' <> int x
 
 

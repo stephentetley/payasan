@@ -108,7 +108,10 @@ pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
 sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
 sizeNoteGroup (Atom e)              = sizeElement e
 sizeNoteGroup (Beamed es)           = sum $ map sizeNoteGroup es
-sizeNoteGroup (Tuplet {})           = error "sizeNoteGroup (Tuplet {})"
+sizeNoteGroup (Tuplet spec es)      = tupletUnitRDuration spec (firstOf es)
+  where
+    firstOf (x:_)   = sizeNoteGroup x
+    firstOf []      = durationSize dEighth
 
 sizeElement :: Element pch Duration anno -> RDuration
 sizeElement (NoteElem (Note _ d) _) = durationSize d
