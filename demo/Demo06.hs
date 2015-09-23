@@ -3,12 +3,7 @@
 
 module Demo06 where
 
-
 import Payasan.LilyPond.Chordmode.Notelist
-
-
-import Payasan.LilyPond.Chordmode.Internal.Interpret  -- TEMP
-
 
 
 -- CHORDS -- 
@@ -17,7 +12,6 @@ import Payasan.LilyPond.Chordmode.Internal.Interpret  -- TEMP
 phrase01 :: StdChordPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
     [chordmode| c2 f4:1.3+.5 g:dim7 |]
-
 
 
 
@@ -31,11 +25,8 @@ manual_ri = default_local_info
 
 
 
-
 demo01 :: IO ()
 demo01 = printAsLilyPond global_ri phrase01
-
-
 
 demo02 :: IO ()
 demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01

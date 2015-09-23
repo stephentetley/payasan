@@ -124,6 +124,6 @@ midiTrans = MONO.chordTranslateToMain . chordTrans
 
 
 chordTrans :: StdChordPhrase -> MONO.Phrase [Pitch] Duration ()
-chordTrans = MONO.mapPch buildNotes
+chordTrans = MONO.mapPitch buildNotes
 
 

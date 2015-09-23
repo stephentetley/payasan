@@ -17,7 +17,8 @@
 module Payasan.Base.Monophonic.Notelist
   ( 
 
-    module Payasan.Base.Monophonic.Internal.Transform
+    module Payasan.Base.Internal.Shell
+  , module Payasan.Base.Monophonic.Internal.Transform
 
   , Phrase
   , StdMonoPhrase
@@ -49,8 +50,8 @@ module Payasan.Base.Monophonic.Notelist
 
   , writeAsMIDI
 
-  , mapPch
-  , mapDrn
+  , mapPitch
+  , mapDuration
 
   ) where
 
@@ -64,6 +65,7 @@ import Payasan.Base.Monophonic.Internal.Transform
 import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.Shell
 import qualified Payasan.Base.Notelist as MAIN
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
