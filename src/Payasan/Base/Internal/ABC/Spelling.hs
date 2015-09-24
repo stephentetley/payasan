@@ -17,7 +17,8 @@
 module Payasan.Base.Internal.ABC.Spelling
   (
     SpellingMap(..) 
-  , spell    
+  , spellFindNatural
+  , spellFindAlteration
   , makeSpellingMap
 
   ) where
@@ -137,18 +138,22 @@ findAlterations (Key n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
 
 
 data SpellingMap = SpellingMap 
-    { spelling_map_alterations      :: SET.Set PitchName 
-    , spelling_map_naturals         :: SET.Set PitchLetter
+    { spelling_alterations      :: SET.Set PitchName 
+    , spelling_alt_lookups      :: MAP.Map PitchLetter  PitchName
+    , spelling_naturals         :: SET.Set PitchLetter
     }
-
+  deriving (Show)
 
 -- TODO - needs testing...
 
--- | Initial translation sets all NATURALS to NO_ACCIDENTAL, we
--- might have to change them to NATURAL for printing.
+-- | Rendering - initial output translation sets all NATURALS 
+-- to NO_ACCIDENTAL, we might have to change them to NATURAL 
+-- for printing.
 --
-spell :: SpellingMap -> ABC.Pitch -> ABC.Pitch
-spell (SpellingMap alts nats) p0@(ABC.Pitch ac l om) = step ac
+spellFindNatural :: SpellingMap -> ABC.Pitch -> ABC.Pitch
+spellFindNatural (SpellingMap { spelling_alterations = alts 
+                              , spelling_naturals    = nats}) 
+                 p0@(ABC.Pitch ac l om) = step ac
   where
     step ABC.NO_ACCIDENTAL      = 
         let (l1,_) = toLetterParts l 
@@ -157,6 +162,23 @@ spell (SpellingMap alts nats) p0@(ABC.Pitch ac l om) = step ac
     step _                      = 
         let (lbl,_,_) = decomposePitch p0 
         in if lbl `SET.member` alts then ABC.Pitch ABC.NO_ACCIDENTAL l om else p0
+
+
+
+
+-- | Parsing - initial input sets all non-altered notes to 
+-- NO_ACCIDENTAL. Non-altered notes in the input can include
+-- notes that are actually altered by the key signature. 
+-- We need to look up their alteration.
+--
+spellFindAlteration :: SpellingMap -> ABC.Pitch -> ABC.Pitch
+spellFindAlteration (SpellingMap { spelling_alt_lookups = finds }) p = 
+    case MAP.lookup (pitch_letter name) finds of
+        Nothing -> p
+        Just name1 -> recomposePitch name1 lc ove
+  where
+    (name,lc,ove) = decomposePitch p
+
 
 
 
@@ -171,15 +193,20 @@ makeSpellingMap ks = let i = findAlterations ks in buildSpellings i
 buildSpellings :: Int -> SpellingMap
 buildSpellings n 
     | abs n > 7 = error "SpellingMap.makeSpellingMap - more sharps/flats than notes."
-    | n == 0    = SpellingMap SET.empty SET.empty
+    | n == 0    = SpellingMap SET.empty MAP.empty SET.empty
     | n >  0    = build $ nsharps n
     | otherwise = build $ nflats (abs n)          
   where
     build lbls = SpellingMap 
-                   { spelling_map_alterations = SET.fromList $ lbls
-                   , spelling_map_naturals    = SET.fromList $ map root lbls
+                   { spelling_alterations = SET.fromList $ lbls
+                   , spelling_alt_lookups = MAP.fromList $ map lookup1 lbls
+                   , spelling_naturals    = SET.fromList $ map root lbls
                    }
+    
     root (PitchName l _)   = l
+
+    lookup1 :: PitchName -> (PitchLetter, PitchName)
+    lookup1 name = (root name, name)
 
 
 

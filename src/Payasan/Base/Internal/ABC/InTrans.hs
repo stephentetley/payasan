@@ -24,6 +24,7 @@ module Payasan.Base.Internal.ABC.InTrans
 
 
 
+import Payasan.Base.Internal.ABC.Spelling
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
 
@@ -72,9 +73,10 @@ noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 -- actually sharpened or flattened according to key 
 -- signature
 
--- likely to change wrt key sig...
 transPch :: Pitch -> PTMon PCH.Pitch
-transPch = pure . toPitch
+transPch p0 = 
+    (\k -> let sm = makeSpellingMap k in toPitch $ spellFindAlteration sm p0) 
+        <$> asksLocal local_key
 
 
 

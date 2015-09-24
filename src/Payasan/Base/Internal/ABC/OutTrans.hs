@@ -73,10 +73,9 @@ elementP (Graces ns)            = Graces    <$> mapM noteP ns
 noteP :: Note PCH.Pitch drn -> PTMon (Note Pitch drn)
 noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
--- likely to change wrt key sig...
 transPch :: PCH.Pitch -> PTMon Pitch
 transPch p0 = 
-    (\k -> let sm = makeSpellingMap k in spell sm $ fromPitch p0) 
+    (\k -> let sm = makeSpellingMap k in spellFindNatural sm $ fromPitch p0) 
         <$> asksLocal local_key
 
 
