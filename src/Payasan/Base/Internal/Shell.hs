@@ -83,7 +83,7 @@ envLookup name = liftM fn $ try $ getEnv name
 shellOutABC :: GlobalRenderInfo -> String -> IO ()
 shellOutABC info abc = 
     do { root <- outputDirectory
-       ; let outfile = root </> global_temp_file_prefix info <.> "abc"
+       ; let outfile = root </> global_temp_abc_file info
        ; writeFile outfile abc
        ; return ()
        }
@@ -92,7 +92,7 @@ shellOutABC info abc =
 shellOutLilyPond :: GlobalRenderInfo -> String -> IO ()
 shellOutLilyPond info ly = 
     do { root <- outputDirectory
-       ; let outfile = root </> global_temp_file_prefix info <.> "ly"
+       ; let outfile = root </> global_temp_ly_file info
        ; writeFile outfile ly
        ; return ()
        }

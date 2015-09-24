@@ -15,7 +15,7 @@
 --
 -- Import directly if needed.
 -- 
--- z- prefix on functions indicates they operate on PitchSpelling
+-- z- prefix on functions indicates they operate on PitchName
 -- which has no notion of octave (c.f. Z12 modulo representation).
 --
 --------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ module Payasan.Base.Pitch
 
   -- * Pitch
     Pitch(..)
-  , PitchSpelling(..)
+  , PitchName(..)
   , PitchLetter(..)
   , Alteration(..)
   , Octave
@@ -53,14 +53,11 @@ module Payasan.Base.Pitch
   , zarithmeticDistanceDown
 
   , semitoneDistance
-  , semitonesToNext
-  , semitonesToPrev
 
   , octaveDistance
   , lyOctaveDistance
 
   -- * Intervals
-  , IntervalType(..)
   , Interval(..)
   , intervalPlus
   , (^+^)
@@ -71,6 +68,7 @@ module Payasan.Base.Pitch
   , subInterval
 
   , (.+^) 
+  , (.-^)
 
   , isSmaller
   , isLarger
@@ -94,12 +92,12 @@ import Data.Data
 
 -- | middle c is c4
 data Pitch = Pitch 
-    { pitch_spelling    :: !PitchSpelling 
+    { pitch_name        :: !PitchName
     , pitch_octave      :: !Octave 
     }
   deriving (Data,Eq,Ord,Show,Typeable)
 
-data PitchSpelling = PitchSpelling !PitchLetter !Alteration
+data PitchName = PitchName !PitchLetter !Alteration
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -115,8 +113,8 @@ type Octave = Int
 instance Pretty Pitch where
   pPrint (Pitch ss o)        = pPrint ss <> pPrint o
 
-instance Pretty PitchSpelling where
-  pPrint (PitchSpelling l a) = pPrint l <> pPrint a
+instance Pretty PitchName where
+  pPrint (PitchName l a) = pPrint l <> pPrint a
 
 instance Pretty PitchLetter where
   pPrint C              = char 'C'
@@ -137,7 +135,7 @@ instance Pretty Alteration where
 -- | Middle C is octave 4 as per /scientific notation/.
 --
 middle_c :: Pitch
-middle_c = Pitch (PitchSpelling C NAT) 4
+middle_c = Pitch (PitchName C NAT) 4
 
 
 --------------------------------------------------------------------------------
@@ -147,20 +145,20 @@ middle_c = Pitch (PitchSpelling C NAT) 4
 naturalOf :: Pitch -> Pitch
 naturalOf (Pitch s o) = Pitch (znaturalOf s) o
 
-znaturalOf :: PitchSpelling -> PitchSpelling
-znaturalOf (PitchSpelling l _) = PitchSpelling l NAT
+znaturalOf :: PitchName -> PitchName
+znaturalOf (PitchName l _) = PitchName l NAT
 
 sharpOf :: Pitch -> Pitch
 sharpOf (Pitch s o) = Pitch (zsharpOf s) o
 
-zsharpOf :: PitchSpelling -> PitchSpelling
-zsharpOf (PitchSpelling l _) = PitchSpelling l SHARP
+zsharpOf :: PitchName -> PitchName
+zsharpOf (PitchName l _) = PitchName l SHARP
 
 flatOf :: Pitch -> Pitch
 flatOf (Pitch s o) = Pitch (zflatOf s) o
 
-zflatOf :: PitchSpelling -> PitchSpelling
-zflatOf (PitchSpelling l _) = PitchSpelling l FLAT
+zflatOf :: PitchName -> PitchName
+zflatOf (PitchName l _) = PitchName l FLAT
 
 
 -- | Middle C is 48 - to get MIDI semitone count add 12
@@ -175,8 +173,8 @@ midiSemitoneCount p = 12 + semitoneCount p
 
 
 
-zsemitoneCount :: PitchSpelling -> Int
-zsemitoneCount (PitchSpelling pl a) = semitoneCountPL pl + semitoneCountA a
+zsemitoneCount :: PitchName -> Int
+zsemitoneCount (PitchName pl a) = semitoneCountPL pl + semitoneCountA a
 
 
 semitoneCountPL :: PitchLetter -> Int
@@ -206,7 +204,7 @@ equivalent :: Pitch -> Pitch -> Bool
 equivalent p q = semitoneCount p == semitoneCount q
 
 
-zequivalent :: PitchSpelling -> PitchSpelling -> Bool
+zequivalent :: PitchName -> PitchName -> Bool
 zequivalent p q = zsemitoneCount p == zsemitoneCount q
 
 
@@ -223,12 +221,12 @@ arithmeticDistance p q
        octaveDistance b a + zarithmeticDistanceDown s1 s2
 
 
-zarithmeticDistanceUp :: PitchSpelling -> PitchSpelling -> Int
-zarithmeticDistanceUp (PitchSpelling l1 _) (PitchSpelling l2 _) = 
+zarithmeticDistanceUp :: PitchName -> PitchName -> Int
+zarithmeticDistanceUp (PitchName l1 _) (PitchName l2 _) = 
     adUpwardsPL l1 l2
 
-zarithmeticDistanceDown :: PitchSpelling -> PitchSpelling -> Int
-zarithmeticDistanceDown (PitchSpelling l1 _) (PitchSpelling l2 _) = 
+zarithmeticDistanceDown :: PitchName -> PitchName -> Int
+zarithmeticDistanceDown (PitchName l1 _) (PitchName l2 _) = 
     adDownwardsPL l1 l2
 
 
@@ -252,20 +250,6 @@ semitoneDistance p q
   where
     sd1 a b = semitoneCount b - semitoneCount a
 
-
-semitonesToNext :: PitchSpelling -> PitchSpelling -> Int
-semitonesToNext s1 s2
-    | s1 == s2  = 12
-    | otherwise = semitoneDistance p q
-  where
-    p = Pitch s1 1
-    q = let q0 = Pitch s2 1 in if q0 `isLower` p then Pitch s2 2 else q0
-
--- | Note - returns a positive number.
-semitonesToPrev :: PitchSpelling -> PitchSpelling -> Int
-semitonesToPrev s1 s2 
-    | s1 == s2  = 12 
-    | otherwise = 12 - semitonesToNext s1 s2
 
 
 -- | Note - should always be positive.
@@ -293,7 +277,6 @@ lyOctaveDistance root p1
 -- Interval
 
 
-data IntervalType = OCTAVE | SECOND | THIRD | FOURTH | FIFTH | SIXTH | SEVENTH
 
 
 -- | Note - intervals should be unsigned. If either of the
@@ -375,28 +358,38 @@ subInterval (Pitch ss o) iv = Pitch ss1 ov1
     ov1   = o + ostep - octaveCount iv
 
 
+infixl 6 .-^
+
+-- | Alias for subInterval. Name and fixity follows vector-space
+-- library but we don\'t depend on it.
+--
+-- (This may change.)
+--
+(.-^) :: Pitch -> Interval -> Pitch
+(.-^) = subInterval
+
 
 -- | The algorith provided by Francois Pachet in 
 --   An Object-Oriented Representation of Pitch-Classes, 
 --   Intervals, Scales and Chords: The basic MusES
 -- does not account for octaves:
 --
-pachetAdd :: PitchSpelling -> Interval -> PitchSpelling
+pachetAdd :: PitchName -> Interval -> PitchName
 pachetAdd sp0 (Interval { interval_distance  = ad
-                        , interval_semitones = sc }) = PitchSpelling l1 alt
+                        , interval_semitones = sc }) = PitchName l1 alt
   where
-    (PitchSpelling l _)         = znaturalOf sp0
-    znext@(PitchSpelling l1 _)  = PitchSpelling (upwardPL l ad) NAT
-    sc_next                     = semitonesToNext sp0 znext
+    (PitchName l0 _)            = znaturalOf sp0
+    znext@(PitchName l1 _)      = PitchName (upwardPL l0 ad) NAT
+    sc_next                     = semitonesToNext sp0 znext       -- logic here is wrong for unison
     alt                         = alterationFromDiff $ sc - sc_next
 
 
-pachetSub :: PitchSpelling -> Interval -> PitchSpelling
+pachetSub :: PitchName -> Interval -> PitchName
 pachetSub sp0 (Interval { interval_distance = ad
-                        , interval_semitones = sc }) = PitchSpelling l1 alt
+                        , interval_semitones = sc }) = PitchName l1 alt
   where
-    (PitchSpelling l _)         = znaturalOf sp0
-    zprev@(PitchSpelling l1 _)  = PitchSpelling (downwardPL l ad) NAT
+    (PitchName l0 _)            = znaturalOf sp0
+    zprev@(PitchName l1 _)      = PitchName (downwardPL l0 ad) NAT
     sc_prev                     = semitonesToPrev sp0 zprev
     alt                         = alterationFromDiff $ sc - sc_prev
 
@@ -408,6 +401,24 @@ upwardPL l ad = let n = fromEnum l in toEnum $ (n + (ad - 1)) `mod` 7
 
 downwardPL :: PitchLetter -> Int -> PitchLetter
 downwardPL l ad = let n = fromEnum l in toEnum $ (n - (ad - 1)) `mod` 7
+
+
+-- | Step 3 in Pachet
+
+semitonesToNext :: PitchName -> PitchName -> Int
+semitonesToNext s1 s2
+    | s1 == s2  = 0
+    | otherwise = semitoneDistance p q
+  where
+    p = Pitch s1 1
+    q = let q0 = Pitch s2 1 in if q0 `isLower` p then Pitch s2 2 else q0
+
+-- | Note - returns a positive number.
+semitonesToPrev :: PitchName -> PitchName -> Int
+semitonesToPrev s1 s2 
+    | s1 == s2  = 0
+    | otherwise = 12 - semitonesToNext s1 s2
+
 
 
 alterationFromDiff :: Int -> Alteration
@@ -428,7 +439,7 @@ alterationFromDiff i
 -- 
 -- Crossing here is (>=).
 --
-crossesTwelve :: PitchSpelling -> Interval -> Bool
+crossesTwelve :: PitchName -> Interval -> Bool
 crossesTwelve ps iv = scount >= 12
   where
     scount = zsemitoneCount ps + interval_semitones (simpleIntervalOf iv)
@@ -443,7 +454,7 @@ crossesTwelve ps iv = scount >= 12
 -- 
 -- Crossing here is (>=).
 --
-crossesZero :: PitchSpelling -> Interval -> Bool
+crossesZero :: PitchName -> Interval -> Bool
 crossesZero ps iv = scount < 0
   where
     scount = zsemitoneCount ps - interval_semitones (simpleIntervalOf iv)

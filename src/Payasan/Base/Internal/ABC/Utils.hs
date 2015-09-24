@@ -39,6 +39,7 @@ module Payasan.Base.Internal.ABC.Utils
   , meter
   , unitNoteLength
   , key
+  , clef
   , mode
   , note
   , rest
@@ -70,11 +71,11 @@ import Data.Ratio
 toPitch :: Pitch -> P.Pitch
 toPitch (Pitch a l om) = 
     let (l1,lcase) = toLetterParts l
-    in P.Pitch (P.PitchSpelling l1 (toAlteration a)) (toOctaveP lcase om)
+    in P.Pitch (P.PitchName l1 (toAlteration a)) (toOctaveP lcase om)
 
 
 fromPitch :: P.Pitch -> Pitch
-fromPitch (P.Pitch (P.PitchSpelling l a) o) = 
+fromPitch (P.Pitch (P.PitchName l a) o) = 
     Pitch (fromAlteration a) (fromLetterPartsOve l o) (fromOctaveP o)
 
 
@@ -83,15 +84,15 @@ data LetterCase = LOWER | UPPER
 
 -- | General function for decomposing pitch 
 -- 
-decomposePitch :: Pitch -> (P.PitchSpelling,LetterCase,P.Octave)
-decomposePitch (Pitch a l om) = (P.PitchSpelling l1 a1, lc, ove)
+decomposePitch :: Pitch -> (P.PitchName,LetterCase,P.Octave)
+decomposePitch (Pitch a l om) = (P.PitchName l1 a1, lc, ove)
   where
     a1          = toAlteration a
     (l1,lc)     = toLetterParts l
     ove         = toOctaveP lc om
 
-recomposePitch :: P.PitchSpelling -> LetterCase -> P.Octave -> Pitch
-recomposePitch (P.PitchSpelling l a) lc i = Pitch a1 l1 om
+recomposePitch :: P.PitchName -> LetterCase -> P.Octave -> Pitch
+recomposePitch (P.PitchName l a) lc i = Pitch a1 l1 om
   where
     a1 = fromAlteration a
     l1 = fromLetterParts l lc
@@ -210,7 +211,11 @@ unitNoteLength UNIT_NOTE_8      = text "1/8"
 unitNoteLength UNIT_NOTE_16     = text "1/16"
 
 key :: Key -> Doc
-key (Key n m)           = pitchSpelling n <> mode m
+key (Key n m)           = pitchName n <> mode m
+
+clef :: Clef -> Doc
+clef TREBLE             = text "clef=treble"
+clef BASS               = text "clef=bass"
 
 
 mode :: Mode -> Doc
@@ -223,8 +228,8 @@ mode LYDIAN             = text "Lyd"
 mode LOCRIAN            = text "Loc"
 
 
-pitchSpelling :: P.PitchSpelling -> Doc
-pitchSpelling (P.PitchSpelling l a) = text (show l) <> alt a
+pitchName :: P.PitchName -> Doc
+pitchName (P.PitchName l a) = text (show l) <> alt a
   where
     alt P.DBL_FLAT      = text "bb"
     alt P.FLAT          = text "b"

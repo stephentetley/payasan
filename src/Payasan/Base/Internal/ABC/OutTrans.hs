@@ -22,6 +22,7 @@ module Payasan.Base.Internal.ABC.OutTrans
 
 
 
+import Payasan.Base.Internal.ABC.Spelling
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
 
@@ -51,6 +52,7 @@ type DTMon a = Mon UnitNoteLength a
 
 -- TODO - This should be aware of keysig changes...
 
+
 pch_algo :: BeamPitchAlgo () PCH.Pitch Pitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
@@ -73,7 +75,9 @@ noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
 -- likely to change wrt key sig...
 transPch :: PCH.Pitch -> PTMon Pitch
-transPch = pure . fromPitch
+transPch p0 = 
+    (\k -> let sm = makeSpellingMap k in spell sm $ fromPitch p0) 
+        <$> asksLocal local_key
 
 
 --------------------------------------------------------------------------------

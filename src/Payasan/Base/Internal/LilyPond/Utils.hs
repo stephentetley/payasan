@@ -22,8 +22,8 @@ module Payasan.Base.Internal.LilyPond.Utils
     toPitchAbs
   , fromPitchAbs
 
-  , toPitchSpelling
-  , fromPitchSpelling
+  , toPitchName
+  , fromPitchName
 
   , toPitchLetter
   , fromPitchLetter
@@ -73,23 +73,23 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 --
 toPitchAbs :: Pitch -> P.Pitch
 toPitchAbs (Pitch l a om) =
-    let lbl = P.PitchSpelling (toPitchLetter l) (toAlteration a) 
+    let lbl = P.PitchName (toPitchLetter l) (toAlteration a) 
     in P.Pitch lbl (toOctaveAbs om)
 
 
 
 fromPitchAbs :: P.Pitch -> Pitch
 fromPitchAbs (P.Pitch lbl o) = 
-    let (l,a) = fromPitchSpelling lbl
+    let (l,a) = fromPitchName lbl
     in Pitch l a (fromOctaveAbs o)
 
 
 
-toPitchSpelling :: PitchLetter -> Accidental -> P.PitchSpelling
-toPitchSpelling l a = P.PitchSpelling (toPitchLetter l) (toAlteration a)
+toPitchName :: PitchLetter -> Accidental -> P.PitchName
+toPitchName l a = P.PitchName (toPitchLetter l) (toAlteration a)
 
-fromPitchSpelling :: P.PitchSpelling -> (PitchLetter,Accidental)
-fromPitchSpelling (P.PitchSpelling p a) = (fromPitchLetter p, fromAlteration a)
+fromPitchName :: P.PitchName -> (PitchLetter,Accidental)
+fromPitchName (P.PitchName p a) = (fromPitchLetter p, fromAlteration a)
 
 
 -- | Middle c is 4. In LilyPond this is C raised 1
@@ -151,14 +151,14 @@ makeOctaveModifier i
 fromPitchRel :: P.Pitch -> P.Pitch -> Pitch
 fromPitchRel p1 p_old = 
     let om    = makeOctaveModifier $ P.lyOctaveDistance p_old p1
-        (l,a) = fromPitchSpelling $ P.pitch_spelling p1        
+        (l,a) = fromPitchName $ P.pitch_name p1        
     in Pitch l a om
 
 
 toPitchRel :: Pitch -> P.Pitch -> P.Pitch
 toPitchRel (Pitch l a om) p0 = octaveAdjust root om
   where
-    lbl   = toPitchSpelling l a
+    lbl   = toPitchName l a
     p1    = P.Pitch lbl (P.pitch_octave p0)
     root  = if P.arithmeticDistance p0 p1 <= 5 
               then p1 else P.Pitch lbl (P.pitch_octave p0 - 1)
@@ -204,10 +204,10 @@ absolute = command "absolute"
 
 
 key :: Key -> Doc
-key (Key ps m)          = command "key" <+> pitchSpelling ps <+> mode m
+key (Key ps m)          = command "key" <+> pitchName ps <+> mode m
 
-pitchSpelling :: P.PitchSpelling -> Doc
-pitchSpelling (P.PitchSpelling l a) = 
+pitchName :: P.PitchName -> Doc
+pitchName (P.PitchName l a) = 
     pitchLetter (fromPitchLetter l) <> fn (fromAlteration a)
   where
     fn NATURAL = empty

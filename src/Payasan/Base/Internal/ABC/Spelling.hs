@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  SymNotelist.Internal.ABCSpelling
+-- Module      :  Payasan.Base.Internal.ABC.Spelling
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module SymNotelist.Internal.ABCSpelling
+module Payasan.Base.Internal.ABC.Spelling
   (
     SpellingMap(..) 
   , spell    
@@ -22,11 +22,13 @@ module SymNotelist.Internal.ABCSpelling
 
   ) where
 
-import qualified SymNotelist.Internal.ABCSyntax as ABC
-import SymNotelist.Internal.ABCUtils
-import SymNotelist.Internal.CommonSyntax (KeySig(..), Mode(..))
-import SymNotelist.NoteNames
-import SymNotelist.Pitch
+
+import qualified Payasan.Base.Internal.ABC.Syntax as ABC
+import Payasan.Base.Internal.ABC.Utils
+import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Names.Pitch
+import Payasan.Base.Pitch
+
 
 import qualified Data.Map as MAP
 import qualified Data.Set as SET
@@ -52,79 +54,79 @@ import qualified Data.Set as SET
 -- 7 flats :   Cb      Abm      GbMix   DbDor   EbPhr   FbLyd   BbLoc
 -}
 
-loc_map :: MAP.Map NoteLabel Int
+loc_map :: MAP.Map PitchName Int
 loc_map = MAP.fromList $ 
-    [ (bsharp,7), (esharp,6), (asharp,5), (dsharp,4)
-    , (gsharp,3), (csharp,2), (fnat,1)
-    , (bnat,0)
-    , (enat,-1), (anat,-2), (dnat,-3), (gnat,-4)
-    , (cnat,-5), (fnat,-6), (bflat,-7)
+    [ (b_sharp,7), (e_sharp,6), (a_sharp,5), (d_sharp,4)
+    , (g_sharp,3), (c_sharp,2), (f_nat,1)
+    , (b_nat,0)
+    , (e_nat,-1), (a_nat,-2), (d_nat,-3), (g_nat,-4)
+    , (c_nat,-5), (f_nat,-6), (b_flat,-7)
     ]
 
-lyd_map :: MAP.Map NoteLabel Int
+lyd_map :: MAP.Map PitchName Int
 lyd_map = MAP.fromList $ 
-    [ (fsharp,7), (bnat,6), (enat,5), (anat,4)
-    , (dnat,3), (gnat,2), (cnat,1)
-    , (fnat,0)
-    , (bflat,-1), (eflat,-2), (aflat,-3), (dflat,-4)
-    , (gflat,-5), (cflat,-6), (fflat,-7)
+    [ (f_sharp,7), (b_nat,6), (e_nat,5), (a_nat,4)
+    , (d_nat,3), (g_nat,2), (c_nat,1)
+    , (f_nat,0)
+    , (b_flat,-1), (e_flat,-2), (a_flat,-3), (d_flat,-4)
+    , (g_flat,-5), (c_flat,-6), (f_flat,-7)
     ]
 
-phr_map :: MAP.Map NoteLabel Int
+phr_map :: MAP.Map PitchName Int
 phr_map = MAP.fromList $ 
-    [ (esharp,7), (asharp,6), (dsharp,5), (gsharp,4)
-    , (csharp,3), (fsharp,2), (bnat,1)
-    , (enat,0)
-    , (anat,-1), (dnat,-2), (gnat,-3), (cnat,-4)
-    , (fnat,-5), (bflat,-6), (eflat,-7)
+    [ (e_sharp,7), (a_sharp,6), (d_sharp,5), (g_sharp,4)
+    , (c_sharp,3), (f_sharp,2), (b_nat,1)
+    , (e_nat,0)
+    , (a_nat,-1), (d_nat,-2), (g_nat,-3), (c_nat,-4)
+    , (f_nat,-5), (b_flat,-6), (e_flat,-7)
     ]
 
-dor_map :: MAP.Map NoteLabel Int
+dor_map :: MAP.Map PitchName Int
 dor_map = MAP.fromList $ 
-    [ (dsharp,7), (gsharp,6), (csharp,5), (fsharp,4)
-    , (bnat,3), (enat,2), (anat,1)
-    , (dnat,0)
-    , (gnat,-1), (cnat,-2), (fnat,-3), (bflat,-4)
-    , (eflat,-5), (aflat,-6), (dflat,-7)
+    [ (d_sharp,7), (g_sharp,6), (c_sharp,5), (f_sharp,4)
+    , (b_nat,3), (e_nat,2), (a_nat,1)
+    , (d_nat,0)
+    , (g_nat,-1), (c_nat,-2), (f_nat,-3), (b_flat,-4)
+    , (e_flat,-5), (a_flat,-6), (d_flat,-7)
     ]
 
-mix_map :: MAP.Map NoteLabel Int
+mix_map :: MAP.Map PitchName Int
 mix_map = MAP.fromList $ 
-    [ (gsharp,7), (csharp,6), (fsharp,5), (bnat,4)
-    , (enat,3), (anat,2), (dnat,1)
-    , (gnat,0)
-    , (cnat,-1), (fnat,-2), (bflat,-3), (eflat,-4)
-    , (aflat,-5), (dflat,-6), (gflat,-7)
+    [ (g_sharp,7), (c_sharp,6), (f_sharp,5), (b_nat,4)
+    , (e_nat,3), (a_nat,2), (d_nat,1)
+    , (g_nat,0)
+    , (c_nat,-1), (f_nat,-2), (b_flat,-3), (e_flat,-4)
+    , (a_flat,-5), (d_flat,-6), (g_flat,-7)
     ]
 
-minor_map :: MAP.Map NoteLabel Int
+minor_map :: MAP.Map PitchName Int
 minor_map = MAP.fromList $ 
-    [ (asharp,7), (dsharp,6), (gsharp,5), (csharp,4)
-    , (fsharp,3), (bnat,2), (enat,1)
-    , (enat,0)
-    , (dnat,-1), (gnat,-2), (cnat,-3), (fnat,-4)
-    , (bflat,-5), (eflat,-6), (aflat,-7)
+    [ (a_sharp,7), (d_sharp,6), (g_sharp,5), (c_sharp,4)
+    , (f_sharp,3), (b_nat,2), (e_nat,1)
+    , (e_nat,0)
+    , (d_nat,-1), (g_nat,-2), (c_nat,-3), (f_nat,-4)
+    , (b_flat,-5), (e_flat,-6), (a_flat,-7)
     ]
 
 
-major_map :: MAP.Map NoteLabel Int
+major_map :: MAP.Map PitchName Int
 major_map = MAP.fromList $ 
-    [ (csharp,7), (fsharp,6), (bnat,5), (enat,4)
-    , (anat,3), (dnat,2), (gnat,1)
-    , (cnat,0)
-    , (fnat,-1), (bflat,-2), (eflat,-3), (aflat,-4)
-    , (dflat,-5), (gflat,-6), (cflat,-7)
+    [ (c_sharp,7), (f_sharp,6), (b_nat,5), (e_nat,4)
+    , (a_nat,3), (d_nat,2), (g_nat,1)
+    , (c_nat,0)
+    , (f_nat,-1), (b_flat,-2), (e_flat,-3), (a_flat,-4)
+    , (d_flat,-5), (g_flat,-6), (c_flat,-7)
     ]
 
 
-findAlterations :: KeySig -> Int
-findAlterations (KeySig n MAJOR)        = MAP.findWithDefault 0 n major_map
-findAlterations (KeySig n MINOR)        = MAP.findWithDefault 0 n minor_map
-findAlterations (KeySig n MIXOLYDIAN)   = MAP.findWithDefault 0 n mix_map
-findAlterations (KeySig n DORIAN)       = MAP.findWithDefault 0 n dor_map
-findAlterations (KeySig n PHRYGIAN)     = MAP.findWithDefault 0 n phr_map
-findAlterations (KeySig n LYDIAN)       = MAP.findWithDefault 0 n lyd_map
-findAlterations (KeySig n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
+findAlterations :: Key -> Int
+findAlterations (Key n MAJOR)        = MAP.findWithDefault 0 n major_map
+findAlterations (Key n MINOR)        = MAP.findWithDefault 0 n minor_map
+findAlterations (Key n MIXOLYDIAN)   = MAP.findWithDefault 0 n mix_map
+findAlterations (Key n DORIAN)       = MAP.findWithDefault 0 n dor_map
+findAlterations (Key n PHRYGIAN)     = MAP.findWithDefault 0 n phr_map
+findAlterations (Key n LYDIAN)       = MAP.findWithDefault 0 n lyd_map
+findAlterations (Key n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
 
 
 --------------------------------------------------------------------------------
@@ -135,12 +137,12 @@ findAlterations (KeySig n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
 
 
 data SpellingMap = SpellingMap 
-    { spelling_map_alterations      :: SET.Set NoteLabel 
+    { spelling_map_alterations      :: SET.Set PitchName 
     , spelling_map_naturals         :: SET.Set PitchLetter
     }
 
 -- | Initial translation sets all NATURALS to NO_ACCIDENTAL, we
--- might  have to change them to NATURAL for printing.
+-- might have to change them to NATURAL for printing.
 --
 spell :: SpellingMap -> ABC.Pitch -> ABC.Pitch
 spell (SpellingMap alts nats) p0@(ABC.Pitch ac l om) = step ac
@@ -155,7 +157,7 @@ spell (SpellingMap alts nats) p0@(ABC.Pitch ac l om) = step ac
 
 
 
-makeSpellingMap :: KeySig -> SpellingMap
+makeSpellingMap :: Key -> SpellingMap
 makeSpellingMap ks = let i = findAlterations ks in buildSpellings i
 
 
@@ -174,19 +176,19 @@ buildSpellings n
                    { spelling_map_alterations = SET.fromList $ lbls
                    , spelling_map_naturals    = SET.fromList $ map root lbls
                    }
-    root (NoteLabel l _)   = l
+    root (PitchName l _)   = l
 
 
 
 
 
-nsharps :: Int -> [NoteLabel]
+nsharps :: Int -> [PitchName]
 nsharps n = map mksharp $ take n [F, C, G, D, A, E, B] 
   where
-    mksharp l = NoteLabel l SHARP
+    mksharp l = PitchName l SHARP
 
-nflats :: Int -> [NoteLabel]
+nflats :: Int -> [PitchName]
 nflats n = map mkflat $ take n [B, E, A, D, G, C, F] 
   where
-    mkflat l = NoteLabel l FLAT
+    mkflat l = PitchName l FLAT
 

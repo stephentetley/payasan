@@ -9,6 +9,11 @@ import Payasan.Base.Monophonic.Notelist
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
+import Payasan.Base.Names.Pitch
+
+import Payasan.Base.ScaleDegree                 -- TEMP
+import Payasan.Base.Internal.ABC.Spelling       -- TEMP
+
 
 
 
@@ -33,6 +38,9 @@ demo01 :: IO ()
 demo01 = 
     do { printAsLilyPond global_ri phrase01
        ; shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01
+       ; putStrLn ""
+       ; printAsABC global_ri phrase01
+       ; shellOutABC global_ri $ outputAsABC global_ri $ phrase01
        }
 
 demo02 :: IO ()
@@ -51,7 +59,22 @@ demo06 :: IO ()
 demo06 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ retrograde phrase01
 
 demo07 :: IO ()
-demo07 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ invertMelody phrase01
+demo07 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ invertChromatic phrase01
 
 
--- test01 = barLength $ Meter 4 4
+scale_a_major :: StdMonoPhrase
+scale_a_major = fromLilyPondWith global_ri ri $ 
+    [lilypond| a4 b cis d | e fis gis a |]
+  where
+    ri = manual_ri { local_key = a_major }
+
+
+demo08 :: IO ()
+demo08 = 
+    do { printAsLilyPond global_ri scale_a_major
+       ; shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ scale_a_major
+       ; shellOutABC global_ri $ outputAsABC global_ri $ scale_a_major
+       }
+
+
+-- test01 = intervalsFromTop phrase01

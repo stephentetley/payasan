@@ -94,8 +94,9 @@ oHeader globals locals =
     $+$ field 'T' (text   $ global_title globals)
     $+$ field 'M' (meter  $ local_meter locals)
     $+$ field 'L' (unitNoteLength $ local_unit_note_len locals)
-    $+$ field 'K' (key    $ local_key locals)
-
+    $+$ field 'K' key_clef 
+  where
+    key_clef = (key $ local_key locals) <+> (clef $ global_clef globals)
 
 oABCPhrase :: ABCPhrase -> Mon Doc
 oABCPhrase (Phrase [])          = return empty

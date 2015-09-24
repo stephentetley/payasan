@@ -17,7 +17,7 @@
 module Payasan.Base.Names.Pitch
   ( 
 
-   -- * Pitch Spellings
+   -- * Pitch Names
     c_flat, c_nat, c_sharp
   , d_flat, d_nat, d_sharp
   , e_flat, e_nat, e_sharp
@@ -26,7 +26,7 @@ module Payasan.Base.Names.Pitch
   , a_flat, a_nat, a_sharp
   , b_flat, b_nat, b_sharp
 
-  -- * Pitch constructors
+  -- * Pitches with octave
   
   , cf_1, c_1, cs_1, df_1, d_1, ds_1, ef_1, e_1, es_1
   , ff_1, f_1, fs_1, gf_1, g_1, gs_1, af_1, a_1, as_1
@@ -67,86 +67,86 @@ import Payasan.Base.Pitch
 
 
 --------------------------------------------------------------------------------
--- Pitch spellings
+-- Pitch names
 
-c_flat          :: PitchSpelling
-c_flat          = PitchSpelling C FLAT
+c_flat          :: PitchName
+c_flat          = PitchName C FLAT
 
-c_nat           :: PitchSpelling
-c_nat           = PitchSpelling C NAT
+c_nat           :: PitchName
+c_nat           = PitchName C NAT
 
-c_sharp         :: PitchSpelling
-c_sharp         = PitchSpelling C SHARP
+c_sharp         :: PitchName
+c_sharp         = PitchName C SHARP
 
 -- D
 
-d_flat          :: PitchSpelling
-d_flat          = PitchSpelling D FLAT
+d_flat          :: PitchName
+d_flat          = PitchName D FLAT
 
-d_nat           :: PitchSpelling
-d_nat           = PitchSpelling D NAT
+d_nat           :: PitchName
+d_nat           = PitchName D NAT
 
-d_sharp         :: PitchSpelling
-d_sharp         = PitchSpelling D SHARP
+d_sharp         :: PitchName
+d_sharp         = PitchName D SHARP
 
 -- E
 
-e_flat          :: PitchSpelling
-e_flat          = PitchSpelling E FLAT
+e_flat          :: PitchName
+e_flat          = PitchName E FLAT
 
-e_nat           :: PitchSpelling
-e_nat           = PitchSpelling E NAT
+e_nat           :: PitchName
+e_nat           = PitchName E NAT
 
-e_sharp         :: PitchSpelling
-e_sharp         = PitchSpelling E SHARP
+e_sharp         :: PitchName
+e_sharp         = PitchName E SHARP
 
 -- F 
 
-f_flat          :: PitchSpelling
-f_flat          = PitchSpelling F FLAT
+f_flat          :: PitchName
+f_flat          = PitchName F FLAT
 
-f_nat           :: PitchSpelling
-f_nat           = PitchSpelling F NAT
+f_nat           :: PitchName
+f_nat           = PitchName F NAT
 
-f_sharp         :: PitchSpelling
-f_sharp         = PitchSpelling F SHARP
+f_sharp         :: PitchName
+f_sharp         = PitchName F SHARP
 
 -- G 
 
-g_flat          :: PitchSpelling
-g_flat          = PitchSpelling G FLAT
+g_flat          :: PitchName
+g_flat          = PitchName G FLAT
 
-g_nat           :: PitchSpelling
-g_nat           = PitchSpelling G NAT
+g_nat           :: PitchName
+g_nat           = PitchName G NAT
 
-g_sharp         :: PitchSpelling
-g_sharp         = PitchSpelling G SHARP
+g_sharp         :: PitchName
+g_sharp         = PitchName G SHARP
 
 -- A
 
-a_flat          :: PitchSpelling
-a_flat          = PitchSpelling A FLAT
+a_flat          :: PitchName
+a_flat          = PitchName A FLAT
 
-a_nat           :: PitchSpelling
-a_nat           = PitchSpelling A NAT
+a_nat           :: PitchName
+a_nat           = PitchName A NAT
 
-a_sharp         :: PitchSpelling
-a_sharp         = PitchSpelling A SHARP
+a_sharp         :: PitchName
+a_sharp         = PitchName A SHARP
 
 -- B
 
-b_flat          :: PitchSpelling
-b_flat          = PitchSpelling B FLAT
+b_flat          :: PitchName
+b_flat          = PitchName B FLAT
 
-b_nat           :: PitchSpelling
-b_nat           = PitchSpelling B NAT
+b_nat           :: PitchName
+b_nat           = PitchName B NAT
 
-b_sharp         :: PitchSpelling
-b_sharp         = PitchSpelling B SHARP
+b_sharp         :: PitchName
+b_sharp         = PitchName B SHARP
 
 
 --------------------------------------------------------------------------------
--- Pitches
+-- Pitches with octave
 
 
 makeC           :: Int -> Pitch

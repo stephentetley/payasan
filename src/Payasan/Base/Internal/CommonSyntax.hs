@@ -20,6 +20,7 @@ module Payasan.Base.Internal.CommonSyntax
 
     GlobalRenderInfo(..)
   , OctaveMode(..)
+  , Clef(..)
 
   , default_global_info
 
@@ -58,10 +59,12 @@ import Data.Ratio
 -- in one mode only.
 
 data GlobalRenderInfo = GlobalRenderInfo
-    { global_temp_file_prefix   :: !String
+    { global_temp_abc_file      :: !String
+    , global_temp_ly_file       :: !String
     , global_title              :: !String
     , global_ly_octave_mode     :: !OctaveMode
     , global_ly_version         :: !String
+    , global_clef               :: !Clef
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -69,12 +72,18 @@ data OctaveMode = AbsPitch
                 | RelPitch !Pitch
   deriving (Data,Eq,Show,Typeable)
 
+data Clef = TREBLE | BASS
+  deriving (Data,Eq,Show,Typeable)
+
+
 default_global_info :: GlobalRenderInfo
 default_global_info = GlobalRenderInfo
-    { global_temp_file_prefix   = "output"
+    { global_temp_abc_file      = "abc_output.abc"
+    , global_temp_ly_file       = "output.ly"
     , global_title              = ""
     , global_ly_octave_mode     = RelPitch middle_c
     , global_ly_version         = "2.18.2"
+    , global_clef               = TREBLE
     }
 
 
@@ -97,7 +106,7 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
-data Key = Key !PitchSpelling !Mode
+data Key = Key !PitchName !Mode
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -155,5 +164,7 @@ tupletUnitRDuration (TupletSpec { tuplet_time_mult = m }) unitd =
 
 
 
+  
+
 c_maj :: Key
-c_maj = Key (PitchSpelling C NAT) MAJOR
+c_maj = Key (PitchName C NAT) MAJOR

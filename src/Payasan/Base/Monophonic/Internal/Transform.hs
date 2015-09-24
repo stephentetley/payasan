@@ -22,7 +22,8 @@ module Payasan.Base.Monophonic.Internal.Transform
   , transposeChromatic
 
   , retrograde
-  , invertMelody
+  , invertChromatic
+
 
   ) where
 
@@ -68,9 +69,11 @@ retrograde (Phrase bs) = Phrase $ map revBar $ reverse bs
     revNG (Atom e)          = Atom e
     revNG (Tuplet spec es)  = Tuplet spec $ map revNG $ reverse es
 
-
-invertMelody :: Phrase Pitch drn anno -> Phrase Pitch drn anno
-invertMelody ph = case lowestPitch ph of 
+-- | Note - seems to need /scale degrees/ - taking interal with 
+-- top note and adding same interval to lowest note does not work.
+--
+invertChromatic :: Phrase Pitch drn anno -> Phrase Pitch drn anno
+invertChromatic ph = case lowestPitch ph of 
     Nothing -> ph
     Just p0 -> mapPitch (\ival -> p0 .+^ ival) $ intervalsFromTop ph
 
