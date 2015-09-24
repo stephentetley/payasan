@@ -63,18 +63,13 @@ oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
 
 oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of
-    Note p d a     -> ppP p <++> ppD d
+    Note p d _     -> ppP p <++> ppD d
     Rest d          -> rest <++> ppD d 
   where
     ppP = pp_pitch ppl
     ppD = pp_duration ppl
 
 
-
-oPitches :: LeafOutput pch drn anno -> [pch] -> Doc
-oPitches ppl ps = hcat $ punctuate (char ':') $ map ppP ps
-  where
-    ppP = pp_pitch ppl
 
 
 

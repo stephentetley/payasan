@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes                #-}
 {-# OPTIONS -Wall #-}
 
-module TestScales where
+module TestScales1 where
 
 import Payasan.Base.Monophonic.Notelist
 
