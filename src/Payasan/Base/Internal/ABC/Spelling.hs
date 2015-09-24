@@ -141,6 +141,9 @@ data SpellingMap = SpellingMap
     , spelling_map_naturals         :: SET.Set PitchLetter
     }
 
+
+-- TODO - needs testing...
+
 -- | Initial translation sets all NATURALS to NO_ACCIDENTAL, we
 -- might have to change them to NATURAL for printing.
 --

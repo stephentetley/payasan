@@ -62,19 +62,3 @@ demo07 :: IO ()
 demo07 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ invertChromatic phrase01
 
 
-scale_a_major :: StdMonoPhrase
-scale_a_major = fromLilyPondWith global_ri ri $ 
-    [lilypond| a4 b cis d | e fis gis a |]
-  where
-    ri = manual_ri { local_key = a_major }
-
-
-demo08 :: IO ()
-demo08 = 
-    do { printAsLilyPond global_ri scale_a_major
-       ; shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ scale_a_major
-       ; shellOutABC global_ri $ outputAsABC global_ri $ scale_a_major
-       }
-
-
--- test01 = intervalsFromTop phrase01

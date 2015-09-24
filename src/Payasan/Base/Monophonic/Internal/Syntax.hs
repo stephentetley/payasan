@@ -35,6 +35,10 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , ABCMonoElement
   
   , StdMonoPhrase
+  , StdMonoBar
+  , StdMonoNoteGroup
+  , StdMonoElement
+
   , LyMonoPhrase
 
 
@@ -76,7 +80,11 @@ type ABCMonoBar                     = Bar       ABC.Pitch ABC.NoteLength ()
 type ABCMonoNoteGroup               = NoteGroup ABC.Pitch ABC.NoteLength ()
 type ABCMonoElement                 = Element   ABC.Pitch ABC.NoteLength ()
 
-type StdMonoPhrase                  = Phrase Pitch Duration ()
+type StdMonoPhrase                  = Phrase    Pitch Duration ()
+type StdMonoBar                     = Bar       Pitch Duration ()
+type StdMonoNoteGroup               = NoteGroup Pitch Duration ()
+type StdMonoElement                 = Element   Pitch Duration ()
+
 
 type LyMonoPhrase anno              = Phrase LY.Pitch  LY.NoteLength anno
 
@@ -152,3 +160,5 @@ sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
 sizeElement :: Element pch Duration anno -> RDuration
 sizeElement (Note _ d _)        = durationSize d
 sizeElement (Rest d)            = durationSize d
+
+

@@ -66,6 +66,12 @@ elementP (Graces ns)            = Graces    <$> mapM noteP ns
 noteP :: Note Pitch drn -> PTMon (Note PCH.Pitch drn)
 noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
+
+
+-- Pitches might be /natural/ in the score when the are
+-- actually sharpened or flattened according to key 
+-- signature
+
 -- likely to change wrt key sig...
 transPch :: Pitch -> PTMon PCH.Pitch
 transPch = pure . toPitch
