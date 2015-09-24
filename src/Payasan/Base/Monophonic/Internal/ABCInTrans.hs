@@ -24,6 +24,7 @@ module Payasan.Base.Monophonic.Internal.ABCInTrans
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
+import Payasan.Base.Internal.ABC.Spelling
 import Payasan.Base.Internal.ABC.Syntax (Pitch,NoteLength)
 import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.CommonSyntax
@@ -54,11 +55,11 @@ elementP (Note p d a)           = (\p1 -> Note p1 d a) <$> transPch p
 elementP (Rest d)               = pure $ Rest d
 
 
--- likely to change wrt key sig...
+
 transPch :: Pitch -> PMon PCH.Pitch
-transPch = pure . toPitch
-
-
+transPch p0 = 
+    (\k -> let sm = makeSpellingMap k in toPitch $ spellFindAlteration sm p0) 
+        <$> asksLocal local_key
 
 --------------------------------------------------------------------------------
 -- Translate duration

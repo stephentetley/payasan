@@ -50,6 +50,9 @@ module Payasan.Base.Internal.Pipeline
 
   , writeAsMIDI
 
+  , outputAsTabular
+  , printAsTabular
+
   ) where
 
 import qualified Payasan.Base.Internal.ABC.InTrans          as ABCIn
@@ -87,7 +90,7 @@ import Payasan.Base.Internal.Tabular.OutputMain
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.PrettyPrint.HughesPJ                -- package: pretty
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 type StdPhrase = Phrase Pitch Duration () 
 
@@ -196,8 +199,22 @@ ppRender = renderStyle (style {lineLength=500})
 
 writeAsMIDI :: FilePath -> StdPhrase -> IO ()
 writeAsMIDI path notes = 
-   let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
-   in MIDI.writeMF1 path [trk]
+    let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
+    in MIDI.writeMF1 path [trk]
 
 noteTrans :: StdPhrase -> BEAM.Phrase MIDI.MidiPitch Duration ()
 noteTrans = MIDI.translate . translateToBeam
+
+
+outputAsTabular :: (Pretty pch, Pretty drn) 
+                => GlobalRenderInfo -> Phrase pch drn anno -> String
+outputAsTabular _gi ph = ppRender $ mainTabular lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsTabular :: (Pretty pch, Pretty drn) 
+               => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+printAsTabular gi = putStrLn . outputAsTabular gi

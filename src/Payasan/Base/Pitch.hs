@@ -97,7 +97,10 @@ data Pitch = Pitch
     }
   deriving (Data,Eq,Ord,Show,Typeable)
 
-data PitchName = PitchName !PitchLetter !Alteration
+data PitchName = PitchName 
+    { pitch_letter      :: !PitchLetter
+    , pitch_alteration  :: !Alteration
+    }
   deriving (Data,Eq,Ord,Show,Typeable)
 
 

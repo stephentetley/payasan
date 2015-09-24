@@ -50,6 +50,9 @@ module Payasan.Base.Monophonic.Notelist
 
   , writeAsMIDI
 
+  , outputAsTabular
+  , printAsTabular
+
   , mapPitch
   , mapDuration
 
@@ -61,14 +64,16 @@ import Payasan.Base.Monophonic.Internal.LilyPondInTrans
 import Payasan.Base.Monophonic.Internal.LilyPondQuasiquote (lilypond)
 import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Monophonic.Internal.TabularOutput
 import Payasan.Base.Monophonic.Internal.Transform
 import Payasan.Base.Monophonic.Internal.Traversals
 
+import Payasan.Base.Internal.Tabular.Common
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Shell
 import qualified Payasan.Base.Notelist as MAIN
 
-import Text.PrettyPrint.HughesPJ        -- package: pretty
+import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
 fromABC :: ABCMonoPhrase -> StdMonoPhrase
@@ -108,3 +113,18 @@ ppRender = MAIN.ppRender
 
 writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
 writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
+
+
+
+outputAsTabular :: (Pretty pch, Pretty drn) 
+                => GlobalRenderInfo -> Phrase pch drn anno -> String
+outputAsTabular _gi ph = ppRender $ monoTabular lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsTabular :: (Pretty pch, Pretty drn) 
+               => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+printAsTabular gi = putStrLn . outputAsTabular gi

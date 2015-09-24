@@ -41,24 +41,24 @@ locals = default_local_info { local_unit_note_len = UNIT_NOTE_4
 
 
 
-test01 :: IO ()
-test01 = 
-    do { printAsLilyPond globals a_major_ly
+demo01 :: IO ()
+demo01 = 
+    do { printAsTabular globals a_major_ly
        ; shellOutLilyPond globals $ outputAsLilyPond globals $ a_major_ly
        ; shellOutABC globals $ outputAsABC globals $ a_major_ly
        }
 
 
-test02 :: IO ()
-test02 = 
-    do { printAsLilyPond globals a_major_abc
+demo02 :: IO ()
+demo02 = 
+    do { printAsTabular globals a_major_abc
        ; shellOutLilyPond globals $ outputAsLilyPond globals $ a_major_abc
        ; shellOutABC globals $ outputAsABC globals $ a_major_abc
        }
 
-test03 :: IO ()
-test03 = 
-    do { printAsLilyPond globals a_major_plain
+demo03 :: IO ()
+demo03 = 
+    do { printAsTabular globals a_major_plain
        ; shellOutLilyPond globals $ outputAsLilyPond globals $ a_major_plain
        ; shellOutABC globals $ outputAsABC globals $ a_major_plain
        }
