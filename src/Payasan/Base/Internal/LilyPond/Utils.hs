@@ -71,17 +71,17 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
 -- | CU = middle C (octave 4)
 --
-toPitchAbs :: Pitch -> P.Pitch
-toPitchAbs (Pitch l a om) =
+toPitchAbs :: LyPitch -> P.Pitch
+toPitchAbs (LyPitch l a om) =
     let lbl = P.PitchName (toPitchLetter l) (toAlteration a) 
     in P.Pitch lbl (toOctaveAbs om)
 
 
 
-fromPitchAbs :: P.Pitch -> Pitch
+fromPitchAbs :: P.Pitch -> LyPitch
 fromPitchAbs (P.Pitch lbl o) = 
     let (l,a) = fromPitchName lbl
-    in Pitch l a (fromOctaveAbs o)
+    in LyPitch l a (fromOctaveAbs o)
 
 
 
@@ -107,22 +107,22 @@ fromOctaveAbs n
     | otherwise             = OveLowered (3-n)
 
 toPitchLetter :: PitchLetter -> P.PitchLetter
-toPitchLetter CL = P.C
-toPitchLetter DL = P.D
-toPitchLetter EL = P.E
-toPitchLetter FL = P.F
-toPitchLetter GL = P.G
-toPitchLetter AL = P.A
-toPitchLetter BL = P.B
+toPitchLetter C = P.C
+toPitchLetter D = P.D
+toPitchLetter E = P.E
+toPitchLetter F = P.F
+toPitchLetter G = P.G
+toPitchLetter A = P.A
+toPitchLetter B = P.B
 
 fromPitchLetter :: P.PitchLetter -> PitchLetter
-fromPitchLetter (P.C) = CL
-fromPitchLetter (P.D) = DL
-fromPitchLetter (P.E) = EL
-fromPitchLetter (P.F) = FL
-fromPitchLetter (P.G) = GL
-fromPitchLetter (P.A) = AL
-fromPitchLetter (P.B) = BL
+fromPitchLetter (P.C) = C
+fromPitchLetter (P.D) = D
+fromPitchLetter (P.E) = E
+fromPitchLetter (P.F) = F
+fromPitchLetter (P.G) = G
+fromPitchLetter (P.A) = A
+fromPitchLetter (P.B) = B
 
 
 toAlteration :: Accidental -> P.Alteration
@@ -148,15 +148,15 @@ makeOctaveModifier i
     | otherwise = OveLowered (abs i)
 
 
-fromPitchRel :: P.Pitch -> P.Pitch -> Pitch
+fromPitchRel :: P.Pitch -> P.Pitch -> LyPitch
 fromPitchRel p1 p_old = 
     let om    = makeOctaveModifier $ P.lyOctaveDistance p_old p1
         (l,a) = fromPitchName $ P.pitch_name p1        
-    in Pitch l a om
+    in LyPitch l a om
 
 
-toPitchRel :: Pitch -> P.Pitch -> P.Pitch
-toPitchRel (Pitch l a om) p0 = octaveAdjust root om
+toPitchRel :: LyPitch -> P.Pitch -> P.Pitch
+toPitchRel (LyPitch l a om) p0 = octaveAdjust root om
   where
     lbl   = toPitchName l a
     p1    = P.Pitch lbl (P.pitch_octave p0)
@@ -232,21 +232,21 @@ tupletSpec (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) =
      
 
 
-rest :: NoteLength -> Doc
+rest :: LyNoteLength -> Doc
 rest d = char 'r' <> noteLength d
 
 
-pitch :: Pitch -> Doc
-pitch (Pitch l a om)  = pitchLetter l <> accidental a <> octaveModifier om
+pitch :: LyPitch -> Doc
+pitch (LyPitch l a om)  = pitchLetter l <> accidental a <> octaveModifier om
 
 pitchLetter :: PitchLetter -> Doc
-pitchLetter CL  = char 'c'
-pitchLetter DL  = char 'd'
-pitchLetter EL  = char 'e'
-pitchLetter FL  = char 'f'
-pitchLetter GL  = char 'g'
-pitchLetter AL  = char 'a'
-pitchLetter BL  = char 'b'
+pitchLetter C   = char 'c'
+pitchLetter D   = char 'd'
+pitchLetter E   = char 'e'
+pitchLetter F   = char 'f'
+pitchLetter G   = char 'g'
+pitchLetter A   = char 'a'
+pitchLetter B   = char 'b'
 
 accidental :: Accidental -> Doc
 accidental NO_ACCIDENTAL        = empty
@@ -263,7 +263,7 @@ octaveModifier (OveRaised i)  = text $ replicate i '\''
 octaveModifier (OveLowered i) = text $ replicate i ','
 
 
-noteLength :: NoteLength -> Doc
+noteLength :: LyNoteLength -> Doc
 noteLength (DrnDefault)     = empty
 noteLength (DrnExplicit d)  = duration d
 

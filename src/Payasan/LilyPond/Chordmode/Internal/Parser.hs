@@ -25,7 +25,7 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 import Payasan.Base.Monophonic.Internal.LilyPondParser
 
 import Payasan.Base.Internal.LilyPond.Lexer
-import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
+import Payasan.Base.Internal.LilyPond.Syntax
 
 import Text.Parsec                              -- package: parsec
 
@@ -52,7 +52,7 @@ parseChordMode = parseLyPhrase parsedef
                            , annoParser  = chordSuffix }
 
 
-chordRoot :: LyParser LY.Pitch
+chordRoot :: LyParser LyPitch
 chordRoot = pitch
 
 chordSuffix :: LyParser ChordSuffix

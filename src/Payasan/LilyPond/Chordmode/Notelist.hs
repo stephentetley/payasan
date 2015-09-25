@@ -63,7 +63,7 @@ import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.Shell
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
-import qualified Payasan.Base.Internal.LilyPond.Syntax      as LY
+import Payasan.Base.Internal.LilyPond.Syntax
 
 -- import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
 -- import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
@@ -97,7 +97,7 @@ outputAsLilyPond gi =
              . translateToBeam 
              . toMain
 
-toMain ::  StdChordPhrase -> MAIN.Phrase LY.Pitch Duration ChordSuffix
+toMain ::  StdChordPhrase -> MAIN.Phrase LyPitch Duration ChordSuffix
 toMain = MONO.translateToMain . translateOutput
 
 

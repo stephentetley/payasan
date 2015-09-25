@@ -37,7 +37,7 @@ module Payasan.Base.Internal.Tabular.Common
 
 import Payasan.Base.Internal.Tabular.Utils
 
-import qualified Payasan.Base.Internal.LilyPond.Syntax as Ly
+import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
 import qualified Payasan.Base.Internal.ABC.Syntax as ABC
 
 import Payasan.Base.Duration
@@ -55,31 +55,31 @@ data LeafOutput pch drn anno = LeafOutput
 
 
 
-std_ly_output :: LeafOutput Ly.Pitch Ly.NoteLength ()
+std_ly_output :: LeafOutput LY.LyPitch LY.LyNoteLength ()
 std_ly_output = LeafOutput { pp_pitch     = lyPitch
                            , pp_duration  = lyNoteLength
                            , pp_anno      = const empty
                            }
 
-lyNoteLength :: Ly.NoteLength -> Doc
-lyNoteLength (Ly.DrnDefault)    = nullDot
-lyNoteLength (Ly.DrnExplicit d) = duration d
+lyNoteLength :: LY.LyNoteLength -> Doc
+lyNoteLength (LY.DrnDefault)    = nullDot
+lyNoteLength (LY.DrnExplicit d) = duration d
 
-lyPitch :: Ly.Pitch -> Doc
+lyPitch :: LY.LyPitch -> Doc
 lyPitch = pPrint
 
 
-std_abc_output :: LeafOutput ABC.Pitch ABC.NoteLength ()
+std_abc_output :: LeafOutput ABC.ABCPitch ABC.ABCNoteLength ()
 std_abc_output = LeafOutput { pp_pitch     = abcPitch
                             , pp_duration  = abcNoteLength
                             , pp_anno      = const empty
                             }
 
-abcNoteLength :: ABC.NoteLength -> Doc
+abcNoteLength :: ABC.ABCNoteLength -> Doc
 abcNoteLength (ABC.DNL)         = nullDot
 abcNoteLength d                 = pPrint d
 
-abcPitch :: ABC.Pitch -> Doc
+abcPitch :: ABC.ABCPitch -> Doc
 abcPitch = pPrint
 
 

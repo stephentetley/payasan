@@ -68,15 +68,15 @@ import Data.Ratio
 
 -- | CU = middle C (octave 4)
 --
-toPitch :: Pitch -> P.Pitch
-toPitch (Pitch a l om) = 
+toPitch :: ABCPitch -> P.Pitch
+toPitch (ABCPitch a l om) = 
     let (l1,lcase) = toLetterParts l
     in P.Pitch (P.PitchName l1 (toAlteration a)) (toOctaveP lcase om)
 
 
-fromPitch :: P.Pitch -> Pitch
+fromPitch :: P.Pitch -> ABCPitch
 fromPitch (P.Pitch (P.PitchName l a) o) = 
-    Pitch (fromAlteration a) (fromLetterPartsOve l o) (fromOctaveP o)
+    ABCPitch (fromAlteration a) (fromLetterPartsOve l o) (fromOctaveP o)
 
 
 data LetterCase = LOWER | UPPER
@@ -84,15 +84,15 @@ data LetterCase = LOWER | UPPER
 
 -- | General function for decomposing pitch 
 -- 
-decomposePitch :: Pitch -> (P.PitchName,LetterCase,P.Octave)
-decomposePitch (Pitch a l om) = (P.PitchName l1 a1, lc, ove)
+decomposePitch :: ABCPitch -> (P.PitchName,LetterCase,P.Octave)
+decomposePitch (ABCPitch a l om) = (P.PitchName l1 a1, lc, ove)
   where
     a1          = toAlteration a
     (l1,lc)     = toLetterParts l
     ove         = toOctaveP lc om
 
-recomposePitch :: P.PitchName -> LetterCase -> P.Octave -> Pitch
-recomposePitch (P.PitchName l a) lc i = Pitch a1 l1 om
+recomposePitch :: P.PitchName -> LetterCase -> P.Octave -> ABCPitch
+recomposePitch (P.PitchName l a) lc i = ABCPitch a1 l1 om
   where
     a1 = fromAlteration a
     l1 = fromLetterParts l lc
@@ -159,7 +159,7 @@ fromAlteration P.DBL_SHARP      = DBL_SHARP
 
 
 
-rduration :: UnitNoteLength -> NoteLength -> RDuration
+rduration :: UnitNoteLength -> ABCNoteLength -> RDuration
 rduration unl (DNL)      = unitLength unl
 rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl
 rduration unl (Divd i)   = let r = fromIntegral i in (unitLength unl) / r
@@ -244,22 +244,22 @@ pitchName (P.PitchName l a) = text (show l) <> alt a
 note :: ABCNote -> Doc 
 note (Note p d) = pitch p <> noteLength d
 
-rest :: NoteLength -> Doc
+rest :: ABCNoteLength -> Doc
 rest d = char 'z' <> noteLength d
 
 
-chord :: [Pitch] -> NoteLength -> Doc
+chord :: [ABCPitch] -> ABCNoteLength -> Doc
 chord ps d = chordForm (map pitch ps) <> noteLength d
 
 -- | Print a duration multiplier.
-noteLength :: NoteLength -> Doc
+noteLength :: ABCNoteLength -> Doc
 noteLength (DNL)      = empty
 noteLength (Mult n)   = int n
 noteLength (Divd n)   = char '/' <> int n
 noteLength (Frac n d) = int n <> char '/' <> int d
 
-pitch :: Pitch -> Doc
-pitch (Pitch a l o) = accidental a <> pitchLetter l <> octaveModifier o
+pitch :: ABCPitch -> Doc
+pitch (ABCPitch a l o) = accidental a <> pitchLetter l <> octaveModifier o
 
 
 octaveModifier:: Octave -> Doc

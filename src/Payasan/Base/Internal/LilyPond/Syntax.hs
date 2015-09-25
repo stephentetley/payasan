@@ -34,11 +34,11 @@ module Payasan.Base.Internal.LilyPond.Syntax
   , GenLyNote
 
   , LyTupletSpec(..)
-  , Pitch(..)
+  , LyPitch(..)
   , Accidental(..)
   , PitchLetter(..)
   , Octave(..)
-  , NoteLength(..)
+  , LyNoteLength(..)
 
   , middle_c
 
@@ -58,18 +58,18 @@ import Data.Data
 -- Syntax
 
 
-type LyPhrase anno              = Phrase      Pitch NoteLength anno
-type LyBar anno                 = Bar         Pitch NoteLength anno
-type LyNoteGroup anno           = NoteGroup   Pitch NoteLength anno
-type LyElement anno             = Element     Pitch NoteLength anno
-type LyNote                     = Note        Pitch NoteLength
+type LyPhrase anno              = Phrase      LyPitch LyNoteLength anno
+type LyBar anno                 = Bar         LyPitch LyNoteLength anno
+type LyNoteGroup anno           = NoteGroup   LyPitch LyNoteLength anno
+type LyElement anno             = Element     LyPitch LyNoteLength anno
+type LyNote                     = Note        LyPitch LyNoteLength
 
 
-type GenLyPhrase pch anno       = Phrase      pch NoteLength anno
-type GenLyBar pch anno          = Bar         pch NoteLength anno
-type GenLyNoteGroup pch anno    = NoteGroup   pch NoteLength anno
-type GenLyElement pch anno      = Element     pch NoteLength anno
-type GenLyNote pch              = Note        pch NoteLength
+type GenLyPhrase pch anno       = Phrase      pch LyNoteLength anno
+type GenLyBar pch anno          = Bar         pch LyNoteLength anno
+type GenLyNoteGroup pch anno    = NoteGroup   pch LyNoteLength anno
+type GenLyElement pch anno      = Element     pch LyNoteLength anno
+type GenLyNote pch              = Note        pch LyNoteLength
 
 
 -- | LilyPond has a simpler Tuplet spec than ABC which we 
@@ -79,7 +79,7 @@ data LyTupletSpec = LyTupletSpec Int Int
   deriving (Data,Eq,Show,Typeable)
 
 
-data Pitch = Pitch PitchLetter Accidental Octave
+data LyPitch = LyPitch PitchLetter Accidental Octave
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -87,7 +87,7 @@ data Accidental = NO_ACCIDENTAL | DBL_FLAT | FLAT | NATURAL | SHARP | DBL_SHARP
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 -- | One octave range - just lower
-data PitchLetter = CL | DL | EL | FL | GL | AL | BL
+data PitchLetter = C | D | E | F | G | A | B
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
@@ -98,14 +98,14 @@ data Octave = OveDefault
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-data NoteLength = DrnDefault
-                | DrnExplicit Duration
+data LyNoteLength = DrnDefault
+                  | DrnExplicit Duration
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
 
-middle_c :: Pitch
-middle_c = Pitch CL NO_ACCIDENTAL (OveRaised 1)
+middle_c :: LyPitch
+middle_c = LyPitch C NO_ACCIDENTAL (OveRaised 1)
 
 
 
@@ -113,8 +113,8 @@ middle_c = Pitch CL NO_ACCIDENTAL (OveRaised 1)
 -- Pretty instances are for debugging and do not correspond 
 -- to valid LilyPond
 
-instance Pretty Pitch where 
-  pPrint (Pitch l a om)         = pPrint l <> pPrint a <> pPrint om
+instance Pretty LyPitch where 
+  pPrint (LyPitch l a om)       = pPrint l <> pPrint a <> pPrint om
 
 instance Pretty Accidental where
   pPrint NO_ACCIDENTAL          = empty
@@ -125,13 +125,13 @@ instance Pretty Accidental where
   pPrint DBL_SHARP              = text "isis"
 
 instance Pretty PitchLetter where
-  pPrint CL                     = char 'c'
-  pPrint DL                     = char 'd'
-  pPrint EL                     = char 'e'
-  pPrint FL                     = char 'f'
-  pPrint GL                     = char 'g'
-  pPrint AL                     = char 'a'
-  pPrint BL                     = char 'b'
+  pPrint C                      = char 'c'
+  pPrint D                      = char 'd'
+  pPrint E                      = char 'e'
+  pPrint F                      = char 'f'
+  pPrint G                      = char 'g'
+  pPrint A                      = char 'a'
+  pPrint B                      = char 'b'
 
 instance Pretty Octave where
   pPrint (OveDefault)           = empty
@@ -139,7 +139,7 @@ instance Pretty Octave where
   pPrint (OveLowered i)         = text (replicate i ',')
 
 
-instance Pretty NoteLength where
+instance Pretty LyNoteLength where
   pPrint (DrnDefault)           = char '.'
   pPrint (DrnExplicit d)        = pPrint d
 

@@ -34,10 +34,10 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as PCH
+import Payasan.Base.Pitch
 
 
-translate :: Phrase Pitch NoteLength anno -> Phrase PCH.Pitch Duration anno
+translate :: Phrase ABCPitch ABCNoteLength anno -> Phrase Pitch Duration anno
 translate = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a
@@ -47,7 +47,7 @@ type DTMon a = Mon UnitNoteLength a
 -- Pitch translation
 
 
-pch_algo :: BeamPitchAlgo () Pitch PCH.Pitch
+pch_algo :: BeamPitchAlgo () ABCPitch Pitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
@@ -55,7 +55,7 @@ pch_algo = BeamPitchAlgo
 
 
 
-elementP :: Element Pitch drn anno -> PTMon (Element PCH.Pitch drn anno)
+elementP :: Element ABCPitch drn anno -> PTMon (Element Pitch drn anno)
 elementP (NoteElem e a)         = (\e1 -> NoteElem e1 a)  <$> noteP e
 elementP (Rest d)               = pure $ Rest d
 elementP (Chord ps d a)         = 
@@ -64,7 +64,7 @@ elementP (Chord ps d a)         =
 elementP (Graces ns)            = Graces    <$> mapM noteP ns
 
 
-noteP :: Note Pitch drn -> PTMon (Note PCH.Pitch drn)
+noteP :: Note ABCPitch drn -> PTMon (Note Pitch drn)
 noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
 
@@ -73,7 +73,7 @@ noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 -- actually sharpened or flattened according to key 
 -- signature
 
-transPch :: Pitch -> PTMon PCH.Pitch
+transPch :: ABCPitch -> PTMon Pitch
 transPch p0 = 
     (\k -> let sm = makeSpellingMap k in toPitch $ spellFindAlteration sm p0) 
         <$> asksLocal local_key
@@ -83,7 +83,7 @@ transPch p0 =
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: BeamDurationAlgo UnitNoteLength NoteLength Duration
+drn_algo :: BeamDurationAlgo UnitNoteLength ABCNoteLength Duration
 drn_algo = BeamDurationAlgo
     { initial_stateD    = UNIT_NOTE_8
     , element_trafoD    = elementD
@@ -92,25 +92,25 @@ drn_algo = BeamDurationAlgo
 -- actionInfoD :: LocalRenderInfo -> DTMon ()
 -- actionInfoD info = put (local_unit_note_len info)
 
-elementD :: Element pch NoteLength anno -> DTMon (Element pch Duration anno)
+elementD :: Element pch ABCNoteLength anno -> DTMon (Element pch Duration anno)
 elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Chord ps d a)         = (\d1 -> Chord ps  d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 
-noteD :: Note pch NoteLength -> DTMon (Note pch Duration)
+noteD :: Note pch ABCNoteLength -> DTMon (Note pch Duration)
 noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 
-changeDrn :: NoteLength -> DTMon Duration
+changeDrn :: ABCNoteLength -> DTMon Duration
 changeDrn d                     = 
     (durationT `flip` d) <$> asksLocal local_unit_note_len
 
 
-durationT :: UnitNoteLength -> NoteLength -> Duration
+durationT :: UnitNoteLength -> ABCNoteLength -> Duration
 durationT unl d = 
     let rat = rduration unl d in case rationalToDuration rat of
-      Nothing -> dLonga
+      Nothing -> d_longa
       Just ans -> ans
 

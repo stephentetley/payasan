@@ -36,7 +36,7 @@ module Payasan.LilyPond.Chordmode.Internal.Base
 
 import qualified Payasan.Base.Monophonic.Internal.Syntax    as MONO
 
-import qualified Payasan.Base.Internal.LilyPond.Syntax      as LY
+import Payasan.Base.Internal.LilyPond.Syntax
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
 
 
@@ -49,10 +49,10 @@ import Data.Data
 -- LilyPond is input as a Monophonic note list, but output as
 -- beam syntax (with bars).
 
-type LyChordPhrase       = MONO.Phrase LyChordRoot LY.NoteLength ChordSuffix
-type OutChordPhrase      = BEAM.Phrase LyChordRoot LY.NoteLength ChordSuffix
+type LyChordPhrase       = MONO.Phrase LyChordRoot LyNoteLength ChordSuffix
+type OutChordPhrase      = BEAM.Phrase LyChordRoot LyNoteLength ChordSuffix
 
-type LyChordRoot         = LY.Pitch
+type LyChordRoot         = LyPitch
 
 type StdChordPhrase      = MONO.Phrase Chord   Duration      ()
 
@@ -67,7 +67,7 @@ data Chord = Chord
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-data LyChord = LyChord LY.Pitch ChordSuffix
+data LyChord = LyChord LyPitch ChordSuffix
   deriving (Data,Eq,Ord,Show,Typeable)
 
 

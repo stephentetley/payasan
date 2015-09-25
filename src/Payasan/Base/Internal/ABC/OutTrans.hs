@@ -33,14 +33,14 @@ import Payasan.Base.Internal.RewriteMonad
 
 
 import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as PCH
+import Payasan.Base.Pitch
 
 import Data.Ratio (numerator, denominator)
 
 
 
 
-translate :: Phrase PCH.Pitch Duration anno -> Phrase Pitch NoteLength anno
+translate :: Phrase Pitch Duration anno -> Phrase ABCPitch ABCNoteLength anno
 translate = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a
@@ -53,7 +53,7 @@ type DTMon a = Mon UnitNoteLength a
 -- TODO - This should be aware of keysig changes...
 
 
-pch_algo :: BeamPitchAlgo () PCH.Pitch Pitch
+pch_algo :: BeamPitchAlgo () Pitch ABCPitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
@@ -61,7 +61,7 @@ pch_algo = BeamPitchAlgo
 
 
 
-elementP :: Element PCH.Pitch drn anno -> PTMon (Element Pitch drn anno)
+elementP :: Element Pitch drn anno -> PTMon (Element ABCPitch drn anno)
 elementP (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
 elementP (Chord ps d a)         = 
@@ -70,10 +70,10 @@ elementP (Chord ps d a)         =
 elementP (Graces ns)            = Graces    <$> mapM noteP ns
 
 
-noteP :: Note PCH.Pitch drn -> PTMon (Note Pitch drn)
+noteP :: Note Pitch drn -> PTMon (Note ABCPitch drn)
 noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
-transPch :: PCH.Pitch -> PTMon Pitch
+transPch :: Pitch -> PTMon ABCPitch
 transPch p0 = 
     (\k -> let sm = makeSpellingMap k in spellFindNatural sm $ fromPitch p0) 
         <$> asksLocal local_key
@@ -82,7 +82,7 @@ transPch p0 =
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: BeamDurationAlgo UnitNoteLength Duration NoteLength
+drn_algo :: BeamDurationAlgo UnitNoteLength Duration ABCNoteLength
 drn_algo = BeamDurationAlgo
     { initial_stateD    = UNIT_NOTE_8
     , element_trafoD    = elementD
@@ -90,23 +90,23 @@ drn_algo = BeamDurationAlgo
 
 
 
-elementD :: Element pch Duration anno -> DTMon (Element pch NoteLength anno)
+elementD :: Element pch Duration anno -> DTMon (Element pch ABCNoteLength anno)
 elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 
 
-noteD :: Note pch Duration -> DTMon (Note pch NoteLength)
+noteD :: Note pch Duration -> DTMon (Note pch ABCNoteLength)
 noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 
-changeDrn :: Duration -> DTMon NoteLength
+changeDrn :: Duration -> DTMon ABCNoteLength
 changeDrn d                     = 
     (durationT `flip` d) <$> asksLocal local_unit_note_len
 
 
-durationT :: UnitNoteLength -> Duration ->  NoteLength
+durationT :: UnitNoteLength -> Duration -> ABCNoteLength
 durationT unl nd = 
     (fn . fork numerator denominator) $ (durationSize nd) / unitLength unl
   where  

@@ -25,6 +25,7 @@ module Payasan.Base.Internal.ABC.Spelling
 
 
 import qualified Payasan.Base.Internal.ABC.Syntax as ABC
+import Payasan.Base.Internal.ABC.Syntax (ABCPitch(..))
 import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Names.Pitch
@@ -150,18 +151,18 @@ data SpellingMap = SpellingMap
 -- to NO_ACCIDENTAL, we might have to change them to NATURAL 
 -- for printing.
 --
-spellFindNatural :: SpellingMap -> ABC.Pitch -> ABC.Pitch
+spellFindNatural :: SpellingMap -> ABCPitch -> ABCPitch
 spellFindNatural (SpellingMap { spelling_alterations = alts 
                               , spelling_naturals    = nats}) 
-                 p0@(ABC.Pitch ac l om) = step ac
+                 p0@(ABCPitch ac l om) = step ac
   where
     step ABC.NO_ACCIDENTAL      = 
         let (l1,_) = toLetterParts l 
-        in if l1 `SET.member` nats then ABC.Pitch ABC.NATURAL l om  else p0
+        in if l1 `SET.member` nats then ABCPitch ABC.NATURAL l om  else p0
 
     step _                      = 
         let (lbl,_,_) = decomposePitch p0 
-        in if lbl `SET.member` alts then ABC.Pitch ABC.NO_ACCIDENTAL l om else p0
+        in if lbl `SET.member` alts then ABCPitch ABC.NO_ACCIDENTAL l om else p0
 
 
 
@@ -171,7 +172,7 @@ spellFindNatural (SpellingMap { spelling_alterations = alts
 -- notes that are actually altered by the key signature. 
 -- We need to look up their alteration.
 --
-spellFindAlteration :: SpellingMap -> ABC.Pitch -> ABC.Pitch
+spellFindAlteration :: SpellingMap -> ABCPitch -> ABCPitch
 spellFindAlteration (SpellingMap { spelling_alt_lookups = finds }) p = 
     case MAP.lookup (pitch_letter name) finds of
         Nothing -> p

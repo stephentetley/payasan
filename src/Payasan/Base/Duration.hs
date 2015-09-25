@@ -39,18 +39,18 @@ module Payasan.Base.Duration
   , rationalToDuration
 
   -- * Named durations
-  , dZero
-  , dMaxima
-  , dLonga
-  , dBreve
-  , dWhole
-  , dHalf
-  , dQuarter
-  , dEighth
-  , dSixteenth
-  , dThirtySecondth
-  , dSixtyFourth
-  , dOneHundredAndTwentyEighth
+  , d_zero
+  , d_maxima
+  , d_longa
+  , d_breve
+  , d_whole
+  , d_half
+  , d_quarter
+  , d_eighth
+  , d_sixteenth
+  , d_thirty_secondth
+  , d_sixty_fourth
+  , d_one_hundred_and_twenty_eighth
   ) where
 
 
@@ -262,43 +262,44 @@ rationalToDuration r
 -- Named durations
 
 
-dZero :: Duration
-dZero = DZero
 
  
 makeDuration :: Numeral -> Duration
 makeDuration nm = Drn nm 0
 
 
-dMaxima                         :: Duration
-dMaxima                         = makeDuration Maxima
+d_zero                              :: Duration
+d_zero                              = DZero
 
-dLonga                          :: Duration
-dLonga                          = makeDuration Longa
+d_maxima                            :: Duration
+d_maxima                            = makeDuration Maxima
 
-dBreve                          :: Duration
-dBreve                          = makeDuration Breve
+d_longa                             :: Duration
+d_longa                             = makeDuration Longa
 
-dWhole                          :: Duration
-dWhole                          = makeDuration D1
+d_breve                             :: Duration
+d_breve                             = makeDuration Breve
 
-dHalf                           :: Duration
-dHalf                           = makeDuration D2
+d_whole                             :: Duration
+d_whole                             = makeDuration D1
 
-dQuarter                        :: Duration
-dQuarter                        = makeDuration D4
+d_half                              :: Duration
+d_half                              = makeDuration D2
 
-dEighth                         :: Duration
-dEighth                         = makeDuration D8
+d_quarter                           :: Duration
+d_quarter                           = makeDuration D4
 
-dSixteenth                      :: Duration
-dSixteenth                      = makeDuration D16
+d_eighth                            :: Duration
+d_eighth                            = makeDuration D8
 
-dThirtySecondth                 :: Duration
-dThirtySecondth                 = makeDuration D32
+d_sixteenth                         :: Duration
+d_sixteenth                         = makeDuration D16
 
-dSixtyFourth                    :: Duration
-dSixtyFourth                    = makeDuration D64
+d_thirty_secondth                   :: Duration
+d_thirty_secondth                   = makeDuration D32
 
-dOneHundredAndTwentyEighth      :: Duration
-dOneHundredAndTwentyEighth      = makeDuration D128
+d_sixty_fourth                      :: Duration
+d_sixty_fourth                      = makeDuration D64
+
+d_one_hundred_and_twenty_eighth     :: Duration
+d_one_hundred_and_twenty_eighth     = makeDuration D128

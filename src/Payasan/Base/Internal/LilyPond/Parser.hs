@@ -154,19 +154,19 @@ barline = reservedOp "|"
 
 -- | Middle c is c'
 --
-pitch :: LyParser Pitch
-pitch = Pitch <$> pitchLetter <*> accidental <*> octaveModifier
+pitch :: LyParser LyPitch
+pitch = LyPitch <$> pitchLetter <*> accidental <*> octaveModifier
 
 
 pitchLetter :: LyParser PitchLetter
 pitchLetter = choice $
-    [ CL <$ char 'c'
-    , DL <$ char 'd'
-    , EL <$ char 'e'
-    , FL <$ char 'f'
-    , GL <$ char 'g'
-    , AL <$ char 'a'
-    , BL <$ char 'b'
+    [ C <$ char 'c'
+    , D <$ char 'd'
+    , E <$ char 'e'
+    , F <$ char 'f'
+    , G <$ char 'g'
+    , A <$ char 'a'
+    , B <$ char 'b'
     ]
 
 
@@ -206,7 +206,7 @@ accidental = accdntl <|> return NO_ACCIDENTAL
 -- Note length parser
 
 
-noteLength :: LyParser NoteLength
+noteLength :: LyParser LyNoteLength
 noteLength = (try explicit) <|> dfault
   where
     dfault   = pure DrnDefault
@@ -217,22 +217,22 @@ duration :: LyParser Duration
 duration = maxima <|> longa <|> breve <|> numeric
         <?> "duration"
   where
-    maxima  = dMaxima <$ reserved "\\maxima"
-    longa   = dLonga  <$ reserved "\\longa"
-    breve   = dBreve  <$ reserved "\\breve"
+    maxima  = d_maxima <$ reserved "\\maxima"
+    longa   = d_longa  <$ reserved "\\longa"
+    breve   = d_breve  <$ reserved "\\breve"
     
 
 numeric :: LyParser Duration
 numeric = do { n <- int; ds <- many (char '.'); step n ds }
   where
-    step 1   ds = return $ addDots (length ds) dWhole
-    step 2   ds = return $ addDots (length ds) dHalf
-    step 4   ds = return $ addDots (length ds) dQuarter
-    step 8   ds = return $ addDots (length ds) dEighth
-    step 16  ds = return $ addDots (length ds) dSixteenth
-    step 32  ds = return $ addDots (length ds) dThirtySecondth
-    step 64  ds = return $ addDots (length ds) dSixtyFourth
-    step 128 ds = return $ addDots (length ds) dOneHundredAndTwentyEighth
+    step 1   ds = return $ addDots (length ds) d_whole
+    step 2   ds = return $ addDots (length ds) d_half
+    step 4   ds = return $ addDots (length ds) d_quarter
+    step 8   ds = return $ addDots (length ds) d_eighth
+    step 16  ds = return $ addDots (length ds) d_sixteenth
+    step 32  ds = return $ addDots (length ds) d_thirty_secondth
+    step 64  ds = return $ addDots (length ds) d_sixty_fourth
+    step 128 ds = return $ addDots (length ds) d_one_hundred_and_twenty_eighth
     step n   _  = fail $ "Unrecognized duration length: " ++ show n
 
 

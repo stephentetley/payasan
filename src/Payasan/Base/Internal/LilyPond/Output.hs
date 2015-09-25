@@ -64,7 +64,7 @@ deltaKey (LocalRenderInfo { local_key = k1 }) =
 --------------------------------------------------------------------------------
 
 lilyPondOutput :: GlobalRenderInfo 
-               -> LyOutputDef Pitch anno 
+               -> LyOutputDef LyPitch anno 
                -> LyPhrase anno -> Doc
 lilyPondOutput globals def ph = 
         header 

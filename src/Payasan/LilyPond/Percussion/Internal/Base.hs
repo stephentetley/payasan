@@ -31,7 +31,7 @@ module Payasan.LilyPond.Percussion.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import qualified Payasan.Base.Internal.MainSyntax as MAIN
 
-import Payasan.Base.Internal.LilyPond.Syntax (NoteLength)
+import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
 import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch)
 
 import Payasan.Base.Duration
@@ -39,8 +39,8 @@ import Payasan.Base.Duration
 import Data.Data
 
 
-type LyDrumPhrase       = BEAM.Phrase DrumPitch NoteLength Accent
-type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration   Accent
+type LyDrumPhrase       = BEAM.Phrase DrumPitch LyNoteLength Accent
+type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration     Accent
 
 data Accent = ACCENT | NO_ACCENT
   deriving (Data,Eq,Ord,Show,Typeable)

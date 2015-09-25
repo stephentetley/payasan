@@ -52,9 +52,9 @@ module Payasan.Base.Monophonic.Internal.Syntax
 
   ) where
 
-import qualified Payasan.Base.Internal.ABC.Syntax as ABC
+import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.CommonSyntax
-import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
+import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
@@ -70,15 +70,15 @@ type GenMonoBar pch anno            = Bar       pch Duration anno
 type GenMonoNoteGroup pch anno      = NoteGroup pch Duration anno
 type GenMonoElement pch anno        = Element   pch Duration anno
 
-type GenLyMonoPhrase pch anno       = Phrase    pch LY.NoteLength anno
-type GenLyMonoBar pch anno          = Bar       pch LY.NoteLength anno
-type GenLyMonoNoteGroup pch anno    = NoteGroup pch LY.NoteLength anno
-type GenLyMonoElement pch anno      = Element   pch LY.NoteLength anno
+type GenLyMonoPhrase pch anno       = Phrase    pch LyNoteLength anno
+type GenLyMonoBar pch anno          = Bar       pch LyNoteLength anno
+type GenLyMonoNoteGroup pch anno    = NoteGroup pch LyNoteLength anno
+type GenLyMonoElement pch anno      = Element   pch LyNoteLength anno
 
-type ABCMonoPhrase                  = Phrase    ABC.Pitch ABC.NoteLength ()
-type ABCMonoBar                     = Bar       ABC.Pitch ABC.NoteLength ()
-type ABCMonoNoteGroup               = NoteGroup ABC.Pitch ABC.NoteLength ()
-type ABCMonoElement                 = Element   ABC.Pitch ABC.NoteLength ()
+type ABCMonoPhrase                  = Phrase    ABCPitch ABCNoteLength ()
+type ABCMonoBar                     = Bar       ABCPitch ABCNoteLength ()
+type ABCMonoNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
+type ABCMonoElement                 = Element   ABCPitch ABCNoteLength ()
 
 type StdMonoPhrase                  = Phrase    Pitch Duration ()
 type StdMonoBar                     = Bar       Pitch Duration ()
@@ -86,7 +86,7 @@ type StdMonoNoteGroup               = NoteGroup Pitch Duration ()
 type StdMonoElement                 = Element   Pitch Duration ()
 
 
-type LyMonoPhrase anno              = Phrase LY.Pitch  LY.NoteLength anno
+type LyMonoPhrase anno              = Phrase LyPitch  LyNoteLength anno
 
 
 -- | Parametric on pitch so we can have the same syntax to 
@@ -155,7 +155,7 @@ sizeNoteGroup (Atom e)          = sizeElement e
 sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
   where
     firstOf (x:_)   = sizeNoteGroup x
-    firstOf []      = durationSize dEighth
+    firstOf []      = durationSize d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
 sizeElement (Note _ d _)        = durationSize d

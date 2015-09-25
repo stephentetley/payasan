@@ -116,7 +116,7 @@ sizeNoteGroup (Beamed es)           = sum $ map sizeNoteGroup es
 sizeNoteGroup (Tuplet spec es)      = tupletUnitRDuration spec (firstOf es)
   where
     firstOf (x:_)   = sizeNoteGroup x
-    firstOf []      = durationSize dEighth
+    firstOf []      = durationSize d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
 sizeElement (NoteElem (Note _ d) _) = durationSize d

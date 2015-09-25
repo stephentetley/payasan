@@ -15,6 +15,8 @@ import Payasan.Base.ScaleDegree                 -- TEMP
 import Payasan.Base.Internal.ABC.Spelling       -- TEMP
 import Payasan.Base.Monophonic.Internal.Plain   -- TEMP
 
+-- a_major_temp :: Phrase LyPitch LyNoteLength
+a_major_temp = [lilypond| a4 b cis d | e fis gis a |]
 
 a_major_ly :: StdMonoPhrase
 a_major_ly = fromLilyPondWith globals locals $ 
@@ -29,7 +31,7 @@ a_major_abc = fromABCWith locals $
 
 a_major_plain :: StdMonoPhrase
 a_major_plain = fromNoteList locals $
-    map (\p -> note p dQuarter) $ [ a_3, b_3, cs_4, d_4, e_4, fs_4, gs_4, a_4  ]
+    map (\p -> note p d_quarter) $ [ a_3, b_3, cs_4, d_4, e_4, fs_4, gs_4, a_4  ]
 
 globals :: GlobalRenderInfo
 globals = default_global_info { global_ly_octave_mode = RelPitch middle_c  }

@@ -29,9 +29,9 @@ a_major_abc = fromABCWith locals $
 
 a_major_plain :: StdPhrase
 a_major_plain = fromNoteList locals $
-    map (map (\p -> note p dQuarter)) $ [ [a_3, b_3, cs_4, d_4]
-                                        , [e_4, fs_4, gs_4, a_4]
-                                        ]
+    map (map (\p -> note p d_quarter)) $ [ [a_3, b_3, cs_4, d_4]
+                                         , [e_4, fs_4, gs_4, a_4]
+                                         ]
 
 
 globals :: GlobalRenderInfo

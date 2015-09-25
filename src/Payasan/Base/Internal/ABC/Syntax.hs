@@ -28,11 +28,11 @@ module Payasan.Base.Internal.ABC.Syntax
   , ABCNote
 
 
-  , Pitch(..)
+  , ABCPitch(..)
   , Accidental(..)
   , PitchLetter(..)
   , Octave(..)
-  , NoteLength(..)
+  , ABCNoteLength(..)
 
   , middle_c
 
@@ -49,15 +49,18 @@ import Data.Data
 
 -- | ABC is not annotated
 
-type ABCPhrase          = Phrase      Pitch NoteLength ()
-type ABCBar             = Bar         Pitch NoteLength ()
-type ABCNoteGroup       = NoteGroup   Pitch NoteLength ()
-type ABCElement         = Element     Pitch NoteLength ()
-type ABCNote            = Note        Pitch NoteLength
+type ABCPhrase          = Phrase      ABCPitch ABCNoteLength ()
+type ABCBar             = Bar         ABCPitch ABCNoteLength ()
+type ABCNoteGroup       = NoteGroup   ABCPitch ABCNoteLength ()
+type ABCElement         = Element     ABCPitch ABCNoteLength ()
+type ABCNote            = Note        ABCPitch ABCNoteLength
 
 
+-- Just give Picth and NoteLength ABC- prefix as they are 
+-- likely to otherwise cause confusion in debug output and 
+-- conversion code.
 
-data Pitch = Pitch Accidental PitchLetter Octave
+data ABCPitch = ABCPitch Accidental PitchLetter Octave
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -79,24 +82,24 @@ data Octave = OveDefault
 
 -- | does this need @Frac Int Int@ ?
 --
-data NoteLength = DNL
-                | Mult Int
-                | Divd Int
-                | Frac Int Int
+data ABCNoteLength = DNL
+                   | Mult Int
+                   | Divd Int
+                   | Frac Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
 
-middle_c :: Pitch
-middle_c = Pitch NO_ACCIDENTAL CU OveDefault
+middle_c :: ABCPitch
+middle_c = ABCPitch NO_ACCIDENTAL CU OveDefault
 
 
 --------------------------------------------------------------------------------
 -- Pretty instances are for debugging and do not correspond 
 -- to valid LilyPond
 
-instance Pretty Pitch where 
-  pPrint (Pitch a l om)         = pPrint a <> pPrint l <> pPrint om
+instance Pretty ABCPitch where 
+  pPrint (ABCPitch a l om)      = pPrint a <> pPrint l <> pPrint om
 
 instance Pretty Accidental where
   pPrint NO_ACCIDENTAL          = empty
@@ -128,7 +131,7 @@ instance Pretty Octave where
   pPrint (OveLowered i)         = text (replicate i ',')
 
 
-instance Pretty NoteLength where
+instance Pretty ABCNoteLength where
   pPrint (DNL)                  = empty
   pPrint (Mult n)               = int n <> text "/1"
   pPrint (Divd d)               = text "1/"<> int d

@@ -132,8 +132,8 @@ note = Note <$> pitch <*> noteLength
     <?> "note"
 
 
-pitch :: ABCParser Pitch
-pitch = Pitch <$> accidental <*> pitchLetter <*> octave
+pitch :: ABCParser ABCPitch
+pitch = ABCPitch <$> accidental <*> pitchLetter <*> octave
 
 
 
@@ -178,7 +178,7 @@ octave = octavehi <|> octavelo <|> return OveDefault
 
 
 
-noteLength :: ABCParser NoteLength
+noteLength :: ABCParser ABCNoteLength
 noteLength = try (divd <|> multOrFrac) 
           <|> return DNL
   where

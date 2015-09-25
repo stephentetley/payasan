@@ -24,11 +24,11 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 import Payasan.Base.Monophonic.Internal.Traversals
 import Payasan.Base.Monophonic.Internal.Syntax as MONO
 
-import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
+import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-translateOutput :: MONO.Phrase Chord drn anno -> MONO.Phrase LY.Pitch drn ChordSuffix
+translateOutput :: MONO.Phrase Chord drn anno -> MONO.Phrase LyPitch drn ChordSuffix
 translateOutput = trafoAnnos 
 
-trafoAnnos :: MONO.Phrase Chord drn anno -> MONO.Phrase LY.Pitch drn ChordSuffix
+trafoAnnos :: MONO.Phrase Chord drn anno -> MONO.Phrase LyPitch drn ChordSuffix
 trafoAnnos = mapPitchAnno $ \ch _ -> (fromPitchAbs $ chord_root ch, chord_suffix ch)
