@@ -149,19 +149,31 @@ makeOctaveModifier i
 
 
 fromPitchRel :: P.Pitch -> P.Pitch -> LyPitch
-fromPitchRel p1 p_old = 
+fromPitchRel p_old p1 = 
     let om    = makeOctaveModifier $ P.lyOctaveDistance p_old p1
         (l,a) = fromPitchName $ P.pitch_name p1        
     in LyPitch l a om
 
 
-toPitchRel :: LyPitch -> P.Pitch -> P.Pitch
-toPitchRel (LyPitch l a om) p0 = octaveAdjust root om
+
+
+-- | In relative mode, the octave modifier is oblivious
+-- to the initial calculation of the pitch /within a fourth/.
+--
+toPitchRel :: P.Pitch -> LyPitch -> P.Pitch
+toPitchRel p0 (LyPitch l a om) = octaveAdjust root om
   where
     lbl   = toPitchName l a
-    p1    = P.Pitch lbl (P.pitch_octave p0)
-    root  = if P.arithmeticDistance p0 p1 <= 5 
-              then p1 else P.Pitch lbl (P.pitch_octave p0 - 1)
+    psame = P.Pitch lbl (P.pitch_octave p0)
+    pup   = octaveAdjust psame $ OveRaised 1
+    pdown = octaveAdjust psame $ OveLowered 1
+    root  = withinFourth p0 psame pup pdown
+
+withinFourth :: P.Pitch -> P.Pitch -> P.Pitch -> P.Pitch -> P.Pitch
+withinFourth p0 a b c
+    | P.arithmeticDistance p0 a <= 4    = a
+    | P.arithmeticDistance p0 b <= 4    = b
+    | otherwise                         = c
 
 
 

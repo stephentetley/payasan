@@ -88,7 +88,7 @@ relNoteP (Note pch drn)         = (\p -> Note p drn) <$> changePitchRel pch
 changePitchRel :: LyPitch -> RelPMon Pitch
 changePitchRel p1 = 
     do { p0 <- previousPitch
-       ; let tp1 = toPitchRel p1 p0
+       ; let tp1 = toPitchRel p0 p1
        ; setPrevPitch tp1
        ; return tp1
        }
