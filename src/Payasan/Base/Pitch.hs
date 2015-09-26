@@ -32,6 +32,11 @@ module Payasan.Base.Pitch
 
 
   , middle_c
+  , c_nat
+
+
+  , nextPitchLetter
+  , prevPitchLetter
 
   , naturalOf
   , znaturalOf
@@ -39,6 +44,9 @@ module Payasan.Base.Pitch
   , zsharpOf
   , flatOf
   , zflatOf
+
+  , fromAlteration
+  , toAlteration
   , semitoneCount
   , midiSemitoneCount
   , zsemitoneCount
@@ -108,7 +116,7 @@ data PitchLetter = C | D | E | F | G | A | B
   deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
 
 data Alteration = DBL_FLAT | FLAT | NAT | SHARP | DBL_SHARP
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+  deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
 
 
 type Octave = Int
@@ -137,12 +145,25 @@ instance Pretty Alteration where
 
 -- | Middle C is octave 4 as per /scientific notation/.
 --
-middle_c :: Pitch
-middle_c = Pitch (PitchName C NAT) 4
+middle_c        :: Pitch
+middle_c        = Pitch c_nat 4
+
+c_nat           :: PitchName 
+c_nat           = PitchName C NAT
 
 
 --------------------------------------------------------------------------------
 -- Operations
+
+
+nextPitchLetter :: PitchLetter -> PitchLetter
+nextPitchLetter B = C
+nextPitchLetter l = succ l
+
+prevPitchLetter :: PitchLetter -> PitchLetter
+prevPitchLetter C = B
+prevPitchLetter l = pred l
+
 
 
 naturalOf :: Pitch -> Pitch
@@ -164,6 +185,22 @@ zflatOf :: PitchName -> PitchName
 zflatOf (PitchName l _) = PitchName l FLAT
 
 
+
+fromAlteration :: Integral a => Alteration -> a
+fromAlteration DBL_FLAT  = -2
+fromAlteration FLAT      = -1
+fromAlteration NAT       = 0
+fromAlteration SHARP     = 1
+fromAlteration DBL_SHARP = 2
+
+toAlteration :: Integral a => a -> Alteration
+toAlteration i 
+    | i <= -2       = DBL_FLAT
+    | i == -1       = FLAT
+    | i ==  0       = NAT
+    | i ==  1       = SHARP
+    | otherwise     = DBL_SHARP
+
 -- | Middle C is 48 - to get MIDI semitone count add 12
 --
 semitoneCount :: Pitch -> Int
@@ -177,7 +214,7 @@ midiSemitoneCount p = 12 + semitoneCount p
 
 
 zsemitoneCount :: PitchName -> Int
-zsemitoneCount (PitchName pl a) = semitoneCountPL pl + semitoneCountA a
+zsemitoneCount (PitchName pl a) = semitoneCountPL pl + fromAlteration a
 
 
 semitoneCountPL :: PitchLetter -> Int
@@ -188,13 +225,6 @@ semitoneCountPL F = 5
 semitoneCountPL G = 7
 semitoneCountPL A = 9
 semitoneCountPL B = 11
-
-semitoneCountA :: Alteration -> Int
-semitoneCountA DBL_FLAT  = -2
-semitoneCountA FLAT      = -1
-semitoneCountA NAT       = 0
-semitoneCountA SHARP     = 1
-semitoneCountA DBL_SHARP = 2
 
 
 isHigher :: Pitch -> Pitch -> Bool

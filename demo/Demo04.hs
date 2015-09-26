@@ -12,8 +12,7 @@ import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
 import Payasan.Base.ScaleDegree                 -- TEMP
-import Payasan.Base.Internal.ABC.Spelling       -- TEMP
-
+import Payasan.Base.Internal.Scale       -- TEMP
 
 
 
@@ -21,7 +20,7 @@ import Payasan.Base.Internal.ABC.Spelling       -- TEMP
 
 phrase01 :: StdMonoPhrase
 phrase01 = fromLilyPondWith global_ri manual_ri $ 
-    [lilypond| d2 a | f d |]
+    [lilypond| d2 a' | f d |]
 
 
 

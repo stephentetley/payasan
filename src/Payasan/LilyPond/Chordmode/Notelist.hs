@@ -65,9 +65,6 @@ import Payasan.Base.Internal.Shell
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 import Payasan.Base.Internal.LilyPond.Syntax
 
--- import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
--- import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
--- import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration

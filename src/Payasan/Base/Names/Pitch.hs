@@ -72,8 +72,7 @@ import Payasan.Base.Pitch
 c_flat          :: PitchName
 c_flat          = PitchName C FLAT
 
-c_nat           :: PitchName
-c_nat           = PitchName C NAT
+-- c_nat is a re-export from Payasan.Base.Pitch 
 
 c_sharp         :: PitchName
 c_sharp         = PitchName C SHARP

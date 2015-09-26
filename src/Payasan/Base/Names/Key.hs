@@ -69,7 +69,7 @@ c_major             = Key c_nat MAJOR
 -- MAJOR with sharps
 
 g_major             :: Key
-g_major             = Key c_nat MAJOR
+g_major             = Key g_nat MAJOR
 
 d_major             :: Key
 d_major             = Key d_nat MAJOR
