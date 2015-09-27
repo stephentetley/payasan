@@ -20,6 +20,7 @@ module Payasan.Base.Monophonic.Internal.Transform
   , diminute
 
   , transposeChromatic
+  , transposeDiatonic
 
   , retrograde
   , invertChromatic
@@ -33,9 +34,13 @@ import Payasan.Base.Monophonic.Internal.RecalcBars
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
+import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.RewriteMonad
+
 import Payasan.Base.Duration
 import Payasan.Base.Names.Interval
 import Payasan.Base.Pitch
+import Payasan.Base.ScaleDegree
 
 
 -- | Double note lengths (and recalc bars).
@@ -59,7 +64,11 @@ transposeChromatic :: Interval
 transposeChromatic ivl = mapPitch (.+^ ivl)
 
 
--- TODO - need more apparatus for transposeDiatonic
+transposeDiatonic :: DiatonicInterval 
+                  -> Phrase Pitch drn anno 
+                  -> Phrase Pitch drn anno
+transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicInterval` ivl)) ph
+
 
 retrograde :: Phrase pch Duration anno -> Phrase pch Duration anno
 retrograde (Phrase bs) = Phrase $ map revBar $ reverse bs
@@ -82,3 +91,37 @@ intervalsFromTop :: Phrase Pitch drn anno -> Phrase Interval drn anno
 intervalsFromTop ph = case highestPitch ph of
     Nothing -> mapPitch (const perfect_unison) ph         -- notelist is empty or just rests
     Just top -> mapPitch (\p -> p `intervalBetween` top) ph 
+
+
+
+
+interScaleStep :: (Phrase OveScaleStep drn anno -> Phrase OveScaleStep drn anno)
+               -> Phrase Pitch drn anno
+               -> Phrase Pitch drn anno
+interScaleStep fn = fromScaleStepRepr . fn . toScaleStepRepr
+
+toScaleStepRepr :: Phrase Pitch drn anno -> Phrase OveScaleStep drn anno
+toScaleStepRepr = transformP step_algo
+  where
+    step_algo = MonoPitchAlgo { initial_stateP = ()
+                              , element_trafoP = change
+                              }
+
+    change (Note p d a) = (\p1 -> Note p1 d a) <$> mf p
+    change (Rest d)     = pure $ Rest d
+
+    mf pch = (\key -> fromPitch key pch) <$> asksLocal local_key
+
+
+fromScaleStepRepr :: Phrase OveScaleStep drn anno -> Phrase Pitch drn anno
+fromScaleStepRepr = transformP step_algo
+  where
+    step_algo = MonoPitchAlgo { initial_stateP = ()
+                              , element_trafoP = change
+                              }
+
+    change (Note p d a) = (\p1 -> Note p1 d a) <$> mf p
+    change (Rest d)     = pure $ Rest d
+
+    mf oss = (\key -> toPitch key oss) <$> asksLocal local_key
+

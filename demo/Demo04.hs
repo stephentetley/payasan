@@ -7,6 +7,7 @@ import Payasan.Base.Monophonic.Notelist
 
 -- import Payasan.Base.Duration
 import Payasan.Base.Pitch
+import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
@@ -59,5 +60,9 @@ demo06 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ retrograde ph
 
 demo07 :: IO ()
 demo07 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ invertChromatic phrase01
+
+demo08 :: IO ()
+demo08 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
+    transposeDiatonic simple_second phrase01
 
 
