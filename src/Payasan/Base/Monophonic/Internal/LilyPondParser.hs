@@ -73,13 +73,13 @@ makeLyParser def = fullLyPhrase
 
 
     phrase :: LyParser (GenLyMonoPhrase pch anno)
-    phrase = Phrase <$> bars
+    phrase = Phrase default_local_info <$> bars
 
     bars :: LyParser [GenLyMonoBar pch anno]
     bars = sepBy bar P.barline
 
     bar :: LyParser (GenLyMonoBar pch anno)
-    bar = Bar default_local_info <$> noteGroups 
+    bar = Bar <$> noteGroups 
 
     noteGroups :: LyParser [GenLyMonoNoteGroup pch anno]
     noteGroups = whiteSpace *> many noteGroup

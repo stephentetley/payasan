@@ -95,20 +95,21 @@ type LyMonoPhrase anno              = Phrase LyPitch  LyNoteLength anno
 -- Parametric on duration so we can read ABC and decode duration
 -- multipliers in a post-parsing phase.
 --
-data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
+-- LocalRenderInfo is annotated at the Phrase level - while this
+-- prevents concatenation it simplifies transformation.
+-- 
+data Phrase pch drn anno = Phrase 
+    { phrase_header     :: !LocalRenderInfo
+    , phrase_bars       :: [Bar pch drn anno] 
+    }
   deriving (Data,Eq,Show,Typeable)
 
-
-instance Monoid (Phrase pch drn anno) where
-  mempty = Phrase []
-  Phrase xs `mappend` Phrase ys = Phrase $ xs ++ ys
 
 
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn anno = Bar 
-    { bar_header        :: LocalRenderInfo
-    , bar_elements      :: [NoteGroup pch drn anno]
+    { bar_elements      :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -144,9 +145,9 @@ data Element pch drn anno =
 pushLocalRenderInfo :: LocalRenderInfo 
                     -> Phrase pch drn anno 
                     -> Phrase pch drn anno
-pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
-  where
-    upd bar = bar { bar_header = ri }
+pushLocalRenderInfo ri (Phrase { phrase_bars = bs }) = 
+    Phrase { phrase_header = ri
+           , phrase_bars   = bs }
 
 
 

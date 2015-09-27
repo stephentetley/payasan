@@ -38,6 +38,7 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
+import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Names.Interval
 import Payasan.Base.Pitch
 import Payasan.Base.ScaleDegree
@@ -71,9 +72,9 @@ transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicInterval` ivl))
 
 
 retrograde :: Phrase pch Duration anno -> Phrase pch Duration anno
-retrograde (Phrase bs) = Phrase $ map revBar $ reverse bs
+retrograde (Phrase info bs) = Phrase info $ map revBar $ reverse bs
   where
-    revBar (Bar info es)    = Bar info $ map revNG $ reverse es
+    revBar (Bar es)         = Bar $ map revNG $ reverse es
     
     revNG (Atom e)          = Atom e
     revNG (Tuplet spec es)  = Tuplet spec $ map revNG $ reverse es
@@ -92,6 +93,20 @@ intervalsFromTop ph = case highestPitch ph of
     Nothing -> mapPitch (const perfect_unison) ph         -- notelist is empty or just rests
     Just top -> mapPitch (\p -> p `intervalBetween` top) ph 
 
+
+invertDiatonic :: Phrase Pitch drn anno -> Phrase Pitch drn anno
+invertDiatonic = interScaleStep invertDiatonic1
+
+invertDiatonic1 :: Phrase OveScaleStep drn anno -> Phrase OveScaleStep drn anno
+invertDiatonic1 ph = case lowestStep ph of 
+    Nothing -> ph
+    Just p0 -> mapPitch (p0 `addDiatonicInterval`) $ diatonicsFromTop ph
+
+
+diatonicsFromTop :: Phrase OveScaleStep drn anno -> Phrase DiatonicInterval drn anno
+diatonicsFromTop ph = case highestStep ph of
+    Nothing -> mapPitch (const simple_unison) ph         -- notelist is empty or just rests
+    Just top -> mapPitch (\p -> p `diatonicIntervalBetween` top) ph 
 
 
 

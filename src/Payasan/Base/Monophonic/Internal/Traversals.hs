@@ -70,10 +70,10 @@ genCollect mf a0 st ph = evalRewriteDefault (phraseC a0 ph) st
   where
 
     phraseC :: ac -> Phrase pch drn anno -> Mon st ac
-    phraseC ac (Phrase bs)      = foldlM barC ac bs
+    phraseC ac (Phrase info bs) = local info (foldlM barC ac bs)
 
     barC :: ac -> Bar pch drn anno -> Mon st ac
-    barC ac (Bar info cs)       = local info $ foldlM noteGroupC ac cs
+    barC ac (Bar  cs)           = foldlM noteGroupC ac cs
 
     noteGroupC :: ac -> NoteGroup pch drn anno -> Mon st ac
     noteGroupC ac (Atom e)      = mf ac e
@@ -92,10 +92,10 @@ genTransform elemT st0 ph =
   where
 
     phraseT :: Phrase p1 d1 a1 -> Mon st (Phrase p2 d2 a2) 
-    phraseT (Phrase bs)         = Phrase <$> mapM barT bs
+    phraseT (Phrase info bs)    = local info (Phrase info <$> mapM barT bs)
 
     barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
-    barT (Bar info cs)          = local info $ Bar info <$> mapM noteGroupT cs
+    barT (Bar cs)               = Bar <$> mapM noteGroupT cs
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e

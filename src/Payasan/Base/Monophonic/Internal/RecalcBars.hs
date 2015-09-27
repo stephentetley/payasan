@@ -28,14 +28,16 @@ import Payasan.Base.Duration
 
 
 recalcBars :: Phrase pch Duration anno -> Phrase pch Duration anno
-recalcBars (Phrase { phrase_bars = bs }) = 
-    let ss = segment bs in Phrase $ remake ss
+recalcBars (Phrase { phrase_header = info, phrase_bars = bs }) = 
+    let s = segment info bs in Phrase { phrase_header = info
+                                      , phrase_bars   = remake s
+                                      }
 
 
 
 data Segment pch anno = Segment 
-    { _segment_header   :: LocalRenderInfo
-    , _segment_notes    :: [NoteGroup pch Duration anno]
+    { segment_header   :: LocalRenderInfo
+    , segment_notes    :: [NoteGroup pch Duration anno]
     }
 
 
@@ -43,29 +45,16 @@ data Segment pch anno = Segment
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-segment :: [Bar pch Duration anno] -> [Segment pch anno]
-segment []     = []
-segment (b:bs) = step (bar_header b) [] [] b bs
+segment :: LocalRenderInfo -> [Bar pch Duration anno] -> Segment pch anno
+segment info bs = Segment { segment_header = info
+                          , segment_notes  = concatMap fn bs }
   where
-    step info ac acc x [] 
-        | info == bar_header x  = acc ++ [Segment info (ac ++ bar_elements x)]
-        | otherwise             = let penul = Segment info ac
-                                      slast = Segment (bar_header x) (bar_elements x)
-                                  in acc ++ [ penul, slast ]
-                                        
-    step info ac acc x (y:ys)
-        | info == bar_header x  = step info (ac ++ bar_elements x) acc y ys
-        | otherwise             = let acc1 = if null ac then acc else acc ++ [Segment info ac]
-                                  in step (bar_header x) (bar_elements x) acc1 y ys
+    fn (Bar xs) = xs
 
 
-
-remake :: [Segment pch anno] -> [Bar pch Duration anno]
-remake = concatMap remake1
-
-remake1 :: Segment pch anno -> [Bar pch Duration anno]
-remake1 (Segment info es) = 
-    map (Bar info) $ split (barLength $ local_meter info) es
+remake :: Segment pch anno -> [Bar pch Duration anno]
+remake (Segment info es) = 
+    map Bar $ split (barLength $ local_meter info) es
 
 split :: RDuration 
       -> [NoteGroup pch Duration anno]

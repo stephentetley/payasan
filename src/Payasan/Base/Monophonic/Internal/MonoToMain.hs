@@ -24,6 +24,7 @@ module Payasan.Base.Monophonic.Internal.MonoToMain
 
 
 
+import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.MainSyntax as T
 import Payasan.Base.Monophonic.Internal.Syntax
 
@@ -34,11 +35,11 @@ translateToMain :: forall pch drn anno.
 translateToMain = phraseT
   where
     phraseT :: Phrase pch drn anno -> T.Phrase pch drn anno
-    phraseT (Phrase bs)             = T.Phrase $ map barT bs
+    phraseT (Phrase info bs)        = T.Phrase $ map (barT info) bs
 
 
-    barT :: Bar pch drn anno -> T.Bar pch drn anno
-    barT (Bar info cs)              = T.Bar info $ concatMap noteGroupT cs
+    barT :: LocalRenderInfo -> Bar pch drn anno -> T.Bar pch drn anno
+    barT info (Bar cs)              = T.Bar info $ concatMap noteGroupT cs
 
 
     -- | Remember - a beamed NoteGroup may generate 1+ elements
@@ -64,11 +65,11 @@ chordTranslateToMain :: forall pch drn anno.
 chordTranslateToMain = phraseT
   where
     phraseT :: Phrase [pch] drn anno -> T.Phrase pch drn anno
-    phraseT (Phrase bs)             = T.Phrase $ map barT bs
+    phraseT (Phrase info bs)        = T.Phrase $ map (barT info) bs
 
 
-    barT :: Bar [pch] drn anno -> T.Bar pch drn anno
-    barT (Bar info cs)              = T.Bar info $ concatMap noteGroupT cs
+    barT :: LocalRenderInfo -> Bar [pch] drn anno -> T.Bar pch drn anno
+    barT info (Bar cs)              = T.Bar info $ concatMap noteGroupT cs
 
 
     -- | Remember - a beamed NoteGroup may generate 1+ elements

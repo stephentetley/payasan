@@ -42,15 +42,15 @@ monoTabular ppl ph = evalRewriteDefault (oPhrase ppl ph) 1
 
 
 oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> OutMon Doc
-oPhrase _   (Phrase [])       = return empty
-oPhrase ppl (Phrase (x:xs))   = do { d <- oBar ppl x; step d xs }
+oPhrase _   (Phrase _    [])    = return empty
+oPhrase ppl (Phrase _ (x:xs))   = do { d <- oBar ppl x; step d xs }
   where
     step ac []      = return (ac $+$ endSpine <++> endSpine)
     step ac (b:bs)  = do { d <- oBar ppl b; step (ac $+$ d) bs }
 
 
 oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> OutMon Doc
-oBar ppl (Bar _info cs) = ($+$) <$> nextBar <*> pure (oNoteGroupList ppl cs)
+oBar ppl (Bar cs) = ($+$) <$> nextBar <*> pure (oNoteGroupList ppl cs)
 
 
 oNoteGroupList :: LeafOutput pch drn anno -> [NoteGroup pch drn anno] -> Doc
