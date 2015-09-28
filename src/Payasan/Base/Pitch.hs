@@ -37,6 +37,10 @@ module Payasan.Base.Pitch
 
   , nextPitchLetter
   , prevPitchLetter
+  , nthPitchLetterUp
+  , nthPitchLetterDown
+  , arithmeticNaturalUp
+  , arithmeticNaturalDown
 
   , naturalOf
   , znaturalOf
@@ -164,6 +168,62 @@ nextPitchLetter l = succ l
 prevPitchLetter :: PitchLetter -> PitchLetter
 prevPitchLetter C = B
 prevPitchLetter l = pred l
+
+-- | Counts from 0 (sub 1 initially for arithmetic steps up)
+--
+nthPitchLetterUp :: Int -> PitchLetter -> PitchLetter
+nthPitchLetterUp n letter
+    | n <  0    = nthPitchLetterDown (abs n) letter
+    | otherwise = let n1 = n `mod` 7
+                      n2 = (fromEnum letter + n1) `mod` 7
+                  in toEnum n2
+  
+-- | Counts from 0 (sub 1 initially for arithmetic steps up)
+--
+nthPitchLetterDown :: Int -> PitchLetter -> PitchLetter
+nthPitchLetterDown n sd 
+    | n <  0    = nthPitchLetterUp (abs n) sd
+    | otherwise = let n1 = n `mod` 7
+                      n2 = (fromEnum sd - n1) `mod` 7
+                  in toEnum n2
+
+
+-- DESIGN NOTE
+-- could use arithmeticNaturalUp for addInterval...
+
+-- | Int should be positive.
+--
+arithmeticNaturalUp :: Int -> Pitch -> Pitch
+arithmeticNaturalUp n (Pitch name o) = 
+    let (om,name2) = arithmeticNaturalUp1 n name in Pitch name2 (o + om)
+
+
+arithmeticNaturalUp1 :: Int -> PitchName -> (Int,PitchName)
+arithmeticNaturalUp1 n (PitchName letter _) = 
+    (om + carry, PitchName letter2 NAT)
+  where
+    (om,pm) = (\(a,b) -> (a,b+1)) $ ((n-1) `divMod` 7)
+    letter2 = nthPitchLetterUp (pm-1) letter
+    carry   = if fromEnum letter2 < fromEnum letter then 1 else 0
+
+
+
+-- | Int should be positive.
+--
+arithmeticNaturalDown :: Int -> Pitch -> Pitch
+arithmeticNaturalDown n (Pitch name o) = 
+    let (om,name2) = arithmeticNaturalDown1 n name in Pitch name2 (o - om)
+
+
+-- | carry is positive (should be subtracted)
+--
+arithmeticNaturalDown1 :: Int -> PitchName -> (Int,PitchName)
+arithmeticNaturalDown1 n (PitchName letter _) = 
+    (om + carry, PitchName letter2 NAT)
+  where
+    (om,pm) = (\(a,b) -> (a,b+1)) $ ((n-1) `divMod` 7)
+    letter2 = nthPitchLetterDown (pm-1) letter
+    carry   = if fromEnum letter2 > fromEnum letter then 1 else 0
 
 
 
