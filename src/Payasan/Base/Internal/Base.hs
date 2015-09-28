@@ -22,6 +22,8 @@ module Payasan.Base.Internal.Base
   , BPM
 
 
+  , PitchOrd(..)
+
   )  where
 
 
@@ -36,3 +38,7 @@ type BPM     = Decimal
 
 
 
+class PitchOrd a where
+  equivalent :: a -> a -> Bool
+  isHigher   :: a -> a -> Bool
+  isLower    :: a -> a -> Bool

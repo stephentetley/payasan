@@ -26,6 +26,16 @@ module Payasan.Base.Names.DiatonicInterval
   , simple_sixth
   , simple_seventh
 
+  -- * Compound intervals (constructors)
+  , compoundUnison
+  , compoundSecond
+  , compoundThird
+  , compoundFourth
+  , compoundFifth
+  , compoundSixth
+  , compoundSeventh
+
+
   ) where
 
 
@@ -33,32 +43,60 @@ import Payasan.Base.ScaleDegree
 
 
 
-simple_unison           :: DiatonicInterval
-simple_unison           = DiatonicInterval { dinterval_type   = UNISON
-                                           , dinterval_octave = 0 }
+simple_unison       :: DiatonicInterval
+simple_unison       = DiatonicInterval { dia_interval_type   = UNISON
+                                       , dia_interval_octave = 0 }
 
-simple_second           :: DiatonicInterval
-simple_second           = DiatonicInterval { dinterval_type   = SECOND
-                                           , dinterval_octave = 0 }
+simple_second       :: DiatonicInterval
+simple_second       = DiatonicInterval { dia_interval_type   = SECOND
+                                       , dia_interval_octave = 0 }
 
-simple_third            :: DiatonicInterval
-simple_third            = DiatonicInterval { dinterval_type   = THIRD
-                                           , dinterval_octave = 0 }
+simple_third        :: DiatonicInterval
+simple_third        = DiatonicInterval { dia_interval_type   = THIRD
+                                       , dia_interval_octave = 0 }
 
-simple_fourth           :: DiatonicInterval
-simple_fourth           = DiatonicInterval { dinterval_type   = FOURTH
-                                           , dinterval_octave = 0 }
+simple_fourth       :: DiatonicInterval
+simple_fourth       = DiatonicInterval { dia_interval_type   = FOURTH
+                                       , dia_interval_octave = 0 }
 
-simple_fifth            :: DiatonicInterval
-simple_fifth            = DiatonicInterval { dinterval_type   = FIFTH
-                                           , dinterval_octave = 0 }
+simple_fifth        :: DiatonicInterval
+simple_fifth        = DiatonicInterval { dia_interval_type   = FIFTH
+                                       , dia_interval_octave = 0 }
 
-simple_sixth            :: DiatonicInterval
-simple_sixth            = DiatonicInterval { dinterval_type   = SIXTH
-                                           , dinterval_octave = 0 }
+simple_sixth        :: DiatonicInterval
+simple_sixth        = DiatonicInterval { dia_interval_type   = SIXTH
+                                       , dia_interval_octave = 0 }
 
-simple_seventh          :: DiatonicInterval
-simple_seventh          = DiatonicInterval { dinterval_type   = SEVENTH
-                                           , dinterval_octave = 0 }
+simple_seventh      :: DiatonicInterval
+simple_seventh      = DiatonicInterval { dia_interval_type   = SEVENTH
+                                       , dia_interval_octave = 0 }
 
+
+compoundUnison      :: Int -> DiatonicInterval
+compoundUnison o    = DiatonicInterval { dia_interval_type   = UNISON
+                                       , dia_interval_octave = o }
+
+compoundSecond      :: Int -> DiatonicInterval
+compoundSecond o    = DiatonicInterval { dia_interval_type   = SECOND
+                                       , dia_interval_octave = o }
+
+compoundThird       :: Int -> DiatonicInterval
+compoundThird o     = DiatonicInterval { dia_interval_type   = THIRD
+                                       , dia_interval_octave = o }
+
+compoundFourth      :: Int -> DiatonicInterval
+compoundFourth o    = DiatonicInterval { dia_interval_type   = FOURTH
+                                       , dia_interval_octave = o }
+
+compoundFifth       :: Int -> DiatonicInterval
+compoundFifth o     = DiatonicInterval { dia_interval_type   = FIFTH
+                                       , dia_interval_octave = o }
+
+compoundSixth       :: Int -> DiatonicInterval
+compoundSixth o     = DiatonicInterval { dia_interval_type   = SIXTH
+                                       , dia_interval_octave = o }
+
+compoundSeventh     :: Int -> DiatonicInterval
+compoundSeventh o   = DiatonicInterval { dia_interval_type   = SEVENTH
+                                       , dia_interval_octave = o }
 

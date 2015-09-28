@@ -29,8 +29,7 @@ module Payasan.Base.Monophonic.Internal.Metrics
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
-import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.Base
 
 import Payasan.Base.Pitch
 import Payasan.Base.ScaleDegree
@@ -58,17 +57,16 @@ highestPitch = foldPitch fn Nothing
 
 
 lowestStep :: Phrase OveScaleStep drn anno -> Maybe OveScaleStep
-lowestStep ph = fmap snd $ collectP fn Nothing () ph
+lowestStep = foldPitch fn Nothing
   where
-    fn Nothing        p = (\k -> Just (k,p)) <$> asksLocal local_key 
-    fn (Just (k0,p0)) p = (\k1 -> if (k1,p) `ctxIsLower` (k0,p0) 
-                                    then Just (k1,p) else Just (k0,p0))
-                            <$> asksLocal local_key
+    fn Nothing   s                      = Just s
+    fn (Just s0) s | s `isLower` s0     = Just s
+                   | otherwise          = Just s0
+
 
 highestStep :: Phrase OveScaleStep drn anno -> Maybe OveScaleStep
-highestStep ph = fmap snd $ collectP fn Nothing () ph
+highestStep = foldPitch fn Nothing
   where
-    fn Nothing        p = (\k -> Just (k,p)) <$> asksLocal local_key 
-    fn (Just (k0,p0)) p = (\k1 -> if (k1,p) `ctxIsHigher` (k0,p0) 
-                                    then Just (k1,p) else Just (k0,p0))
-                            <$> asksLocal local_key
+    fn Nothing   s                      = Just s
+    fn (Just s0) s | s `isHigher` s0    = Just s
+                   | otherwise          = Just s0

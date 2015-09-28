@@ -34,6 +34,14 @@ module Payasan.Base.ScaleDegree
   , nthScaleDegreeFwd
   , nthScaleDegreeBwd
 
+  , fromDiatonicInterval
+  , toDiatonicInterval
+
+  , diatonicIntervalBetween
+
+  , fromSimpleInterval  -- TEMP
+  , toSimpleInterval    -- TEMP
+
   , toPitch1
   , toPitch
   , fromPitch1
@@ -45,6 +53,7 @@ module Payasan.Base.ScaleDegree
   ) where
 
 
+import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Pitch
@@ -80,8 +89,8 @@ data OveScaleStep = OveScaleStep ScaleStep Octave
 
 
 data DiatonicInterval = DiatonicInterval
-    { dinterval_type    :: !SimpleInterval
-    , dinterval_octave  :: !Int
+    { dia_interval_type         :: !SimpleInterval
+    , dia_interval_octave       :: !Int
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -160,6 +169,82 @@ nthScaleDegreeBwd n sd
 
 
 
+-- Semitone counting is not supported as it is context-dependent 
+-- on key.
+
+
+
+-- Could we achieve same as above with a @diatonic_root_note@
+-- rather than a key?
+--
+-- Then OveScaleStep always has a ctx-free /measurement/ 
+-- interpretation. (Root will be needed for change to Pitch).
+--
+
+-- NOTE - arbitrary key change (within phrases) makes using 
+-- scale degrees as a representation a lot more complicated.
+-- There is good justification or moving LocalRenderInfo
+-- to Phrase rather than Bar for Monnophonic note list.
+-- 
+
+
+-- | A diatonic interval has a unique numeric representation
+-- 
+diatonicIntervalBetween :: OveScaleStep -> OveScaleStep -> DiatonicInterval
+diatonicIntervalBetween a b 
+    | a `equivalent` b  = DiatonicInterval UNISON 0
+    | a `isLower` b     = toDiatonicInterval $ 1 + naturalPosition b - naturalPosition a
+    | otherwise         = toDiatonicInterval $ 1 + naturalPosition a - naturalPosition b
+
+
+instance PitchOrd OveScaleStep where 
+  equivalent a b = naturalPosition a == naturalPosition b
+  isLower    a b = naturalPosition a <  naturalPosition b
+  isHigher   a b = naturalPosition a >  naturalPosition b
+
+naturalPosition :: OveScaleStep -> Int
+naturalPosition (OveScaleStep s o) = o * 7 + fromEnum (step_degree s)
+
+
+-- | Octave always positive...
+--
+fromDiatonicInterval :: DiatonicInterval -> Int
+fromDiatonicInterval (DiatonicInterval { dia_interval_type = simple
+                                       , dia_interval_octave = o }) = 
+    o * 7 + fromSimpleInterval simple
+
+toDiatonicInterval :: Int -> DiatonicInterval
+toDiatonicInterval i = 
+    DiatonicInterval { dia_interval_type   = toSimpleInterval i
+                     , dia_interval_octave = i `div` 7 
+                     }
+
+
+fromSimpleInterval :: Integral a => SimpleInterval -> a
+fromSimpleInterval UNISON      = 1
+fromSimpleInterval SECOND      = 2
+fromSimpleInterval THIRD       = 3
+fromSimpleInterval FOURTH      = 4
+fromSimpleInterval FIFTH       = 5
+fromSimpleInterval SIXTH       = 6
+fromSimpleInterval SEVENTH     = 7
+
+toSimpleInterval :: (Show a, Integral a) => a -> SimpleInterval
+toSimpleInterval i = fn $ 1 + ((i-1) `mod` 7)
+  where
+    fn 1 = UNISON
+    fn 2 = SECOND
+    fn 3 = THIRD
+    fn 4 = FOURTH
+    fn 5 = FIFTH
+    fn 6 = SIXTH
+    fn 7 = SEVENTH
+    fn n = error $ "toSimpleInterval - unreachable: " ++ show n
+
+
+
+
+
 toPitch1 :: SpellingMap -> OveScaleStep -> Pitch
 toPitch1 sm  (OveScaleStep deg o) = 
     case MAP.lookup (step_degree deg) (spelling_deg_to_pch sm) of
@@ -192,22 +277,14 @@ toPitch :: Key -> OveScaleStep -> Pitch
 toPitch key sd = toPitch1 (buildSpellingMap key) sd
 
 
-fromSimpleInterval :: Integral a => SimpleInterval -> a
-fromSimpleInterval UNISON      = 1
-fromSimpleInterval SECOND      = 2
-fromSimpleInterval THIRD       = 3
-fromSimpleInterval FOURTH      = 4
-fromSimpleInterval FIFTH       = 5
-fromSimpleInterval SIXTH       = 6
-fromSimpleInterval SEVENTH     = 7
 
 
 
 
 addDiatonicInterval :: OveScaleStep -> DiatonicInterval -> OveScaleStep
 addDiatonicInterval (OveScaleStep step o) ivl = 
-   let (carry,step1) = addSimpleInterval step (dinterval_type ivl)
-       om            = dinterval_octave ivl
+   let (carry,step1) = addSimpleInterval step (dia_interval_type ivl)
+       om            = dia_interval_octave ivl
    in OveScaleStep step1 (o + om + carry)
 
 
@@ -221,8 +298,8 @@ addSimpleInterval (ScaleStep name _) ivl =
 
 subDiatonicInterval :: OveScaleStep -> DiatonicInterval -> OveScaleStep
 subDiatonicInterval (OveScaleStep step o) ivl = 
-   let (carry,step1) = subSimpleInterval step (dinterval_type ivl)
-       om            = dinterval_octave ivl
+   let (carry,step1) = subSimpleInterval step (dia_interval_type ivl)
+       om            = dia_interval_octave ivl
    in OveScaleStep step1 ((o - om) + carry)
 
 

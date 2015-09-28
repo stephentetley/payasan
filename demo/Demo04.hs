@@ -12,8 +12,6 @@ import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.ScaleDegree                 -- TEMP
-import Payasan.Base.Internal.Scale       -- TEMP
 
 
 
@@ -53,16 +51,23 @@ demo04 :: IO ()
 demo04 = shellOutABC global_ri $ outputAsABC global_ri $ augment phrase01
 
 demo05 :: IO ()
-demo05 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ augment phrase01
+demo05 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
+    augment phrase01
 
 demo06 :: IO ()
-demo06 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ retrograde phrase01
+demo06 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
+    retrograde phrase01
 
 demo07 :: IO ()
-demo07 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ invertChromatic phrase01
+demo07 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
+    invertChromatic phrase01
 
 demo08 :: IO ()
 demo08 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
     transposeDiatonic simple_second phrase01
+
+demo09 :: IO ()
+demo09 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
+    invertDiatonic phrase01
 
 

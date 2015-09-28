@@ -50,9 +50,6 @@ module Payasan.Base.Pitch
   , semitoneCount
   , midiSemitoneCount
   , zsemitoneCount
-  , isHigher
-  , isLower
-  , equivalent
   , zequivalent
 
   
@@ -64,6 +61,8 @@ module Payasan.Base.Pitch
 
   , octaveDistance
   , lyOctaveDistance
+
+  , nearestRootToC4
 
   -- * Intervals
   , Interval(..)
@@ -92,6 +91,8 @@ module Payasan.Base.Pitch
 
   )
   where
+
+import Payasan.Base.Internal.Base
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -226,15 +227,11 @@ semitoneCountPL G = 7
 semitoneCountPL A = 9
 semitoneCountPL B = 11
 
+instance PitchOrd Pitch where
+  equivalent p q = semitoneCount p == semitoneCount q
+  isHigher   p q = semitoneCount p >  semitoneCount q
+  isLower    p q = semitoneCount p <  semitoneCount q
 
-isHigher :: Pitch -> Pitch -> Bool
-isHigher p q = semitoneCount p > semitoneCount q
-
-isLower :: Pitch -> Pitch -> Bool
-isLower p q = semitoneCount p < semitoneCount q
-
-equivalent :: Pitch -> Pitch -> Bool
-equivalent p q = semitoneCount p == semitoneCount q
 
 
 zequivalent :: PitchName -> PitchName -> Bool
@@ -305,6 +302,19 @@ lyOctaveDistance root p1
                  ostep  = if ad >= 5 then 1 else 0
                  ove    = octaveDistance a b
              in ostep + ove
+
+
+
+
+
+nearestRootToC4 :: PitchName -> Pitch
+nearestRootToC4 name = if addown < adup then pdown else psame
+  where
+    psame  = Pitch name 4
+    pdown   = Pitch name 3
+    adup    = arithmeticDistance middle_c psame
+    addown  = arithmeticDistance pdown middle_c
+
 
 --------------------------------------------------------------------------------
 -- Interval
@@ -540,7 +550,8 @@ invertSimpleInterval :: Interval -> Interval
 invertSimpleInterval = step . simpleIntervalOf 
   where
     step (Interval { interval_distance = ad, interval_semitones = n }) = 
-        Interval { interval_distance  = 9 - ad, interval_semitones   = 12 - n }
+        Interval { interval_distance    = 9 - ad
+                 , interval_semitones   = 12 - n }
 
 
 

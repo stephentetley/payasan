@@ -24,7 +24,7 @@ module Payasan.Base.Monophonic.Internal.Transform
 
   , retrograde
   , invertChromatic
-
+  , invertDiatonic
 
   ) where
 
