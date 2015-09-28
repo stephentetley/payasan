@@ -110,6 +110,9 @@ genTransform elemT st0 ph =
 -- However, this functionality is for /library writers/ not
 -- /top level users/ where it seems that acknowledging the 
 -- note-rest distinction is useful.
+-- 
+-- Also it allows us to use element for Maybe when calculating 
+-- contours.
 --
 
 

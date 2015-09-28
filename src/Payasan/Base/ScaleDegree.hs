@@ -39,8 +39,6 @@ module Payasan.Base.ScaleDegree
 
   , diatonicIntervalBetween
 
-  , fromSimpleInterval  -- TEMP
-  , toSimpleInterval    -- TEMP
 
   , toPitch1
   , toPitch
@@ -101,15 +99,9 @@ data SimpleInterval = UNISON | SECOND | THIRD | FOURTH
 
 
 data SpellingMap = SpellingMap 
-    { spelling_deg_to_pch       :: MAP.Map ScaleDegree PitchName
-    , spelling_pch_to_step      :: MAP.Map PitchLetter ScaleStep
-    , spelling_nat_to_scale_tone    :: MAP.Map PitchLetter PitchName
-    }
+    { spelling_nat_to_scale_tone    :: MAP.Map PitchLetter PitchName }
   deriving (Show)
 
-
-ordered_degrees :: [ScaleDegree]
-ordered_degrees = [ TONIC .. LEADING_TONE ]
 
 
 -- Design notes
@@ -119,21 +111,9 @@ ordered_degrees = [ TONIC .. LEADING_TONE ]
 
 buildSpellingMap :: Key -> SpellingMap 
 buildSpellingMap key = let scale = buildScale key in 
-    SpellingMap { spelling_deg_to_pch   = makePitchLookup scale
-                , spelling_pch_to_step  = makeStepLookup scale
-                , spelling_nat_to_scale_tone = makeSTLookup scale
-                }
+    SpellingMap { spelling_nat_to_scale_tone = makeSTLookup scale }
 
 
-
-makePitchLookup :: Scale -> MAP.Map ScaleDegree PitchName
-makePitchLookup ss = MAP.fromList $ zip ordered_degrees ss
-
-makeStepLookup :: Scale -> MAP.Map PitchLetter ScaleStep
-makeStepLookup ss = 
-    MAP.fromList $ zipWith fn ss ordered_degrees
-  where
-    fn (PitchName lttr alt) deg = (lttr, ScaleStep deg $ fromAlteration alt)
 
 makeSTLookup :: Scale -> MAP.Map PitchLetter PitchName
 makeSTLookup ss = MAP.fromList $ map fn ss
@@ -253,17 +233,17 @@ data Direction = UP | DOWN
 
 
 fromPitch :: Key -> Pitch -> OveScaleStep
-fromPitch key@(Key start _) p = fromPitch2 (buildSpellingMap key) root p
+fromPitch (Key start _) p = fromPitch1 root p
   where
     root = nearestRootToC4 start 
 
 toPitch :: Key -> OveScaleStep -> Pitch
-toPitch key@(Key start _) sd = toPitch2 (buildSpellingMap key) root sd
+toPitch key@(Key start _) sd = toPitch1 (buildSpellingMap key) root sd
   where
     root = nearestRootToC4 start 
 
-toPitch2 :: SpellingMap -> Pitch -> OveScaleStep -> Pitch
-toPitch2 sm root oss = 
+toPitch1 :: SpellingMap -> Pitch -> OveScaleStep -> Pitch
+toPitch1 sm root oss = 
     alterPitch scale_tone alt
   where
     (dir,dia,alt) = asInterval oss
@@ -277,8 +257,8 @@ toPitch2 sm root oss =
 
 
 
-fromPitch2 :: SpellingMap -> Pitch -> Pitch -> OveScaleStep
-fromPitch2 sm root pch = alterOveScaleStep ss1 (toAlteration alt)
+fromPitch1 :: Pitch -> Pitch -> OveScaleStep
+fromPitch1 root pch = alterOveScaleStep ss1 (toAlteration alt)
   where
     dir         = if pch `isHigher` root then UP else DOWN
     real_ival   = if dir == UP then intervalBetween root pch 
@@ -328,12 +308,6 @@ asScaleStep (DiatonicInterval name o) =
   
 
 
-
-toPitch1 :: SpellingMap -> OveScaleStep -> Pitch
-toPitch1 sm (OveScaleStep deg o) = 
-    case MAP.lookup (step_degree deg) (spelling_deg_to_pch sm) of
-        Just name -> Pitch (alterPitchName name $ step_alteration deg) o
-        Nothing -> Pitch c_nat 0
  
 
 alterPitch :: Pitch -> Alt -> Pitch
@@ -345,14 +319,6 @@ alterPitchName (PitchName l a) n =
 
 
 
-
-fromPitch1 :: SpellingMap -> Pitch -> OveScaleStep
-fromPitch1 sm (Pitch nm o) = 
-    case MAP.lookup (pitch_letter nm) (spelling_pch_to_step sm) of
-        Nothing -> OveScaleStep (ScaleStep TONIC 0) 0
-        Just sd -> OveScaleStep (alterScaleStep sd $ pitch_alteration nm) o
-
-
 alterOveScaleStep :: OveScaleStep -> Alteration -> OveScaleStep
 alterOveScaleStep (OveScaleStep ss o) alt = 
     OveScaleStep (alterScaleStep ss alt) o
@@ -360,10 +326,6 @@ alterOveScaleStep (OveScaleStep ss o) alt =
 alterScaleStep :: ScaleStep -> Alteration -> ScaleStep
 alterScaleStep (ScaleStep name a) alt = 
     ScaleStep name (a + fromAlteration alt)
-
-
-
-
 
 
 

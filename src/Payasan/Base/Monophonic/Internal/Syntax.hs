@@ -126,10 +126,10 @@ data NoteGroup pch drn anno =
   deriving (Data,Eq,Show,Typeable)
 
 
--- | TODO - if we allow ties, there is a simple duration
--- doubling transformation (unfortunately there isn\'t a
--- simple duration halving trafo).
+-- | TODO - should we implement ties?
 --
+-- Note - if we ignore anno Element can also represent 
+-- Maybe+duration.
 --
 data Element pch drn anno = 
       Note   pch   drn   anno

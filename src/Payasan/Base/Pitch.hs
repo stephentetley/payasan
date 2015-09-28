@@ -189,7 +189,7 @@ nthPitchLetterDown n sd
 
 
 -- DESIGN NOTE
--- could use arithmeticNaturalUp for addInterval...
+-- could use arithmeticNaturalUp/Down for addInterval...
 
 -- | Int should be positive.
 --
@@ -483,7 +483,7 @@ pachetAdd sp0 (Interval { interval_distance  = ad
   where
     (PitchName l0 _)            = znaturalOf sp0
     znext@(PitchName l1 _)      = PitchName (upwardPL l0 ad) NAT
-    sc_next                     = semitonesToNext sp0 znext       -- logic here is wrong for unison
+    sc_next                     = semitonesToNext sp0 znext
     alt                         = alterationFromDiff $ sc - sc_next
 
 
