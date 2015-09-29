@@ -53,6 +53,9 @@ module Payasan.Base.Internal.Pipeline
   , outputAsTabular
   , printAsTabular
 
+  , outputAsLinear
+  , printAsLinear
+
   ) where
 
 import qualified Payasan.Base.Internal.ABC.InTrans          as ABCIn
@@ -81,9 +84,10 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.MainSyntax
 
-import Payasan.Base.Internal.Tabular.Common
-import Payasan.Base.Internal.Tabular.OutputBeam
-import Payasan.Base.Internal.Tabular.OutputMain
+import Payasan.Base.Internal.Output.Common
+import Payasan.Base.Internal.Output.Tabular.OutputBeam
+import Payasan.Base.Internal.Output.Tabular.OutputMain
+import Payasan.Base.Internal.Output.Linear.OutputMain
 
 
 
@@ -218,3 +222,17 @@ outputAsTabular _gi ph = ppRender $ mainTabular lo ph
 printAsTabular :: (Pretty pch, Pretty drn) 
                => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
+
+
+outputAsLinear :: (Pretty pch, Pretty drn) 
+               => GlobalRenderInfo -> Phrase pch drn anno -> String
+outputAsLinear _gi ph = ppRender $ mainLinear lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsLinear :: (Pretty pch, Pretty drn) 
+              => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+printAsLinear gi = putStrLn . outputAsLinear gi

@@ -26,3 +26,8 @@ demo01 = printAsABC default_global_info phrase01
 demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01
 
+demo02 :: IO ()
+demo02 = printAsTabular default_global_info phrase01
+
+demo03 :: IO ()
+demo03 = printAsLinear default_global_info phrase01

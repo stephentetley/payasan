@@ -15,9 +15,9 @@ import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Internal.Tabular.Common
-import Payasan.Base.Internal.Tabular.OutputBeam
-import Payasan.Base.Internal.Tabular.OutputMain
+import Payasan.Base.Internal.Output.Common
+import Payasan.Base.Internal.Output.Tabular.OutputBeam
+import Payasan.Base.Internal.Output.Tabular.OutputMain
 
 
 import Text.PrettyPrint.HughesPJClass        -- package: pretty

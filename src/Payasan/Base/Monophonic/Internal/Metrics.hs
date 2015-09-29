@@ -114,7 +114,10 @@ semitoneInterval :: forall drn anno.
                     Phrase Pitch drn anno -> Phrase Int drn anno
 semitoneInterval = transformP (contourAlgo comp)
   where
-    comp pold pnew = interval_semitones $ intervalBetween pold pnew
+    comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
+                     in if pnew `isLower` pold then negate sc else sc
+
+
 
 
 data GrossContour = DOWN | GSAME | UP
@@ -128,6 +131,8 @@ grossContour = transformP (contourAlgo comp)
     comp pold pnew | pnew `isHigher` pold = UP
                    | pnew `isLower`  pold = DOWN
                    | otherwise            = GSAME
+
+
 
 
 data RefinedContour = LEAP_DOWN | STEP_DOWN | RSAME | STEP_UP | LEAP_UP

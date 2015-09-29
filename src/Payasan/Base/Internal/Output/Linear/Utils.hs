@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Tabular.Utils
+-- Module      :  Payasan.Base.Internal.Output.Linear.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,71 +10,46 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helpers to print in Humdrum-like format.
+-- Helpers to print in a linear format.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Tabular.Utils
+module Payasan.Base.Internal.Output.Linear.Utils
   ( 
 
-    OutMon
-  , nextBar
-  , (<++>)
-  , comment
-  , tandem
-  , exclusive
-  , bar
-  , rest
-  , nullDot
+    rest
+  , nullStar
   , duration
-  , endSpine
+
+  , endBar
+  , endPhrase
+
+  , concatBars
 
   ) where
 
-import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
--- Generating output is stateful to track bar number
-
-type OutMon a = Rewrite Int a
-
-
-nextBar :: OutMon Doc
-nextBar = do { i <- get; puts (1+); return $ bar i }
 
 
 
-infixl 6 <++>
 
-(<++>) :: Doc -> Doc -> Doc
-a <++> b = a <> sizedText 8 "\t" <> b
-
-comment :: String -> Doc
-comment = text . ('!':)
-
-tandem :: Doc -> Doc
-tandem d    = char '*' <> d
-
-exclusive :: Doc -> Doc
-exclusive d = text "**" <> d
-
-
-bar :: Int -> Doc
-bar n = char '=' <> int n
+barStart :: Int -> Doc
+barStart n = char '=' <> int n
 
 rest :: Doc
 rest = char 'r'
 
-nullDot :: Doc
-nullDot = char '.'
+nullStar :: Doc
+nullStar = char '*'
 
 
 duration :: Duration -> Doc
 duration d = 
-    maybe (comment "zero") (\(n,dc) -> fn n <> dots dc) $ symbolicComponents d 
+    maybe (int 0) (\(n,dc) -> fn n <> dots dc) $ symbolicComponents d 
   where
     dots dc     = text $ replicate dc '.'
     fn Maxima   = text "maxima"
@@ -90,5 +65,17 @@ duration d =
     fn D128     = int 128
 
     
-endSpine :: Doc
-endSpine = text "*-"
+endBar :: Doc
+endBar = text "|"
+
+endPhrase :: Doc
+endPhrase = text "||"
+
+
+
+concatBars :: [Doc] -> Doc
+concatBars []     = empty
+concatBars (x:xs) = step 1 x xs
+  where
+    step _ b []       = b <+> endPhrase
+    step n b (c:cs)   = barStart n <+> b <+> endBar $+$ (step (n+1) c cs)

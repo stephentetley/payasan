@@ -12,8 +12,9 @@ import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
-
-
+import Payasan.Base.Monophonic.Internal.Metrics
+-- import Payasan.Base.Internal.Linear.Common
+-- import Payasan.Base.Internal.Linear.Utils
 
 -- TRANSFORMATIONS -- 
 
@@ -70,4 +71,5 @@ demo09 :: IO ()
 demo09 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ 
     invertDiatonic phrase01
 
-
+-- TODO - need linear output...
+demo10 = semitoneInterval phrase01

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Tabular.OutputMain
+-- Module      :  Payasan.Base.Internal.Output.Linear.OutputMain
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,44 +10,38 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Output Main syntax to a Humdrum-like form.
+-- Output Main syntax to a linear form.
 --
--- This is intended debugging and checking purposes, so it is
--- specialized to represent Payasan and is not directly 
--- compatible with Humdrum.
+-- This is intended debugging and checking purposes.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Tabular.OutputMain
+module Payasan.Base.Internal.Output.Linear.OutputMain
   ( 
 
-    mainTabular
+    mainLinear
     
   ) where
 
-import Payasan.Base.Internal.Tabular.Common
-import Payasan.Base.Internal.Tabular.Utils
+import Payasan.Base.Internal.Output.Common
+import Payasan.Base.Internal.Output.Linear.Utils
+
 import Payasan.Base.Internal.MainSyntax
-import Payasan.Base.Internal.RewriteMonad
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-mainTabular :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-mainTabular ppl ph = evalRewriteDefault (oPhrase ppl ph) 1
+mainLinear :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
+mainLinear ppl ph = concatBars $ oPhrase ppl ph
 
 
-oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> OutMon Doc
-oPhrase _   (Phrase [])       = return empty
-oPhrase ppl (Phrase (x:xs))   = do { d <- oBar ppl x; step d xs }
-  where
-    step ac []      = return (ac $+$ endSpine <++> endSpine)
-    step ac (b:bs)  = do { d <- oBar ppl b; step (ac $+$ d) bs }
+oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> [Doc]
+oPhrase ppl (Phrase xs)         = map (oBar ppl) xs
 
 
-oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> OutMon Doc
-oBar ppl (Bar _info cs) = ($+$) <$> nextBar <*> pure (oNoteGroupList ppl cs)
+oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> Doc
+oBar ppl (Bar _info cs)         =  oNoteGroupList ppl cs
 
 
 oNoteGroupList :: LeafOutput pch drn anno -> [NoteGroup pch drn anno] -> Doc
@@ -61,14 +55,14 @@ oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
 oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of
     NoteElem n _    -> oNote ppl n
-    Rest d          -> rest <++> ppD d 
+    Rest d          -> rest <> ppD d 
     Chord ps d _    -> oPitches ppl ps <+> ppD d 
     Graces xs       -> vcat $ map (oNote ppl) xs
   where
     ppD = pp_duration ppl
 
 oNote :: LeafOutput pch drn anno -> Note pch drn -> Doc
-oNote ppl (Note p d)          = ppP p <++> ppD d
+oNote ppl (Note p d)          = ppP p <> ppD d
   where
     ppP = pp_pitch ppl
     ppD = pp_duration ppl

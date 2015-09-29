@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Tabular.OutputBeam
+-- Module      :  Payasan.Base.Internal.Output.Tabular.OutputBeam
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -18,42 +18,38 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Tabular.OutputBeam
+module Payasan.Base.Internal.Output.Tabular.OutputBeam
   ( 
 
     beamTabular
     
   ) where
 
-import Payasan.Base.Internal.Tabular.Common (LeafOutput(..))
-import Payasan.Base.Internal.Tabular.Utils
+import Payasan.Base.Internal.Output.Common (LeafOutput(..))
+import Payasan.Base.Internal.Output.Tabular.Utils
+
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.RewriteMonad
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
 beamTabular :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-beamTabular ppl ph = evalRewriteDefault (oPhrase ppl ph) 1
+beamTabular ppl ph = concatBars 2 $ oPhrase ppl ph
 
 
 
 
-oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> OutMon Doc
-oPhrase _   (Phrase [])       = return empty
-oPhrase ppl (Phrase (x:xs))   = do { d <- oBar ppl x; step d xs }
-  where
-    step ac []      = return (ac $+$ endSpine <++> endSpine)
-    step ac (b:bs)  = do { d <- oBar ppl b; step (ac $+$ d) bs }
+oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> [Doc]
+oPhrase ppl  (Phrase xs)        = map (oBar ppl) xs
 
 
-oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> OutMon Doc
-oBar ppl (Bar _info cs) = ($+$) <$> nextBar <*> pure (oNoteGroupList ppl cs)
+oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> Doc
+oBar ppl (Bar _ cs)             = oNoteGroupList ppl cs
 
 
 oNoteGroupList :: LeafOutput pch drn anno -> [NoteGroup pch drn anno] -> Doc
-oNoteGroupList ppl xs = vcat $ map (oNoteGroup ppl) xs
+oNoteGroupList ppl xs           = vcat $ map (oNoteGroup ppl) xs
 
 
 oNoteGroup :: LeafOutput pch drn anno -> NoteGroup pch drn anno -> Doc

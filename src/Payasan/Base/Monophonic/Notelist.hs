@@ -53,6 +53,11 @@ module Payasan.Base.Monophonic.Notelist
   , outputAsTabular
   , printAsTabular
 
+  , outputAsLinear
+  , printAsLinear
+
+
+
   , mapPitch
   , mapDuration
 
@@ -62,13 +67,14 @@ import Payasan.Base.Monophonic.Internal.ABCInTrans
 import Payasan.Base.Monophonic.Internal.ABCParser (abc)
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
 import Payasan.Base.Monophonic.Internal.LilyPondQuasiquote (lilypond)
+import Payasan.Base.Monophonic.Internal.LinearOutput
 import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.TabularOutput
 import Payasan.Base.Monophonic.Internal.Transform
 import Payasan.Base.Monophonic.Internal.Traversals
 
-import Payasan.Base.Internal.Tabular.Common
+import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Shell
 import qualified Payasan.Base.Notelist as MAIN
@@ -128,3 +134,19 @@ outputAsTabular _gi ph = ppRender $ monoTabular lo ph
 printAsTabular :: (Pretty pch, Pretty drn) 
                => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
+
+
+
+
+outputAsLinear :: (Pretty pch, Pretty drn) 
+                => GlobalRenderInfo -> Phrase pch drn anno -> String
+outputAsLinear _gi ph = ppRender $ monoLinear lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsLinear :: (Pretty pch, Pretty drn) 
+               => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+printAsLinear gi = putStrLn . outputAsLinear gi

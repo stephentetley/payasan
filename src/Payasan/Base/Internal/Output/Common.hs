@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Tabular.Common
+-- Module      :  Payasan.Base.Internal.Output.Common
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,15 +10,13 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Output to a Humdrum-like form.
+-- Output to console either in a linear or Humdrum-like form.
 --
--- This is intended debugging and checking purposes, so it is
--- specialized to represent Payasan and is not directly 
--- compatible with Humdrum.
+-- This is intended debugging and checking purposes.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Tabular.Common
+module Payasan.Base.Internal.Output.Common
   ( 
 
     LeafOutput(..)
@@ -35,7 +33,6 @@ module Payasan.Base.Internal.Tabular.Common
 
   ) where
 
-import Payasan.Base.Internal.Tabular.Utils
 
 import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
 import qualified Payasan.Base.Internal.ABC.Syntax as ABC
@@ -62,7 +59,7 @@ std_ly_output = LeafOutput { pp_pitch     = lyPitch
                            }
 
 lyNoteLength :: LY.LyNoteLength -> Doc
-lyNoteLength (LY.DrnDefault)    = nullDot
+lyNoteLength (LY.DrnDefault)    = char '.'
 lyNoteLength (LY.DrnExplicit d) = duration d
 
 lyPitch :: LY.LyPitch -> Doc
@@ -76,7 +73,7 @@ std_abc_output = LeafOutput { pp_pitch     = abcPitch
                             }
 
 abcNoteLength :: ABC.ABCNoteLength -> Doc
-abcNoteLength (ABC.DNL)         = nullDot
+abcNoteLength (ABC.DNL)         = char '.'
 abcNoteLength d                 = pPrint d
 
 abcPitch :: ABC.ABCPitch -> Doc
@@ -88,5 +85,24 @@ pitch_duration_output = LeafOutput { pp_pitch     = pPrint
                                    , pp_duration  = pPrint
                                    , pp_anno      = const empty
                                    }
+
+
+duration :: Duration -> Doc
+duration d = 
+    maybe (text "!zero") (\(n,dc) -> fn n <> dots dc) $ symbolicComponents d 
+  where
+    dots dc     = text $ replicate dc '.'
+    fn Maxima   = text "maxima"
+    fn Longa    = text "longa"
+    fn Breve    = text "breve"
+    fn D1       = int 1
+    fn D2       = int 2
+    fn D4       = int 4
+    fn D8       = int 8
+    fn D16      = int 16
+    fn D32      = int 32
+    fn D64      = int 64
+    fn D128     = int 128
+
 
 
