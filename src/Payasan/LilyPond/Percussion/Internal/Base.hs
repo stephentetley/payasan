@@ -36,6 +36,8 @@ import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch)
 
 import Payasan.Base.Duration
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
 import Data.Data
 
 
@@ -281,3 +283,5 @@ toMidiPitch Fivedown            = 52            -- same as Chinesecymbal
 
 
 
+instance Pretty DrumPitch where
+  pPrint = text . shortName

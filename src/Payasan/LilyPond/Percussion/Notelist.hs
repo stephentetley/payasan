@@ -41,6 +41,12 @@ module Payasan.LilyPond.Percussion.Notelist
 
   , writeAsMIDI
 
+  , outputAsTabular
+  , printAsTabular
+
+  , outputAsLinear
+  , printAsLinear
+
   ) where
 
 import Payasan.LilyPond.Percussion.Internal.Base
@@ -58,6 +64,10 @@ import Payasan.Base.Internal.Shell
 import Payasan.Base.Internal.LilyPond.InTrans
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 
+import Payasan.Base.Internal.Output.Common
+import Payasan.Base.Internal.Output.Linear.OutputMain
+import Payasan.Base.Internal.Output.Tabular.OutputMain
+
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
 import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
@@ -65,7 +75,7 @@ import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration
 
-import Text.PrettyPrint.HughesPJ        -- package: pretty
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
@@ -103,3 +113,30 @@ writeAsMIDI path notes =
 noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch Duration Accent
 noteTrans = PERC.translate . translateToBeam
 
+
+
+
+outputAsTabular :: GlobalRenderInfo -> StdDrumPhrase -> String
+outputAsTabular _gi ph = ppRender $ mainTabular lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsTabular :: GlobalRenderInfo -> StdDrumPhrase ->  IO ()
+printAsTabular gi = putStrLn . outputAsTabular gi
+
+
+
+
+outputAsLinear ::  GlobalRenderInfo -> StdDrumPhrase -> String
+outputAsLinear _gi ph = ppRender $ mainLinear lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsLinear :: GlobalRenderInfo -> StdDrumPhrase ->  IO ()
+printAsLinear gi = putStrLn . outputAsLinear gi

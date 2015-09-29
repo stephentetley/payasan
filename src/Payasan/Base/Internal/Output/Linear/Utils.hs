@@ -34,9 +34,6 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-
-
-
 barStart :: Int -> Doc
 barStart n = char '=' <> int n
 
@@ -77,5 +74,5 @@ concatBars :: [Doc] -> Doc
 concatBars []     = empty
 concatBars (x:xs) = step 1 x xs
   where
-    step _ b []       = b <+> endPhrase
+    step n b []       = barStart n <+> b <+> endPhrase
     step n b (c:cs)   = barStart n <+> b <+> endBar $+$ (step (n+1) c cs)

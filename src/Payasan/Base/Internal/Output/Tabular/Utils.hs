@@ -85,6 +85,6 @@ concatBars :: Int -> [Doc] -> Doc
 concatBars _ []     = empty
 concatBars w (x:xs) = step 1 x xs
   where
-    step _ b []       = b $+$ endSpines w
+    step n b []       = barStarts w n $+$ b $+$ endSpines w
     step n b (c:cs)   = barStarts w n $+$ b $+$ (step (n+1) c cs)
 

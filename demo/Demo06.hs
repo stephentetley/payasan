@@ -34,3 +34,10 @@ demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01
 demo03 :: IO ()
 demo03 = writeAsMIDI "out/chords01.mid" phrase01
 
+
+demo04 :: IO ()
+demo04 = printAsTabular default_global_info phrase01
+
+demo05 :: IO ()
+demo05 = printAsLinear default_global_info phrase01
+

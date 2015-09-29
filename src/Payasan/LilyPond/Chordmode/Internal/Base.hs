@@ -43,6 +43,8 @@ import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
 import Data.Data
 
 
@@ -114,3 +116,61 @@ data Alt = NVE | NO_ALT | PVE
 -- Probably avoid inversions
 
 
+instance Pretty Chord where
+  pPrint (Chord p suffix)       = pPrint p <> char ':' <> pPrint suffix
+
+instance Pretty ChordSuffix where
+  pPrint (NamedModifier cmod)   = pPrint cmod
+  pPrint (ChordSteps steps)     = pPrint steps
+
+
+
+instance Pretty ChordModifier where
+  pPrint MAJ5           = text "M5"
+  pPrint MAJ6           = text "M6"
+  pPrint MAJ7           = text "M7"
+  pPrint MAJ9           = text "M9"
+  pPrint MAJ11          = text "M11"
+  pPrint MAJ13          = text "M13"
+  pPrint MIN5           = text "m5"
+  pPrint MIN6           = text "m6"
+  pPrint MIN7           = text "m7"
+  pPrint MIN9           = text "m9"
+  pPrint MIN11          = text "m11"
+  pPrint MIN13          = text "m13"
+  pPrint DIM5           = text "dim5"
+  pPrint DIM7           = text "dim7"
+  pPrint AUG5           = text "aug5"
+  pPrint AUG7           = text "aug7"
+  pPrint DOM7           = text "dom8"
+  pPrint DOM9           = text "dom9"
+  pPrint DOM11          = text "dom11"
+  pPrint DOM13          = text "dom13"
+  pPrint MM7            = text "Mm7"
+  pPrint SUS            = text "sus"
+  pPrint SUS2           = text "sus2"
+  pPrint SUS4           = text "sus4"
+  pPrint NO_MOD         = empty
+
+
+instance Pretty Steps where
+  pPrint (Steps { additions = adds, removals = subs }) =
+      dotSep (map pPrint adds) <> mkSubs subs
+    where
+      mkSubs [] = empty
+      mkSubs xs = char '^' <> dotSep (map pPrint xs)
+
+instance Pretty Step where
+  pPrint (Step i alt)   = int i <> pPrint alt
+
+instance Pretty Alt where
+  pPrint NVE            = char '-'
+  pPrint NO_ALT         = empty
+  pPrint PVE            = char '+'
+
+dotSep :: [Doc] -> Doc
+dotSep []     = empty
+dotSep (x:xs) = step x xs
+  where
+    step d []       = d
+    step d (a:as)   = d <> char '.' <> step a as

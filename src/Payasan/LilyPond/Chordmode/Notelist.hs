@@ -41,6 +41,12 @@ module Payasan.LilyPond.Chordmode.Notelist
 
   , writeAsMIDI
 
+  , outputAsTabular
+  , printAsTabular
+
+  , outputAsLinear
+  , printAsLinear
+
 
   ) where
 
@@ -55,22 +61,24 @@ import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 import qualified Payasan.Base.Monophonic.Internal.MonoToMain    as MONO
 import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
 import qualified Payasan.Base.Monophonic.Internal.Traversals    as MONO
+import Payasan.Base.Monophonic.Internal.LinearOutput
+import Payasan.Base.Monophonic.Internal.TabularOutput
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.MainSyntax as MAIN
 import Payasan.Base.Internal.MainToBeam
+import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
 import Payasan.Base.Internal.LilyPond.Syntax
 
-
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.PrettyPrint.HughesPJ        -- package: pretty
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 -- Use Monophonic syntax...
 
@@ -124,3 +132,27 @@ chordTrans :: StdChordPhrase -> MONO.Phrase [Pitch] Duration ()
 chordTrans = MONO.mapPitch buildNotes
 
 
+outputAsTabular :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsTabular _gi ph = ppRender $ monoTabular lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsTabular :: GlobalRenderInfo -> StdChordPhrase ->  IO ()
+printAsTabular gi = putStrLn . outputAsTabular gi
+
+
+
+
+outputAsLinear :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsLinear _gi ph = ppRender $ monoLinear lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+printAsLinear :: GlobalRenderInfo -> StdChordPhrase ->  IO ()
+printAsLinear gi = putStrLn . outputAsLinear gi
