@@ -47,6 +47,7 @@ elementT (NoteElem e a)         = T.NoteElem (noteT e) a
 elementT (Rest d)               = T.Rest d
 elementT (Chord ps d a)         = T.Chord ps d a
 elementT (Graces ns)            = T.Graces $ map noteT ns
+elementT (Punctuation s)        = T.Punctuation s
 
 
 noteT :: Note pch drn -> T.Note pch drn

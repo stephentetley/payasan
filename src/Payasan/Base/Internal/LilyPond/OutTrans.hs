@@ -81,6 +81,7 @@ relElementP (Chord ps d a)      =
     (\ps1 -> Chord ps1 d a) <$> mapM changePitchRel ps
 
 relElementP (Graces ns)         = Graces <$> mapM relNoteP ns
+relElementP (Punctuation s)     = pure $ Punctuation s
 
 
 relNoteP :: Note Pitch drn -> RelPMon (Note LyPitch drn)
@@ -113,6 +114,7 @@ absElementP (Chord ps d a)      =
     (\ps1 -> Chord ps1 d a)  <$> mapM changePitchAbs ps
 
 absElementP (Graces ns)         = Graces <$> mapM absNoteP ns
+absElementP (Punctuation s)     = pure $ Punctuation s
 
 
 absNoteP :: Note Pitch drn -> AbsPMon (Note LyPitch drn)
@@ -146,6 +148,7 @@ elementD (NoteElem e a)         = (\e1 -> NoteElem  e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
+elementD (Punctuation s)        = pure $ Punctuation s
 
 noteD :: Note pch Duration -> DMon (Note pch LyNoteLength)
 noteD (Note pch drn)            = Note pch <$> changeDrn drn

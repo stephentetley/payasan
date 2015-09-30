@@ -153,10 +153,11 @@ detachable (Atom e) = detachableE e
 detachable _        = False
 
 detachableE :: Element pch drn anno -> Bool
-detachableE (Rest {})     = True
-detachableE (NoteElem {}) = False
-detachableE (Chord {})    = False
-detachableE (Graces {})   = False
+detachableE (Rest {})           = True
+detachableE (NoteElem {})       = False
+detachableE (Chord {})          = False
+detachableE (Graces {})         = False
+detachableE (Punctuation {})    = True
 
 --------------------------------------------------------------------------------
 -- Finally beam

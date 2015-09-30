@@ -51,6 +51,7 @@ elementP (NoteElem e a)         = (\n -> NoteElem n a) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
 elementP (Chord ps d a)         = pure $ Chord (map pitchToMidi ps) d a
 elementP (Graces ns)            = Graces <$> mapM noteP ns
+elementP (Punctuation s)        = pure $ Punctuation s
 
 
 noteP :: Note Pitch drn -> PTMon (Note MidiPitch drn)

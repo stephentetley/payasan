@@ -68,6 +68,7 @@ elementP (Chord ps d a)         =
     (\ps1 -> Chord ps1 d a) <$> mapM transPch ps
 
 elementP (Graces ns)            = Graces    <$> mapM noteP ns
+elementP (Punctuation s)        = pure $ Punctuation s
 
 
 noteP :: Note Pitch drn -> PTMon (Note ABCPitch drn)
@@ -95,6 +96,7 @@ elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
+elementD (Punctuation s)        = pure $ Punctuation s
 
 
 noteD :: Note pch Duration -> DTMon (Note pch ABCNoteLength)

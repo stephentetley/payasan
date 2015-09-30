@@ -136,8 +136,12 @@ oNoteGroup _  (Atom e)          = oElement e
 oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 
+
+-- | Punctuation is not used by ABC.
+--
 oElement :: ABCElement -> Doc
 oElement (NoteElem n _)         = note n
 oElement (Rest d)               = rest d 
 oElement (Chord ps d _)         = chord ps d 
 oElement (Graces xs)            = graceForm $ map note xs
+oElement (Punctuation {})       = empty

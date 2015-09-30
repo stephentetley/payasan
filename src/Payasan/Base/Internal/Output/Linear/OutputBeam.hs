@@ -66,6 +66,7 @@ oElement ppl elt = case elt of
     Rest d          -> rest <++> ppD d 
     Chord ps d _    -> oPitches ppl ps <+> ppD d 
     Graces xs       -> vcat $ map (oNote ppl) xs
+    Punctuation s   -> text s
   where
     ppD = pp_duration ppl
 

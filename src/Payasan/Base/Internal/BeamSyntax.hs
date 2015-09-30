@@ -88,11 +88,14 @@ data NoteGroup pch drn anno =
 --
 -- See old Neume code. 
 --
+-- Punctuation is for LilyPond only (may change).
+--
 data Element pch drn anno = 
-      NoteElem   (Note pch drn)  anno
-    | Rest       drn
-    | Chord      [pch]           drn    anno
-    | Graces     [Note pch drn]
+      NoteElem      (Note pch drn)  anno
+    | Rest          drn
+    | Chord         [pch]           drn    anno
+    | Graces        [Note pch drn]
+    | Punctuation   String
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -123,7 +126,7 @@ sizeElement (NoteElem (Note _ d) _) = durationSize d
 sizeElement (Rest d)                = durationSize d
 sizeElement (Chord _ d _)           = durationSize d
 sizeElement (Graces {})             = 0
-
+sizeElement (Punctuation {})        = 0
 
 firstRenderInfo :: Phrase pch drn anno -> Maybe LocalRenderInfo
 firstRenderInfo (Phrase [])    = Nothing

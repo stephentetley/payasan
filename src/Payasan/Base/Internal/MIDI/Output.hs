@@ -102,6 +102,8 @@ elementT df (Chord ps d _)      =
 
 elementT _  (Graces {})         = return []
 
+elementT _  (Punctuation {})    = return []
+
 
 noteT :: (Duration -> Seconds) -> Note T.MidiPitch Duration -> Mon T.MidiNote
 noteT df (Note pch drn)        = 

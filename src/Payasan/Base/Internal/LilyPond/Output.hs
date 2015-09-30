@@ -155,6 +155,7 @@ renderNotes def ph = evalRewriteDefault (oLyPhrase ph) (stateZero first_info)
         chordForm (map pPitch ps) <> noteLength d <> pAnno a
 
     oElement (Graces ns)            = graceForm (map oNote ns)
+    oElement (Punctuation s)        = text s
 
 
     oNote :: GenLyNote pch -> Doc
