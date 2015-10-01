@@ -122,8 +122,9 @@ toScaleStepRepr = transformP step_algo
                               , element_trafoP = change
                               }
 
-    change (Note p d a) = (\p1 -> Note p1 d a) <$> mf p
-    change (Rest d)     = pure $ Rest d
+    change (Note p d a)         = (\p1 -> Note p1 d a) <$> mf p
+    change (Rest d)             = pure $ Rest d
+    change (Punctuation s)      = pure $ Punctuation s
 
     mf pch = (\key -> fromPitch key pch) <$> asksLocal local_key
 
@@ -135,8 +136,9 @@ fromScaleStepRepr = transformP step_algo
                               , element_trafoP = change
                               }
 
-    change (Note p d a) = (\p1 -> Note p1 d a) <$> mf p
-    change (Rest d)     = pure $ Rest d
+    change (Note p d a)         = (\p1 -> Note p1 d a) <$> mf p
+    change (Rest d)             = pure $ Rest d
+    change (Punctuation s)      = pure $ Punctuation s
 
     mf oss = (\key -> toPitch key oss) <$> asksLocal local_key
 

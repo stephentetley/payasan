@@ -99,16 +99,16 @@ contourAlgo :: (Pitch -> Pitch -> ctour)
 contourAlgo comp = MonoPitchAlgo { initial_stateP = Nothing
                                  , element_trafoP = fn }
   where   
-    fn (Note p d a) = do { opt <- get 
-                         ; case opt of 
-                              Nothing -> put (Just p) >> return (Rest d)
-                              Just p0 -> 
-                                  let ct = comp p0 p
-                                  in put (Just p) >> return (Note ct d a)
-                         }
+    fn (Note p d a)     = do { opt <- get 
+                             ; case opt of 
+                                  Nothing -> put (Just p) >> return (Rest d)
+                                  Just p0 -> 
+                                     let ct = comp p0 p
+                                     in put (Just p) >> return (Note ct d a)
+                             }
 
-    fn (Rest d)     = pure $ Rest d
-
+    fn (Rest d)         = pure $ Rest d
+    fn (Punctuation s)  = pure $ Punctuation s
 
 semitoneInterval :: forall drn anno. 
                     Phrase Pitch drn anno -> Phrase Int drn anno

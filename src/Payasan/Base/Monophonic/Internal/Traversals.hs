@@ -143,8 +143,9 @@ collectP :: forall st pch drn anno ac.
 collectP mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note p _ _)    = mf ac p
-    elementC ac (Rest {})       = pure $ ac
+    elementC ac (Note p _ _)        = mf ac p
+    elementC ac (Rest {})           = pure $ ac
+    elementC ac (Punctuation {})    = pure $ ac
 
 
 
@@ -164,8 +165,9 @@ ctxMapPitch fn = transformP algo
                           , element_trafoP    = stepE 
                           }
 
-    stepE (Note p d a)  = (\ks -> Note (fn ks p) d a) <$> asksLocal local_key
-    stepE (Rest d)      = pure $ Rest d
+    stepE (Note p d a)    = (\ks -> Note (fn ks p) d a) <$> asksLocal local_key
+    stepE (Rest d)        = pure $ Rest d
+    stepE (Punctuation s) = pure $ Punctuation s
 
 
 foldPitch :: (ac -> pch -> ac) -> ac -> Phrase pch drn anno -> ac
@@ -203,8 +205,9 @@ collectD :: forall st pch drn anno ac.
 collectD mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note _ d _)    = mf ac d
-    elementC ac (Rest {})       = pure $ ac
+    elementC ac (Note _ d _)        = mf ac d
+    elementC ac (Rest {})           = pure $ ac
+    elementC ac (Punctuation {})    = pure $ ac
 
 --------------------------------------------------------------------------------
 -- Transformation
@@ -219,8 +222,9 @@ mapDuration fn = transformD algo
                              , element_trafoD   = stepE 
                              }
 
-    stepE (Note p d a)  = pure $ Note p (fn d) a
-    stepE (Rest d)      = pure $ Rest (fn d)
+    stepE (Note p d a)          = pure $ Note p (fn d) a
+    stepE (Rest d)              = pure $ Rest (fn d)
+    stepE (Punctuation s)       = pure $ Punctuation s
 
 
 foldDuration :: (ac -> drn -> ac) -> ac -> Phrase pch drn anno -> ac
@@ -256,8 +260,9 @@ collectA :: forall st pch drn anno ac.
 collectA mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note _ _ a)    = mf ac a
-    elementC ac (Rest {})       = pure $ ac
+    elementC ac (Note _ _ a)        = mf ac a
+    elementC ac (Rest {})           = pure $ ac
+    elementC ac (Punctuation {})    = pure $ ac
 
 
 --------------------------------------------------------------------------------
@@ -271,8 +276,9 @@ mapAnno fn = transformA algo
                          , element_trafoA   = stepE 
                          }
 
-    stepE (Note p d a)  = pure $ Note p d (fn a)
-    stepE (Rest d)      = pure $ Rest d
+    stepE (Note p d a)          = pure $ Note p d (fn a)
+    stepE (Rest d)              = pure $ Rest d
+    stepE (Punctuation s)       = pure $ Punctuation s
 
 
 foldAnno :: (ac -> anno -> ac) -> ac -> Phrase pch drn anno -> ac
@@ -309,8 +315,9 @@ collectPA :: forall st pch drn anno ac.
 collectPA mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note p _ a)    = mf ac p a
-    elementC ac (Rest {})       = pure $ ac
+    elementC ac (Note p _ a)        = mf ac p a
+    elementC ac (Rest {})           = pure $ ac
+    elementC ac (Punctuation {})    = pure $ ac
 
 
 
@@ -325,8 +332,9 @@ mapPitchAnno fn = transformPA algo
                               , element_trafoPA   = stepE 
                               }
 
-    stepE (Note p d a)  = let (p1,a1) = fn p a in pure $ Note p1 d a1
-    stepE (Rest d)      = pure $ Rest d
+    stepE (Note p d a)      = let (p1,a1) = fn p a in pure $ Note p1 d a1
+    stepE (Rest d)          = pure $ Rest d
+    stepE (Punctuation s)   = pure $ Punctuation s
 
 foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Phrase pch drn anno -> ac
 foldPitchAnno fn a0 ph = collectPA step a0 () ph
