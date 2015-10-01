@@ -47,9 +47,6 @@ import Payasan.Base.Duration
 import Text.Parsec                              -- package: parsec
 
 
-import Data.Char (isSpace)
-
-
 --------------------------------------------------------------------------------
 -- Parser
 
@@ -69,33 +66,19 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (GenLyPhrase pch anno)
-makeLyParser def = fullLyPhrase
+makeLyParser def = fullInputParse phrase
   where
     pPitch :: LyParser pch
     pPitch = pitchParser def
 
     pAnno  :: LyParser anno
     pAnno  = annoParser def
-
-    fullLyPhrase :: LyParser (GenLyPhrase pch anno)
-    fullLyPhrase = whiteSpace *> lyPhraseK >>= step
-      where 
-        isTrail             = all (isSpace)
-        step (ans,_,ss) 
-            | isTrail ss    = return ans
-            | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-    
-    lyPhraseK :: LyParser (GenLyPhrase pch anno, SourcePos, String)
-    lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
-
     
     phrase :: LyParser (GenLyPhrase pch anno)
     phrase = Phrase <$> bars
 
     bars :: LyParser [GenLyBar pch anno]
     bars = sepBy bar barline
-
 
     bar :: LyParser (GenLyBar pch anno)
     bar = Bar default_local_info <$> noteGroups 

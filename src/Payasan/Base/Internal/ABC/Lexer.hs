@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -19,6 +19,7 @@ module Payasan.Base.Internal.ABC.Lexer
   (
     ABCParser
   , ABCLexer
+  , fullInputParse
   , symbol 
   , reservedOp
   , int
@@ -35,10 +36,24 @@ import qualified Text.Parsec.Token as P
 
 
 import Control.Monad.Identity
-
+import Data.Char (isSpace)
 
 type ABCParser a        = ParsecT String () Identity a
 type ABCLexer           = P.GenTokenParser String () Identity
+
+
+
+fullInputParse :: forall a. ABCParser a -> ABCParser a
+fullInputParse p = whiteSpace *> parseK >>= step
+  where 
+    isTrail             = all (isSpace)
+    step (ans,_,ss) 
+        | isTrail ss    = return ans
+        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
+
+
+    parseK :: ABCParser (a, SourcePos, String)
+    parseK = (,,) <$> p <*> getPosition <*> getInput
 
 
 --------------------------------------------------------------------------------

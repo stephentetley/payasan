@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -19,6 +19,7 @@ module Payasan.Base.Internal.LilyPond.Lexer
   (
     LyParser
   , LyLexer
+  , fullInputParse
   , symbol 
   , reserved
   , reservedOp
@@ -36,10 +37,25 @@ import qualified Text.Parsec.Token as P
 
 
 import Control.Monad.Identity
-
+import Data.Char (isSpace)
 
 type LyParser a         = ParsecT String () Identity a
 type LyLexer            = P.GenTokenParser String () Identity
+
+
+
+
+fullInputParse :: forall a. LyParser a -> LyParser a
+fullInputParse p = whiteSpace *> parseK >>= step
+  where 
+    isTrail             = all (isSpace)
+    step (ans,_,ss) 
+        | isTrail ss    = return ans
+        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
+
+
+    parseK :: LyParser (a, SourcePos, String)
+    parseK = (,,) <$> p <*> getPosition <*> getInput
 
 
 --------------------------------------------------------------------------------

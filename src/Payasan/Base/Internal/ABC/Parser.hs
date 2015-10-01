@@ -37,7 +37,6 @@ import Text.Parsec                              -- package: parsec
 
 import Language.Haskell.TH.Quote
 
-import Data.Char (isSpace)
 
 --------------------------------------------------------------------------------
 -- Quasiquote
@@ -58,19 +57,8 @@ abc = QuasiQuoter
 
 
 parseABCPhrase :: String -> Either ParseError ABCPhrase
-parseABCPhrase = runParser fullABCPhrase () ""
+parseABCPhrase = runParser (fullInputParse phrase) () ""
 
-fullABCPhrase :: ABCParser ABCPhrase
-fullABCPhrase = whiteSpace *> abcPhraseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-
-abcPhraseK :: ABCParser (ABCPhrase,SourcePos,String)
-abcPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
 phrase :: ABCParser ABCPhrase
 phrase = Phrase <$> bars
@@ -84,10 +72,8 @@ barline = reservedOp "|"
 bar :: ABCParser ABCBar
 bar = Bar default_local_info <$> noteGroups 
 
-
 noteGroups :: ABCParser [ABCNoteGroup]
 noteGroups = whiteSpace *> many noteGroup
-
 
 noteGroup :: ABCParser ABCNoteGroup
 noteGroup = tuplet <|> (Atom <$> element)

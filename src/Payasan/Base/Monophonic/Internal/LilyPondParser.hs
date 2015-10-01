@@ -21,6 +21,7 @@ module Payasan.Base.Monophonic.Internal.LilyPondParser
     LyParserDef (..)    -- re-export
   , parseLyPhrase
   , pitch
+  , noAnno
 
   ) where
 
@@ -29,14 +30,11 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P
-import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..), pitch)
+import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..), pitch, noAnno)
 import Payasan.Base.Internal.CommonSyntax
 
 
 import Text.Parsec                              -- package: parsec
-
-
-import Data.Char (isSpace)
 
 
 --------------------------------------------------------------------------------
@@ -51,26 +49,13 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 
 makeLyParser :: forall pch anno. 
                 P.LyParserDef pch anno -> LyParser (GenLyMonoPhrase pch anno)
-makeLyParser def = fullLyPhrase
+makeLyParser def = fullInputParse phrase
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
 
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
-
-    fullLyPhrase :: LyParser (GenLyMonoPhrase pch anno)
-    fullLyPhrase = whiteSpace *> lyPhraseK >>= step
-      where 
-        isTrail             = all (isSpace)
-        step (ans,_,ss) 
-            | isTrail ss    = return ans
-            | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-
-    lyPhraseK :: LyParser (GenLyMonoPhrase pch anno, SourcePos, String)
-    lyPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
-
 
     phrase :: LyParser (GenLyMonoPhrase pch anno)
     phrase = Phrase default_local_info <$> bars
