@@ -43,6 +43,8 @@ module Payasan.Base.Internal.Pipeline
   
   , outputAsABC
   , printAsABC
+
+  , genOutputAsLilyPond
   , outputAsLilyPond
   , printAsLilyPond
 
@@ -184,14 +186,26 @@ outputAsABC gi = ppRender . abcOutput gi . ABCOut.translate . addBeams . transla
 printAsABC :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsABC gi = putStrLn . outputAsABC gi
 
+genOutputAsLilyPond :: LyOutputDef pch anno 
+                    -> GlobalRenderInfo 
+                    -> Phrase pch Duration anno 
+                    -> String
+genOutputAsLilyPond def gi = 
+    ppRender . lilyPondOutput def gi
+             . LYOut.translateDurationOnly
+             . addBeams 
+             . translateToBeam
+
+
 outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
 outputAsLilyPond gi = 
-    ppRender . lilyPondOutput gi std_def 
+    ppRender . lilyPondOutput std_def gi
              . LYOut.translate gi 
              . addBeams 
              . translateToBeam
   where
     std_def = LyOutputDef { printPitch = pitch, printAnno = \_ -> empty }
+
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

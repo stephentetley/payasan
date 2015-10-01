@@ -63,10 +63,10 @@ deltaKey (LocalRenderInfo { local_key = k1 }) =
 
 --------------------------------------------------------------------------------
 
-lilyPondOutput :: GlobalRenderInfo 
-               -> LyOutputDef LyPitch anno 
-               -> LyPhrase anno -> Doc
-lilyPondOutput globals def ph = 
+lilyPondOutput :: LyOutputDef pch anno 
+               -> GlobalRenderInfo 
+               -> GenLyPhrase pch anno -> Doc
+lilyPondOutput def globals ph = 
         header 
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where

@@ -5,14 +5,14 @@ module Demo07 where
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 import Payasan.LilyPond.Lyricmode.Internal.Parser
+import Payasan.LilyPond.Lyricmode.Notelist
 
 
 -- LYRICS -- 
 
-temp01 = [lyricmode| Shake4 ba8 -- by8 shake2 | Shake4 ba8 -- by8 shake.2 |  |]
 
 
-{-
+
 phrase01 :: StdLyricPhrase
 phrase01 = fromLilyPondWith globals locals $ 
     [lyricmode| Shake4 ba8 -- by8 shake2 | Shake4 ba8 -- by8 shake.2 |  |]
@@ -32,7 +32,9 @@ locals = default_local_info
 
 
 demo01 :: IO ()
-demo01 = printAsLilyPond global_ri phrase01
+demo01 = printAsLilyPond globals phrase01
+
+{-
 
 demo02 :: IO ()
 demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01

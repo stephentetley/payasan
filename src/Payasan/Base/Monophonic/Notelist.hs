@@ -27,11 +27,11 @@ module Payasan.Base.Monophonic.Notelist
   , LyMonoPhrase
   , lilypond
 
-  , GlobalRenderInfo(..)
+  , GlobalRenderInfo(..)        -- Re-export
   , OctaveMode(..)
   , default_global_info
 
-  , LocalRenderInfo(..)
+  , LocalRenderInfo(..)         -- Re-export
   , UnitNoteLength(..)
   , default_local_info
 
@@ -43,6 +43,7 @@ module Payasan.Base.Monophonic.Notelist
 
   , outputAsABC
   , printAsABC
+  , genOutputAsLilyPond
   , outputAsLilyPond
   , printAsLilyPond
 
@@ -74,10 +75,14 @@ import Payasan.Base.Monophonic.Internal.TabularOutput
 import Payasan.Base.Monophonic.Internal.Transform
 import Payasan.Base.Monophonic.Internal.Traversals
 
+import Payasan.Base.Internal.LilyPond.Output (LyOutputDef(..))
+
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Shell
 import qualified Payasan.Base.Notelist as MAIN
+
+import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
@@ -102,16 +107,22 @@ fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
 outputAsABC :: GlobalRenderInfo -> StdMonoPhrase -> String
 outputAsABC gi = MAIN.outputAsABC gi . translateToMain
 
-
 printAsABC :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
 printAsABC gi = MAIN.printAsABC gi . translateToMain
+
+
+genOutputAsLilyPond :: LyOutputDef pch anno 
+                    -> GlobalRenderInfo 
+                    -> Phrase pch Duration anno
+                    -> String
+genOutputAsLilyPond def gi = MAIN.genOutputAsLilyPond def gi . translateToMain
 
 outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
 
-
 printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
 printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
+
 
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender

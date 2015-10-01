@@ -26,15 +26,19 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
 
   , Syllable(..)
 
+  , inTrans
+
   ) where
 
+import Payasan.Base.Monophonic.Internal.LilyPondInTrans
 import qualified Payasan.Base.Monophonic.Internal.Syntax as MONO
 
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
 
 import Payasan.Base.Duration
 
--- import Text.PrettyPrint.HughesPJClass           -- package: pretty
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 
@@ -69,4 +73,16 @@ data Syllable = Syllable String
 -- For the time being we represent it just as a String, while
 -- this is not great for pattern matching etc. it prevents 
 -- adding another type parameter to the syntax.
+
+
+
+instance Pretty Syllable where
+  pPrint (Syllable s)   = text s
+
+
+inTrans :: GlobalRenderInfo 
+        -> LyLyricPhrase
+        -> StdLyricPhrase
+inTrans _info = trafoDuration
+
 
