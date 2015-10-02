@@ -51,10 +51,11 @@ import Payasan.Base.ScaleDegree
 import Data.Data
 
 
+
+-- Simple metrics
+
 barCount :: Phrase pch drn anno -> Int
 barCount (Phrase { phrase_bars = bs }) = length bs
-
-
              
 
 
@@ -109,6 +110,7 @@ contourAlgo comp = MonoPitchAlgo { initial_stateP = Nothing
 
     fn (Rest d)         = pure $ Rest d
     fn (Punctuation s)  = pure $ Punctuation s
+
 
 semitoneInterval :: forall drn anno. 
                     Phrase Pitch drn anno -> Phrase Int drn anno

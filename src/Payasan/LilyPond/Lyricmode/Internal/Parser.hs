@@ -27,18 +27,13 @@ import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P
-import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Duration
 
 
 import Text.Parsec                              -- package: parsec
-import Text.Parsec.String (Parser)
 
 import Language.Haskell.TH.Quote
-
-import Data.Char
 
 
 lyricmode :: QuasiQuoter

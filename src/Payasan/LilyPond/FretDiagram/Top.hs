@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Lyricmode.Notelist
+-- Module      :  Payasan.LilyPond.FretDiagram.Top
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,29 +10,23 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Lyricmode for LilyPond.
+-- Fret diagrams for LilyPond.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Lyricmode.Notelist
+module Payasan.LilyPond.FretDiagram.Top
   ( 
    
-    StdLyricPhrase
-  , lyricmode
+--    StdLyricPhrase
+--  , lyricmode
 
-  , GlobalRenderInfo(..)        -- Re-export
+    GlobalRenderInfo(..)        -- Re-export
   , OctaveMode(..)
   , default_global_info
 
   , LocalRenderInfo(..)         -- Re-export
   , UnitNoteLength(..)
   , default_local_info
-
-  , fromLilyPond
-  , fromLilyPondWith
-
-  , outputAsLilyPond
-  , printAsLilyPond
 
   ) where
 
@@ -49,6 +43,7 @@ import Payasan.Base.Internal.LilyPond.Output (LyOutputDef(..))
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
+{-
 
 fromLilyPond :: GlobalRenderInfo -> LyLyricPhrase -> StdLyricPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
@@ -69,3 +64,4 @@ outputAsLilyPond gi = MONO.genOutputAsLilyPond def gi
 printAsLilyPond :: GlobalRenderInfo -> StdLyricPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
+-}
