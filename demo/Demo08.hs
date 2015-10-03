@@ -7,11 +7,13 @@ import Payasan.LilyPond.FretDiagram.Internal.Base
 import Payasan.LilyPond.FretDiagram.Internal.Parser
 import Payasan.LilyPond.FretDiagram.Top
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
 
 -- FRET DIAGRAMS -- 
 
-test01 = [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
-test02 = [fret_diagram| c:6-5-1;4-o;3-2;2-3;1-2;  |]
+test01 = pPrint $ [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
+test02 = pPrint $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
 
 
 {-

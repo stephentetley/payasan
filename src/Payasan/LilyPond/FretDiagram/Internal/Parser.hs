@@ -18,8 +18,6 @@ module Payasan.LilyPond.FretDiagram.Internal.Parser
   ( 
      fret_diagram
 
-  , testIt
-
   ) where
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
@@ -39,7 +37,7 @@ import Language.Haskell.TH.Quote
 
 fret_diagram :: QuasiQuoter
 fret_diagram = QuasiQuoter
-    { quoteExp = \s -> case parseFretting s of
+    { quoteExp = \s -> case parseFretBoard s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -49,22 +47,31 @@ fret_diagram = QuasiQuoter
 
 
 
-parseFretting :: String -> Either ParseError Fretting
-parseFretting = runParser (fullInputParse fretting) () ""
+parseFretBoard :: String -> Either ParseError FretBoard
+parseFretBoard = runParser (fullInputParse fretBoard) () ""
 
-fretting :: LyParser Fretting
-fretting = whiteSpace *> many1 (fretting1 <* symbol ";")
+fretBoard :: LyParser FretBoard
+fretBoard = (\a b -> FretBoard { fretboard_name       = ""
+                               , fretboard_opt_barre  = a 
+                               , fretboard_fingerings = b }) 
+          <$> (whiteSpace *> optionMaybe barre) <*> many1 fingering
 
-fretting1 :: LyParser Fretting1
-fretting1 = barre <|> fret
-         <?> "fretting1"
+fingering :: LyParser Fingering
+fingering = p <?> "fingering"
   where
-    barre = Barre <$> (symbol "c:" *> many1 (try $ stringNumber <* char '-'))
-                  <*> fretNumber
-    fret  = Fret <$> (stringNumber <* char '-') <*> fretNumber
+    p = Fingering <$> suffixStringNumber <*> (fretNumber <* symbol ";")
+
+
+barre :: LyParser BarreIndicator
+barre = BarreIndicator <$> (symbol "c:" *> suffixStringNumber) 
+                       <*> suffixStringNumber
+                       <*> (int <* symbol ";")
 
 
 
+
+suffixStringNumber :: LyParser StringNumber
+suffixStringNumber = stringNumber <* char '-'
 
 stringNumber :: LyParser StringNumber
 stringNumber = int
@@ -77,4 +84,3 @@ fretNumber = choice [open, muted, number]
     muted   = MUTED <$ char 'x'
     number  = FretNumber <$> int
 
-testIt = runParser fretting () "" "6-x;5-x;4-o;3-2;2-3;1-2; "
