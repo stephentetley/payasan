@@ -71,6 +71,7 @@ transposeDiatonic :: DiatonicInterval
 transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicInterval` ivl)) ph
 
 
+
 retrograde :: Phrase pch Duration anno -> Phrase pch Duration anno
 retrograde (Phrase info bs) = Phrase info $ map revBar $ reverse bs
   where

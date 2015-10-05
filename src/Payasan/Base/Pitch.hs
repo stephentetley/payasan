@@ -305,10 +305,10 @@ arithmeticDistance p q
     | otherwise         = adDown p q
   where
     adUp   a@(Pitch s1 _) b@(Pitch s2 _) = 
-        octaveDistance a b + zarithmeticDistanceUp s1 s2
+        (7 * octaveDistance a b) + zarithmeticDistanceUp s1 s2
 
     adDown a@(Pitch s1 _) b@(Pitch s2 _) = 
-       octaveDistance b a + zarithmeticDistanceDown s1 s2
+       (7 * octaveDistance b a) + zarithmeticDistanceDown s1 s2
 
 
 zarithmeticDistanceUp :: PitchName -> PitchName -> Int

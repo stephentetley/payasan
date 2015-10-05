@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -18,12 +19,17 @@ module Payasan.Base.Internal.Scale
   ( 
 
     Scale
+  , fromScale
   , buildScale
+
+  , isScaleTone
   
   -- TEMP - if ABC.Spelling is made to use scales it shouldn\'t need these
   , nsharps
   , nflats
   , findAlterations
+
+
 
   ) where
 
@@ -33,16 +39,21 @@ import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 
 
+import Data.Data
 import qualified Data.List as LIST
 import qualified Data.Map as MAP
 
-type Scale = [PitchName]
+
+
+newtype Scale = Scale { fromScale :: [PitchName] }
+  deriving (Data,Eq,Show,Typeable)
+
 
 
 buildScale :: Key -> Scale
 buildScale key@(Key root _) = 
    let i = findAlterations key
-   in orderPitchNames root $ pitchNamesUnordered i
+   in Scale $ orderPitchNames root $ pitchNamesUnordered i
 
 
 orderPitchNames :: PitchName -> [PitchName] -> [PitchName]
@@ -64,6 +75,13 @@ pitchNamesUnordered n =
 
 findFromRoot :: PitchLetter -> [PitchName] -> Maybe PitchName
 findFromRoot pl xs = LIST.find (\a -> pl == pitch_letter a) xs
+
+
+
+
+isScaleTone :: Pitch -> Scale -> Bool
+isScaleTone (Pitch lbl _) sc = lbl `elem` fromScale sc
+
 
 
 nsharps :: Int -> [PitchName]
@@ -173,3 +191,5 @@ findAlterations (Key n DORIAN)       = MAP.findWithDefault 0 n dor_map
 findAlterations (Key n PHRYGIAN)     = MAP.findWithDefault 0 n phr_map
 findAlterations (Key n LYDIAN)       = MAP.findWithDefault 0 n lyd_map
 findAlterations (Key n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
+
+

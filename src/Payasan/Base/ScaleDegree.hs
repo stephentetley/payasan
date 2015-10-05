@@ -48,6 +48,8 @@ module Payasan.Base.ScaleDegree
   , addDiatonicInterval
   , subDiatonicInterval
 
+  , transposeWithDiatonicInterval
+
   ) where
 
 
@@ -82,7 +84,10 @@ newtype Alt = Alt Int
 -- | Notion of ord is complicated here, it depends on what octave 
 -- means...
 --
-data OveScaleStep = OveScaleStep ScaleStep Octave
+data OveScaleStep = OveScaleStep 
+    { ove_scale_step             :: ScaleStep 
+    , ove_cohort                 :: Octave
+    }
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -116,7 +121,7 @@ buildSpellingMap key = let scale = buildScale key in
 
 
 makeSTLookup :: Scale -> MAP.Map PitchLetter PitchName
-makeSTLookup ss = MAP.fromList $ map fn ss
+makeSTLookup sc = MAP.fromList $ map fn $ fromScale sc
   where
     fn pn = (pitch_letter pn,pn)
 
@@ -196,13 +201,6 @@ fromDiatonicInterval (DiatonicInterval { dia_interval_type = simple
                                        , dia_interval_octave = o }) = 
     o * 7 + fromSimpleInterval simple
 
-toDiatonicInterval :: Int -> DiatonicInterval
-toDiatonicInterval i = 
-    DiatonicInterval { dia_interval_type   = toSimpleInterval i
-                     , dia_interval_octave = i `div` 7 
-                     }
-
-
 fromSimpleInterval :: Integral a => SimpleInterval -> a
 fromSimpleInterval UNISON      = 1
 fromSimpleInterval SECOND      = 2
@@ -211,6 +209,14 @@ fromSimpleInterval FOURTH      = 4
 fromSimpleInterval FIFTH       = 5
 fromSimpleInterval SIXTH       = 6
 fromSimpleInterval SEVENTH     = 7
+
+
+toDiatonicInterval :: Int -> DiatonicInterval
+toDiatonicInterval i = 
+    DiatonicInterval { dia_interval_type   = toSimpleInterval i
+                     , dia_interval_octave = (i-1) `div` 7 
+                     }
+
 
 toSimpleInterval :: (Show a, Integral a) => a -> SimpleInterval
 toSimpleInterval i = fn $ 1 + ((i-1) `mod` 7)
@@ -226,7 +232,7 @@ toSimpleInterval i = fn $ 1 + ((i-1) `mod` 7)
 
 
 
--- Prefer fromPitch2 and toPitch2...
+
 
 data Direction = UP | DOWN
   deriving (Eq,Show)
@@ -236,6 +242,23 @@ fromPitch :: Key -> Pitch -> OveScaleStep
 fromPitch (Key start _) p = fromPitch1 root p
   where
     root = nearestRootToC4 start 
+
+
+fromPitch1 :: Pitch -> Pitch -> OveScaleStep
+fromPitch1 root pch = alterOveScaleStep ss1 (toAlteration alt)
+  where
+    dir         = if pch `isHigher` root then UP else DOWN
+    real_ivl    = if dir == UP then intervalBetween root pch 
+                               else intervalBetween pch root
+
+    nat_ivl     = if dir == UP then intervalBetween root (naturalOf pch)
+                               else intervalBetween (naturalOf pch) root
+
+    alt         = interval_semitones real_ivl - interval_semitones nat_ivl
+    
+    ss1         = asScaleStep $ toDiatonicInterval $ interval_distance nat_ivl
+
+
 
 toPitch :: Key -> OveScaleStep -> Pitch
 toPitch key@(Key start _) sd = toPitch1 (buildSpellingMap key) root sd
@@ -256,20 +279,6 @@ toPitch1 sm root oss =
                       Nothing -> Pitch lbl ove
 
 
-
-fromPitch1 :: Pitch -> Pitch -> OveScaleStep
-fromPitch1 root pch = alterOveScaleStep ss1 (toAlteration alt)
-  where
-    dir         = if pch `isHigher` root then UP else DOWN
-    real_ival   = if dir == UP then intervalBetween root pch 
-                               else intervalBetween pch root
-
-    nat_ival    = if dir == UP then intervalBetween root (naturalOf pch)
-                               else intervalBetween (naturalOf pch) root
-
-    alt         = interval_semitones real_ival - interval_semitones nat_ival
-    
-    ss1         = asScaleStep $ toDiatonicInterval $ interval_distance nat_ival
 
     
 
@@ -360,4 +369,11 @@ subSimpleInterval (ScaleStep name _) ivl =
     in if name1 > name then (-1, ScaleStep name1 0) 
                        else (0, ScaleStep name1 0)
 
+
+
+-- Is wrong...
+--
+transposeWithDiatonicInterval :: Key -> DiatonicInterval -> Pitch -> Pitch 
+transposeWithDiatonicInterval key ivl p = 
+    let step = fromPitch key p in toPitch key (step `addDiatonicInterval` ivl)
 

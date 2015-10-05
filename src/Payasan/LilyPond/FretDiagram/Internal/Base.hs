@@ -26,7 +26,13 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
   , pushName
 
+  , GuitarTuning
+  , standard_tuning
+
   ) where
+
+import Payasan.Base.Pitch
+import Payasan.Base.Names.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -61,9 +67,17 @@ data FretNumber = OPEN | MUTED | FretNumber !Int
   deriving (Data,Eq,Show,Typeable)
 
 
+
 pushName :: String -> FretBoard -> FretBoard
 pushName ss a = a { fretboard_name  = ss }
 
+
+-- Sorted list - low to high strings
+type GuitarTuning = [Pitch]
+
+
+standard_tuning :: GuitarTuning
+standard_tuning = [ e_3, a_3, d_4, g_4, b_4, e_5 ]
 
 descSort :: [Fingering] -> [Fingering]
 descSort = sortBy fn
