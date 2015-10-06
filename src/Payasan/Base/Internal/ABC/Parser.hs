@@ -119,7 +119,7 @@ note = Note <$> pitch <*> noteLength
 
 
 pitch :: ABCParser ABCPitch
-pitch = ABCPitch <$> accidental <*> pitchLetter <*> octave
+pitch = ABCPitch <$> accidental <*> pitchLetter <*> octaveModifier
 
 
 
@@ -156,8 +156,8 @@ pitchLetter = choice $
     ]
 
 
-octave :: ABCParser Octave
-octave = octavehi <|> octavelo <|> return OveDefault
+octaveModifier :: ABCParser OctaveModifier
+octaveModifier = octavehi <|> octavelo <|> return OveDefault
   where
     octavehi = (OveRaised  . length) <$> many1 (char '\'')
     octavelo = (OveLowered . length) <$> many1 (char ',')

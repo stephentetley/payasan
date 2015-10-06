@@ -23,6 +23,9 @@ module Payasan.Base.Internal.Scale
   , buildScale
 
   , isScaleTone
+  , findAlteration
+  , alterationForShorthand
+  , alterationForLonghand
   
   -- TEMP - if ABC.Spelling is made to use scales it shouldn\'t need these
   , nsharps
@@ -69,18 +72,38 @@ pitchNamesUnordered n =
     map mk1 [C,D,E,F,G,A,B]
   where
     accidentals = if n >= 0 then nsharps n else nflats (abs n)
-    mk1 pl      = case findFromRoot pl accidentals of
+    mk1 pl      = case findFromRoot1 pl accidentals of
                     Just name -> name
                     Nothing -> PitchName pl NAT 
 
-findFromRoot :: PitchLetter -> [PitchName] -> Maybe PitchName
-findFromRoot pl xs = LIST.find (\a -> pl == pitch_letter a) xs
+findFromRoot1 :: PitchLetter -> [PitchName] -> Maybe PitchName
+findFromRoot1 pl xs = LIST.find (\a -> pl == pitch_letter a) xs
 
 
 
 
 isScaleTone :: Pitch -> Scale -> Bool
 isScaleTone (Pitch lbl _) sc = lbl `elem` fromScale sc
+
+findAlteration :: PitchLetter -> Scale -> Maybe Alteration
+findAlteration pl sc = 
+    pitch_alteration <$> LIST.find (\a -> pl == pitch_letter a) (fromScale sc)
+
+
+-- | Lookup a /natural/ note to see if it is altered in the scale.
+-- 
+alterationForShorthand :: Pitch -> Scale -> Maybe Alteration
+alterationForShorthand p@(Pitch (PitchName ltr _) _) sc 
+    | isAltered p = Nothing
+    | otherwise   = findAlteration ltr sc >>= \alt ->
+                    if alt == NAT then Nothing else Just alt
+
+
+
+alterationForLonghand :: Pitch -> Scale -> Maybe Alteration
+alterationForLonghand p sc 
+    | isScaleTone p sc && isAltered p = Just NAT
+    | otherwise                       = Nothing
 
 
 

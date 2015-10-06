@@ -18,9 +18,8 @@ module Payasan.Base.Internal.ABC.Utils
   ( 
 
   -- * Conversion
-    toPitch
-  , fromPitch
-  , LetterCase(..)
+
+    LetterCase(..)
   , decomposePitch
   , recomposePitch
   , fromLetterParts
@@ -66,18 +65,6 @@ import Data.Ratio
 
 -- TODO are pitch conversions Context Free regarding key and alterations?
 
--- | CU = middle C (octave 4)
---
-toPitch :: ABCPitch -> P.Pitch
-toPitch (ABCPitch a l om) = 
-    let (l1,lcase) = toLetterParts l
-    in P.Pitch (P.PitchName l1 (toAlteration a)) (toOctaveP lcase om)
-
-
-fromPitch :: P.Pitch -> ABCPitch
-fromPitch (P.Pitch (P.PitchName l a) o) = 
-    ABCPitch (fromAlteration a) (fromLetterPartsOve l o) (fromOctaveP o)
-
 
 data LetterCase = LOWER | UPPER
   deriving (Eq,Ord,Show)
@@ -98,7 +85,7 @@ recomposePitch (P.PitchName l a) lc i = ABCPitch a1 l1 om
     l1 = fromLetterParts l lc
     om = fromOctaveP i
 
-toOctaveP :: LetterCase -> Octave -> P.Octave
+toOctaveP :: LetterCase -> OctaveModifier -> P.Octave
 toOctaveP lc ove = let base = if lc == UPPER then 4 else 5 in step base ove
   where
     step i (OveDefault)   = i
@@ -106,7 +93,7 @@ toOctaveP lc ove = let base = if lc == UPPER then 4 else 5 in step base ove
     step i (OveLowered n) = i - n
 
 
-fromOctaveP :: P.Octave -> Octave
+fromOctaveP :: P.Octave -> OctaveModifier
 fromOctaveP ove | ove < 4       = OveLowered (4 - ove)
                 | ove > 5       = OveRaised  (ove - 5)
                 | otherwise     = OveDefault
@@ -136,10 +123,6 @@ fromLetterParts P.G lc  = if lc == UPPER then GU else GL
 fromLetterParts P.A lc  = if lc == UPPER then AU else AL
 fromLetterParts P.B lc  = if lc == UPPER then BU else BL
 
-fromLetterPartsOve :: P.PitchLetter -> Int -> PitchLetter
-fromLetterPartsOve l o 
-    | o <= 4    = fromLetterParts l UPPER
-    | otherwise = fromLetterParts l LOWER
 
 toAlteration :: Accidental -> P.Alteration
 toAlteration NO_ACCIDENTAL      = P.NAT
@@ -262,7 +245,7 @@ pitch :: ABCPitch -> Doc
 pitch (ABCPitch a l o) = accidental a <> pitchLetter l <> octaveModifier o
 
 
-octaveModifier:: Octave -> Doc
+octaveModifier:: OctaveModifier -> Doc
 octaveModifier (OveDefault)     = empty
 octaveModifier (OveRaised i)    = text $ replicate i '\''
 octaveModifier (OveLowered i)   = text $ replicate i ','

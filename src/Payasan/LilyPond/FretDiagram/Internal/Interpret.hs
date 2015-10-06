@@ -40,7 +40,7 @@ interpretFretDiagram key gt fb =
 fretBoardIntervals :: FretBoard -> [Maybe DiatonicInterval]
 fretBoardIntervals = map fn . fretboard_fingerings
   where
-    fn (Fingering _ n) = case n of
+    fn (Fingering _ x) = case x of
                            OPEN -> Just simple_unison
                            MUTED -> Nothing
                            FretNumber n -> Just $ toDiatonicInterval $  n + 1

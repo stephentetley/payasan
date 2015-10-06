@@ -85,8 +85,8 @@ newtype Alt = Alt Int
 -- means...
 --
 data OveScaleStep = OveScaleStep 
-    { ove_scale_step             :: ScaleStep 
-    , ove_cohort                 :: Octave
+    { oss_scale_step             :: !ScaleStep 
+    , oss_cohort                 :: !Octave
     }
   deriving (Data,Eq,Show,Typeable)
 

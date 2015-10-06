@@ -34,6 +34,8 @@ module Payasan.Base.Pitch
   , middle_c
   , c_nat
 
+  , isNatural
+  , isAltered 
 
   , nextPitchLetter
   , prevPitchLetter
@@ -159,6 +161,14 @@ c_nat           = PitchName C NAT
 
 --------------------------------------------------------------------------------
 -- Operations
+
+isNatural :: Pitch -> Bool
+isNatural (Pitch (PitchName _ NAT) _) = True
+isNatural _                           = False
+
+isAltered :: Pitch -> Bool
+isAltered = not . isAltered
+
 
 
 nextPitchLetter :: PitchLetter -> PitchLetter

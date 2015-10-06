@@ -25,7 +25,7 @@ import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.ABC.Spelling
-import Payasan.Base.Internal.ABC.Syntax (ABCPitch, ABCNoteLength)
+import Payasan.Base.Internal.ABC.Syntax (ABCPitch, ABCNoteLength, toPitch)
 import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad

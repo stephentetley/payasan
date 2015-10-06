@@ -79,7 +79,6 @@ transPch p0 =
     (\k -> let sm = makeSpellingMap k in spellFindNatural sm $ fromPitch p0) 
         <$> asksLocal local_key
 
-
 --------------------------------------------------------------------------------
 -- Translate duration
 
