@@ -24,14 +24,13 @@ module Payasan.Base.Internal.ABC.InTrans
 
 
 
-import Payasan.Base.Internal.ABC.Spelling
 import Payasan.Base.Internal.ABC.Syntax
-import Payasan.Base.Internal.ABC.Utils
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.Scale
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -75,9 +74,7 @@ noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 -- signature
 
 transPch :: ABCPitch -> PTMon Pitch
-transPch p0 = 
-    (\k -> let sm = makeSpellingMap k in toPitch $ spellFindAlteration sm p0) 
-        <$> asksLocal local_key
+transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asksLocal local_key
 
 
 
@@ -107,12 +104,6 @@ noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 changeDrn :: ABCNoteLength -> DTMon Duration
 changeDrn d                     = 
-    (durationT `flip` d) <$> asksLocal local_unit_note_len
+    (\unl -> toDuration unl d) <$> asksLocal local_unit_note_len
 
-
-durationT :: UnitNoteLength -> ABCNoteLength -> Duration
-durationT unl d = 
-    let rat = rduration unl d in case rationalToDuration rat of
-      Nothing -> d_longa
-      Just ans -> ans
 

@@ -25,7 +25,6 @@ import Payasan.Base.Monophonic.Internal.Traversals
 import Payasan.Base.Monophonic.Internal.Syntax as MONO
 
 import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.LilyPond.Utils
 
 translateOutput :: MONO.Phrase Chord drn anno -> MONO.Phrase LyPitch drn ChordSuffix
 translateOutput = trafoAnnos 

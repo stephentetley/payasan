@@ -27,12 +27,6 @@ module Payasan.Base.Internal.Scale
   , alterationForShorthand
   , alterationForLonghand
   
-  -- TEMP - if ABC.Spelling is made to use scales it shouldn\'t need these
-  , nsharps
-  , nflats
-  , findAlterations
-
-
 
   ) where
 
@@ -55,7 +49,7 @@ newtype Scale = Scale { fromScale :: [PitchName] }
 
 buildScale :: Key -> Scale
 buildScale key@(Key root _) = 
-   let i = findAlterations key
+   let i = countAlterations key
    in Scale $ orderPitchNames root $ pitchNamesUnordered i
 
 
@@ -83,25 +77,24 @@ findFromRoot1 pl xs = LIST.find (\a -> pl == pitch_letter a) xs
 
 
 isScaleTone :: Pitch -> Scale -> Bool
-isScaleTone (Pitch lbl _) sc = lbl `elem` fromScale sc
+isScaleTone (Pitch lbl _) sc = let xs = fromScale sc in lbl `elem` xs
 
 findAlteration :: PitchLetter -> Scale -> Maybe Alteration
 findAlteration pl sc = 
-    pitch_alteration <$> LIST.find (\a -> pl == pitch_letter a) (fromScale sc)
+    fmap pitch_alteration $ LIST.find (\a -> pl == pitch_letter a) (fromScale sc)
 
 
 -- | Lookup a /natural/ note to see if it is altered in the scale.
 -- 
-alterationForShorthand :: Pitch -> Scale -> Maybe Alteration
-alterationForShorthand p@(Pitch (PitchName ltr _) _) sc 
+alterationForShorthand :: Scale -> Pitch -> Maybe Alteration
+alterationForShorthand sc p@(Pitch (PitchName ltr _) _)
     | isAltered p = Nothing
-    | otherwise   = findAlteration ltr sc >>= \alt ->
+    | otherwise   = findAlteration ltr sc >>= \alt -> 
                     if alt == NAT then Nothing else Just alt
 
 
-
-alterationForLonghand :: Pitch -> Scale -> Maybe Alteration
-alterationForLonghand p sc 
+alterationForLonghand :: Scale -> Pitch -> Maybe Alteration
+alterationForLonghand sc p
     | isScaleTone p sc && isAltered p = Just NAT
     | otherwise                       = Nothing
 
@@ -206,13 +199,13 @@ major_map = MAP.fromList $
     ]
 
 
-findAlterations :: Key -> Int
-findAlterations (Key n MAJOR)        = MAP.findWithDefault 0 n major_map
-findAlterations (Key n MINOR)        = MAP.findWithDefault 0 n minor_map
-findAlterations (Key n MIXOLYDIAN)   = MAP.findWithDefault 0 n mix_map
-findAlterations (Key n DORIAN)       = MAP.findWithDefault 0 n dor_map
-findAlterations (Key n PHRYGIAN)     = MAP.findWithDefault 0 n phr_map
-findAlterations (Key n LYDIAN)       = MAP.findWithDefault 0 n lyd_map
-findAlterations (Key n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
+countAlterations :: Key -> Int
+countAlterations (Key n MAJOR)        = MAP.findWithDefault 0 n major_map
+countAlterations (Key n MINOR)        = MAP.findWithDefault 0 n minor_map
+countAlterations (Key n MIXOLYDIAN)   = MAP.findWithDefault 0 n mix_map
+countAlterations (Key n DORIAN)       = MAP.findWithDefault 0 n dor_map
+countAlterations (Key n PHRYGIAN)     = MAP.findWithDefault 0 n phr_map
+countAlterations (Key n LYDIAN)       = MAP.findWithDefault 0 n lyd_map
+countAlterations (Key n LOCRIAN)      = MAP.findWithDefault 0 n loc_map
 
 

@@ -30,8 +30,8 @@ module Payasan.Base.Monophonic.Internal.LilyPondInTrans
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
-import Payasan.Base.Internal.LilyPond.Syntax (LyPitch,LyNoteLength(..))
-import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.Base.Internal.LilyPond.Syntax
+
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 

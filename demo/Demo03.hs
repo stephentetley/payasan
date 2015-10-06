@@ -10,7 +10,7 @@ import Payasan.Base.Pitch
 
 import Payasan.Base.Internal.LilyPond.OutTrans
 import Payasan.Base.Internal.LilyPond.Output
-import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.Base.Internal.LilyPond.Syntax (fromPitchRel)
 
 import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Pitch

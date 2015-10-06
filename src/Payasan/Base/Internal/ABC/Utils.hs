@@ -10,26 +10,15 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helpers for ABC output (pretty printers) and conversion.
+-- Helpers for ABC output (pretty printers).
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.ABC.Utils
   ( 
 
-  -- * Conversion
-
-    LetterCase(..)
-  , decomposePitch
-  , recomposePitch
-  , fromLetterParts
-  , toLetterParts
-
-  , rduration
-  , unitLength 
-
   -- * Output
-  , vsep
+    vsep
   , sepList
   , field
   , midtuneField
@@ -53,107 +42,11 @@ import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.CommonSyntax
 
 import qualified Payasan.Base.Pitch as P
-import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
-import Data.Ratio
 
 
---------------------------------------------------------------------------------
--- Conversion
-
--- TODO are pitch conversions Context Free regarding key and alterations?
-
-
-data LetterCase = LOWER | UPPER
-  deriving (Eq,Ord,Show)
-
--- | General function for decomposing pitch 
--- 
-decomposePitch :: ABCPitch -> (P.PitchName,LetterCase,P.Octave)
-decomposePitch (ABCPitch a l om) = (P.PitchName l1 a1, lc, ove)
-  where
-    a1          = toAlteration a
-    (l1,lc)     = toLetterParts l
-    ove         = toOctaveP lc om
-
-recomposePitch :: P.PitchName -> LetterCase -> P.Octave -> ABCPitch
-recomposePitch (P.PitchName l a) lc i = ABCPitch a1 l1 om
-  where
-    a1 = fromAlteration a
-    l1 = fromLetterParts l lc
-    om = fromOctaveP i
-
-toOctaveP :: LetterCase -> OctaveModifier -> P.Octave
-toOctaveP lc ove = let base = if lc == UPPER then 4 else 5 in step base ove
-  where
-    step i (OveDefault)   = i
-    step i (OveRaised n)  = i + n
-    step i (OveLowered n) = i - n
-
-
-fromOctaveP :: P.Octave -> OctaveModifier
-fromOctaveP ove | ove < 4       = OveLowered (4 - ove)
-                | ove > 5       = OveRaised  (ove - 5)
-                | otherwise     = OveDefault
-
-toLetterParts :: PitchLetter -> (P.PitchLetter, LetterCase)
-toLetterParts CU   = (P.C, UPPER)
-toLetterParts DU   = (P.D, UPPER)
-toLetterParts EU   = (P.E, UPPER)
-toLetterParts FU   = (P.F, UPPER)
-toLetterParts GU   = (P.G, UPPER)
-toLetterParts AU   = (P.A, UPPER)
-toLetterParts BU   = (P.B, UPPER)
-toLetterParts CL   = (P.C, LOWER)
-toLetterParts DL   = (P.D, LOWER)
-toLetterParts EL   = (P.E, LOWER)
-toLetterParts FL   = (P.F, LOWER)
-toLetterParts GL   = (P.G, LOWER)
-toLetterParts AL   = (P.A, LOWER)
-toLetterParts BL   = (P.B, LOWER)
-
-fromLetterParts :: P.PitchLetter -> LetterCase -> PitchLetter
-fromLetterParts P.C lc  = if lc == UPPER then CU else CL
-fromLetterParts P.D lc  = if lc == UPPER then DU else DL
-fromLetterParts P.E lc  = if lc == UPPER then EU else EL
-fromLetterParts P.F lc  = if lc == UPPER then FU else FL
-fromLetterParts P.G lc  = if lc == UPPER then GU else GL
-fromLetterParts P.A lc  = if lc == UPPER then AU else AL
-fromLetterParts P.B lc  = if lc == UPPER then BU else BL
-
-
-toAlteration :: Accidental -> P.Alteration
-toAlteration NO_ACCIDENTAL      = P.NAT
-toAlteration DBL_FLAT           = P.DBL_FLAT
-toAlteration FLAT               = P.FLAT
-toAlteration NATURAL            = P.NAT
-toAlteration SHARP              = P.SHARP
-toAlteration DBL_SHARP          = P.DBL_SHARP
-
-fromAlteration :: P.Alteration -> Accidental
-fromAlteration P.DBL_FLAT       = DBL_FLAT
-fromAlteration P.FLAT           = FLAT
-fromAlteration P.NAT            = NO_ACCIDENTAL
-fromAlteration P.SHARP          = SHARP
-fromAlteration P.DBL_SHARP      = DBL_SHARP
-
-
-
-
-rduration :: UnitNoteLength -> ABCNoteLength -> RDuration
-rduration unl (DNL)      = unitLength unl
-rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl
-rduration unl (Divd i)   = let r = fromIntegral i in (unitLength unl) / r
-rduration unl (Frac n d) = 
-    let nr = fromIntegral n; nd = fromIntegral d in (unitLength unl) * (nr%nd)
-
-
-unitLength :: UnitNoteLength -> RDuration
-unitLength UNIT_NOTE_4  = 1%4
-unitLength UNIT_NOTE_8  = 1%8
-unitLength UNIT_NOTE_16 = 1%16
 
 
 --------------------------------------------------------------------------------

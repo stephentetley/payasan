@@ -24,11 +24,12 @@ module Payasan.Base.Monophonic.Internal.ABCInTrans
 import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
-import Payasan.Base.Internal.ABC.Spelling
-import Payasan.Base.Internal.ABC.Syntax (ABCPitch, ABCNoteLength, toPitch)
-import Payasan.Base.Internal.ABC.Utils
+import Payasan.Base.Internal.ABC.Syntax ( ABCPitch, ABCNoteLength
+                                        , toPitch, toDuration )
+
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.Scale
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -58,9 +59,7 @@ elementP (Punctuation s)        = pure $ Punctuation s
 
 
 transPch :: ABCPitch -> PMon Pitch
-transPch p0 = 
-    (\k -> let sm = makeSpellingMap k in toPitch $ spellFindAlteration sm p0) 
-        <$> asksLocal local_key
+transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asksLocal local_key
 
 --------------------------------------------------------------------------------
 -- Translate duration
@@ -81,12 +80,5 @@ elementD (Punctuation s)        = pure $ Punctuation s
 
 
 changeDrn :: ABCNoteLength -> DMon Duration
-changeDrn d = (durationT `flip` d) <$> asksLocal local_unit_note_len
-
-
-durationT :: UnitNoteLength -> ABCNoteLength -> Duration
-durationT unl d = 
-    let rat = rduration unl d in case rationalToDuration rat of
-      Nothing -> d_longa
-      Just ans -> ans
+changeDrn d = (\unl -> toDuration unl d) <$> asksLocal local_unit_note_len
 

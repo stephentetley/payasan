@@ -26,7 +26,6 @@ import Payasan.Base.Monophonic.Internal.Traversals
 import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.LilyPond.Utils
 
 translateInput :: LyChordPhrase -> StdChordPhrase
 translateInput = trafoAnnos . trafoDuration

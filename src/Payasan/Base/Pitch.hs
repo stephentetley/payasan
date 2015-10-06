@@ -36,6 +36,7 @@ module Payasan.Base.Pitch
 
   , isNatural
   , isAltered 
+  , setAlteration
 
   , nextPitchLetter
   , prevPitchLetter
@@ -167,7 +168,11 @@ isNatural (Pitch (PitchName _ NAT) _) = True
 isNatural _                           = False
 
 isAltered :: Pitch -> Bool
-isAltered = not . isAltered
+isAltered = not . isNatural
+
+
+setAlteration :: Pitch -> Alteration -> Pitch
+setAlteration (Pitch (PitchName l _) o) a = Pitch (PitchName l a) o
 
 
 

@@ -10,31 +10,15 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helpers for LilyPond output (pretty printers) and conversion.
+-- Helpers for LilyPond output (pretty printers).
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.LilyPond.Utils
   ( 
 
-
-  -- * Conversion
-    toPitchAbs
-  , fromPitchAbs
-
-  , toPitchName
-  , fromPitchName
-
-  , toPitchLetter
-  , fromPitchLetter
-  , toAlteration
-  , fromAlteration
-
-  , toPitchRel
-  , fromPitchRel
-
   -- * Output
-  , command
+    command
   , block 
   , definition
 
@@ -64,125 +48,6 @@ import qualified Payasan.Base.Pitch as P
 import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
-
---------------------------------------------------------------------------------
--- Conversion
-
-
--- | CU = middle C (octave 4)
---
-toPitchAbs :: LyPitch -> P.Pitch
-toPitchAbs (LyPitch l a om) =
-    let lbl = P.PitchName (toPitchLetter l) (toAlteration a) 
-    in P.Pitch lbl (toOctaveAbs om)
-
-
-
-fromPitchAbs :: P.Pitch -> LyPitch
-fromPitchAbs (P.Pitch lbl o) = 
-    let (l,a) = fromPitchName lbl
-    in LyPitch l a (fromOctaveAbs o)
-
-
-
-toPitchName :: PitchLetter -> Accidental -> P.PitchName
-toPitchName l a = P.PitchName (toPitchLetter l) (toAlteration a)
-
-fromPitchName :: P.PitchName -> (PitchLetter,Accidental)
-fromPitchName (P.PitchName p a) = (fromPitchLetter p, fromAlteration a)
-
-
--- | Middle c is 4. In LilyPond this is C raised 1
---
-toOctaveAbs :: Octave -> P.Octave
-toOctaveAbs (OveDefault)    = 3
-toOctaveAbs (OveRaised n)   = 3 + n
-toOctaveAbs (OveLowered n)  = 3 - n
-
-
-fromOctaveAbs :: P.Octave -> Octave
-fromOctaveAbs n 
-    | n >  3                = OveRaised (n-3)
-    | n == 3                = OveDefault
-    | otherwise             = OveLowered (3-n)
-
-toPitchLetter :: PitchLetter -> P.PitchLetter
-toPitchLetter C = P.C
-toPitchLetter D = P.D
-toPitchLetter E = P.E
-toPitchLetter F = P.F
-toPitchLetter G = P.G
-toPitchLetter A = P.A
-toPitchLetter B = P.B
-
-fromPitchLetter :: P.PitchLetter -> PitchLetter
-fromPitchLetter (P.C) = C
-fromPitchLetter (P.D) = D
-fromPitchLetter (P.E) = E
-fromPitchLetter (P.F) = F
-fromPitchLetter (P.G) = G
-fromPitchLetter (P.A) = A
-fromPitchLetter (P.B) = B
-
-
-toAlteration :: Accidental -> P.Alteration
-toAlteration NO_ACCIDENTAL      = P.NAT
-toAlteration DBL_FLAT           = P.DBL_FLAT
-toAlteration FLAT               = P.FLAT
-toAlteration NATURAL            = P.NAT
-toAlteration SHARP              = P.SHARP
-toAlteration DBL_SHARP          = P.DBL_SHARP
-
-fromAlteration :: P.Alteration -> Accidental
-fromAlteration P.DBL_FLAT       = DBL_FLAT
-fromAlteration P.FLAT           = FLAT
-fromAlteration P.NAT            = NO_ACCIDENTAL
-fromAlteration P.SHARP          = SHARP
-fromAlteration P.DBL_SHARP      = DBL_SHARP
-
-
-makeOctaveModifier :: Int -> Octave
-makeOctaveModifier i 
-    | i == 0    = OveDefault
-    | i >  0    = OveRaised i
-    | otherwise = OveLowered (abs i)
-
-
-fromPitchRel :: P.Pitch -> P.Pitch -> LyPitch
-fromPitchRel p_old p1 = 
-    let om    = makeOctaveModifier $ P.lyOctaveDistance p_old p1
-        (l,a) = fromPitchName $ P.pitch_name p1        
-    in LyPitch l a om
-
-
-
-
--- | In relative mode, the octave modifier is oblivious
--- to the initial calculation of the pitch /within a fourth/.
---
-toPitchRel :: P.Pitch -> LyPitch -> P.Pitch
-toPitchRel p0 (LyPitch l a om) = octaveAdjust root om
-  where
-    lbl   = toPitchName l a
-    psame = P.Pitch lbl (P.pitch_octave p0)
-    pup   = octaveAdjust psame $ OveRaised 1
-    pdown = octaveAdjust psame $ OveLowered 1
-    root  = withinFourth p0 psame pup pdown
-
-withinFourth :: P.Pitch -> P.Pitch -> P.Pitch -> P.Pitch -> P.Pitch
-withinFourth p0 a b c
-    | P.arithmeticDistance p0 a <= 4    = a
-    | P.arithmeticDistance p0 b <= 4    = b
-    | otherwise                         = c
-
-
-
-octaveAdjust :: P.Pitch -> Octave -> P.Pitch
-octaveAdjust pch@(P.Pitch lbl o) om = case om of
-    OveDefault      -> pch
-    OveRaised i     -> P.Pitch lbl (o+i)
-    OveLowered i    -> P.Pitch lbl (o-i)
-
 
                    
 

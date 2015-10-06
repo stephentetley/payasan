@@ -22,20 +22,18 @@ module Payasan.Base.Internal.ABC.OutTrans
 
 
 
-import Payasan.Base.Internal.ABC.Spelling
 import Payasan.Base.Internal.ABC.Syntax
-import Payasan.Base.Internal.ABC.Utils
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.Scale
 
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Data.Ratio (numerator, denominator)
 
 
 
@@ -74,10 +72,10 @@ elementP (Punctuation s)        = pure $ Punctuation s
 noteP :: Note Pitch drn -> PTMon (Note ABCPitch drn)
 noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
+-- This should be optimized to not make a scale each time!
+--
 transPch :: Pitch -> PTMon ABCPitch
-transPch p0 = 
-    (\k -> let sm = makeSpellingMap k in spellFindNatural sm $ fromPitch p0) 
-        <$> asksLocal local_key
+transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asksLocal local_key
 
 --------------------------------------------------------------------------------
 -- Translate duration
@@ -104,15 +102,6 @@ noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 changeDrn :: Duration -> DTMon ABCNoteLength
 changeDrn d                     = 
-    (durationT `flip` d) <$> asksLocal local_unit_note_len
+    (\unl -> fromDuration unl d) <$> asksLocal local_unit_note_len
 
 
-durationT :: UnitNoteLength -> Duration -> ABCNoteLength
-durationT unl nd = 
-    (fn . fork numerator denominator) $ (durationSize nd) / unitLength unl
-  where  
-    fork f g a = (f a, g a)
-    fn (1,1)   = DNL
-    fn (1,dn)  = Divd (fromIntegral dn)
-    fn (nm,1)  = Mult (fromIntegral nm)
-    fn (nm,dn) = Frac (fromIntegral nm) (fromIntegral dn)

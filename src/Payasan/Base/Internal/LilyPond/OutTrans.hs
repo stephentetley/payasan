@@ -24,7 +24,6 @@ module Payasan.Base.Internal.LilyPond.OutTrans
 
 
 import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.LilyPond.Utils
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
