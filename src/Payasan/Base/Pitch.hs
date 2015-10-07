@@ -14,9 +14,6 @@
 -- Pitch type
 --
 -- Import directly if needed.
--- 
--- z- prefix on functions indicates they operate on PitchName
--- which has no notion of octave (c.f. Z12 modulo representation).
 --
 --------------------------------------------------------------------------------
 
@@ -30,69 +27,57 @@ module Payasan.Base.Pitch
   , Alteration(..)
   , Octave
 
-
   , middle_c
   , c_nat
 
   , isNatural
   , isAltered 
   , setAlteration
+  , asNatural
+  , asSharp
+  , asFlat
 
-  , nextPitchLetter
-  , prevPitchLetter
-  , nthPitchLetterUp
-  , nthPitchLetterDown
-  , arithmeticNaturalUp
-  , arithmeticNaturalDown
-
-  , naturalOf
-  , znaturalOf
-  , sharpOf
-  , zsharpOf
-  , flatOf
-  , zflatOf
-
-  , fromAlteration
   , toAlteration
+  , fromAlteration
+
   , semitoneCount
   , midiSemitoneCount
-  , zsemitoneCount
-  , zequivalent
 
-  
   , arithmeticDistance
-  , zarithmeticDistanceUp
-  , zarithmeticDistanceDown
-
   , semitoneDistance
 
-  , octaveDistance
   , lyOctaveDistance
-
   , nearestRootToC4
+
+  , Natural
+  , toNatural
+  , fromNatural
+  , fromPosition
+  , toPosition
+  , naturalAddArithDist
+  , naturalSubArithDist
+
 
   -- * Intervals
   , Interval(..)
-  , intervalPlus
-  , (^+^)
-
-  , makeCompound
-  , intervalBetween
-  , addInterval
-  , subInterval
-
-  , (.+^) 
-  , (.-^)
-
   , isSmaller
   , isLarger
   , octaveCount
-  , addOctaves
-  , arithDistModulo
+
+  , intervalBetween
+
+  , intervalPlus
+  , (^+^)
+
+  , addInterval
+  , (.+^) 
+
+  , subInterval
+  , (.-^)
 
   , simpleIntervalOf
-
   , invertSimpleInterval
+
 
   , intervalDescription
 
@@ -168,106 +153,23 @@ isNatural (Pitch (PitchName _ NAT) _) = True
 isNatural _                           = False
 
 isAltered :: Pitch -> Bool
-isAltered = not . isNatural
+isAltered (Pitch (PitchName _ NAT) _) = False
+isAltered _                           = True
+
 
 
 setAlteration :: Pitch -> Alteration -> Pitch
 setAlteration (Pitch (PitchName l _) o) a = Pitch (PitchName l a) o
 
+asNatural       :: Pitch -> Pitch
+asNatural p     = setAlteration p NAT
 
+asSharp         :: Pitch -> Pitch
+asSharp p       = setAlteration p SHARP
 
-nextPitchLetter :: PitchLetter -> PitchLetter
-nextPitchLetter B = C
-nextPitchLetter l = succ l
+asFlat          :: Pitch -> Pitch
+asFlat p        = setAlteration p FLAT
 
-prevPitchLetter :: PitchLetter -> PitchLetter
-prevPitchLetter C = B
-prevPitchLetter l = pred l
-
--- | Counts from 0 (sub 1 initially for arithmetic steps up)
---
-nthPitchLetterUp :: Int -> PitchLetter -> PitchLetter
-nthPitchLetterUp n letter
-    | n <  0    = nthPitchLetterDown (abs n) letter
-    | otherwise = let n1 = n `mod` 7
-                      n2 = (fromEnum letter + n1) `mod` 7
-                  in toEnum n2
-  
--- | Counts from 0 (sub 1 initially for arithmetic steps up)
---
-nthPitchLetterDown :: Int -> PitchLetter -> PitchLetter
-nthPitchLetterDown n sd 
-    | n <  0    = nthPitchLetterUp (abs n) sd
-    | otherwise = let n1 = n `mod` 7
-                      n2 = (fromEnum sd - n1) `mod` 7
-                  in toEnum n2
-
-
--- DESIGN NOTE
--- could use arithmeticNaturalUp/Down for addInterval...
-
--- | Int should be positive.
---
-arithmeticNaturalUp :: Int -> Pitch -> Pitch
-arithmeticNaturalUp n (Pitch name o) = 
-    let (om,name2) = arithmeticNaturalUp1 n name in Pitch name2 (o + om)
-
-
-arithmeticNaturalUp1 :: Int -> PitchName -> (Int,PitchName)
-arithmeticNaturalUp1 n (PitchName letter _) = 
-    (om + carry, PitchName letter2 NAT)
-  where
-    (om,pm) = (\(a,b) -> (a,b+1)) $ ((n-1) `divMod` 7)
-    letter2 = nthPitchLetterUp (pm-1) letter
-    carry   = if fromEnum letter2 < fromEnum letter then 1 else 0
-
-
-
--- | Int should be positive.
---
-arithmeticNaturalDown :: Int -> Pitch -> Pitch
-arithmeticNaturalDown n (Pitch name o) = 
-    let (om,name2) = arithmeticNaturalDown1 n name in Pitch name2 (o - om)
-
-
--- | carry is positive (should be subtracted)
---
-arithmeticNaturalDown1 :: Int -> PitchName -> (Int,PitchName)
-arithmeticNaturalDown1 n (PitchName letter _) = 
-    (om + carry, PitchName letter2 NAT)
-  where
-    (om,pm) = (\(a,b) -> (a,b+1)) $ ((n-1) `divMod` 7)
-    letter2 = nthPitchLetterDown (pm-1) letter
-    carry   = if fromEnum letter2 > fromEnum letter then 1 else 0
-
-
-
-naturalOf :: Pitch -> Pitch
-naturalOf (Pitch s o) = Pitch (znaturalOf s) o
-
-znaturalOf :: PitchName -> PitchName
-znaturalOf (PitchName l _) = PitchName l NAT
-
-sharpOf :: Pitch -> Pitch
-sharpOf (Pitch s o) = Pitch (zsharpOf s) o
-
-zsharpOf :: PitchName -> PitchName
-zsharpOf (PitchName l _) = PitchName l SHARP
-
-flatOf :: Pitch -> Pitch
-flatOf (Pitch s o) = Pitch (zflatOf s) o
-
-zflatOf :: PitchName -> PitchName
-zflatOf (PitchName l _) = PitchName l FLAT
-
-
-
-fromAlteration :: Integral a => Alteration -> a
-fromAlteration DBL_FLAT  = -2
-fromAlteration FLAT      = -1
-fromAlteration NAT       = 0
-fromAlteration SHARP     = 1
-fromAlteration DBL_SHARP = 2
 
 toAlteration :: Integral a => a -> Alteration
 toAlteration i 
@@ -277,10 +179,32 @@ toAlteration i
     | i ==  1       = SHARP
     | otherwise     = DBL_SHARP
 
+fromAlteration :: Integral a => Alteration -> a
+fromAlteration DBL_FLAT  = -2
+fromAlteration FLAT      = -1
+fromAlteration NAT       = 0
+fromAlteration SHARP     = 1
+fromAlteration DBL_SHARP = 2
+
+
+
 -- | Middle C is 48 - to get MIDI semitone count add 12
 --
 semitoneCount :: Pitch -> Int
-semitoneCount (Pitch s o) = zsemitoneCount s + (12 * o)
+semitoneCount (Pitch (PitchName l a) o) = 
+    octavePosition l + fromAlteration a + 12 * o
+
+
+octavePosition :: PitchLetter -> Int
+octavePosition C        = 0
+octavePosition D        = 2
+octavePosition E        = 4
+octavePosition F        = 5
+octavePosition G        = 7
+octavePosition A        = 9
+octavePosition B        = 11
+
+
 
 -- | Middle C is 48 - to get MIDI semitone count add 12
 --
@@ -289,103 +213,97 @@ midiSemitoneCount p = 12 + semitoneCount p
 
 
 
-zsemitoneCount :: PitchName -> Int
-zsemitoneCount (PitchName pl a) = semitoneCountPL pl + fromAlteration a
-
-
-semitoneCountPL :: PitchLetter -> Int
-semitoneCountPL C = 0
-semitoneCountPL D = 2
-semitoneCountPL E = 4
-semitoneCountPL F = 5
-semitoneCountPL G = 7
-semitoneCountPL A = 9
-semitoneCountPL B = 11
-
 instance PitchOrd Pitch where
   equivalent p q = semitoneCount p == semitoneCount q
   isHigher   p q = semitoneCount p >  semitoneCount q
   isLower    p q = semitoneCount p <  semitoneCount q
 
 
+--------------------------------------------------------------------------------
+-- Natural - simplifies arithmetic distance calculations
 
-zequivalent :: PitchName -> PitchName -> Bool
-zequivalent p q = zsemitoneCount p == zsemitoneCount q
+
+data Natural = Natural
+    { natural_letter    :: !PitchLetter
+    , natural_octave    :: !Octave 
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+
+toNatural :: Pitch -> Natural
+toNatural (Pitch (PitchName l _) o) = Natural { natural_letter = l
+                                              , natural_octave = o }
+
+
+fromNatural :: Natural -> Pitch
+fromNatural (Natural l o) = Pitch (PitchName l NAT) o
+
+semitones :: Natural -> Int
+semitones (Natural l o) = octavePosition l + 12 * o
+
+toPosition :: Natural -> Int
+toPosition (Natural l o ) = fromEnum l + 7 * o
+
+fromPosition :: Int -> Natural 
+fromPosition n = let (o,i) = n `divMod` 7 in Natural (toEnum i) o
+
+instance PitchOrd Natural where
+  equivalent p q = semitones p == semitones q
+  isHigher   p q = semitones p >  semitones q
+  isLower    p q = semitones p <  semitones q
+
+
+naturalDistance :: Natural -> Natural -> Int
+naturalDistance p q 
+    | p == q            = 1
+    | q `isHigher` p    = distUp p q
+    | otherwise         = distUp q p
+  where
+    distUp a b = 1 + toPosition b - toPosition a
 
 
 arithmeticDistance :: Pitch -> Pitch -> Int
-arithmeticDistance p q 
-    | p == q            = 1
-    | q `isHigher` p    = adUp p q
-    | otherwise         = adDown p q
-  where
-    adUp   a@(Pitch s1 _) b@(Pitch s2 _) = 
-        (7 * octaveDistance a b) + zarithmeticDistanceUp s1 s2
-
-    adDown a@(Pitch s1 _) b@(Pitch s2 _) = 
-       (7 * octaveDistance b a) + zarithmeticDistanceDown s1 s2
-
-
-zarithmeticDistanceUp :: PitchName -> PitchName -> Int
-zarithmeticDistanceUp (PitchName l1 _) (PitchName l2 _) = 
-    adUpwardsPL l1 l2
-
-zarithmeticDistanceDown :: PitchName -> PitchName -> Int
-zarithmeticDistanceDown (PitchName l1 _) (PitchName l2 _) = 
-    adDownwardsPL l1 l2
-
-
-adUpwardsPL :: PitchLetter -> PitchLetter -> Int
-adUpwardsPL start end = step (fromEnum start) (fromEnum end)
-  where
-    step i j | i < j            = 1 + (j-i)
-             | otherwise        = let hij = j+7 in 1 + (hij-i)
-
-adDownwardsPL :: PitchLetter -> PitchLetter -> Int
-adDownwardsPL start end = step (fromEnum start) (fromEnum end)
-  where
-    step i j | i > j            = 1 + (i-j)
-             | otherwise        = let hii = i+7 in 1 + (hii-j)
+arithmeticDistance p q = naturalDistance (toNatural p) (toNatural q)
 
 
 semitoneDistance :: Pitch -> Pitch -> Int
 semitoneDistance p q 
-    | p `isHigher` q    = sd1 q p
-    | otherwise         = sd1 p q
+    | p `isHigher` q    = dist q p
+    | otherwise         = dist p q
   where
-    sd1 a b = semitoneCount b - semitoneCount a
+    dist lo hi = semitoneCount hi - semitoneCount lo
 
 
 
--- | Note - should always be positive.
---
-octaveDistance :: Pitch -> Pitch -> Int
-octaveDistance p q
-    | p `isHigher` q    = fn q p
-    | otherwise         = fn p q
-  where
-    fn a b = let x = semitoneCount (naturalOf b) - semitoneCount (naturalOf a)
-             in x `div` 12
+naturalAddArithDist :: Natural -> Int -> Natural
+naturalAddArithDist nat n = fromPosition $ toPosition nat + (n-1)
+
+
+naturalSubArithDist :: Natural -> Int -> Natural
+naturalSubArithDist nat n = fromPosition $ toPosition nat - (n+1)
+
+
+
+--------------------------------------------------------------------------------
+-- 
 
 lyOctaveDistance :: Pitch -> Pitch -> Int
-lyOctaveDistance root p1 
-    | root == p1         = 0
-    | root `isHigher` p1 = negate $ fn p1 root
-    | otherwise          = fn root p1
+lyOctaveDistance root p1 = sign $ dist (toNatural root) (toNatural p1)
   where
-    fn a b = let ad     = arithmeticDistance a b 
-                 ostep  = if ad >= 5 then 1 else 0
-                 ove    = octaveDistance a b
-             in ostep + ove
+    sign        = if root `isHigher` p1 then negate else id
 
-
+    -- ad is always positive
+    dist r n1   = let ad    = naturalDistance r n1
+                      ostep = if ad >= 5 then 1 else 0
+                      ove   = max 0 $ (ad-5) `div` 7
+                  in ove + ostep
 
 
 
 nearestRootToC4 :: PitchName -> Pitch
 nearestRootToC4 name = if addown < adup then pdown else psame
   where
-    psame  = Pitch name 4
+    psame   = Pitch name 4
     pdown   = Pitch name 3
     adup    = arithmeticDistance middle_c psame
     addown  = arithmeticDistance pdown middle_c
@@ -393,8 +311,6 @@ nearestRootToC4 name = if addown < adup then pdown else psame
 
 --------------------------------------------------------------------------------
 -- Interval
-
-
 
 
 -- | Note - intervals should be unsigned. If either of the
@@ -406,6 +322,35 @@ data Interval = Interval
     , interval_semitones        :: !Int
     }
   deriving (Data,Eq,Ord,Show,Typeable)
+
+
+
+perfect_octave :: Interval
+perfect_octave = Interval { interval_distance = 8
+                          , interval_semitones  = 12    
+                          }
+
+
+
+isSmaller :: Interval -> Interval -> Bool
+isSmaller i1 i2 = interval_semitones i1 < interval_semitones i2
+
+isLarger :: Interval -> Interval -> Bool
+isLarger i1 i2 = interval_semitones i1 > interval_semitones i2
+
+
+octaveCount :: Interval -> Int
+octaveCount (Interval { interval_semitones = n }) = n `div` 12
+
+
+
+-- | Note - Interval is always _positive_.
+--
+intervalBetween :: Pitch -> Pitch -> Interval
+intervalBetween p q = Interval { interval_distance  = arithmeticDistance p q
+                               , interval_semitones = semitoneDistance p q
+                               }
+
 
 
 intervalPlus :: Interval -> Interval -> Interval
@@ -426,36 +371,15 @@ infixl 6 ^+^
 (^+^) = intervalPlus
 
 
-intervalBetween :: Pitch -> Pitch -> Interval
-intervalBetween p q 
-    | p `isHigher` q    = fn q p
-    | otherwise         = fn p q
-  where
-    fn a b = let sc = semitoneCount b - semitoneCount a
-             in Interval { interval_distance  = arithmeticDistance a b
-                         , interval_semitones = sc 
-                         }
 
-
-makeCompound :: Int -> Interval -> Interval
-makeCompound i ivl = fn $ simpleIntervalOf ivl
-  where
-    fn (Interval { interval_distance  = d
-                 , interval_semitones = sc }) = 
-        let d1 = d - 1 + 8 * i
-            sc1 = sc + 12 * i
-        in Interval { interval_distance  = d1, interval_semitones = sc1 }
-
---------------------------------------------------------------------------------
--- Adding intervals to pitches
 
 addInterval :: Pitch -> Interval -> Pitch
-addInterval (Pitch ss o) iv = Pitch ss1 ov1
+addInterval p iv = setAlteration p2 (toAlteration sdiff)
   where
-    ss1   = pachetAdd ss iv
-    ostep = if crossesTwelve ss iv then 1 else 0
-    ov1   = o + ostep + octaveCount iv
-
+    nat1  = toNatural p
+    nat2  = naturalAddArithDist nat1 (interval_distance iv)
+    p2    = fromNatural nat2
+    sdiff = interval_semitones iv - semitoneDistance p p2
 
 
 infixl 6 .+^
@@ -468,15 +392,17 @@ infixl 6 .+^
 (.+^) :: Pitch -> Interval -> Pitch
 (.+^) = addInterval
 
+    
 subInterval :: Pitch -> Interval -> Pitch
-subInterval (Pitch ss o) iv = Pitch ss1 ov1
+subInterval p iv = setAlteration p2 (toAlteration sdiff)
   where
-    ss1   = pachetSub ss iv
-    ostep = if crossesZero ss iv then -1 else 0
-    ov1   = o + ostep - octaveCount iv
+    nat1  = toNatural p
+    nat2  = naturalSubArithDist nat1 (interval_distance iv)
+    p2    = fromNatural nat2
+    sdiff = semitoneDistance p p2 - interval_semitones iv
 
 
-infixl 6 .-^
+
 
 -- | Alias for subInterval. Name and fixity follows vector-space
 -- library but we don\'t depend on it.
@@ -487,126 +413,7 @@ infixl 6 .-^
 (.-^) = subInterval
 
 
--- | The algorith provided by Francois Pachet in 
---   An Object-Oriented Representation of Pitch-Classes, 
---   Intervals, Scales and Chords: The basic MusES
--- does not account for octaves:
---
-pachetAdd :: PitchName -> Interval -> PitchName
-pachetAdd sp0 (Interval { interval_distance  = ad
-                        , interval_semitones = sc }) = PitchName l1 alt
-  where
-    (PitchName l0 _)            = znaturalOf sp0
-    znext@(PitchName l1 _)      = PitchName (upwardPL l0 ad) NAT
-    sc_next                     = semitonesToNext sp0 znext
-    alt                         = alterationFromDiff $ sc - sc_next
 
-
-pachetSub :: PitchName -> Interval -> PitchName
-pachetSub sp0 (Interval { interval_distance = ad
-                        , interval_semitones = sc }) = PitchName l1 alt
-  where
-    (PitchName l0 _)            = znaturalOf sp0
-    zprev@(PitchName l1 _)      = PitchName (downwardPL l0 ad) NAT
-    sc_prev                     = semitonesToPrev sp0 zprev
-    alt                         = alterationFromDiff $ sc - sc_prev
-
-
-
--- | Step 2 in Pachet
-upwardPL :: PitchLetter -> Int -> PitchLetter
-upwardPL l ad = let n = fromEnum l in toEnum $ (n + (ad - 1)) `mod` 7
-
-downwardPL :: PitchLetter -> Int -> PitchLetter
-downwardPL l ad = let n = fromEnum l in toEnum $ (n - (ad - 1)) `mod` 7
-
-
--- | Step 3 in Pachet
-
-semitonesToNext :: PitchName -> PitchName -> Int
-semitonesToNext s1 s2
-    | s1 == s2  = 0
-    | otherwise = semitoneDistance p q
-  where
-    p = Pitch s1 1
-    q = let q0 = Pitch s2 1 in if q0 `isLower` p then Pitch s2 2 else q0
-
--- | Note - returns a positive number.
-semitonesToPrev :: PitchName -> PitchName -> Int
-semitonesToPrev s1 s2 
-    | s1 == s2  = 0
-    | otherwise = 12 - semitonesToNext s1 s2
-
-
-
-alterationFromDiff :: Int -> Alteration
-alterationFromDiff i 
-    | i >= 2    = DBL_SHARP
-    | i == 1    = SHARP
-    | i == 0    = NAT
-    | i == (-1) = FLAT
-    | otherwise = DBL_FLAT
-
-
--- | Does the addition of the interval result in a /crossing/ to 
--- the next octave?
--- e.g.
---
---   > c(sc=0) `upto` f(sc=5) does not cross
---   > f(sc=5) `upto` c(sc=0) crosses
--- 
--- Crossing here is (>=).
---
-crossesTwelve :: PitchName -> Interval -> Bool
-crossesTwelve ps iv = scount >= 12
-  where
-    scount = zsemitoneCount ps + interval_semitones (simpleIntervalOf iv)
-   
-
--- | Does the subtracion of the interval result in a /crossing/ to 
--- the previous octave?
--- e.g.
---
---   > c(sc=0) `downto` f(sc=5) crosses
---   > f(sc=5) `downto` c(sc=0) does not cross
--- 
--- Crossing here is (>=).
---
-crossesZero :: PitchName -> Interval -> Bool
-crossesZero ps iv = scount < 0
-  where
-    scount = zsemitoneCount ps - interval_semitones (simpleIntervalOf iv)
-   
-
---------------------------------------------------------------------------------
--- More operations
-
-isSmaller :: Interval -> Interval -> Bool
-isSmaller i1 i2 = interval_semitones i1 < interval_semitones i2
-
-isLarger :: Interval -> Interval -> Bool
-isLarger i1 i2 = interval_semitones i1 > interval_semitones i2
-
-
-octaveCount :: Interval -> Int
-octaveCount (Interval { interval_semitones = n }) = n `div` 12
-
-addOctaves :: Interval -> Int -> Interval
-addOctaves (Interval { interval_distance = ad
-                     , interval_semitones  = sc }) i = 
-    Interval { interval_distance = ad + (i * 8)
-             , interval_semitones  = sc + (i * 12)
-             }
-
-
-arithDistModulo :: Int -> Int
-arithDistModulo ad = let x = ad-1 in 1+(x `mod` 7)
-
-
-perfect_octave :: Interval
-perfect_octave = Interval { interval_distance = 8
-                          , interval_semitones  = 12    
-                          }
 
 -- | Simple intervals are smaller intervals than perfect_octave
 -- 
@@ -617,9 +424,12 @@ simpleIntervalOf iv@(Interval { interval_distance = ad
     | otherwise                      = Interval { interval_distance = ad1
                                                 , interval_semitones  = n1 }
   where
-    ad1 = arithDistModulo ad
+    ad1 = simpleArithmeticDistance ad
     n1  = n `mod` 12
 
+
+simpleArithmeticDistance :: Int -> Int
+simpleArithmeticDistance ad = 1 + ((ad-1) `mod` 7)
 
 invertSimpleInterval :: Interval -> Interval
 invertSimpleInterval = step . simpleIntervalOf 
@@ -641,7 +451,7 @@ intervalDescription iv = (intervalColour iv, distanceName iv, octaveCount iv)
 distanceName :: Interval -> String
 distanceName (Interval {interval_distance = ad}) 
     | ad == 1   = "unison"
-    | otherwise = step $ arithDistModulo ad
+    | otherwise = step $ simpleArithmeticDistance ad
   where
     step 1 = "octave"
     step 2 = "second"
@@ -654,7 +464,7 @@ distanceName (Interval {interval_distance = ad})
 
 intervalColour :: Interval -> String
 intervalColour (Interval {interval_distance = ad, interval_semitones = n}) = 
-    maybe "unknown" id $ case arithDistModulo ad of
+    maybe "unknown" id $ case simpleArithmeticDistance ad of
       1 -> identify ["perfect", "augmented"] nmod
       2 -> identify ["diminished", "minor", "major", "augmented"] nmod
       3 -> identify ["diminished", "minor", "major", "augmented"] (nmod-2)
