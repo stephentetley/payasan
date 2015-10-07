@@ -39,15 +39,22 @@ module Payasan.Base.Internal.ABC.Syntax
   , toPitch
   , fromPitch
 
+  , toDuration
+  , fromDuration
+
   ) where
 
 import Payasan.Base.Internal.BeamSyntax
+import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.Scale
+
 import qualified Payasan.Base.Pitch as PCH
+import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
-
+import Data.Ratio
 
 --------------------------------------------------------------------------------
 -- Syntax
@@ -99,12 +106,16 @@ middle_c :: ABCPitch
 middle_c = ABCPitch NO_ACCIDENTAL CU OveDefault
 
 
-toPitch :: ABCPitch -> PCH.Pitch
-toPitch (ABCPitch a l om) = PCH.Pitch (PCH.PitchName l1 a1) ove
+-- | If pitch is NO_ACCIDENTAL, alteration needs looking up in the scale
+--
+toPitch :: Scale -> ABCPitch -> PCH.Pitch
+toPitch sc (ABCPitch a l om) = PCH.Pitch (PCH.PitchName l1 a1) ove
   where
     (l1,o1) = decomposePitchLetter l
     ove     = modifyOctave o1 om
-    a1      = toAlteration a
+    a1      = case findAlteration l1 sc of
+                Nothing -> toAlteration a
+                Just alt -> alt
 
 
 modifyOctave :: PCH.Octave -> OctaveModifier -> PCH.Octave
@@ -131,11 +142,11 @@ decomposePitchLetter BL         = (PCH.B, 5)
 
 
 
-fromPitch :: PCH.Pitch -> ABCPitch
-fromPitch (PCH.Pitch (PCH.PitchName l a) o) = ABCPitch a1 l1 om 
+fromPitch :: Scale -> PCH.Pitch -> ABCPitch
+fromPitch sc p@(PCH.Pitch (PCH.PitchName l a) o) = ABCPitch a1 l1 om 
   where
     l1 = calcPitchLetter l o
-    a1 = fromAlteration a
+    a1 = if isScaleTone p sc then NO_ACCIDENTAL else fromAlteration a
     om = fromOctave o
 
 calcPitchLetter :: PCH.PitchLetter -> PCH.Octave -> PitchLetter
@@ -165,10 +176,41 @@ toAlteration DBL_SHARP          = PCH.DBL_SHARP
 fromAlteration :: PCH.Alteration -> Accidental
 fromAlteration PCH.DBL_FLAT     = DBL_FLAT
 fromAlteration PCH.FLAT         = FLAT
-fromAlteration PCH.NAT          = NO_ACCIDENTAL
+fromAlteration PCH.NAT          = NATURAL
 fromAlteration PCH.SHARP        = SHARP
 fromAlteration PCH.DBL_SHARP    = DBL_SHARP
 
+
+toDuration :: UnitNoteLength -> ABCNoteLength -> Duration
+toDuration unl d = 
+    case rationalToDuration $ rduration unl d of
+      Nothing -> d_longa
+      Just ans -> ans
+
+
+rduration :: UnitNoteLength -> ABCNoteLength -> RDuration
+rduration unl (DNL)      = unitLength unl
+rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl
+rduration unl (Divd i)   = let r = fromIntegral i in (unitLength unl) / r
+rduration unl (Frac n d) = 
+    let nr = fromIntegral n; nd = fromIntegral d in (unitLength unl) * (nr%nd)
+
+
+unitLength :: UnitNoteLength -> RDuration
+unitLength UNIT_NOTE_4  = 1%4
+unitLength UNIT_NOTE_8  = 1%8
+unitLength UNIT_NOTE_16 = 1%16
+
+
+fromDuration :: UnitNoteLength -> Duration -> ABCNoteLength
+fromDuration unl nd = 
+    (fn . fork numerator denominator) $ (durationSize nd) / unitLength unl
+  where  
+    fork f g a = (f a, g a)
+    fn (1,1)   = DNL
+    fn (1,dn)  = Divd (fromIntegral dn)
+    fn (nm,1)  = Mult (fromIntegral nm)
+    fn (nm,dn) = Frac (fromIntegral nm) (fromIntegral dn)
 
 --------------------------------------------------------------------------------
 -- Pretty instances are for debugging and do not correspond 
