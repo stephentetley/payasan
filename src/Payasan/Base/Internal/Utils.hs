@@ -1,6 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
-{-# LANGUAGE DeriveFunctor              #-}
-{-# LANGUAGE CPP                        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -21,10 +18,13 @@
 
 module Payasan.Base.Internal.Utils
   ( 
-
+    
+    divModS1
+  , divS1
+  , modS1
 
   -- * Hughes list
-    H
+  , H
   , emptyH
   , appendH
   , consH
@@ -34,26 +34,20 @@ module Payasan.Base.Internal.Utils
   , toListH
   , fromListH
 
-  -- * Cat List
-  , CatList
-  , emptyCat
-  , wrapCat
-  , appendCat
-  , replicateCat
-  , toListCat
-  , fromListCat
 
   )  where
 
 
-import Data.Data
-import qualified Data.Foldable as F
 
-#ifndef MIN_VERSION_GLASGOW_HASKELL
-import Data.Monoid
-#endif
-import qualified Data.Traversable as T
 
+divModS1 :: Integral a => a -> a -> (a,a)
+divModS1 x y = let (d,m0) = (x-1) `divMod` y in (d,m0+1)
+
+divS1 :: Integral a => a -> a -> a
+divS1 x y = (x-1) `div` y
+
+modS1 :: Integral a => a -> a -> a
+modS1 x y = let m0 = (x-1) `mod` y in m0+1
 
 
 --------------------------------------------------------------------------------
@@ -86,60 +80,4 @@ toListH f = f $ []
 
 fromListH :: [a] -> H a
 fromListH xs = (xs++)
-
-
---------------------------------------------------------------------------------
--- Cat list list that supports efficient concat but also Data+Typeable
-
-data CatList a = None 
-               | Single [a]
-               | Concat (CatList a) (CatList a)
-  deriving (Data,Eq,Functor,Ord,Show,Typeable)
-
-
-instance Monoid (CatList a) where
-  mempty  = emptyCat
-  mappend = appendCat
-
-instance F.Foldable CatList where
-  foldMap _ (None)        = mempty
-  foldMap f (Single xs)   = F.foldMap f xs
-  foldMap f (Concat x y)  = F.foldMap f x `mappend` F.foldMap f y
-
-
-instance T.Traversable CatList where
-  traverse _ (None)       = pure None
-  traverse f (Single xs)  = Single <$> T.traverse f xs
-  traverse f (Concat x y) = Concat <$> T.traverse f x <*> T.traverse f y
-
-
-emptyCat :: CatList a
-emptyCat = None
-
-wrapCat :: [a] -> CatList a
-wrapCat = Single
-
-appendCat :: CatList a -> CatList a -> CatList a
-appendCat a      (None) = a
-appendCat (None) b      = b
-appendCat a      b      = Concat a b
-
-replicateCat :: Int -> CatList a -> CatList a
-replicateCat i _  | i < 0  = emptyCat
-replicateCat i xs | i == 1 = xs
-replicateCat i xs          = step $ replicate i xs
-  where
-    step []                 = emptyCat
-    step [ys]               = ys
-    step (ys:yss)           = ys `appendCat` step yss
-
-
-toListCat :: CatList a -> [a]
-toListCat (None)       = []
-toListCat (Single xs)  = xs
-toListCat (Concat a b) = let ys = toListCat b in toListCat a ++ ys
-
-fromListCat :: [a] -> CatList a
-fromListCat = Single 
-
 

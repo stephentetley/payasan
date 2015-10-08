@@ -55,6 +55,9 @@ diminute :: Phrase pch Duration anno -> Phrase pch Duration anno
 diminute = recalcBars . mapDuration halveDuration
 
 
+addDiatonicIntervalC :: ChromaticPitch -> DiatonicInterval -> ChromaticPitch
+addDiatonicIntervalC (ChromaticPitch dp a) ivl = 
+    ChromaticPitch (dp `addDiatonicInterval` ivl) a
 
 -- | Transpose by an exact interval - this may produce 
 -- non-scale tones.
@@ -68,7 +71,7 @@ transposeChromatic ivl = mapPitch (.+^ ivl)
 transposeDiatonic :: DiatonicInterval 
                   -> Phrase Pitch drn anno 
                   -> Phrase Pitch drn anno
-transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicInterval` ivl)) ph
+transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicIntervalC` ivl)) ph
 
 
 
@@ -95,28 +98,30 @@ intervalsFromTop ph = case highestPitch ph of
     Just top -> mapPitch (\p -> p `intervalBetween` top) ph 
 
 
+-- | 08 Oct - this is now wrong due to changes to ScaleDegree!
+--
 invertDiatonic :: Phrase Pitch drn anno -> Phrase Pitch drn anno
 invertDiatonic = interScaleStep invertDiatonic1
 
-invertDiatonic1 :: Phrase OveScaleStep drn anno -> Phrase OveScaleStep drn anno
+invertDiatonic1 :: Phrase ChromaticPitch drn anno -> Phrase ChromaticPitch drn anno
 invertDiatonic1 ph = case lowestStep ph of 
     Nothing -> ph
-    Just p0 -> mapPitch (p0 `addDiatonicInterval`) $ diatonicsFromTop ph
+    Just p0 -> mapPitch (\ival -> ChromaticPitch (p0 `addDiatonicInterval` ival) 0) $ diatonicsFromTop ph
 
 
-diatonicsFromTop :: Phrase OveScaleStep drn anno -> Phrase DiatonicInterval drn anno
+diatonicsFromTop :: Phrase ChromaticPitch drn anno -> Phrase DiatonicInterval drn anno
 diatonicsFromTop ph = case highestStep ph of
     Nothing -> mapPitch (const simple_unison) ph         -- notelist is empty or just rests
-    Just top -> mapPitch (\p -> p `diatonicIntervalBetween` top) ph 
+    Just top -> mapPitch (\p -> diatonic_base p `diatonicIntervalBetween` top) ph 
 
 
 
-interScaleStep :: (Phrase OveScaleStep drn anno -> Phrase OveScaleStep drn anno)
+interScaleStep :: (Phrase ChromaticPitch drn anno -> Phrase ChromaticPitch drn anno)
                -> Phrase Pitch drn anno
                -> Phrase Pitch drn anno
 interScaleStep fn = fromScaleStepRepr . fn . toScaleStepRepr
 
-toScaleStepRepr :: Phrase Pitch drn anno -> Phrase OveScaleStep drn anno
+toScaleStepRepr :: Phrase Pitch drn anno -> Phrase ChromaticPitch drn anno
 toScaleStepRepr = transformP step_algo
   where
     step_algo = MonoPitchAlgo { initial_stateP = ()
@@ -127,10 +132,10 @@ toScaleStepRepr = transformP step_algo
     change (Rest d)             = pure $ Rest d
     change (Punctuation s)      = pure $ Punctuation s
 
-    mf pch = (\key -> fromPitch key pch) <$> asksLocal local_key
+    mf pch = (\key -> toChromaticPitch key pch) <$> asksLocal local_key
 
 
-fromScaleStepRepr :: Phrase OveScaleStep drn anno -> Phrase Pitch drn anno
+fromScaleStepRepr :: Phrase ChromaticPitch drn anno -> Phrase Pitch drn anno
 fromScaleStepRepr = transformP step_algo
   where
     step_algo = MonoPitchAlgo { initial_stateP = ()
@@ -141,5 +146,5 @@ fromScaleStepRepr = transformP step_algo
     change (Rest d)             = pure $ Rest d
     change (Punctuation s)      = pure $ Punctuation s
 
-    mf oss = (\key -> toPitch key oss) <$> asksLocal local_key
+    mf oss = (\key -> fromChromaticPitch key oss) <$> asksLocal local_key
 

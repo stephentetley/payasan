@@ -74,16 +74,16 @@ highestPitch = foldPitch fn Nothing
                    | otherwise          = Just p0
 
 
-lowestStep :: Phrase OveScaleStep drn anno -> Maybe OveScaleStep
-lowestStep = foldPitch fn Nothing
+lowestStep :: Phrase ChromaticPitch drn anno -> Maybe DiatonicPitch
+lowestStep = fmap diatonic_base . foldPitch fn Nothing
   where
     fn Nothing   s                      = Just s
     fn (Just s0) s | s `isLower` s0     = Just s
                    | otherwise          = Just s0
 
 
-highestStep :: Phrase OveScaleStep drn anno -> Maybe OveScaleStep
-highestStep = foldPitch fn Nothing
+highestStep :: Phrase ChromaticPitch drn anno -> Maybe DiatonicPitch
+highestStep = fmap diatonic_base . foldPitch fn Nothing
   where
     fn Nothing   s                      = Just s
     fn (Just s0) s | s `isHigher` s0    = Just s

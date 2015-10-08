@@ -85,6 +85,7 @@ module Payasan.Base.Pitch
   where
 
 import Payasan.Base.Internal.Base
+import Payasan.Base.Internal.Utils
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -253,6 +254,8 @@ instance PitchOrd Natural where
   isLower    p q = semitones p <  semitones q
 
 
+-- | Always positive.
+--
 naturalDistance :: Natural -> Natural -> Int
 naturalDistance p q 
     | p == q            = 1
@@ -261,7 +264,8 @@ naturalDistance p q
   where
     distUp a b = 1 + toPosition b - toPosition a
 
-
+-- | Always positive.
+--
 arithmeticDistance :: Pitch -> Pitch -> Int
 arithmeticDistance p q = naturalDistance (toNatural p) (toNatural q)
 
@@ -424,12 +428,11 @@ simpleIntervalOf iv@(Interval { interval_distance = ad
     | otherwise                      = Interval { interval_distance = ad1
                                                 , interval_semitones  = n1 }
   where
-    ad1 = simpleArithmeticDistance ad
+    ad1 = ad `modS1` 7
     n1  = n `mod` 12
 
 
-simpleArithmeticDistance :: Int -> Int
-simpleArithmeticDistance ad = 1 + ((ad-1) `mod` 7)
+
 
 invertSimpleInterval :: Interval -> Interval
 invertSimpleInterval = step . simpleIntervalOf 
@@ -451,7 +454,7 @@ intervalDescription iv = (intervalColour iv, distanceName iv, octaveCount iv)
 distanceName :: Interval -> String
 distanceName (Interval {interval_distance = ad}) 
     | ad == 1   = "unison"
-    | otherwise = step $ simpleArithmeticDistance ad
+    | otherwise = step $ ad `modS1` 7
   where
     step 1 = "octave"
     step 2 = "second"
@@ -464,7 +467,7 @@ distanceName (Interval {interval_distance = ad})
 
 intervalColour :: Interval -> String
 intervalColour (Interval {interval_distance = ad, interval_semitones = n}) = 
-    maybe "unknown" id $ case simpleArithmeticDistance ad of
+    maybe "unknown" id $ case ad `modS1` 7 of
       1 -> identify ["perfect", "augmented"] nmod
       2 -> identify ["diminished", "minor", "major", "augmented"] nmod
       3 -> identify ["diminished", "minor", "major", "augmented"] (nmod-2)
