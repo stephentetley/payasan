@@ -307,6 +307,8 @@ subDiatonicInterval p ivl =
 
 
 
+--- TODO - not sure about the API for these two...
+
 diatonically :: (DiatonicPitch -> DiatonicPitch) 
              -> ChromaticPitch 
              -> ChromaticPitch

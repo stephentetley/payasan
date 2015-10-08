@@ -143,20 +143,22 @@ decomposePitchLetter BL         = (PCH.B, 5)
 
 
 fromPitch :: Scale -> PCH.Pitch -> ABCPitch
-fromPitch sc p@(PCH.Pitch (PCH.PitchName l a) o) = ABCPitch a1 l1 om 
+fromPitch sc p@(PCH.Pitch (PCH.PitchName l a) o) = ABCPitch a1 l1 om
   where
     l1 = calcPitchLetter l o
     a1 = if isScaleTone p sc then NO_ACCIDENTAL else fromAlteration a
     om = fromOctave o
 
+
 calcPitchLetter :: PCH.PitchLetter -> PCH.Octave -> PitchLetter
-calcPitchLetter PCH.C o         = if o >= 5 then CU else CL
-calcPitchLetter PCH.D o         = if o >= 5 then DU else DL
-calcPitchLetter PCH.E o         = if o >= 5 then EU else EL
-calcPitchLetter PCH.F o         = if o >= 5 then FU else FL
-calcPitchLetter PCH.G o         = if o >= 5 then GU else GL
-calcPitchLetter PCH.A o         = if o >= 5 then AU else AL
-calcPitchLetter PCH.B o         = if o >= 5 then BU else BL
+calcPitchLetter PCH.C o         = if o <= 4 then CU else CL
+calcPitchLetter PCH.D o         = if o <= 4 then DU else DL
+calcPitchLetter PCH.E o         = if o <= 4 then EU else EL
+calcPitchLetter PCH.F o         = if o <= 4 then FU else FL
+calcPitchLetter PCH.G o         = if o <= 4 then GU else GL
+calcPitchLetter PCH.A o         = if o <= 4 then AU else AL
+calcPitchLetter PCH.B o         = if o <= 4 then BU else BL
+
 
 fromOctave :: PCH.Octave -> OctaveModifier
 fromOctave ove | ove < 4       = OveLowered (4 - ove)
