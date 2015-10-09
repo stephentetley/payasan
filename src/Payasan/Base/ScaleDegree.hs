@@ -59,6 +59,7 @@ import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Pitch
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 import qualified Data.Map as MAP
@@ -215,8 +216,8 @@ fromDiatonicPitch key (DiatonicPitch deg o) = Pitch name (root_ove + o + carry)
 -- | return 0 same octave or 1 (next octave)
 
 octaveCarry :: PitchLetter -> PitchLetter -> Int
-octaveCarry a b | a < b     = 1
-                | otherwise = 0
+octaveCarry a b | a <= b    = 0
+                | otherwise = 1
 
 
 alterBy :: Pitch -> Alt -> Pitch
@@ -293,8 +294,8 @@ toSimpleInterval i = fn $ i `modS1` 7
 diatonicIntervalBetween :: DiatonicPitch -> DiatonicPitch -> DiatonicInterval
 diatonicIntervalBetween a b = fn (toIndex a) (toIndex b)
   where
-    fn x y | y >= x     = toDiatonicInterval $ y - x
-           | otherwise  = toDiatonicInterval $ x - y
+    fn x y | y >= x     = toDiatonicInterval $ 1 + (y - x)
+           | otherwise  = toDiatonicInterval $ 1 + (x - y)
 
 
 addDiatonicInterval :: DiatonicPitch -> DiatonicInterval -> DiatonicPitch
@@ -321,3 +322,26 @@ transposeWithDiatonicInterval key ivl p =
     in fromChromaticPitch key $ diatonically (`addDiatonicInterval` ivl) cp
 
 
+--------------------------------------------------------------------------------
+-- Pretty
+
+instance Pretty ScaleDegree where
+  pPrint s = char '^' <> int (fromScaleDegree s)
+
+
+instance Pretty SimpleInterval where
+  pPrint UNISON         = text "unison"
+  pPrint SECOND         = text "second"
+  pPrint THIRD          = text "third"
+  pPrint FOURTH         = text "fourth"
+  pPrint FIFTH          = text "fifth"
+  pPrint SIXTH          = text "sixth"
+  pPrint SEVENTH        = text "seventh"
+
+instance Pretty DiatonicInterval where
+  pPrint (DiatonicInterval { dia_interval_type   = ty
+                           , dia_interval_octave = o }) = prefix o <> pPrint ty
+      where
+        prefix i | i == 0    = empty
+                 | i <  0    = parens (int i) <> char '*'
+                 | otherwise = int i <> char '*'

@@ -26,6 +26,8 @@ module Payasan.Base.Monophonic.Internal.Transform
   , invertChromatic
   , invertDiatonic
 
+  , diatonicsFromTop -- temp
+
   ) where
 
 

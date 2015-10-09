@@ -13,7 +13,10 @@ import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
 import Payasan.Base.Monophonic.Internal.Metrics
+import Payasan.Base.ScaleDegree
 
+
+-- Note to me - debugging with a rhythm staff and markup would be good.
 
 -- TRANSFORMATIONS -- 
 
@@ -43,7 +46,7 @@ demo01 =
        }
 
 demo02 :: IO ()
-demo02 = printAsLilyPond globals $ mapPitch (.+^ major_second) phrase01
+demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ mapPitch (.+^ major_second) phrase01
 
 demo03 :: IO ()
 demo03 = printAsLilyPond globals $ augment phrase01
@@ -71,5 +74,24 @@ demo09 :: IO ()
 demo09 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
     invertDiatonic phrase01
 
--- TODO - need linear output...
-demo10 = semitoneInterval phrase01
+test09 = printAsTabular globals $ diatonicsFromTop $ mapPitch (toChromaticPitch d_minor) $ phrase01
+
+test09b = fromChromaticPitch d_minor $ 
+    mkC $ addDiatonicInterval (DiatonicPitch TONIC 0) (DiatonicInterval FOURTH 0) 
+
+mkC dp = ChromaticPitch dp 0
+
+
+test09c = diatonicIntervalBetween (diatonic_base $ toChromaticPitch d_minor d_4) 
+                                  (diatonic_base $ toChromaticPitch d_minor a_4)
+
+test09d = fmap (fromChromaticPitch d_minor . mkC) $ lowestStep $ mapPitch (toChromaticPitch d_minor) $ phrase01
+
+-- currently gets ove wrong...
+test09e = fromChromaticPitch d_minor $ mkC $ (DiatonicPitch TONIC 0) `addDiatonicInterval` simple_fifth
+
+
+
+test09f = fromChromaticPitch d_minor $ mkC $ (DiatonicPitch TONIC 0) `addDiatonicInterval` simple_unison
+
+test09g = fromChromaticPitch d_minor $ mkC $ (DiatonicPitch TONIC 0) 
