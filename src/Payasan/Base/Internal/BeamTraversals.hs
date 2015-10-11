@@ -25,6 +25,9 @@ module Payasan.Base.Internal.BeamTraversals
   , BeamDurationAlgo(..)
   , transformD
 
+  , BeamPitchAnnoAlgo(..)
+  , transformPA
+
   ) where
 
 
@@ -34,6 +37,31 @@ import Payasan.Base.Internal.RewriteMonad
 
 
 type Mon st a = Rewrite st a
+
+
+genTransform :: forall st p1 p2 d1 d2 a1 a2. 
+                (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
+             -> st
+             -> Phrase p1 d1 a1
+             -> Phrase p2 d2 a2
+genTransform elemT st0 ph = 
+    evalRewriteDefault (phraseT ph) st0
+  where
+    phraseT :: Phrase p1 d1 a1 -> Mon st (Phrase p2 d2 a2)
+    phraseT (Phrase bs)         = Phrase <$> mapM barT bs
+
+    barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
+    barT (Bar info cs)          = local info $ Bar info <$> mapM noteGroupT cs
+
+    noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
+    noteGroupT (Atom e)         = Atom <$> elemT e
+    noteGroupT (Beamed cs)      = Beamed <$> mapM noteGroupT cs
+    noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
+
+
+
+--------------------------------------------------------------------------------
+-- Duration
 
 data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo 
     { initial_stateP :: st
@@ -47,19 +75,8 @@ transformP :: forall st p1 p2 drn anno.
            -> Phrase p1 drn anno 
            -> Phrase p2 drn anno
 transformP (BeamPitchAlgo { initial_stateP = st0 
-                          , element_trafoP = elemT }) ph = 
-    evalRewriteDefault (phraseT ph) st0
-  where
-    phraseT :: Phrase p1 drn anno -> Mon st (Phrase p2 drn anno)
-    phraseT (Phrase bs)         = Phrase <$> mapM barT bs
-
-    barT :: Bar p1 drn anno -> Mon st (Bar p2 drn anno)
-    barT (Bar info cs)          = local info $ Bar info <$> mapM noteGroupT cs
-
-    noteGroupT :: NoteGroup p1 drn anno -> Mon st (NoteGroup p2 drn anno)
-    noteGroupT (Atom e)         = Atom <$> elemT e
-    noteGroupT (Beamed cs)      = Beamed <$> mapM noteGroupT cs
-    noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
+                          , element_trafoP = elemT }) = 
+    genTransform elemT st0
 
 
 --------------------------------------------------------------------------------
@@ -77,18 +94,25 @@ transformD :: forall st pch d1 d2 anno.
            -> Phrase pch d1 anno 
            -> Phrase pch d2 anno
 transformD (BeamDurationAlgo { initial_stateD = st0 
-                             , element_trafoD = elemT }) ph = 
-    evalRewriteDefault (phraseT ph) st0
-  where
-    phraseT :: Phrase pch d1 anno -> Mon st (Phrase pch d2 anno)
-    phraseT (Phrase bs)         = Phrase <$> mapM barT bs
-
-    barT :: Bar pch d1 anno -> Mon st (Bar pch d2 anno)
-    barT (Bar info cs)          = local info $ Bar info <$> mapM noteGroupT cs
-
-    noteGroupT :: NoteGroup pch d1 anno -> Mon st (NoteGroup pch d2 anno)
-    noteGroupT (Atom e)         = Atom <$> elemT e
-    noteGroupT (Beamed cs)      = Beamed <$> mapM noteGroupT cs
-    noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
+                             , element_trafoD = elemT }) = 
+    genTransform elemT st0
 
 
+--------------------------------------------------------------------------------
+-- Duration
+
+data BeamPitchAnnoAlgo st pch1 anno1 pch2 anno2 = BeamPitchAnnoAlgo 
+    { initial_statePA :: st
+    , element_trafoPA :: 
+             forall drn. 
+             Element pch1 drn anno1 -> Mon st (Element pch2 drn anno2)
+    }
+
+
+transformPA :: forall st p1 p2 drn a1 a2.
+               BeamPitchAnnoAlgo st p1 a1 p2 a2
+            -> Phrase p1 drn a1 
+            -> Phrase p2 drn a2
+transformPA (BeamPitchAnnoAlgo { initial_statePA = st0 
+                               , element_trafoPA = elemT }) = 
+    genTransform elemT st0

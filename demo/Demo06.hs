@@ -5,31 +5,33 @@ module Demo06 where
 
 import Payasan.LilyPond.Chordmode.Notelist
 
+import Payasan.Base.Internal.LilyPond.RhythmicMarkup
+
 
 -- CHORDS -- 
 
 
 phrase01 :: StdChordPhrase
-phrase01 = fromLilyPondWith global_ri manual_ri $ 
+phrase01 = fromLilyPondWith globals locals $ 
     [chordmode| c2 f4:1.3+.5 g:dim7 |]
 
 
 
 
-global_ri :: GlobalRenderInfo
-global_ri = default_global_info { global_ly_octave_mode = AbsPitch }
+globals :: GlobalRenderInfo
+globals = default_global_info { global_ly_octave_mode = AbsPitch }
 
 
-manual_ri :: LocalRenderInfo
-manual_ri = default_local_info
+locals :: LocalRenderInfo
+locals = default_local_info
 
 
 
 demo01 :: IO ()
-demo01 = printAsLilyPond global_ri phrase01
+demo01 = printAsLilyPond globals phrase01
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond global_ri $ outputAsLilyPond global_ri $ phrase01
+demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01
 
 demo03 :: IO ()
 demo03 = writeAsMIDI "out/chords01.mid" phrase01

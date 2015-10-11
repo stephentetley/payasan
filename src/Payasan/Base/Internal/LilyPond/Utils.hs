@@ -18,7 +18,9 @@ module Payasan.Base.Internal.LilyPond.Utils
   ( 
 
   -- * Output
-    command
+    Markup
+ 
+  , command
   , block 
   , definition
 
@@ -50,6 +52,16 @@ import Payasan.Base.Duration
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
                    
+newtype Markup = Markup { getMarkup :: Doc }
+
+instance Monoid Markup where
+  mempty = Markup $ empty
+  a `mappend` b = Markup $ getMarkup a <> getMarkup b
+
+
+
+
+
 
 --------------------------------------------------------------------------------
 -- Pretty printing helpers
