@@ -74,6 +74,8 @@ demo09 :: IO ()
 demo09 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
     invertDiatonic phrase01
 
+{-
+
 test09 = printAsTabular globals $ diatonicsFromTop $ mapPitch (toChromaticPitch d_minor) $ phrase01
 
 test09b = fromChromaticPitch d_minor $ 
@@ -95,3 +97,5 @@ test09e = fromChromaticPitch d_minor $ mkC $ (DiatonicPitch TONIC 0) `addDiatoni
 test09f = fromChromaticPitch d_minor $ mkC $ (DiatonicPitch TONIC 0) `addDiatonicInterval` simple_unison
 
 test09g = fromChromaticPitch d_minor $ mkC $ (DiatonicPitch TONIC 0) 
+
+-}

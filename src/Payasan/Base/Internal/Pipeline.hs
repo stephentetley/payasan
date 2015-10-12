@@ -48,6 +48,11 @@ module Payasan.Base.Internal.Pipeline
   , outputAsLilyPond
   , printAsLilyPond
 
+  , genOutputAsRhythmicMarkup
+  , outputAsRhythmicMarkup
+  , printAsRhythmicMarkup
+
+
   , ppRender
 
   , writeAsMIDI
@@ -66,12 +71,13 @@ import Payasan.Base.Internal.ABC.Output (abcOutput)
 import Payasan.Base.Internal.ABC.Parser (abc)
 import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 
-import qualified Payasan.Base.Internal.LilyPond.InTrans     as LYIn
-import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
+import qualified Payasan.Base.Internal.LilyPond.InTrans         as LYIn
+import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY
+import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LYOut
 import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput, LyOutputDef(..))
 import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
-import Payasan.Base.Internal.LilyPond.Utils (pitch)
+import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
 import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
@@ -209,6 +215,30 @@ outputAsLilyPond gi =
 
 printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
+
+
+genOutputAsRhythmicMarkup :: RHY.MarkupOutput pch 
+                          -> GlobalRenderInfo 
+                          -> Phrase pch Duration anno 
+                          -> String
+genOutputAsRhythmicMarkup def gi = 
+    ppRender . lilyPondOutput ppDef gi
+             . RHY.translate def
+             . addBeams 
+             . translateToBeam
+  where
+    ppDef = LyOutputDef { printPitch = pitch, printAnno = markup }
+
+
+outputAsRhythmicMarkup :: GlobalRenderInfo -> StdPhrase -> String
+outputAsRhythmicMarkup gi = genOutputAsRhythmicMarkup def gi
+  where
+    def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
+
+
+printAsRhythmicMarkup :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsRhythmicMarkup gi = putStrLn . outputAsRhythmicMarkup gi
+
 
 
 ppRender :: Doc -> String

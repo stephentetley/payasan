@@ -38,16 +38,13 @@ import Payasan.Base.Duration
 data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Markup }
 
 
-translate :: GlobalRenderInfo 
-          -> MarkupOutput pch
+translate :: MarkupOutput pch
           -> Phrase pch Duration anno 
           -> Phrase LyPitch LyNoteLength Markup
-translate _   mo = 
+translate mo = 
     transformPA (markup_algo mo) . translateDurationOnly
 
 
-
-type PAMon    a     = Mon () a
 
 
 --------------------------------------------------------------------------------
@@ -56,33 +53,31 @@ type PAMon    a     = Mon () a
 markup_algo :: MarkupOutput pch -> BeamPitchAnnoAlgo () pch a LyPitch Markup
 markup_algo mo = BeamPitchAnnoAlgo
     { initial_statePA   = ()
-    , element_trafoPA   = elementPA mo
+    , element_trafoPA   = liftElementTrafo $ elementPA mo
     }
+
+
 
 
 
 elementPA :: forall pch drn anno. 
              MarkupOutput pch 
           -> Element pch drn anno 
-          -> PAMon (Element LyPitch drn Markup)
+          -> Element LyPitch drn Markup
 elementPA mo elt = case elt of 
-    NoteElem e _        -> NoteElem <$> notePA e <*> markupPA e
-    Rest d              -> pure $ Rest d
+    NoteElem e _        -> NoteElem (notePA e) (markupPA e)
+    Rest d              -> Rest d
     Chord ps d _        -> 
-        (\p annos -> NoteElem (Note p d) (mconcat annos)) 
-            <$> middleC <*> pure (map markupF ps)
+        NoteElem (Note middle_c d) (mconcat $ map markupF ps)
 
-    Graces ns           -> Graces <$> mapM notePA ns
-    Punctuation s       -> pure $ Punctuation s
+    Graces ns           -> Graces $ map notePA ns
+    Punctuation s       -> Punctuation s
   where
     markupF                     = asMarkup mo
 
-    notePA   :: Note pch drn -> PAMon (Note LyPitch drn)
-    notePA (Note _ drn)         = (\p -> Note p drn) <$> middleC
+    notePA   :: Note pch drn -> (Note LyPitch drn)
+    notePA (Note _ drn)         = Note middle_c drn
 
-    markupPA :: Note pch drn -> PAMon Markup
-    markupPA (Note pch _)       = pure $ markupF pch
-
-    middleC :: PAMon LyPitch
-    middleC                     = pure middle_c
+    markupPA :: Note pch drn -> Markup
+    markupPA (Note pch _)       = markupF pch
 

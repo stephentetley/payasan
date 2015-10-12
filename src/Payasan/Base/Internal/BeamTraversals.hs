@@ -19,6 +19,8 @@
 module Payasan.Base.Internal.BeamTraversals
   (
     Mon 
+  , liftElementTrafo
+
   , BeamPitchAlgo(..)
   , transformP
 
@@ -59,6 +61,13 @@ genTransform elemT st0 ph =
     noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
 
 
+--------------------------------------------------------------------------------
+-- Lift a pure Element transformer
+
+liftElementTrafo :: (Element p1 d1 a1 -> Element p2 d2 a2) 
+                 -> Element p1 d1 a1 
+                 -> Mon () (Element p2 d2 a2)
+liftElementTrafo f = \e -> return (f e)
 
 --------------------------------------------------------------------------------
 -- Duration

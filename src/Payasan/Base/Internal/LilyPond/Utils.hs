@@ -19,7 +19,10 @@ module Payasan.Base.Internal.LilyPond.Utils
 
   -- * Output
     Markup
- 
+  , markup
+  , tiny
+
+  -- * pretty printers 
   , command
   , block 
   , definition
@@ -54,13 +57,18 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
                    
 newtype Markup = Markup { getMarkup :: Doc }
 
+markup :: Markup -> Doc
+markup a = char '^' <> command "markup" <+> getMarkup a
+
+
 instance Monoid Markup where
   mempty = Markup $ empty
   a `mappend` b = Markup $ getMarkup a <> getMarkup b
 
 
 
-
+tiny :: Doc -> Markup 
+tiny d = Markup $ command "tiny" <+> d
 
 
 --------------------------------------------------------------------------------

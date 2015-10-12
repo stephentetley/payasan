@@ -5,8 +5,6 @@ module Demo06 where
 
 import Payasan.LilyPond.Chordmode.Notelist
 
-import Payasan.Base.Internal.LilyPond.RhythmicMarkup
-
 
 -- CHORDS -- 
 
@@ -42,4 +40,7 @@ demo04 = printAsTabular default_global_info phrase01
 
 demo05 :: IO ()
 demo05 = printAsLinear default_global_info phrase01
+
+demo06 :: IO ()
+demo06 = shellOutLilyPond globals $ outputAsRhythmicMarkup globals $ phrase01
 

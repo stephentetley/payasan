@@ -37,6 +37,9 @@ module Payasan.LilyPond.Chordmode.Notelist
   , outputAsLilyPond
   , printAsLilyPond
 
+  , outputAsRhythmicMarkup
+  , printAsRhythmicMarkup
+
   , ppRender
 
   , writeAsMIDI
@@ -63,6 +66,7 @@ import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
 import qualified Payasan.Base.Monophonic.Internal.Traversals    as MONO
 import Payasan.Base.Monophonic.Internal.LinearOutput
 import Payasan.Base.Monophonic.Internal.TabularOutput
+import qualified Payasan.Base.Monophonic.Notelist               as MONO
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
@@ -71,8 +75,9 @@ import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
-import Payasan.Base.Internal.LilyPond.Syntax
+import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LYOut
+import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY
+import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration
@@ -100,15 +105,23 @@ outputAsLilyPond gi =
              . LYOut.translateDurationOnly
              . addBeams 
              . translateToBeam 
-             . toMain
-
-toMain ::  StdChordPhrase -> MAIN.Phrase LyPitch Duration ChordSuffix
-toMain = MONO.translateToMain . translateOutput
+             . MONO.translateToMain 
+             . translateOutput
 
 
 
 printAsLilyPond :: GlobalRenderInfo -> StdChordPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
+
+
+outputAsRhythmicMarkup :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsRhythmicMarkup gi = MONO.genOutputAsRhythmicMarkup def gi
+  where
+    def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
+
+
+printAsRhythmicMarkup :: GlobalRenderInfo -> StdChordPhrase -> IO ()
+printAsRhythmicMarkup gi = putStrLn . outputAsRhythmicMarkup gi
 
 
 ppRender :: Doc -> String

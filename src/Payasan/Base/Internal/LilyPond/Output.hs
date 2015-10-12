@@ -17,9 +17,9 @@
 
 module Payasan.Base.Internal.LilyPond.Output
   ( 
-    lilyPondOutput
+    LyOutputDef(..)
+  , lilyPondOutput
 
-  , LyOutputDef(..)
   , renderNotes
   ) where
 
@@ -63,6 +63,13 @@ deltaKey (LocalRenderInfo { local_key = k1 }) =
 
 --------------------------------------------------------------------------------
 
+
+data LyOutputDef pch anno = LyOutputDef 
+    { printPitch    :: pch -> Doc
+    , printAnno     :: anno -> Doc
+    }
+
+
 lilyPondOutput :: LyOutputDef pch anno 
                -> GlobalRenderInfo 
                -> GenLyPhrase pch anno -> Doc
@@ -100,10 +107,6 @@ octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
 -- to be printed. 
 
 
-data LyOutputDef pch anno = LyOutputDef 
-    { printPitch    :: pch -> Doc
-    , printAnno     :: anno -> Doc
-    }
 
 -- | Pitch should be \"context free\" at this point.
 --
