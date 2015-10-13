@@ -30,7 +30,6 @@ import Payasan.Base.Internal.LilyPond.Utils
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
-import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Duration
 

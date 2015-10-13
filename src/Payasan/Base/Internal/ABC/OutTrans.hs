@@ -38,7 +38,8 @@ import Payasan.Base.Pitch
 
 
 
-translate :: Phrase Pitch Duration anno -> Phrase ABCPitch ABCNoteLength anno
+translate :: Phrase Pitch Duration anno 
+          -> Phrase ABCPitch ABCNoteLength anno
 translate = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a

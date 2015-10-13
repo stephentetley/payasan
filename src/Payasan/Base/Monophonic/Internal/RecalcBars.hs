@@ -36,7 +36,7 @@ recalcBars (Phrase { phrase_header = info, phrase_bars = bs }) =
 
 
 data Segment pch anno = Segment 
-    { segment_header   :: LocalRenderInfo
+    { segment_header   :: LocalContextInfo
     , segment_notes    :: [NoteGroup pch Duration anno]
     }
 
@@ -45,7 +45,7 @@ data Segment pch anno = Segment
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-segment :: LocalRenderInfo -> [Bar pch Duration anno] -> Segment pch anno
+segment :: LocalContextInfo -> [Bar pch Duration anno] -> Segment pch anno
 segment info bs = Segment { segment_header = info
                           , segment_notes  = concatMap fn bs }
   where

@@ -34,26 +34,26 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 type Mon a = Rewrite State a
 
-data State = State { prev_info  :: !LocalRenderInfo }
+data State = State { prev_info  :: !LocalContextInfo }
 
-stateZero :: LocalRenderInfo -> State
+stateZero :: LocalContextInfo -> State
 stateZero info = State { prev_info  = info }
 
 
-setInfo :: LocalRenderInfo -> Mon () 
+setInfo :: LocalContextInfo -> Mon () 
 setInfo info = puts (\s -> s { prev_info = info })
 
 
-deltaMetrical :: LocalRenderInfo -> Mon (Maybe Meter)
-deltaMetrical (LocalRenderInfo { local_meter = m1 }) = 
+deltaMetrical :: LocalContextInfo -> Mon (Maybe Meter)
+deltaMetrical (LocalContextInfo { local_meter = m1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
         | local_meter prev == m1 = Nothing
         | otherwise              = Just m1
 
-deltaKey :: LocalRenderInfo -> Mon (Maybe Key)
-deltaKey (LocalRenderInfo { local_key = k1 }) = 
+deltaKey :: LocalContextInfo -> Mon (Maybe Key)
+deltaKey (LocalContextInfo { local_key = k1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
@@ -71,25 +71,25 @@ data LyOutputDef pch anno = LyOutputDef
 
 
 lilyPondOutput :: LyOutputDef pch anno 
-               -> GlobalRenderInfo 
+               -> ScoreInfo 
                -> GenLyPhrase pch anno -> Doc
-lilyPondOutput def globals ph = 
+lilyPondOutput def info ph = 
         header 
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where
-    local1          = maybe default_local_info id $ firstRenderInfo ph
-    header          = oHeader globals
-    modeBlockF      = octaveModeBlock (global_ly_octave_mode globals)
+    local1          = maybe default_local_info id $ firstContextInfo ph
+    header          = oHeader info
+    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
     notes_header    = oPhraseHeader local1
     notes           = renderNotes def ph
 
 
-oHeader :: GlobalRenderInfo -> Doc
+oHeader :: ScoreInfo -> Doc
 oHeader globals = 
         version (global_ly_version globals)
     $+$ block (Just $ command "header") (title $ global_title globals)
 
-oPhraseHeader :: LocalRenderInfo -> Doc
+oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = 
         key   (local_key locals)
     $+$ meter (local_meter locals)
@@ -110,11 +110,12 @@ octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
 
 -- | Pitch should be \"context free\" at this point.
 --
-renderNotes :: forall pch anno. LyOutputDef pch anno -> GenLyPhrase pch anno -> Doc
-renderNotes def ph = evalRewriteDefault (oLyPhrase ph) (stateZero first_info)
+renderNotes :: forall pch anno. 
+               LyOutputDef pch anno -> GenLyPhrase pch anno -> Doc
+renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
   where
-    first_info :: LocalRenderInfo
-    first_info  = maybe default_local_info id $ firstRenderInfo ph
+    first_info :: LocalContextInfo
+    first_info  = maybe default_local_info id $ firstContextInfo ph
 
     pPitch :: pch -> Doc
     pPitch = printPitch def
@@ -133,11 +134,11 @@ renderNotes def ph = evalRewriteDefault (oLyPhrase ph) (stateZero first_info)
                            }
 
     oBar :: GenLyBar pch anno -> Mon Doc
-    oBar (Bar info cs)              = 
-          do { dkey    <- deltaKey info
-             ; dmeter  <- deltaMetrical info
+    oBar (Bar locals cs)            = 
+          do { dkey    <- deltaKey locals
+             ; dmeter  <- deltaMetrical locals
              ; let ans = hsep (map oNoteGroup cs)
-             ; setInfo info
+             ; setInfo locals
              ; return $ prefixM dmeter $ prefixK dkey $ ans
              }
         where

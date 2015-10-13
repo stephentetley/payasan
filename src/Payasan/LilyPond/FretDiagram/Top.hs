@@ -17,14 +17,12 @@
 module Payasan.LilyPond.FretDiagram.Top
   ( 
    
---    StdLyricPhrase
---  , lyricmode
 
-    GlobalRenderInfo(..)        -- Re-export
+    ScoreInfo(..)        -- Re-export
   , OctaveMode(..)
-  , default_global_info
+  , default_score_info
 
-  , LocalRenderInfo(..)         -- Re-export
+  , LocalContextInfo(..)         -- Re-export
   , UnitNoteLength(..)
   , default_local_info
 

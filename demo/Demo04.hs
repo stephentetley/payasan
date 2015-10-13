@@ -26,11 +26,11 @@ phrase01 = fromLilyPondWith globals manuals $
 
 
 
-globals :: GlobalRenderInfo
-globals = default_global_info { global_ly_octave_mode = RelPitch middle_c  }
+globals :: ScoreInfo
+globals = default_score_info { global_ly_octave_mode = RelPitch middle_c  }
 
 
-manuals :: LocalRenderInfo
+manuals :: LocalContextInfo
 manuals = default_local_info { local_unit_note_len = UNIT_NOTE_4
                              , local_key = d_minor  }
 

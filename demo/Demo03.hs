@@ -24,30 +24,30 @@ import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
 phrase01 :: StdPhrase 
-phrase01 = fromLilyPondWith global_ri manual_ri $ 
+phrase01 = fromLilyPondWith globals locals $ 
     [lilypond| c4 d e fis | c' |]
 
 
 debug01 :: IO StdPhrase
-debug01 = fromLilyPondWithIO global_ri manual_ri $ 
+debug01 = fromLilyPondWithIO globals locals $ 
     [lilypond| c4 d e fis | c' |]
 
 
 
-global_ri :: GlobalRenderInfo
-global_ri = 
-    default_global_info { global_ly_octave_mode = RelPitch middle_c }
+globals :: ScoreInfo
+globals = 
+    default_score_info { global_ly_octave_mode = RelPitch middle_c }
 
 
-manual_ri :: LocalRenderInfo
-manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
+locals :: LocalContextInfo
+locals = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = printAsLilyPond global_ri phrase01
+demo01 = printAsLilyPond globals phrase01
 
 demo01a :: IO ()
-demo01a = printAsABC global_ri phrase01
+demo01a = printAsABC globals phrase01
 
 
 test01,test02, test03 :: Int

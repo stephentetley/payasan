@@ -56,9 +56,6 @@ data Syllable = Syllable String
 
 
 
---          | ExtenderLine            -- Double underscore
---          | HyphenLine              -- Double hyphen 
-
 
 --
 -- What is an extender? 
@@ -80,7 +77,7 @@ instance Pretty Syllable where
   pPrint (Syllable s)   = text s
 
 
-inTrans :: GlobalRenderInfo 
+inTrans :: ScoreInfo 
         -> LyLyricPhrase
         -> StdLyricPhrase
 inTrans _info = trafoDuration

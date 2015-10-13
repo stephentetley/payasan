@@ -32,7 +32,7 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = NoteGroup Pitch Duration ()
 
-fromNoteList :: LocalRenderInfo -> [[NoteListAtom]] -> Phrase Pitch Duration ()
+fromNoteList :: LocalContextInfo -> [[NoteListAtom]] -> Phrase Pitch Duration ()
 fromNoteList ri xss = Phrase $ map (Bar ri) xss
 
 note :: Pitch -> Duration -> NoteListAtom

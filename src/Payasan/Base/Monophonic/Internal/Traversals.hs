@@ -66,7 +66,7 @@ genCollect :: forall st pch drn anno ac.
            -> st
            -> Phrase pch drn anno 
            -> ac
-genCollect mf a0 st ph = evalRewriteDefault (phraseC a0 ph) st
+genCollect mf a0 st ph = evalRewrite (phraseC a0 ph) st
   where
 
     phraseC :: ac -> Phrase pch drn anno -> Mon st ac
@@ -88,7 +88,7 @@ genTransform :: forall st p1 p2 d1 d2 a1 a2.
              -> Phrase p1 d1 a1
              -> Phrase p2 d2 a2
 genTransform elemT st0 ph = 
-    evalRewriteDefault (phraseT ph) st0
+    evalRewrite (phraseT ph) st0
   where
 
     phraseT :: Phrase p1 d1 a1 -> Mon st (Phrase p2 d2 a2) 

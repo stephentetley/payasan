@@ -77,11 +77,11 @@ phrase01 = fromLilyPondWith globals locals $
 -}
 
 
-globals :: GlobalRenderInfo
-globals = default_global_info { global_ly_octave_mode = AbsPitch }
+globals :: ScoreInfo
+globals = default_score_info { global_ly_octave_mode = AbsPitch }
 
 
-locals :: LocalRenderInfo
+locals :: LocalContextInfo
 locals = default_local_info
 
 

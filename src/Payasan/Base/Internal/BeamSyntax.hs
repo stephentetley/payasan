@@ -30,9 +30,9 @@ module Payasan.Base.Internal.BeamSyntax
   , Note(..)
 
   -- * Operations
-  , pushLocalRenderInfo
+  , pushContextInfo
   , sizeNoteGroup
-  , firstRenderInfo 
+  , firstContextInfo 
 
 
   ) where
@@ -66,7 +66,7 @@ instance Monoid (Phrase pch drn anno) where
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn anno = Bar 
-    { bar_header        :: LocalRenderInfo
+    { bar_header        :: LocalContextInfo
     , bar_elements      :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
@@ -105,10 +105,10 @@ data Note pch drn = Note pch drn
 --------------------------------------------------------------------------------
 -- Operations (maybe should be in another module)
 
-pushLocalRenderInfo :: LocalRenderInfo 
-                    -> Phrase pch drn anno 
-                    -> Phrase pch drn anno
-pushLocalRenderInfo ri (Phrase bs) = Phrase $ map upd bs
+pushContextInfo :: LocalContextInfo 
+                -> Phrase pch drn anno 
+                -> Phrase pch drn anno
+pushContextInfo ri (Phrase bs) = Phrase $ map upd bs
   where
     upd bar = bar { bar_header = ri }
 
@@ -128,6 +128,6 @@ sizeElement (Chord _ d _)           = durationSize d
 sizeElement (Graces {})             = 0
 sizeElement (Punctuation {})        = 0
 
-firstRenderInfo :: Phrase pch drn anno -> Maybe LocalRenderInfo
-firstRenderInfo (Phrase [])    = Nothing
-firstRenderInfo (Phrase (b:_)) = Just $ bar_header b
+firstContextInfo :: Phrase pch drn anno -> Maybe LocalContextInfo
+firstContextInfo (Phrase [])    = Nothing
+firstContextInfo (Phrase (b:_)) = Just $ bar_header b

@@ -35,7 +35,7 @@ import Payasan.Base.Pitch
 
 
 
-translate :: GlobalRenderInfo 
+translate :: ScoreInfo 
           -> Phrase Pitch Duration anno 
           -> Phrase LyPitch LyNoteLength anno
 translate info = pitchTrafo . transformD drn_algo

@@ -25,11 +25,11 @@ module Payasan.Base.Internal.Pipeline
   , LyPhrase
   , lilypond
 
-  , GlobalRenderInfo(..)
+  , ScoreInfo(..)
   , OctaveMode(..)
-  , default_global_info 
+  , default_score_info 
 
-  , LocalRenderInfo(..)
+  , LocalContextInfo(..)
   , UnitNoteLength(..)
   , default_local_info
 
@@ -147,15 +147,15 @@ debug f a = tell (f a) >> return a
 fromABC :: ABCPhrase -> StdPhrase
 fromABC = fromABCWith default_local_info
 
-fromABCWith :: LocalRenderInfo -> ABCPhrase -> StdPhrase
-fromABCWith ri = translateToMain . ABCIn.translate . BEAM.pushLocalRenderInfo ri
+fromABCWith :: LocalContextInfo -> ABCPhrase -> StdPhrase
+fromABCWith locals = translateToMain . ABCIn.translate . BEAM.pushContextInfo locals
 
 
-fromABCWithIO :: LocalRenderInfo -> ABCPhrase -> IO StdPhrase
-fromABCWithIO ri ph = 
+fromABCWithIO :: LocalContextInfo -> ABCPhrase -> IO StdPhrase
+fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
-    body = do { ph1 <- debug (beamTabular std_abc_output) $ BEAM.pushLocalRenderInfo ri ph
+    body = do { ph1 <- debug (beamTabular std_abc_output) $ BEAM.pushContextInfo locals ph
               ; ph2 <- debug (beamTabular pitch_duration_output) $ ABCIn.translate ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
@@ -163,22 +163,22 @@ fromABCWithIO ri ph =
 
 
 
-fromLilyPond :: GlobalRenderInfo -> LyPhrase () -> StdPhrase 
+fromLilyPond :: ScoreInfo -> LyPhrase () -> StdPhrase 
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 
-fromLilyPondWith :: GlobalRenderInfo -> LocalRenderInfo -> LyPhrase () -> StdPhrase
+fromLilyPondWith :: ScoreInfo -> LocalContextInfo -> LyPhrase () -> StdPhrase
 fromLilyPondWith gi ri = 
-    translateToMain . LYIn.translate gi . BEAM.pushLocalRenderInfo ri
+    translateToMain . LYIn.translate gi . BEAM.pushContextInfo ri
 
-fromLilyPondWithIO :: GlobalRenderInfo 
-                   -> LocalRenderInfo 
+fromLilyPondWithIO :: ScoreInfo 
+                   -> LocalContextInfo 
                    -> LyPhrase () 
                    -> IO StdPhrase
 fromLilyPondWithIO gi ri ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
-    body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushLocalRenderInfo ri ph
+    body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushContextInfo ri ph
               ; ph2 <- debug (beamTabular pitch_duration_output) $ LYIn.translate gi ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
@@ -186,24 +186,28 @@ fromLilyPondWithIO gi ri ph =
 
 
 
-outputAsABC :: GlobalRenderInfo -> StdPhrase -> String
-outputAsABC gi = ppRender . abcOutput gi . ABCOut.translate . addBeams . translateToBeam
+outputAsABC :: ScoreInfo -> StdPhrase -> String
+outputAsABC info = 
+    ppRender . abcOutput info 
+             . ABCOut.translate
+             . addBeams 
+             . translateToBeam
 
-printAsABC :: GlobalRenderInfo -> StdPhrase -> IO ()
-printAsABC gi = putStrLn . outputAsABC gi
+printAsABC :: ScoreInfo -> StdPhrase -> IO ()
+printAsABC info = putStrLn . outputAsABC info
 
 genOutputAsLilyPond :: LyOutputDef pch anno 
-                    -> GlobalRenderInfo 
+                    -> ScoreInfo 
                     -> Phrase pch Duration anno 
                     -> String
-genOutputAsLilyPond def gi = 
-    ppRender . lilyPondOutput def gi
+genOutputAsLilyPond def info = 
+    ppRender . lilyPondOutput def info
              . LYOut.translateDurationOnly
              . addBeams 
              . translateToBeam
 
 
-outputAsLilyPond :: GlobalRenderInfo -> StdPhrase -> String
+outputAsLilyPond :: ScoreInfo -> StdPhrase -> String
 outputAsLilyPond gi = 
     ppRender . lilyPondOutput std_def gi
              . LYOut.translate gi 
@@ -213,16 +217,16 @@ outputAsLilyPond gi =
     std_def = LyOutputDef { printPitch = pitch, printAnno = \_ -> empty }
 
 
-printAsLilyPond :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
 genOutputAsRhythmicMarkup :: RHY.MarkupOutput pch 
-                          -> GlobalRenderInfo 
+                          -> ScoreInfo
                           -> Phrase pch Duration anno 
                           -> String
-genOutputAsRhythmicMarkup def gi = 
-    ppRender . lilyPondOutput ppDef gi
+genOutputAsRhythmicMarkup def info = 
+    ppRender . lilyPondOutput ppDef info
              . RHY.translate def
              . addBeams 
              . translateToBeam
@@ -230,13 +234,13 @@ genOutputAsRhythmicMarkup def gi =
     ppDef = LyOutputDef { printPitch = pitch, printAnno = markup }
 
 
-outputAsRhythmicMarkup :: GlobalRenderInfo -> StdPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String
 outputAsRhythmicMarkup gi = genOutputAsRhythmicMarkup def gi
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: GlobalRenderInfo -> StdPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()
 printAsRhythmicMarkup gi = putStrLn . outputAsRhythmicMarkup gi
 
 
@@ -255,7 +259,7 @@ noteTrans = MIDI.translate . translateToBeam
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 
-                => GlobalRenderInfo -> Phrase pch drn anno -> String
+                => ScoreInfo -> Phrase pch drn anno -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -264,12 +268,12 @@ outputAsTabular _gi ph = ppRender $ mainTabular lo ph
                     }
 
 printAsTabular :: (Pretty pch, Pretty drn) 
-               => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+               => ScoreInfo -> Phrase pch drn anno ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 outputAsLinear :: (Pretty pch, Pretty drn) 
-               => GlobalRenderInfo -> Phrase pch drn anno -> String
+               => ScoreInfo -> Phrase pch drn anno -> String
 outputAsLinear _gi ph = ppRender $ mainLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -278,5 +282,5 @@ outputAsLinear _gi ph = ppRender $ mainLinear lo ph
                     }
 
 printAsLinear :: (Pretty pch, Pretty drn) 
-              => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+              => ScoreInfo -> Phrase pch drn anno ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

@@ -46,7 +46,7 @@ type Mon a = Rewrite Seconds a
 
 
 midiOutput :: T.TrackData -> Phrase T.MidiPitch Duration anno -> T.Track
-midiOutput td ph = T.render $ evalRewriteDefault (phraseT td ph) 0
+midiOutput td ph = T.render $ evalRewrite (phraseT td ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.

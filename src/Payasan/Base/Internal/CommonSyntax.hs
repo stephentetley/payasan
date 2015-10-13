@@ -18,13 +18,13 @@
 module Payasan.Base.Internal.CommonSyntax
   ( 
 
-    GlobalRenderInfo(..)
+    ScoreInfo(..)
   , OctaveMode(..)
   , Clef(..)
 
-  , default_global_info
+  , default_score_info
 
-  , LocalRenderInfo(..)
+  , LocalContextInfo(..)
   , UnitNoteLength(..)
   , Key(..)
   , Mode(..)
@@ -54,11 +54,20 @@ import Data.Data
 import Data.Ratio
 
 
--- | Note don\'t store LilyPond Absolute / Relative pitch
+-- | Note - don\'t store LilyPond Absolute / Relative pitch
 -- at bar level. This a a global property as we must render
 -- in one mode only.
 
-data GlobalRenderInfo = GlobalRenderInfo
+-- Some data is usefully render info but should be specified by
+-- library writer not by the end user, e.g. global_do_beaming
+--
+-- Potentially there is a relationship between a user exposed 
+-- config and a larger internal one like Parsec\'s LanguageDef 
+-- and TokenParser
+
+
+
+data ScoreInfo = ScoreInfo
     { global_temp_abc_file      :: !String
     , global_temp_ly_file       :: !String
     , global_title              :: !String
@@ -76,8 +85,8 @@ data Clef = TREBLE | BASS
   deriving (Data,Eq,Show,Typeable)
 
 
-default_global_info :: GlobalRenderInfo
-default_global_info = GlobalRenderInfo
+default_score_info :: ScoreInfo
+default_score_info = ScoreInfo
     { global_temp_abc_file      = "abc_output.abc"
     , global_temp_ly_file       = "output.ly"
     , global_title              = ""
@@ -87,13 +96,18 @@ default_global_info = GlobalRenderInfo
     }
 
 
--- | Note - @LocalRenderInfo@ is stored as a header to a Bar. 
--- This allows concatenating bars together. Generally outputting 
--- should be sensitive to changes to LocalRenderInfo as a new bar
--- is printed.
+-- | Note - @LocalRenderInfo@ is stored as a header to a Bar in
+-- Beam and Main syntax.
 -- 
- 
-data LocalRenderInfo = LocalRenderInfo
+-- This allows concatenating bars together (and tempo and key 
+-- changes). Generally outputting must be sensitive to changes 
+-- to LocalRenderInfo as a new bar is printed.
+-- 
+-- Mono syntax is more suitable to transformation, hence we put 
+-- @LocalRenderInfo@ at the start of the phrase
+--
+
+data LocalContextInfo = LocalContextInfo
     { local_key                 :: !Key
     , local_meter               :: !Meter
     , local_meter_patn          :: !MeterPattern
@@ -101,10 +115,6 @@ data LocalRenderInfo = LocalRenderInfo
     , local_bpm                 :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
-
-data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
-
 
 data Key = Key !PitchName !Mode
   deriving (Data,Eq,Ord,Show,Typeable)
@@ -121,13 +131,22 @@ data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
 data Meter = Meter Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
 
+-- TODO - span bars with meter pattern (e.g. for 2-bar patterns
+-- as in South American music).
+--
 type MeterPattern = [RDuration]
 
+data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
 
-default_local_info :: LocalRenderInfo
-default_local_info = LocalRenderInfo 
+
+
+
+
+default_local_info :: LocalContextInfo
+default_local_info = LocalContextInfo 
     { local_key                 = c_maj
     , local_meter               = Meter 4 4 
     , local_meter_patn          = [1%2,1%2]

@@ -9,6 +9,7 @@ import Payasan.LilyPond.Chordmode.Notelist
 -- CHORDS -- 
 
 
+
 phrase01 :: StdChordPhrase
 phrase01 = fromLilyPondWith globals locals $ 
     [chordmode| c2 f4:1.3+.5 g:dim7 |]
@@ -16,11 +17,11 @@ phrase01 = fromLilyPondWith globals locals $
 
 
 
-globals :: GlobalRenderInfo
-globals = default_global_info { global_ly_octave_mode = AbsPitch }
+globals :: ScoreInfo
+globals = default_score_info { global_ly_octave_mode = AbsPitch }
 
 
-locals :: LocalRenderInfo
+locals :: LocalContextInfo
 locals = default_local_info
 
 
@@ -36,10 +37,10 @@ demo03 = writeAsMIDI "out/chords01.mid" phrase01
 
 
 demo04 :: IO ()
-demo04 = printAsTabular default_global_info phrase01
+demo04 = printAsTabular globals phrase01
 
 demo05 :: IO ()
-demo05 = printAsLinear default_global_info phrase01
+demo05 = printAsLinear globals phrase01
 
 demo06 :: IO ()
 demo06 = shellOutLilyPond globals $ outputAsRhythmicMarkup globals $ phrase01

@@ -22,11 +22,11 @@ module Payasan.LilyPond.Percussion.Notelist
   , StdDrumPhrase
   , drums
 
-  , GlobalRenderInfo(..)
+  , ScoreInfo(..)
   , OctaveMode(..)
-  , default_global_info
+  , default_score_info
 
-  , LocalRenderInfo(..)
+  , LocalContextInfo(..)
   , UnitNoteLength(..)
   , default_local_info
 
@@ -79,25 +79,25 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fromLilyPond :: GlobalRenderInfo -> LyDrumPhrase -> StdDrumPhrase
+fromLilyPond :: ScoreInfo -> LyDrumPhrase -> StdDrumPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
-fromLilyPondWith :: GlobalRenderInfo 
-                 -> LocalRenderInfo 
+fromLilyPondWith :: ScoreInfo 
+                 -> LocalContextInfo 
                  -> LyDrumPhrase
                  -> StdDrumPhrase
 fromLilyPondWith _gi ri = 
-    translateToMain . translateDurationOnly . BEAM.pushLocalRenderInfo ri
+    translateToMain . translateDurationOnly . BEAM.pushContextInfo ri
 
 
 
-outputAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> String
+outputAsLilyPond :: ScoreInfo -> StdDrumPhrase -> String
 outputAsLilyPond gi = 
     ppRender . drumsOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
 
 
 
-printAsLilyPond :: GlobalRenderInfo -> StdDrumPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdDrumPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
@@ -116,7 +116,7 @@ noteTrans = PERC.translate . translateToBeam
 
 
 
-outputAsTabular :: GlobalRenderInfo -> StdDrumPhrase -> String
+outputAsTabular :: ScoreInfo -> StdDrumPhrase -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -124,13 +124,13 @@ outputAsTabular _gi ph = ppRender $ mainTabular lo ph
                     , pp_anno      = const empty
                     }
 
-printAsTabular :: GlobalRenderInfo -> StdDrumPhrase ->  IO ()
+printAsTabular :: ScoreInfo -> StdDrumPhrase ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 
 
-outputAsLinear ::  GlobalRenderInfo -> StdDrumPhrase -> String
+outputAsLinear ::  ScoreInfo -> StdDrumPhrase -> String
 outputAsLinear _gi ph = ppRender $ mainLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -138,5 +138,5 @@ outputAsLinear _gi ph = ppRender $ mainLinear lo ph
                     , pp_anno      = const empty
                     }
 
-printAsLinear :: GlobalRenderInfo -> StdDrumPhrase ->  IO ()
+printAsLinear :: ScoreInfo -> StdDrumPhrase ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

@@ -16,15 +16,17 @@
 
 module Payasan.LilyPond.Lyricmode.Notelist
   ( 
+
+    module Payasan.Base.Internal.Shell
    
-    StdLyricPhrase
+  , StdLyricPhrase
   , lyricmode
 
-  , GlobalRenderInfo(..)        -- Re-export
+  , ScoreInfo(..)        -- Re-export
   , OctaveMode(..)
-  , default_global_info
+  , default_score_info
 
-  , LocalRenderInfo(..)         -- Re-export
+  , LocalContextInfo(..)         -- Re-export
   , UnitNoteLength(..)
   , default_local_info
 
@@ -44,28 +46,30 @@ import qualified Payasan.Base.Monophonic.Notelist        as MONO
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Output (LyOutputDef(..))
+import Payasan.Base.Internal.Shell
 
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fromLilyPond :: GlobalRenderInfo -> LyLyricPhrase -> StdLyricPhrase
+fromLilyPond :: ScoreInfo -> LyLyricPhrase -> StdLyricPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
-fromLilyPondWith :: GlobalRenderInfo 
-                 -> LocalRenderInfo 
+fromLilyPondWith :: ScoreInfo 
+                 -> LocalContextInfo 
                  -> LyLyricPhrase
                  -> StdLyricPhrase
-fromLilyPondWith gi ri = inTrans gi . MONO.pushLocalRenderInfo ri
+fromLilyPondWith gi ri = inTrans gi . MONO.pushContextInfo ri
 
 
-
-outputAsLilyPond :: GlobalRenderInfo -> StdLyricPhrase -> String
+-- This should not beam...
+--
+outputAsLilyPond :: ScoreInfo -> StdLyricPhrase -> String
 outputAsLilyPond gi = MONO.genOutputAsLilyPond def gi
   where 
     def = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
 
-printAsLilyPond :: GlobalRenderInfo -> StdLyricPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdLyricPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 

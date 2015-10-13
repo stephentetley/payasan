@@ -30,7 +30,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-chordmodeOutput :: GlobalRenderInfo -> OutChordPhrase -> Doc
+chordmodeOutput :: ScoreInfo -> OutChordPhrase -> Doc
 chordmodeOutput globals ph = 
         header
     $+$ chordmodeBlock notes
@@ -42,7 +42,7 @@ chordmodeOutput globals ph =
 
 
 
-oHeader :: GlobalRenderInfo -> Doc
+oHeader :: ScoreInfo -> Doc
 oHeader globals  = 
         version (global_ly_version globals)
     $+$ block (Just $ command "header") (title $ global_title globals)

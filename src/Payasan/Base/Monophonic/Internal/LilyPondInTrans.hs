@@ -40,7 +40,7 @@ import Payasan.Base.Pitch
 
 
 
-lilyPondTranslate :: GlobalRenderInfo 
+lilyPondTranslate :: ScoreInfo
                   -> GenLyMonoPhrase LyPitch anno 
                   -> Phrase Pitch Duration anno
 lilyPondTranslate info = pitchTrafo . trafoDuration

@@ -33,7 +33,7 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = StdMonoNoteGroup
 
-fromNoteList :: LocalRenderInfo -> [NoteListAtom] -> StdMonoPhrase
+fromNoteList :: LocalContextInfo -> [NoteListAtom] -> StdMonoPhrase
 fromNoteList ri xs = recalcBars $ Phrase ri [Bar xs]
 
 note :: Pitch -> Duration -> NoteListAtom

@@ -47,7 +47,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , NoteGroup(..)
   , Element(..)
 
-  , pushLocalRenderInfo
+  , pushContextInfo
   , sizeNoteGroup
 
   ) where
@@ -99,7 +99,7 @@ type LyMonoPhrase anno              = Phrase LyPitch  LyNoteLength anno
 -- prevents concatenation it simplifies transformation.
 -- 
 data Phrase pch drn anno = Phrase 
-    { phrase_header     :: !LocalRenderInfo
+    { phrase_header     :: !LocalContextInfo
     , phrase_bars       :: [Bar pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
@@ -143,10 +143,10 @@ data Element pch drn anno =
 -- Push RenderInfo into bars.
 
 
-pushLocalRenderInfo :: LocalRenderInfo 
-                    -> Phrase pch drn anno 
-                    -> Phrase pch drn anno
-pushLocalRenderInfo ri (Phrase { phrase_bars = bs }) = 
+pushContextInfo :: LocalContextInfo 
+                -> Phrase pch drn anno 
+                -> Phrase pch drn anno
+pushContextInfo ri (Phrase { phrase_bars = bs }) = 
     Phrase { phrase_header = ri
            , phrase_bars   = bs }
 

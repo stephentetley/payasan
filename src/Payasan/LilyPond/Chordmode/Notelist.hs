@@ -22,11 +22,11 @@ module Payasan.LilyPond.Chordmode.Notelist
   , StdChordPhrase
   , chordmode
 
-  , GlobalRenderInfo(..)
+  , ScoreInfo(..)
   , OctaveMode(..)
-  , default_global_info
+  , default_score_info
 
-  , LocalRenderInfo(..)
+  , LocalContextInfo(..)
   , UnitNoteLength(..)
   , default_local_info
 
@@ -87,19 +87,19 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 -- Use Monophonic syntax...
 
-fromLilyPond :: GlobalRenderInfo -> LyChordPhrase -> StdChordPhrase
+fromLilyPond :: ScoreInfo -> LyChordPhrase -> StdChordPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
-fromLilyPondWith :: GlobalRenderInfo 
-                 -> LocalRenderInfo 
+fromLilyPondWith :: ScoreInfo 
+                 -> LocalContextInfo 
                  -> LyChordPhrase 
                  -> StdChordPhrase
 fromLilyPondWith _gi ri = 
-    translateInput . MONO.pushLocalRenderInfo ri
+    translateInput . MONO.pushContextInfo ri
 
 
 
-outputAsLilyPond :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsLilyPond :: ScoreInfo -> StdChordPhrase -> String
 outputAsLilyPond gi =
     ppRender . chordmodeOutput gi 
              . LYOut.translateDurationOnly
@@ -110,17 +110,17 @@ outputAsLilyPond gi =
 
 
 
-printAsLilyPond :: GlobalRenderInfo -> StdChordPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdChordPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
-outputAsRhythmicMarkup :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> String
 outputAsRhythmicMarkup gi = MONO.genOutputAsRhythmicMarkup def gi
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: GlobalRenderInfo -> StdChordPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> IO ()
 printAsRhythmicMarkup gi = putStrLn . outputAsRhythmicMarkup gi
 
 
@@ -145,7 +145,7 @@ chordTrans :: StdChordPhrase -> MONO.Phrase [Pitch] Duration ()
 chordTrans = MONO.mapPitch buildNotes
 
 
-outputAsTabular :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsTabular :: ScoreInfo -> StdChordPhrase -> String
 outputAsTabular _gi ph = ppRender $ monoTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -153,13 +153,13 @@ outputAsTabular _gi ph = ppRender $ monoTabular lo ph
                     , pp_anno      = const empty
                     }
 
-printAsTabular :: GlobalRenderInfo -> StdChordPhrase ->  IO ()
+printAsTabular :: ScoreInfo -> StdChordPhrase ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 
 
-outputAsLinear :: GlobalRenderInfo -> StdChordPhrase -> String
+outputAsLinear :: ScoreInfo -> StdChordPhrase -> String
 outputAsLinear _gi ph = ppRender $ monoLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -167,5 +167,5 @@ outputAsLinear _gi ph = ppRender $ monoLinear lo ph
                     , pp_anno      = const empty
                     }
 
-printAsLinear :: GlobalRenderInfo -> StdChordPhrase ->  IO ()
+printAsLinear :: ScoreInfo -> StdChordPhrase ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

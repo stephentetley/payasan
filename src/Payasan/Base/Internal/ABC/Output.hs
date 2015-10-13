@@ -36,10 +36,10 @@ type CatOp = Doc -> Doc -> Doc
 type Mon a = Rewrite State a
 
 data State = State { bar_column :: !Int
-                   , prev_info  :: !LocalRenderInfo
+                   , prev_info  :: !LocalContextInfo
                    }
 
-stateZero :: LocalRenderInfo -> State
+stateZero :: LocalContextInfo -> State
 stateZero info = State { bar_column = 0
                        , prev_info  = info }
 
@@ -53,12 +53,12 @@ incrLineLen :: Mon ()
 incrLineLen = puts (\s -> s { bar_column = 1 + bar_column s })
 
 
-setInfo :: LocalRenderInfo -> Mon () 
+setInfo :: LocalContextInfo -> Mon () 
 setInfo info = puts (\s -> s { prev_info = info })
 
 
-deltaMetrical :: LocalRenderInfo -> Mon (Maybe (Meter,UnitNoteLength))
-deltaMetrical (LocalRenderInfo { local_meter = m1
+deltaMetrical :: LocalContextInfo -> Mon (Maybe (Meter,UnitNoteLength))
+deltaMetrical (LocalContextInfo { local_meter = m1
                                , local_unit_note_len = u1 }) = 
     fn <$> gets prev_info
   where
@@ -66,8 +66,8 @@ deltaMetrical (LocalRenderInfo { local_meter = m1
         | local_meter prev == m1 && local_unit_note_len prev == u1 = Nothing
         | otherwise        = Just (m1,u1)
 
-deltaKey :: LocalRenderInfo -> Mon (Maybe Key)
-deltaKey (LocalRenderInfo { local_key = k1 }) = 
+deltaKey :: LocalContextInfo -> Mon (Maybe Key)
+deltaKey (LocalContextInfo { local_key = k1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
@@ -78,17 +78,17 @@ deltaKey (LocalRenderInfo { local_key = k1 }) =
 --------------------------------------------------------------------------------
 
 
-abcOutput :: GlobalRenderInfo -> ABCPhrase -> Doc
+abcOutput :: ScoreInfo -> ABCPhrase -> Doc
 abcOutput info ph = header $+$ body
   where
-    first_info  = maybe default_local_info id $ firstRenderInfo ph
+    first_info  = maybe default_local_info id $ firstContextInfo ph
     header      = oHeader info first_info
-    body        = evalRewriteDefault (oABCPhrase ph) (stateZero first_info)
+    body        = evalRewrite (oABCPhrase ph) (stateZero first_info)
 
 -- | Note X field must be first K field should be last -
 -- see abcplus manual page 11.
 --
-oHeader :: GlobalRenderInfo -> LocalRenderInfo -> Doc
+oHeader :: ScoreInfo -> LocalContextInfo -> Doc
 oHeader globals locals = 
         field 'X' (int 1)
     $+$ field 'T' (text   $ global_title globals)

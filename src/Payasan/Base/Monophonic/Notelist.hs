@@ -27,11 +27,11 @@ module Payasan.Base.Monophonic.Notelist
   , LyMonoPhrase
   , lilypond
 
-  , GlobalRenderInfo(..)        -- Re-export
+  , ScoreInfo(..)        -- Re-export
   , OctaveMode(..)
-  , default_global_info
+  , default_score_info
 
-  , LocalRenderInfo(..)         -- Re-export
+  , LocalContextInfo(..)         -- Re-export
   , UnitNoteLength(..)
   , default_local_info
 
@@ -96,50 +96,50 @@ import Text.PrettyPrint.HughesPJClass        -- package: pretty
 fromABC :: ABCMonoPhrase -> StdMonoPhrase
 fromABC  = fromABCWith default_local_info
 
-fromABCWith :: LocalRenderInfo -> ABCMonoPhrase -> StdMonoPhrase
-fromABCWith ri = abcTranslate . pushLocalRenderInfo ri
+fromABCWith :: LocalContextInfo -> ABCMonoPhrase -> StdMonoPhrase
+fromABCWith ri = abcTranslate . pushContextInfo ri
 
 
-fromLilyPond :: GlobalRenderInfo -> LyMonoPhrase () -> StdMonoPhrase
+fromLilyPond :: ScoreInfo -> LyMonoPhrase () -> StdMonoPhrase
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
-fromLilyPondWith :: GlobalRenderInfo 
-                 -> LocalRenderInfo 
+fromLilyPondWith :: ScoreInfo 
+                 -> LocalContextInfo 
                  -> LyMonoPhrase ()
                  -> StdMonoPhrase
-fromLilyPondWith gi ri = lilyPondTranslate gi . pushLocalRenderInfo ri
+fromLilyPondWith gi ri = lilyPondTranslate gi . pushContextInfo ri
 
 
-outputAsABC :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsABC :: ScoreInfo -> StdMonoPhrase -> String
 outputAsABC gi = MAIN.outputAsABC gi . translateToMain
 
-printAsABC :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsABC :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsABC gi = MAIN.printAsABC gi . translateToMain
 
 
 genOutputAsLilyPond :: LyOutputDef pch anno 
-                    -> GlobalRenderInfo 
+                    -> ScoreInfo 
                     -> Phrase pch Duration anno
                     -> String
 genOutputAsLilyPond def gi = MAIN.genOutputAsLilyPond def gi . translateToMain
 
-outputAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsLilyPond :: ScoreInfo -> StdMonoPhrase -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
 
-printAsLilyPond :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
 
 
 genOutputAsRhythmicMarkup :: RHY.MarkupOutput pch 
-                          -> GlobalRenderInfo 
+                          -> ScoreInfo 
                           -> Phrase pch Duration anno
                           -> String
 genOutputAsRhythmicMarkup def gi = MAIN.genOutputAsRhythmicMarkup def gi . translateToMain
 
-outputAsRhythmicMarkup :: GlobalRenderInfo -> StdMonoPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> String
 outputAsRhythmicMarkup gi = MAIN.outputAsRhythmicMarkup gi . translateToMain
 
-printAsRhythmicMarkup :: GlobalRenderInfo -> StdMonoPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsRhythmicMarkup gi = MAIN.printAsRhythmicMarkup gi . translateToMain
 
 
@@ -153,7 +153,7 @@ writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 
-                => GlobalRenderInfo -> Phrase pch drn anno -> String
+                => ScoreInfo -> Phrase pch drn anno -> String
 outputAsTabular _gi ph = ppRender $ monoTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -162,14 +162,14 @@ outputAsTabular _gi ph = ppRender $ monoTabular lo ph
                     }
 
 printAsTabular :: (Pretty pch, Pretty drn) 
-               => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+               => ScoreInfo -> Phrase pch drn anno ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 
 
 outputAsLinear :: (Pretty pch, Pretty drn) 
-                => GlobalRenderInfo -> Phrase pch drn anno -> String
+                => ScoreInfo -> Phrase pch drn anno -> String
 outputAsLinear _gi ph = ppRender $ monoLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -178,5 +178,5 @@ outputAsLinear _gi ph = ppRender $ monoLinear lo ph
                     }
 
 printAsLinear :: (Pretty pch, Pretty drn) 
-               => GlobalRenderInfo -> Phrase pch drn anno ->  IO ()
+               => ScoreInfo -> Phrase pch drn anno ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi
