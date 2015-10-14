@@ -75,7 +75,7 @@ import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LYOut
+import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY
 import Payasan.Base.Internal.LilyPond.Utils
 
@@ -102,7 +102,7 @@ fromLilyPondWith _gi ri =
 outputAsLilyPond :: ScoreInfo -> StdChordPhrase -> String
 outputAsLilyPond gi =
     ppRender . chordmodeOutput gi 
-             . LYOut.translateDurationOnly
+             . LY.translateToOutput_DurationOnly
              . addBeams 
              . translateToBeam 
              . MONO.translateToMain 

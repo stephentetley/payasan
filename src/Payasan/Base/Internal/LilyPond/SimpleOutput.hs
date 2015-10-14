@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPond.Output
+-- Module      :  Payasan.Base.Internal.LilyPond.SimpleOutput
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,12 +15,13 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPond.Output
+module Payasan.Base.Internal.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
-  , lilyPondOutput
-
+  , simpleLyOutput
   , renderNotes
+
+
   ) where
 
 import Payasan.Base.Internal.LilyPond.Syntax
@@ -70,10 +71,10 @@ data LyOutputDef pch anno = LyOutputDef
     }
 
 
-lilyPondOutput :: LyOutputDef pch anno 
+simpleLyOutput :: LyOutputDef pch anno 
                -> ScoreInfo 
                -> GenLyPhrase pch anno -> Doc
-lilyPondOutput def info ph = 
+simpleLyOutput def info ph = 
         header 
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where

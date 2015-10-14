@@ -4,23 +4,18 @@
 module Demo03 where
 
 
-import Payasan.Base.Duration
+-- import Payasan.Base.Duration
 import Payasan.Base.Notelist
 import Payasan.Base.Pitch
 
-import Payasan.Base.Internal.LilyPond.OutTrans
-import Payasan.Base.Internal.LilyPond.Output
-import Payasan.Base.Internal.LilyPond.Syntax (fromPitchRel)
+import Payasan.Base.Internal.LilyPond.Syntax (fromPitchRel, LyPitch)
 
-import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Pitch
 
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Tabular.OutputBeam
-import Payasan.Base.Internal.Output.Tabular.OutputMain
 
 
-import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
 phrase01 :: StdPhrase 
@@ -54,12 +49,15 @@ test01,test02, test03 :: Int
 test01 = octaveCount $ Interval 9 13
 test02 = octaveCount $ Interval 1 0
 test03 = octaveCount $ Interval 8 12
+
+test04 :: Interval
 test04 = simpleIntervalOf $ Interval 8 12
 
-
+test05 :: LyPitch
 test05 = fromPitchRel c_5 fs_4
 
 test06 = beamTabular std_ly_output $ [lilypond| c4 d e fis | c' |]
 
 
+test07 :: LyPitch
 test07 = fromPitchRel e_4 ff_4

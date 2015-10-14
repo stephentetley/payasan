@@ -61,8 +61,8 @@ import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.Shell
 
-import Payasan.Base.Internal.LilyPond.InTrans
-import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LYOut
+import qualified Payasan.Base.Internal.LilyPond.InTrans     as LY
+import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY
 
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Linear.OutputMain
@@ -87,13 +87,13 @@ fromLilyPondWith :: ScoreInfo
                  -> LyDrumPhrase
                  -> StdDrumPhrase
 fromLilyPondWith _gi ri = 
-    translateToMain . translateDurationOnly . BEAM.pushContextInfo ri
+    translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushContextInfo ri
 
 
 
 outputAsLilyPond :: ScoreInfo -> StdDrumPhrase -> String
 outputAsLilyPond gi = 
-    ppRender . drumsOutput gi . LYOut.translateDurationOnly . addBeams . translateToBeam
+    ppRender . drumsOutput gi . LY.translateToOutput_DurationOnly . addBeams . translateToBeam
 
 
 

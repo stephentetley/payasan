@@ -22,7 +22,7 @@ module Payasan.LilyPond.Percussion.Internal.Output
 import Payasan.LilyPond.Percussion.Internal.Base
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.Output ( LyOutputDef(..), renderNotes )
+import Payasan.Base.Internal.LilyPond.SimpleOutput ( LyOutputDef(..), renderNotes )
 import Payasan.Base.Internal.LilyPond.Utils
 
 

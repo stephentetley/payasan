@@ -80,8 +80,8 @@ import Payasan.Base.Monophonic.Internal.TabularOutput
 import Payasan.Base.Monophonic.Internal.Transform
 import Payasan.Base.Monophonic.Internal.Traversals
 
-import Payasan.Base.Internal.LilyPond.Output (LyOutputDef(..))
-import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY
+import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
+import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.CommonSyntax
@@ -117,7 +117,7 @@ printAsABC :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsABC gi = MAIN.printAsABC gi . translateToMain
 
 
-genOutputAsLilyPond :: LyOutputDef pch anno 
+genOutputAsLilyPond :: LY.LyOutputDef pch anno 
                     -> ScoreInfo 
                     -> Phrase pch Duration anno
                     -> String
@@ -130,7 +130,7 @@ printAsLilyPond :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
 
 
-genOutputAsRhythmicMarkup :: RHY.MarkupOutput pch 
+genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo 
                           -> Phrase pch Duration anno
                           -> String

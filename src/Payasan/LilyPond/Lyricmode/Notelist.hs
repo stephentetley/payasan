@@ -45,7 +45,7 @@ import qualified Payasan.Base.Monophonic.Internal.Syntax as MONO
 import qualified Payasan.Base.Monophonic.Notelist        as MONO
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.Output (LyOutputDef(..))
+import Payasan.Base.Internal.LilyPond.SimpleOutput (LyOutputDef(..))
 import Payasan.Base.Internal.Shell
 
 

@@ -74,8 +74,9 @@ import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 import qualified Payasan.Base.Internal.LilyPond.InTrans         as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
-import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput, LyOutputDef(..))
+import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
 import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
+import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 import Payasan.Base.Internal.LilyPond.Utils
 
@@ -103,6 +104,8 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
+
 
 type StdPhrase = Phrase Pitch Duration () 
 
@@ -163,17 +166,17 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond :: ScoreInfo -> LyPhrase () -> StdPhrase 
+fromLilyPond :: ScoreInfo -> LY.LyPhrase () -> StdPhrase 
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 
-fromLilyPondWith :: ScoreInfo -> LocalContextInfo -> LyPhrase () -> StdPhrase
+fromLilyPondWith :: ScoreInfo -> LocalContextInfo -> LY.LyPhrase () -> StdPhrase
 fromLilyPondWith gi ri = 
     translateToMain . LY.translateFromInput gi . BEAM.pushContextInfo ri
 
 fromLilyPondWithIO :: ScoreInfo 
                    -> LocalContextInfo 
-                   -> LyPhrase () 
+                   -> LY.LyPhrase () 
                    -> IO StdPhrase
 fromLilyPondWithIO gi ri ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
@@ -197,47 +200,67 @@ printAsABC :: ScoreInfo -> StdPhrase -> IO ()
 printAsABC info = putStrLn . outputAsABC info
 
 
--- lilyPondPipeline :: Phrase pch Duration anno -> GenLyPhrase pch anno
--- lilyPondPipeline = LY.translateToOutput_DurationOnly . addBeams . translateToBeam
+
+data LilyPondPipeline p1 a1 p2 a2 = LilyPondPipeline
+    { beam_trafo    :: BEAM.Phrase p1 Duration a1 -> BEAM.Phrase p1 Duration a1
+    , out_trafo     :: BEAM.Phrase p1 Duration a1 -> LY.GenLyPhrase p2 a2 
+    , output_func   :: LY.GenLyPhrase p2 a2 -> Doc
+    }
 
 
+genOutputAsLilyPond_ :: LilyPondPipeline p1 a1 p2 a2
+                     -> Phrase p1 Duration a1
+                     -> String
+genOutputAsLilyPond_ config = 
+    ppRender . outputStep  
+             . toGenLyPhrase 
+             . beamingRewrite  
+             . translateToBeam
+  where
+    outputStep          = output_func config
+    toGenLyPhrase       = out_trafo config
+    beamingRewrite      = beam_trafo config
 
-genOutputAsLilyPond :: LyOutputDef pch anno 
+
+genOutputAsLilyPond :: LY.LyOutputDef pch anno 
                     -> ScoreInfo 
                     -> Phrase pch Duration anno 
                     -> String
 genOutputAsLilyPond def info = 
-    ppRender . lilyPondOutput def info
+    ppRender . LY.simpleLyOutput def info
              . LY.translateToOutput_DurationOnly
              . addBeams 
              . translateToBeam
 
 
 outputAsLilyPond :: ScoreInfo -> StdPhrase -> String
-outputAsLilyPond gi = 
-    ppRender . lilyPondOutput std_def gi
-             . LY.translateToOutput gi 
-             . addBeams 
-             . translateToBeam
+outputAsLilyPond globals = genOutputAsLilyPond_ config
   where
-    std_def = LyOutputDef { printPitch = pitch, printAnno = \_ -> empty }
+    config  = LilyPondPipeline { beam_trafo  = addBeams
+                               , out_trafo   = LY.translateToOutput globals
+                               , output_func = LY.simpleLyOutput std_def globals 
+                               }
+    std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = \_ -> empty }
 
 
 printAsLilyPond :: ScoreInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
+
+-- Rhythmic markup generally should be beamed.
+
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo
                           -> Phrase pch Duration anno 
                           -> String
 genOutputAsRhythmicMarkup def info = 
-    ppRender . lilyPondOutput ppDef info
+    ppRender . LY.simpleLyOutput ppDef info
              . LY.translateToRhythmicMarkup def
              . addBeams 
              . translateToBeam
   where
-    ppDef = LyOutputDef { printPitch = pitch, printAnno = markup }
+    ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = markup }
 
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String
