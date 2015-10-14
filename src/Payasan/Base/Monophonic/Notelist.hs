@@ -44,6 +44,7 @@ module Payasan.Base.Monophonic.Notelist
   , outputAsABC
   , printAsABC
 
+  , MAIN.LilyPondPipeline(..)
   , genOutputAsLilyPond
   , outputAsLilyPond
   , printAsLilyPond
@@ -80,7 +81,6 @@ import Payasan.Base.Monophonic.Internal.TabularOutput
 import Payasan.Base.Monophonic.Internal.Transform
 import Payasan.Base.Monophonic.Internal.Traversals
 
-import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
@@ -117,17 +117,19 @@ printAsABC :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsABC gi = MAIN.printAsABC gi . translateToMain
 
 
-genOutputAsLilyPond :: LY.LyOutputDef pch anno 
-                    -> ScoreInfo 
-                    -> Phrase pch Duration anno
+
+genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2
+                    -> Phrase p1 Duration a1
                     -> String
-genOutputAsLilyPond def gi = MAIN.genOutputAsLilyPond def gi . translateToMain
+genOutputAsLilyPond config = MAIN.genOutputAsLilyPond config . translateToMain
 
 outputAsLilyPond :: ScoreInfo -> StdMonoPhrase -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
 
 printAsLilyPond :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
+
+
 
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
@@ -141,6 +143,8 @@ outputAsRhythmicMarkup gi = MAIN.outputAsRhythmicMarkup gi . translateToMain
 
 printAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> IO ()
 printAsRhythmicMarkup gi = MAIN.printAsRhythmicMarkup gi . translateToMain
+
+
 
 
 ppRender :: Doc -> String

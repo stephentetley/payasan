@@ -29,11 +29,11 @@ locals = default_local_info
 
 
 
-demo01 :: IO ()
-demo01 = printAsLilyPond globals phrase01
-
-
+demo01  :: IO ()
+demo01 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01
+demo02 = printAsLilyPond globals phrase01
+
+
 

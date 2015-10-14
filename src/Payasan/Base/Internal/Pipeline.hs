@@ -44,6 +44,7 @@ module Payasan.Base.Internal.Pipeline
   , outputAsABC
   , printAsABC
 
+  , LilyPondPipeline(..)
   , genOutputAsLilyPond
   , outputAsLilyPond
   , printAsLilyPond
@@ -208,10 +209,10 @@ data LilyPondPipeline p1 a1 p2 a2 = LilyPondPipeline
     }
 
 
-genOutputAsLilyPond_ :: LilyPondPipeline p1 a1 p2 a2
-                     -> Phrase p1 Duration a1
-                     -> String
-genOutputAsLilyPond_ config = 
+genOutputAsLilyPond :: LilyPondPipeline p1 a1 p2 a2
+                    -> Phrase p1 Duration a1
+                    -> String
+genOutputAsLilyPond config = 
     ppRender . outputStep  
              . toGenLyPhrase 
              . beamingRewrite  
@@ -222,19 +223,8 @@ genOutputAsLilyPond_ config =
     beamingRewrite      = beam_trafo config
 
 
-genOutputAsLilyPond :: LY.LyOutputDef pch anno 
-                    -> ScoreInfo 
-                    -> Phrase pch Duration anno 
-                    -> String
-genOutputAsLilyPond def info = 
-    ppRender . LY.simpleLyOutput def info
-             . LY.translateToOutput_DurationOnly
-             . addBeams 
-             . translateToBeam
-
-
 outputAsLilyPond :: ScoreInfo -> StdPhrase -> String
-outputAsLilyPond globals = genOutputAsLilyPond_ config
+outputAsLilyPond globals = genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
                                , out_trafo   = LY.translateToOutput globals

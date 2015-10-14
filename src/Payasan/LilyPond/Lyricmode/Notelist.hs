@@ -39,36 +39,45 @@ module Payasan.LilyPond.Lyricmode.Notelist
   ) where
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
+import Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Parser
 
 import qualified Payasan.Base.Monophonic.Internal.Syntax as MONO
 import qualified Payasan.Base.Monophonic.Notelist        as MONO
 
+import qualified Payasan.Base.Internal.LilyPond.OutTrans as LY
+
+import Payasan.Base.Internal.AddBeams (noBeams)
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.SimpleOutput (LyOutputDef(..))
 import Payasan.Base.Internal.Shell
 
 
-import Text.PrettyPrint.HughesPJClass           -- package: pretty
+-- import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
 fromLilyPond :: ScoreInfo -> LyLyricPhrase -> StdLyricPhrase
-fromLilyPond gi = fromLilyPondWith gi default_local_info
+fromLilyPond globals = fromLilyPondWith globals default_local_info
 
 fromLilyPondWith :: ScoreInfo 
                  -> LocalContextInfo 
                  -> LyLyricPhrase
                  -> StdLyricPhrase
-fromLilyPondWith gi ri = inTrans gi . MONO.pushContextInfo ri
+fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals
 
 
 -- This should not beam...
 --
 outputAsLilyPond :: ScoreInfo -> StdLyricPhrase -> String
-outputAsLilyPond gi = MONO.genOutputAsLilyPond def gi
-  where 
-    def = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
+outputAsLilyPond globals = MONO.genOutputAsLilyPond config
+  where
+    config  = MONO.LilyPondPipeline 
+                { MONO.beam_trafo  = noBeams
+                , MONO.out_trafo   = LY.translateToOutput_DurationOnly
+                , MONO.output_func = lyricsOutput globals
+                }
+
+
 
 printAsLilyPond :: ScoreInfo -> StdLyricPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

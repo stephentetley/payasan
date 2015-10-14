@@ -19,8 +19,8 @@ module Payasan.Base.Internal.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
   , simpleLyOutput
-  , renderNotes
 
+  , renderNotes
 
   ) where
 

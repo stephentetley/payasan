@@ -18,6 +18,7 @@
 module Payasan.Base.Internal.AddBeams
   (
     addBeams
+  , noBeams
   ) where
 
 
@@ -39,6 +40,13 @@ beamBar (Bar info cs) =
     let mpat  = local_meter_patn info
         segs1 = detachExtremities $ singleout $ segment mpat cs
     in Bar info $ beamSegments segs1
+
+
+noBeams :: Phrase pch Duration anno -> Phrase pch Duration anno
+noBeams = id
+
+
+
 
 
 
