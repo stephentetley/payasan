@@ -89,11 +89,16 @@ oHeader globals =
         version (global_ly_version globals)
     $+$ block (Just $ command "header") (title $ global_title globals)
 
+
+-- TODO - note appropriate for RhythmicStaff etc.
+--
 oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = 
         key   (local_key locals)
     $+$ meter (local_meter locals)
 
+-- TODO - note appropriate for RhythmicStaff etc.
+--
 octaveModeBlock :: OctaveMode -> Doc -> Doc
 octaveModeBlock (AbsPitch)   d  = absolute $+$ d
 octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d

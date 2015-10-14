@@ -19,12 +19,12 @@
 module Payasan.Base.Internal.LilyPond.RhythmicMarkup
   (
     MarkupOutput(..)
-  , translate
+  , translateToRhythmicMarkup
   ) where
 
 
 
-import Payasan.Base.Internal.LilyPond.OutTrans hiding ( translate )
+import Payasan.Base.Internal.LilyPond.OutTrans
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
@@ -37,11 +37,11 @@ import Payasan.Base.Duration
 data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Markup }
 
 
-translate :: MarkupOutput pch
-          -> Phrase pch Duration anno 
-          -> Phrase LyPitch LyNoteLength Markup
-translate mo = 
-    transformPA (markup_algo mo) . translateDurationOnly
+translateToRhythmicMarkup :: MarkupOutput pch
+                          -> Phrase pch Duration anno 
+                          -> Phrase LyPitch LyNoteLength Markup
+translateToRhythmicMarkup mo = 
+    transformPA (markup_algo mo) . translateToOutput_DurationOnly
 
 
 

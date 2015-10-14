@@ -17,8 +17,8 @@
 
 module Payasan.Base.Internal.LilyPond.OutTrans
   (
-    translate
-  , translateDurationOnly
+    translateToOutput
+  , translateToOutput_DurationOnly
   ) where
 
 
@@ -35,10 +35,10 @@ import Payasan.Base.Pitch
 
 
 
-translate :: ScoreInfo 
-          -> Phrase Pitch Duration anno 
-          -> Phrase LyPitch LyNoteLength anno
-translate info = pitchTrafo . transformD drn_algo
+translateToOutput :: ScoreInfo 
+                  -> Phrase Pitch Duration anno 
+                  -> Phrase LyPitch LyNoteLength anno
+translateToOutput info = pitchTrafo . transformD drn_algo
   where
     -- If AbsPitch then /previous pitch/ will never be used
     pitchTrafo = case global_ly_octave_mode info of
@@ -47,9 +47,9 @@ translate info = pitchTrafo . transformD drn_algo
 
 
 
-translateDurationOnly :: Phrase pch Duration anno 
-                      -> Phrase pch LyNoteLength anno
-translateDurationOnly = transformD drn_algo
+translateToOutput_DurationOnly :: Phrase pch Duration anno 
+                               -> Phrase pch LyNoteLength anno
+translateToOutput_DurationOnly = transformD drn_algo
 
 type DMon    a      = Mon Duration a
 type RelPMon a      = Mon Pitch a

@@ -17,7 +17,7 @@
 
 module Payasan.Base.Internal.ABC.OutTrans
   (
-    translate
+    translateToOutput
   ) where
 
 
@@ -38,9 +38,9 @@ import Payasan.Base.Pitch
 
 
 
-translate :: Phrase Pitch Duration anno 
-          -> Phrase ABCPitch ABCNoteLength anno
-translate = transformP pch_algo . transformD drn_algo
+translateToOutput :: Phrase Pitch Duration anno 
+                  -> Phrase ABCPitch ABCNoteLength anno
+translateToOutput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a
 type DTMon a = Mon UnitNoteLength a

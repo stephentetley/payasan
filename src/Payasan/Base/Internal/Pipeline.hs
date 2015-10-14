@@ -65,15 +65,15 @@ module Payasan.Base.Internal.Pipeline
 
   ) where
 
-import qualified Payasan.Base.Internal.ABC.InTrans          as ABCIn
-import qualified Payasan.Base.Internal.ABC.OutTrans         as ABCOut
+import qualified Payasan.Base.Internal.ABC.InTrans          as ABC
+import qualified Payasan.Base.Internal.ABC.OutTrans         as ABC
 import Payasan.Base.Internal.ABC.Output (abcOutput)
 import Payasan.Base.Internal.ABC.Parser (abc)
 import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
 
-import qualified Payasan.Base.Internal.LilyPond.InTrans         as LYIn
-import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY
-import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LYOut
+import qualified Payasan.Base.Internal.LilyPond.InTrans         as LY
+import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
+import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 import Payasan.Base.Internal.LilyPond.Output (lilyPondOutput, LyOutputDef(..))
 import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
@@ -148,7 +148,7 @@ fromABC :: ABCPhrase -> StdPhrase
 fromABC = fromABCWith default_local_info
 
 fromABCWith :: LocalContextInfo -> ABCPhrase -> StdPhrase
-fromABCWith locals = translateToMain . ABCIn.translate . BEAM.pushContextInfo locals
+fromABCWith locals = translateToMain . ABC.translateFromInput . BEAM.pushContextInfo locals
 
 
 fromABCWithIO :: LocalContextInfo -> ABCPhrase -> IO StdPhrase
@@ -156,7 +156,7 @@ fromABCWithIO locals ph =
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
     body = do { ph1 <- debug (beamTabular std_abc_output) $ BEAM.pushContextInfo locals ph
-              ; ph2 <- debug (beamTabular pitch_duration_output) $ ABCIn.translate ph1
+              ; ph2 <- debug (beamTabular pitch_duration_output) $ ABC.translateFromInput ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
               }
@@ -169,7 +169,7 @@ fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 fromLilyPondWith :: ScoreInfo -> LocalContextInfo -> LyPhrase () -> StdPhrase
 fromLilyPondWith gi ri = 
-    translateToMain . LYIn.translate gi . BEAM.pushContextInfo ri
+    translateToMain . LY.translateFromInput gi . BEAM.pushContextInfo ri
 
 fromLilyPondWithIO :: ScoreInfo 
                    -> LocalContextInfo 
@@ -179,7 +179,7 @@ fromLilyPondWithIO gi ri ph =
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
     body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushContextInfo ri ph
-              ; ph2 <- debug (beamTabular pitch_duration_output) $ LYIn.translate gi ph1
+              ; ph2 <- debug (beamTabular pitch_duration_output) $ LY.translateFromInput gi ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
               }
@@ -189,12 +189,18 @@ fromLilyPondWithIO gi ri ph =
 outputAsABC :: ScoreInfo -> StdPhrase -> String
 outputAsABC info = 
     ppRender . abcOutput info 
-             . ABCOut.translate
+             . ABC.translateToOutput
              . addBeams 
              . translateToBeam
 
 printAsABC :: ScoreInfo -> StdPhrase -> IO ()
 printAsABC info = putStrLn . outputAsABC info
+
+
+-- lilyPondPipeline :: Phrase pch Duration anno -> GenLyPhrase pch anno
+-- lilyPondPipeline = LY.translateToOutput_DurationOnly . addBeams . translateToBeam
+
+
 
 genOutputAsLilyPond :: LyOutputDef pch anno 
                     -> ScoreInfo 
@@ -202,7 +208,7 @@ genOutputAsLilyPond :: LyOutputDef pch anno
                     -> String
 genOutputAsLilyPond def info = 
     ppRender . lilyPondOutput def info
-             . LYOut.translateDurationOnly
+             . LY.translateToOutput_DurationOnly
              . addBeams 
              . translateToBeam
 
@@ -210,7 +216,7 @@ genOutputAsLilyPond def info =
 outputAsLilyPond :: ScoreInfo -> StdPhrase -> String
 outputAsLilyPond gi = 
     ppRender . lilyPondOutput std_def gi
-             . LYOut.translate gi 
+             . LY.translateToOutput gi 
              . addBeams 
              . translateToBeam
   where
@@ -221,13 +227,13 @@ printAsLilyPond :: ScoreInfo -> StdPhrase -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
-genOutputAsRhythmicMarkup :: RHY.MarkupOutput pch 
+genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo
                           -> Phrase pch Duration anno 
                           -> String
 genOutputAsRhythmicMarkup def info = 
     ppRender . lilyPondOutput ppDef info
-             . RHY.translate def
+             . LY.translateToRhythmicMarkup def
              . addBeams 
              . translateToBeam
   where
@@ -237,7 +243,7 @@ genOutputAsRhythmicMarkup def info =
 outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String
 outputAsRhythmicMarkup gi = genOutputAsRhythmicMarkup def gi
   where
-    def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
+    def = LY.MarkupOutput { LY.asMarkup = \p -> tiny (braces $ pPrint p) }
 
 
 printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()
