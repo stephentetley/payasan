@@ -20,18 +20,27 @@ module Payasan.Base.Internal.LilyPond.RhythmicMarkup
   (
     MarkupOutput(..)
   , translateToRhythmicMarkup
+
+  , rhythmicMarkupOutput
+
   ) where
 
 
 
 import Payasan.Base.Internal.LilyPond.OutTrans
+import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
+import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Duration
+
+
+import Text.PrettyPrint.HughesPJ        -- package: pretty
+
 
 
 data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Markup }
@@ -56,9 +65,6 @@ markup_algo mo = BeamPitchAnnoAlgo
     }
 
 
-
-
-
 elementPA :: forall pch drn anno. 
              MarkupOutput pch 
           -> Element pch drn anno 
@@ -79,4 +85,43 @@ elementPA mo elt = case elt of
 
     markupPA :: Note pch drn -> Markup
     markupPA (Note pch _)       = markupF pch
+
+
+--------------------------------------------------------------------------------
+-- Output
+
+rhythmicMarkupOutput :: LyOutputDef pch anno 
+                     -> ScoreInfo 
+                     -> GenLyPhrase pch anno -> Doc
+rhythmicMarkupOutput def info ph =
+        header
+    $+$ simultaneous1 (block (Just rhythmic_staff) 
+                             (modeBlockF $ (notes_header $+$ notes)))
+  where
+    local1          = maybe default_local_info id $ firstContextInfo ph
+    header          = oHeader info
+    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
+    rhythmic_staff  = command "new" <+> text "RhythmicStaff"
+    notes_header    = oPhraseHeader local1
+    notes           = renderNotes def ph
+
+
+oHeader :: ScoreInfo -> Doc
+oHeader globals = 
+        version (global_ly_version globals)
+    $+$ block (Just $ command "header") (title $ global_title globals)
+
+
+-- TODO - note appropriate for RhythmicStaff etc.
+--
+oPhraseHeader :: LocalContextInfo -> Doc
+oPhraseHeader locals = 
+        key   (local_key locals)
+    $+$ meter (local_meter locals)
+
+-- TODO - note appropriate for RhythmicStaff etc.
+--
+octaveModeBlock :: OctaveMode -> Doc -> Doc
+octaveModeBlock (AbsPitch)   d  = absolute $+$ d
+octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
 

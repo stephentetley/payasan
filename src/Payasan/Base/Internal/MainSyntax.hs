@@ -70,6 +70,9 @@ data NoteGroup pch drn anno =
 -- See old Neume code. 
 --
 -- Punctuation is for LilyPond only (may change).
+-- 
+-- TODO - skip and rest have different interpretations in LilyPond
+-- they need to be differentiated.
 --
 data Element pch drn anno = 
       NoteElem      (Note pch drn) anno

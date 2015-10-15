@@ -21,6 +21,7 @@ module Payasan.Base.Internal.LilyPond.Utils
     Markup
   , markup
   , tiny
+  , teeny
 
   -- * pretty printers 
   , vsep
@@ -74,6 +75,9 @@ instance Monoid Markup where
 
 tiny :: Doc -> Markup 
 tiny d = Markup $ command "tiny" <+> d
+
+teeny :: Doc -> Markup 
+teeny d = Markup $ command "teeny" <+> d
 
 
 --------------------------------------------------------------------------------

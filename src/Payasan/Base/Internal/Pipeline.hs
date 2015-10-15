@@ -249,7 +249,7 @@ genOutputAsRhythmicMarkup :: LY.MarkupOutput pch
                           -> Phrase pch Duration anno 
                           -> String
 genOutputAsRhythmicMarkup def info = 
-    ppRender . LY.simpleLyOutput ppDef info
+    ppRender . LY.rhythmicMarkupOutput ppDef info
              . LY.translateToRhythmicMarkup def
              . addBeams 
              . translateToBeam
@@ -260,7 +260,7 @@ genOutputAsRhythmicMarkup def info =
 outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String
 outputAsRhythmicMarkup gi = genOutputAsRhythmicMarkup def gi
   where
-    def = LY.MarkupOutput { LY.asMarkup = \p -> tiny (braces $ pPrint p) }
+    def = LY.MarkupOutput { LY.asMarkup = \p -> teeny (braces $ pPrint p) }
 
 
 printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()

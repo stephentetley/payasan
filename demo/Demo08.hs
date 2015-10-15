@@ -36,13 +36,16 @@ locals = default_local_info
 
 
 dia01 :: FretDiagram
-dia01 = pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
+dia01 = pushName "chordX" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
+
+dia02 :: FretDiagram
+dia02 = pushName "chordY" $ [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
 
 
 demo01 :: IO ()
-demo01 = shellOutLilyPond globals $ outputAsLilyPond globals [dia01] $ 
+demo01 = shellOutLilyPond globals $ outputAsLilyPond globals [dia01,dia02] $ 
     fromNoteList locals standard_tuning [ [ chord dia01 d_whole ]
-                                        , [ chord dia01 d_whole ] ]
+                                        , [ chord dia02 d_whole ] ]
 
 
 temp01 :: IO ()
