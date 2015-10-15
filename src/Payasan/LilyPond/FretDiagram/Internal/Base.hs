@@ -18,7 +18,8 @@
 module Payasan.LilyPond.FretDiagram.Internal.Base
   ( 
 
-    FretDiagram(..)
+    FretDiagramPhrase
+  , FretDiagram(..)
   , FretDiagramRef(..)
   , Fingering(..)
   , BarreIndicator(..)
@@ -34,6 +35,9 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.LilyPond.Utils (command)
+import Payasan.Base.Monophonic.Internal.Syntax (Phrase)
+
+import Payasan.Base.Duration
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 
@@ -42,6 +46,8 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 import Data.List (sortBy)
 
+
+type FretDiagramPhrase = Phrase [Pitch] Duration FretDiagramRef
 
 
 data FretDiagram = FretDiagram

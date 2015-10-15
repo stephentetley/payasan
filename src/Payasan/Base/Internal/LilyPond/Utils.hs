@@ -23,6 +23,8 @@ module Payasan.Base.Internal.LilyPond.Utils
   , tiny
 
   -- * pretty printers 
+  , vsep
+
   , command
   , block 
   , definition
@@ -43,6 +45,9 @@ module Payasan.Base.Internal.LilyPond.Utils
   , beamForm
   , chordForm
   , graceForm
+
+  , simultaneous1
+  , simultaneous
  
   ) where
 
@@ -74,6 +79,11 @@ tiny d = Markup $ command "tiny" <+> d
 --------------------------------------------------------------------------------
 -- Pretty printing helpers
 
+
+vsep :: [Doc] -> Doc
+vsep []     = empty
+vsep [d]    = d
+vsep (d:ds) = d $+$ vsep ds
 
 command :: String -> Doc
 command = text . ('\\' :)
@@ -180,3 +190,14 @@ graceForm ds = command "grace" <+> braces (hsep ds)
 beamForm :: [Doc] -> Doc
 beamForm (d:ds) = d <> char '[' <> hsep ds <> char ']'
 beamForm []     = empty
+
+
+simultaneous1 :: Doc -> Doc
+simultaneous1 d = text "<<" $+$ d $+$ text ">>"
+
+simultaneous :: [Doc] -> Doc
+simultaneous xs = text "<<" $+$ step xs $+$ text ">>"
+  where
+    step [d]    = d   
+    step (d:ds) = d $+$ text "//" $+$ step ds
+    step []     = empty

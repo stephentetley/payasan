@@ -37,7 +37,6 @@ import Payasan.Base.Pitch
 -- Use Monophonic syntax or not? - Initially do, see what happens...
 
 
-type FretDiagramPhrase = Phrase [Pitch] Duration FretDiagramRef
 
 type NoteListAtom = NoteGroup FretDiagram Duration ()
 

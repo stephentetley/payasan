@@ -3,10 +3,9 @@
 
 module Demo08 where
 
-import Payasan.LilyPond.FretDiagram.Internal.Base
-import Payasan.LilyPond.FretDiagram.Internal.Interpret
-import Payasan.LilyPond.FretDiagram.Internal.Parser
-import Payasan.LilyPond.FretDiagram.Top
+import Payasan.LilyPond.FretDiagram.Notelist
+
+import Payasan.LilyPond.FretDiagram.Internal.Interpret  -- TEMP
 
 import qualified Payasan.Base.Monophonic.Notelist as MONO
 import qualified Payasan.Base.Monophonic.Internal.Plain as MONO
@@ -18,7 +17,6 @@ import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Internal.Base 
 
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
@@ -36,19 +34,23 @@ locals :: LocalContextInfo
 locals = default_local_info
 
 
-test01 = pPrint $ [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
-test02 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
-test03 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
 
+dia01 :: FretDiagram
 dia01 = pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
 
 
 demo01 :: IO ()
-demo01 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
+demo01 = shellOutLilyPond globals $ outputAsLilyPond globals [dia01] $ 
+    fromNoteList locals standard_tuning [ [ chord dia01 d_whole ]
+                                        , [ chord dia01 d_whole ] ]
+
+
+temp01 :: IO ()
+temp01 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ standard_tuning
 
-demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
+temp02 :: IO ()
+temp02 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where
     pitches :: [Pitch]
@@ -56,10 +58,12 @@ demo02 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $
                 [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
 
 
-demo03 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
-    fromNoteList locals standard_tuning [[ chord dia01 d_whole ]]
+test01 = pPrint $ [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
+test02 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
+test03 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
 
--- This shows error in transposeWithDiatonicInterval ** NOW FIXED
+
+-- This was showing an error in transposeWithDiatonicInterval ** NOW FIXED
 --
 test04 :: IO ()
 test04 = MONO.shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
