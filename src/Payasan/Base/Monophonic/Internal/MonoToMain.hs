@@ -52,7 +52,7 @@ translateToMain = phraseT
     elementT :: Element pch drn anno -> T.Element pch drn anno
     elementT (Note p d a)           = T.NoteElem (T.Note p d) a
     elementT (Rest d)               = T.Rest d
-    elementT (Punctuation d)        = T.Punctuation d
+    elementT (Punctuation s)        = T.Punctuation s
 
 
 

@@ -18,6 +18,7 @@ module Payasan.Base.Internal.Pipeline
   ( 
 
     StdPhrase
+  , StdPhraseAnno
 
   , ABCPhrase           -- * re-export
   , abc                 -- * re-export
@@ -86,18 +87,20 @@ import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
 import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
+import Payasan.Base.Internal.Output.Common
+import Payasan.Base.Internal.Output.Tabular.OutputBeam
+import Payasan.Base.Internal.Output.Tabular.OutputMain
+import Payasan.Base.Internal.Output.Linear.OutputMain
+
 
 import Payasan.Base.Internal.AddBeams
+import Payasan.Base.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
 import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.MainSyntax
 
-import Payasan.Base.Internal.Output.Common
-import Payasan.Base.Internal.Output.Tabular.OutputBeam
-import Payasan.Base.Internal.Output.Tabular.OutputMain
-import Payasan.Base.Internal.Output.Linear.OutputMain
 
 
 
@@ -108,7 +111,8 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-type StdPhrase = Phrase Pitch Duration () 
+type StdPhrase          = Phrase Pitch Duration () 
+type StdPhraseAnno anno = Phrase Pitch Duration anno
 
 
 --------------------------------------------------------------------------------
@@ -223,17 +227,17 @@ genOutputAsLilyPond config =
     beamingRewrite      = beam_trafo config
 
 
-outputAsLilyPond :: ScoreInfo -> StdPhrase -> String
+outputAsLilyPond :: Anno anno => ScoreInfo -> StdPhraseAnno anno -> String
 outputAsLilyPond globals = genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
                                , out_trafo   = LY.translateToOutput globals
                                , output_func = LY.simpleLyOutput std_def globals 
                                }
-    std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = \_ -> empty }
+    std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = anno }
 
 
-printAsLilyPond :: ScoreInfo -> StdPhrase -> IO ()
+printAsLilyPond :: Anno anno => ScoreInfo -> StdPhraseAnno anno -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 

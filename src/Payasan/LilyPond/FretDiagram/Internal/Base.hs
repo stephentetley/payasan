@@ -18,7 +18,8 @@
 module Payasan.LilyPond.FretDiagram.Internal.Base
   ( 
 
-    FretBoard(..)
+    FretDiagram(..)
+  , FretDiagramRef(..)
   , Fingering(..)
   , BarreIndicator(..)
   , StringNumber
@@ -31,6 +32,8 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
   ) where
 
+import Payasan.Base.Internal.Base
+import Payasan.Base.Internal.LilyPond.Utils (command)
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 
@@ -39,11 +42,16 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 import Data.List (sortBy)
 
-data FretBoard = FretBoard
-     { fretboard_name           :: String
-     , fretboard_opt_barre      :: Maybe BarreIndicator
-     , fretboard_fingerings     :: [Fingering]
+
+
+data FretDiagram = FretDiagram
+     { fd_name           :: !String
+     , fd_opt_barre      :: Maybe BarreIndicator
+     , fd_fingerings     :: [Fingering]
      }
+  deriving (Data,Eq,Show,Typeable)
+
+data FretDiagramRef = FretDiagramRef { ref_name :: !String }
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -68,8 +76,8 @@ data FretNumber = OPEN | MUTED | FretNumber !Int
 
 
 
-pushName :: String -> FretBoard -> FretBoard
-pushName ss a = a { fretboard_name  = ss }
+pushName :: String -> FretDiagram -> FretDiagram
+pushName ss a = a { fd_name  = ss }
 
 
 -- Sorted list - low to high strings
@@ -86,15 +94,20 @@ descSort = sortBy fn
     fn a b | fingering_string a < fingering_string b   = GT
            | otherwise                                 = LT
 
-instance Pretty FretBoard where
-  pPrint (FretBoard { fretboard_opt_barre   = barre
-                    , fretboard_fingerings  = xs }) = 
-    let rest = cat $ map pPrint $ descSort xs
-    in case barre of 
-        Just b -> pPrint b <> rest
-        Nothing -> rest
+instance Pretty FretDiagram where
+  pPrint (FretDiagram { fd_opt_barre   = barre
+                      , fd_fingerings  = xs }) = 
+      command "fret-diagram" <+> char '#' <> doubleQuotes body
+    where
+      strings = cat $ map pPrint $ descSort xs
+      body    = case barre of { Just b -> pPrint b <> strings
+                              ; Nothing -> strings }
       
  
+instance Pretty FretDiagramRef where
+  pPrint (FretDiagramRef s) = char '^' <> command s
+
+instance Anno FretDiagramRef where anno = pPrint
 
 instance Pretty Fingering where
   pPrint (Fingering { fingering_string = s

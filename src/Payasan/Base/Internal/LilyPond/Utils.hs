@@ -171,7 +171,7 @@ duration d = let (root,dc) = lilyPondComponents d
 
 
 chordForm :: [Doc] -> Doc
-chordForm ds = char '<' <> hcat ds <> char '>'
+chordForm ds = char '<' <> hsep ds <> char '>'
 
 graceForm :: [Doc] -> Doc
 graceForm ds = command "grace" <+> braces (hsep ds)

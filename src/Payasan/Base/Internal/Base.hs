@@ -24,10 +24,15 @@ module Payasan.Base.Internal.Base
 
   , PitchOrd(..)
 
+  , Anno(..)
+
   )  where
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Fixed
+
+
 
 type Decimal = Fixed E9
 
@@ -42,3 +47,8 @@ class PitchOrd a where
   equivalent :: a -> a -> Bool
   isHigher   :: a -> a -> Bool
   isLower    :: a -> a -> Bool
+
+
+class Anno a where anno :: a -> Doc
+
+instance Anno () where anno = const empty

@@ -31,13 +31,13 @@ import Text.Parsec                              -- package: parsec
 
 import Language.Haskell.TH.Quote
 
--- Syntax is markup - not phrases.
 
+-- Syntax is markup - not phrases.
 
 
 fret_diagram :: QuasiQuoter
 fret_diagram = QuasiQuoter
-    { quoteExp = \s -> case parseFretBoard s of
+    { quoteExp = \s -> case parseFretDiagram s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -47,13 +47,13 @@ fret_diagram = QuasiQuoter
 
 
 
-parseFretBoard :: String -> Either ParseError FretBoard
-parseFretBoard = runParser (fullInputParse fretBoard) () ""
+parseFretDiagram :: String -> Either ParseError FretDiagram
+parseFretDiagram = runParser (fullInputParse fretDiagram) () ""
 
-fretBoard :: LyParser FretBoard
-fretBoard = (\a b -> FretBoard { fretboard_name       = ""
-                               , fretboard_opt_barre  = a 
-                               , fretboard_fingerings = b }) 
+fretDiagram :: LyParser FretDiagram
+fretDiagram = (\a b -> FretDiagram { fd_name       = ""
+                                   , fd_opt_barre  = a 
+                                   , fd_fingerings = b }) 
           <$> (whiteSpace *> optionMaybe barre) <*> many1 fingering
 
 fingering :: LyParser Fingering
