@@ -20,6 +20,10 @@ module Payasan.Base.Internal.LilyPond.Utils
   -- * Output
     Markup
   , markup
+  , huge
+  , large
+  , normalSize
+  , small
   , tiny
   , teeny
 
@@ -28,6 +32,8 @@ module Payasan.Base.Internal.LilyPond.Utils
 
   , command
   , block 
+  , simultaneous1
+  , simultaneous
   , definition
 
   , version
@@ -47,8 +53,6 @@ module Payasan.Base.Internal.LilyPond.Utils
   , chordForm
   , graceForm
 
-  , simultaneous1
-  , simultaneous
  
   ) where
 
@@ -72,12 +76,24 @@ instance Monoid Markup where
   a `mappend` b = Markup $ getMarkup a <> getMarkup b
 
 
+huge            :: Doc -> Markup 
+huge d          = Markup $ command "huge" <+> d
 
-tiny :: Doc -> Markup 
-tiny d = Markup $ command "tiny" <+> d
+large           :: Doc -> Markup 
+large d         = Markup $ command "large" <+> d
 
-teeny :: Doc -> Markup 
-teeny d = Markup $ command "teeny" <+> d
+normalSize      :: Doc -> Markup 
+normalSize d    = Markup $ command "normalSize" <+> d
+
+small           :: Doc -> Markup 
+small d         = Markup $ command "small" <+> d
+
+
+tiny            :: Doc -> Markup 
+tiny d          = Markup $ command "tiny" <+> d
+
+teeny           :: Doc -> Markup 
+teeny d         = Markup $ command "teeny" <+> d
 
 
 --------------------------------------------------------------------------------
@@ -96,6 +112,18 @@ block :: Maybe Doc -> Doc -> Doc
 block prefix body = maybe inner (\d -> d <+> inner) prefix
   where
     inner = let d1 = nest 2 body in lbrace $+$ d1 $+$ rbrace
+
+
+simultaneous1 :: Doc -> Doc
+simultaneous1 d = text "<<" $+$ d $+$ text ">>"
+
+simultaneous :: [Doc] -> Doc
+simultaneous xs = text "<<" $+$ step xs $+$ text ">>"
+  where
+    step [d]    = d   
+    step (d:ds) = d $+$ text "//" $+$ step ds
+    step []     = empty
+
 
 definition :: String -> Doc -> Doc 
 definition ss d = text ss <+> char '=' <+> doubleQuotes d
@@ -196,12 +224,3 @@ beamForm (d:ds) = d <> char '[' <> hsep ds <> char ']'
 beamForm []     = empty
 
 
-simultaneous1 :: Doc -> Doc
-simultaneous1 d = text "<<" $+$ d $+$ text ">>"
-
-simultaneous :: [Doc] -> Doc
-simultaneous xs = text "<<" $+$ step xs $+$ text ">>"
-  where
-    step [d]    = d   
-    step (d:ds) = d $+$ text "//" $+$ step ds
-    step []     = empty

@@ -92,7 +92,7 @@ fromLilyPondWith _gi ri =
 
 
 outputAsLilyPond :: ScoreInfo -> StdDrumPhrase -> String
-outputAsLilyPond globals = MAIN.genOutputAsLilyPond config
+outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams

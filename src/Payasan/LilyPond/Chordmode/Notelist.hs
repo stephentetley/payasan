@@ -71,7 +71,6 @@ import qualified Payasan.Base.Monophonic.Notelist               as MONO
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.MainSyntax as MAIN
-import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
 
@@ -100,14 +99,16 @@ fromLilyPondWith _gi ri =
 
 
 outputAsLilyPond :: ScoreInfo -> StdChordPhrase -> String
-outputAsLilyPond gi =
-    ppRender . chordmodeOutput gi 
-             . LY.translateToOutput_DurationOnly
-             . addBeams 
-             . translateToBeam 
-             . MONO.translateToMain 
-             . translateOutput
-
+outputAsLilyPond globals = 
+    MAIN.ppRender . MAIN.genOutputAsLilyPond config  
+                  . MONO.translateToMain 
+                  . translateOutput
+  where
+    config  = MAIN.LilyPondPipeline 
+                { MAIN.beam_trafo  = addBeams
+                , MAIN.out_trafo   = LY.translateToOutput_DurationOnly
+                , MAIN.output_func = chordmodeOutput globals 
+                }
 
 
 printAsLilyPond :: ScoreInfo -> StdChordPhrase -> IO ()
@@ -115,7 +116,8 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> String
-outputAsRhythmicMarkup gi = MONO.genOutputAsRhythmicMarkup def gi
+outputAsRhythmicMarkup globals = 
+    MAIN.ppRender . MONO.genOutputAsRhythmicMarkup def globals
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
 

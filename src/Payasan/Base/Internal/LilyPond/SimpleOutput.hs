@@ -18,7 +18,7 @@
 module Payasan.Base.Internal.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
-  , simpleLyOutput
+  , simpleScoreOutput
 
   , renderNotes
 
@@ -71,10 +71,11 @@ data LyOutputDef pch anno = LyOutputDef
     }
 
 
-simpleLyOutput :: LyOutputDef pch anno 
-               -> ScoreInfo 
-               -> GenLyPhrase pch anno -> Doc
-simpleLyOutput def info ph = 
+
+simpleScoreOutput :: LyOutputDef pch anno 
+                  -> ScoreInfo 
+                  -> GenLyPhrase pch anno -> Doc
+simpleScoreOutput def info ph = 
         header 
     $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
   where

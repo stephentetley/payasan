@@ -42,13 +42,14 @@ import Payasan.LilyPond.Lyricmode.Internal.Base
 import Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Parser
 
-import qualified Payasan.Base.Monophonic.Internal.Syntax as MONO
-import qualified Payasan.Base.Monophonic.Notelist        as MONO
+import qualified Payasan.Base.Monophonic.Internal.Syntax    as MONO
+import qualified Payasan.Base.Monophonic.Notelist           as MONO
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans as LY
+import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY
 
 import Payasan.Base.Internal.AddBeams (noBeams)
 import Payasan.Base.Internal.CommonSyntax
+import qualified Payasan.Base.Internal.Pipeline             as MAIN
 import Payasan.Base.Internal.Shell
 
 
@@ -67,9 +68,10 @@ fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals
 
 
 -- This should not beam...
+-- Ideally print two simultaneous interpretations...
 --
 outputAsLilyPond :: ScoreInfo -> StdLyricPhrase -> String
-outputAsLilyPond globals = MONO.genOutputAsLilyPond config
+outputAsLilyPond globals = MAIN.ppRender . MONO.genOutputAsLilyPond config
   where
     config  = MONO.LilyPondPipeline 
                 { MONO.beam_trafo  = noBeams

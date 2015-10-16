@@ -205,7 +205,12 @@ printAsABC :: ScoreInfo -> StdPhrase -> IO ()
 printAsABC info = putStrLn . outputAsABC info
 
 
-
+-- | This can capture both full score output and just notelist 
+-- output by supplying the appropriate output function.
+--
+-- Libraries should define two output functions when appropriate:
+-- one for full score and one for just notelist.
+--
 data LilyPondPipeline p1 a1 p2 a2 = LilyPondPipeline
     { beam_trafo    :: BEAM.Phrase p1 Duration a1 -> BEAM.Phrase p1 Duration a1
     , out_trafo     :: BEAM.Phrase p1 Duration a1 -> LY.GenLyPhrase p2 a2 
@@ -215,12 +220,9 @@ data LilyPondPipeline p1 a1 p2 a2 = LilyPondPipeline
 
 genOutputAsLilyPond :: LilyPondPipeline p1 a1 p2 a2
                     -> Phrase p1 Duration a1
-                    -> String
+                    -> Doc
 genOutputAsLilyPond config = 
-    ppRender . outputStep  
-             . toGenLyPhrase 
-             . beamingRewrite  
-             . translateToBeam
+    outputStep . toGenLyPhrase . beamingRewrite . translateToBeam
   where
     outputStep          = output_func config
     toGenLyPhrase       = out_trafo config
@@ -228,11 +230,11 @@ genOutputAsLilyPond config =
 
 
 outputAsLilyPond :: Anno anno => ScoreInfo -> StdPhraseAnno anno -> String
-outputAsLilyPond globals = genOutputAsLilyPond config
+outputAsLilyPond globals = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
                                , out_trafo   = LY.translateToOutput globals
-                               , output_func = LY.simpleLyOutput std_def globals 
+                               , output_func = LY.simpleScoreOutput std_def globals 
                                }
     std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = anno }
 
@@ -247,18 +249,17 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo
                           -> Phrase pch Duration anno 
-                          -> String
+                          -> Doc
 genOutputAsRhythmicMarkup def info = 
-    ppRender . LY.rhythmicMarkupOutput ppDef info
-             . LY.translateToRhythmicMarkup def
-             . addBeams 
-             . translateToBeam
+    LY.rhythmicMarkupOutput ppDef info . LY.translateToRhythmicMarkup def
+                                       . addBeams 
+                                       . translateToBeam
   where
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = markup }
 
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String
-outputAsRhythmicMarkup gi = genOutputAsRhythmicMarkup def gi
+outputAsRhythmicMarkup gi = ppRender . genOutputAsRhythmicMarkup def gi
   where
     def = LY.MarkupOutput { LY.asMarkup = \p -> teeny (braces $ pPrint p) }
 

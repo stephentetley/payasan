@@ -3,9 +3,9 @@
 
 module Demo07 where
 
-import Payasan.LilyPond.Lyricmode.Internal.Base
-import Payasan.LilyPond.Lyricmode.Internal.Parser
 import Payasan.LilyPond.Lyricmode.Notelist
+
+import Payasan.LilyPond.Lyricmode.Internal.Interpret    -- TEMP
 
 
 -- LYRICS -- 

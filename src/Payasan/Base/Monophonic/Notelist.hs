@@ -120,7 +120,7 @@ printAsABC gi = MAIN.printAsABC gi . translateToMain
 
 genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2
                     -> Phrase p1 Duration a1
-                    -> String
+                    -> Doc
 genOutputAsLilyPond config = MAIN.genOutputAsLilyPond config . translateToMain
 
 outputAsLilyPond :: ScoreInfo -> StdMonoPhrase -> String
@@ -135,7 +135,7 @@ printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo 
                           -> Phrase pch Duration anno
-                          -> String
+                          -> Doc
 genOutputAsRhythmicMarkup def gi = MAIN.genOutputAsRhythmicMarkup def gi . translateToMain
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> String
