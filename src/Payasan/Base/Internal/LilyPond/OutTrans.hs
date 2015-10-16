@@ -128,10 +128,12 @@ changePitchAbs p1 = return $ fromPitchAbs p1
 --------------------------------------------------------------------------------
 -- Duration translation
 
-
+-- We always want the first duration to print in the output,
+-- so the initial state is 0 which should never match.
+--
 drn_algo :: BeamDurationAlgo Duration Duration LyNoteLength
 drn_algo = BeamDurationAlgo
-    { initial_stateD    = d_quarter
+    { initial_stateD    = d_zero        
     , element_trafoD    = elementD
     }
 

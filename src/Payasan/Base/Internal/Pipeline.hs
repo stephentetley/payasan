@@ -234,7 +234,7 @@ outputAsLilyPond globals = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
                                , out_trafo   = LY.translateToOutput globals
-                               , output_func = LY.simpleScoreOutput std_def globals 
+                               , output_func = LY.simpleScore std_def globals 
                                }
     std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = anno }
 
@@ -251,9 +251,9 @@ genOutputAsRhythmicMarkup :: LY.MarkupOutput pch
                           -> Phrase pch Duration anno 
                           -> Doc
 genOutputAsRhythmicMarkup def info = 
-    LY.rhythmicMarkupOutput ppDef info . LY.translateToRhythmicMarkup def
-                                       . addBeams 
-                                       . translateToBeam
+    LY.rhythmicMarkupScore ppDef info . LY.translateToRhythmicMarkup def
+                                      . addBeams 
+                                      . translateToBeam
   where
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = markup }
 

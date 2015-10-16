@@ -61,5 +61,5 @@ fretDef :: FretDiagram -> Doc
 fretDef = asDefinition
 
 phraseBlock :: Doc -> Doc
-phraseBlock doc  = simultaneous1 $ block Nothing doc
+phraseBlock doc  = simultaneous1 $ anonBlock doc
 

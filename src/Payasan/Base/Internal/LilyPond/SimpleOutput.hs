@@ -18,8 +18,11 @@
 module Payasan.Base.Internal.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
-  , simpleScoreOutput
 
+  , simpleScore
+  , simpleVoice
+
+  , scoreHeader
   , renderNotes
 
   ) where
@@ -72,50 +75,61 @@ data LyOutputDef pch anno = LyOutputDef
 
 
 
-simpleScoreOutput :: LyOutputDef pch anno 
-                  -> ScoreInfo 
-                  -> GenLyPhrase pch anno -> Doc
-simpleScoreOutput def info ph = 
+simpleScore :: LyOutputDef pch anno 
+            -> ScoreInfo 
+            -> GenLyPhrase pch anno -> Doc
+simpleScore def info ph = 
         header 
-    $+$ block Nothing (modeBlockF $ (notes_header $+$ notes))
+    $+$ anonBlock (simpleVoice def info ph)
   where
-    local1          = maybe default_local_info id $ firstContextInfo ph
-    header          = oHeader info
-    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
-    notes_header    = oPhraseHeader local1
-    notes           = renderNotes def ph
+    header          = scoreHeader info
 
 
-oHeader :: ScoreInfo -> Doc
-oHeader globals = 
-        version (global_ly_version globals)
-    $+$ block (Just $ command "header") (title $ global_title globals)
+scoreHeader :: ScoreInfo -> Doc
+scoreHeader globals = 
+    version (global_ly_version globals) $+$ header
+  where
+    header  = withString (global_title globals) $ \ss ->
+                 block (Just $ command "header") (title ss)
 
 
--- TODO - note appropriate for RhythmicStaff etc.
---
-oPhraseHeader :: LocalContextInfo -> Doc
-oPhraseHeader locals = 
-        key   (local_key locals)
-    $+$ meter (local_meter locals)
 
--- TODO - note appropriate for RhythmicStaff etc.
---
-octaveModeBlock :: OctaveMode -> Doc -> Doc
-octaveModeBlock (AbsPitch)   d  = absolute $+$ d
-octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
+
 
 
 --------------------------------------------------------------------------------
 -- Notelist
 
--- Design note - we only want to write this once.
--- Should allow different pch (standard, drum note, etc.)
--- to be printed. 
 
+-- @voiceOutput@ specifically for @standard@ pitch output.
+--
+-- Write alternative functions for other types of output.
+-- 
+simpleVoice :: LyOutputDef pch anno 
+            -> ScoreInfo 
+            -> GenLyPhrase pch anno -> Doc
+simpleVoice def info ph = modeBlockF (notes_header $+$ notes)
+  where
+    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
+    local1          = maybe default_local_info id $ firstContextInfo ph
+    notes_header    = oPhraseHeader local1
+    notes           = renderNotes def ph
+
+octaveModeBlock :: OctaveMode -> Doc -> Doc
+octaveModeBlock (AbsPitch)   d  = absolute $+$ d
+octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
+
+oPhraseHeader :: LocalContextInfo -> Doc
+oPhraseHeader locals = 
+        key   (local_key locals)
+    $+$ meter (local_meter locals)
 
 
 -- | Pitch should be \"context free\" at this point.
+--
+-- Design note - we only want to write this once.
+-- Should allow different pch (standard, drum note, etc.)
+-- to be printed. 
 --
 renderNotes :: forall pch anno. 
                LyOutputDef pch anno -> GenLyPhrase pch anno -> Doc

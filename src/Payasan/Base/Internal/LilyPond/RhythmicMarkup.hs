@@ -21,7 +21,8 @@ module Payasan.Base.Internal.LilyPond.RhythmicMarkup
     MarkupOutput(..)
   , translateToRhythmicMarkup
 
-  , rhythmicMarkupOutput
+  , rhythmicMarkupScore
+  , rhythmicMarkupVoice
 
   ) where
 
@@ -90,30 +91,28 @@ elementPA mo elt = case elt of
 --------------------------------------------------------------------------------
 -- Output
 
-rhythmicMarkupOutput :: LyOutputDef pch anno 
-                     -> ScoreInfo 
-                     -> GenLyPhrase pch anno -> Doc
-rhythmicMarkupOutput def info ph =
-        header
-    $+$ simultaneous1 (block (Just rhythmic_staff) 
-                             (modeBlockF $ (notes_header $+$ notes)))
+rhythmicMarkupScore :: LyOutputDef pch anno 
+                    -> ScoreInfo 
+                    -> GenLyPhrase pch anno -> Doc
+rhythmicMarkupScore def info ph =
+        header $+$ simultaneous1 (rhythmicMarkupVoice def info ph)
   where
-    local1          = maybe default_local_info id $ firstContextInfo ph
-    header          = oHeader info
-    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
+    header          = scoreHeader info
+
+
+rhythmicMarkupVoice :: LyOutputDef pch anno 
+                    -> ScoreInfo
+                    -> GenLyPhrase pch anno -> Doc
+rhythmicMarkupVoice def info ph = 
+    block (Just rhythmic_staff) (modeBlockF $ (notes_header $+$ notes))
+  where
     rhythmic_staff  = command "new" <+> text "RhythmicStaff"
+    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
+    local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = renderNotes def ph
 
 
-oHeader :: ScoreInfo -> Doc
-oHeader globals = 
-        version (global_ly_version globals)
-    $+$ block (Just $ command "header") (title $ global_title globals)
-
-
--- TODO - note appropriate for RhythmicStaff etc.
---
 oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = 
         key   (local_key locals)

@@ -29,9 +29,11 @@ module Payasan.Base.Internal.LilyPond.Utils
 
   -- * pretty printers 
   , vsep
+  , withString
 
   , command
   , block 
+  , anonBlock
   , simultaneous1
   , simultaneous
   , definition
@@ -105,6 +107,10 @@ vsep []     = empty
 vsep [d]    = d
 vsep (d:ds) = d $+$ vsep ds
 
+withString :: String -> (String -> Doc) -> Doc
+withString ss f = if null ss then empty else f ss
+
+
 command :: String -> Doc
 command = text . ('\\' :)
 
@@ -113,6 +119,8 @@ block prefix body = maybe inner (\d -> d <+> inner) prefix
   where
     inner = let d1 = nest 2 body in lbrace $+$ d1 $+$ rbrace
 
+anonBlock :: Doc -> Doc
+anonBlock doc  = block Nothing doc
 
 simultaneous1 :: Doc -> Doc
 simultaneous1 d = text "<<" $+$ d $+$ text ">>"
