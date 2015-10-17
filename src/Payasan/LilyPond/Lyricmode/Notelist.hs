@@ -43,22 +43,16 @@ import Payasan.LilyPond.Lyricmode.Internal.Interpret
 import Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Parser
 
-import qualified Payasan.Base.Monophonic.Internal.Syntax    as MONO
-import qualified Payasan.Base.Monophonic.Notelist           as MONO
+import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
+import qualified Payasan.Base.Monophonic.Internal.Traversals    as MONO
+import qualified Payasan.Base.Monophonic.Notelist               as MONO
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY
-import Payasan.Base.Internal.LilyPond.RhythmicMarkup        as LY
-import Payasan.Base.Internal.LilyPond.SimpleOutput
-import Payasan.Base.Internal.LilyPond.Utils
+import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 
-import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
-import qualified Payasan.Base.Internal.Pipeline             as MAIN
+import qualified Payasan.Base.Internal.Pipeline                 as MAIN
 import Payasan.Base.Internal.Shell
-
-
--- import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
@@ -72,29 +66,21 @@ fromLilyPondWith :: ScoreInfo
 fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals
 
 
--- This should not beam...
--- Ideally print two simultaneous interpretations...
+-- Lyrics should not beam.
+-- Print two simultaneous interpretations.
 --
 outputAsLilyPond :: ScoreInfo -> StdLyricPhrase -> String
-outputAsLilyPond globals ph = 
-    MAIN.ppRender $ lyricsCombine globals beats lyrics
+outputAsLilyPond globals lyrics = 
+    MAIN.ppRender $ MONO.genOutputAsLilyPond2 config2 beats lyrics
   where
-    beats           = MONO.genOutputAsLilyPond config_beats $ extractRhythm ph
-    config_beats    = MONO.LilyPondPipeline 
-                        { MONO.beam_trafo  = addBeams
-                        , MONO.out_trafo   = LY.translateToOutput globals
-                        , MONO.output_func = LY.rhythmicMarkupVoice def globals
+    beats           = MONO.censorPunctuation $ extractRhythm lyrics
+    config2         = MAIN.LilyPondPipeline2
+                        { MAIN.pipe2_beam_trafo1   = addBeams
+                        , MAIN.pipe2_out_trafo1    = LY.translateToOutput globals
+                        , MAIN.pipe2_beam_trafo2   = noBeams
+                        , MAIN.pipe2_out_trafo2    = LY.translateToOutput_DurationOnly
+                        , MAIN.pipe2_output_func   = lyricsScore globals
                         }
-    def             = LyOutputDef { printPitch = pitch, printAnno = anno }
-
-
-    lyrics          = MONO.genOutputAsLilyPond config_lyrics ph
-    config_lyrics   = MONO.LilyPondPipeline 
-                        { MONO.beam_trafo  = noBeams
-                        , MONO.out_trafo   = LY.translateToOutput_DurationOnly
-                        , MONO.output_func = lyricsVoice globals
-                        }
-
 
 
 printAsLilyPond :: ScoreInfo -> StdLyricPhrase -> IO ()

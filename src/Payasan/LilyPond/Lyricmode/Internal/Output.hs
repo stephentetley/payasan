@@ -19,16 +19,17 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
    
     lyricsScore
   , lyricsVoice
-  , lyricsCombine
 
   ) where
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
+import Payasan.Base.Internal.LilyPond.RhythmicMarkup
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
+import Payasan.Base.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.CommonSyntax
 
@@ -36,12 +37,20 @@ import Payasan.Base.Internal.CommonSyntax
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
-lyricsScore :: ScoreInfo -> BEAM.Phrase Syllable LyNoteLength a -> Doc
-lyricsScore globals ph = 
-        header
-    $+$ anonBlock (lyricsVoice globals ph)
+lyricsScore :: Anno a1 
+            => ScoreInfo 
+            -> BEAM.Phrase LyPitch LyNoteLength a1 
+            -> BEAM.Phrase Syllable LyNoteLength a2 
+            -> Doc
+lyricsScore globals ph1 ph2 = 
+        header $+$ simultaneous1 (rhythm $+$ lyrics)
   where
     header          = scoreHeader globals
+    rhythm          = rhythmicMarkupVoice rhythm_def globals ph1
+    rhythm_def      = LyOutputDef { printPitch = pitch, printAnno = anno }
+
+    lyrics          = lyricsVoice globals ph2
+                      
 
 
 
@@ -53,9 +62,3 @@ lyricsVoice _globals ph = block (Just prefix) notes
     notes       = renderNotes lyric_def ph
     lyric_def   = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
 
-
--- This is really the wrong type should be Phrases not Docs for input...
-
-lyricsCombine :: ScoreInfo -> Doc -> Doc -> Doc
-lyricsCombine info rhythmn lyrics = 
-    scoreHeader info $+$ simultaneous1 (rhythmn $+$ lyrics)

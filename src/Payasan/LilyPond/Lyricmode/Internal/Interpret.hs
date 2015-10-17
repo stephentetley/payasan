@@ -32,3 +32,4 @@ import Payasan.Base.Pitch
 --
 extractRhythm :: StdLyricPhrase -> Phrase Pitch Duration ()
 extractRhythm = mapPitch (const middle_c)
+

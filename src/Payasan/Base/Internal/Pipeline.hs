@@ -47,6 +47,11 @@ module Payasan.Base.Internal.Pipeline
 
   , LilyPondPipeline(..)
   , genOutputAsLilyPond
+
+  , LilyPondPipeline2(..)
+  , genOutputAsLilyPond2
+
+
   , outputAsLilyPond
   , printAsLilyPond
 
@@ -211,11 +216,13 @@ printAsABC info = putStrLn . outputAsABC info
 -- Libraries should define two output functions when appropriate:
 -- one for full score and one for just notelist.
 --
-data LilyPondPipeline p1 a1 p2 a2 = LilyPondPipeline
-    { beam_trafo    :: BEAM.Phrase p1 Duration a1 -> BEAM.Phrase p1 Duration a1
-    , out_trafo     :: BEAM.Phrase p1 Duration a1 -> LY.GenLyPhrase p2 a2 
-    , output_func   :: LY.GenLyPhrase p2 a2 -> Doc
+data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
+    { beam_trafo    :: BEAM.Phrase p1i Duration a1i -> BEAM.Phrase p1i Duration a1i
+    , out_trafo     :: BEAM.Phrase p1i Duration a1i -> LY.GenLyPhrase p1o a1o
+    , output_func   :: LY.GenLyPhrase p1o a1o -> Doc
     }
+
+
 
 
 genOutputAsLilyPond :: LilyPondPipeline p1 a1 p2 a2
@@ -224,9 +231,36 @@ genOutputAsLilyPond :: LilyPondPipeline p1 a1 p2 a2
 genOutputAsLilyPond config = 
     outputStep . toGenLyPhrase . beamingRewrite . translateToBeam
   where
-    outputStep          = output_func config
-    toGenLyPhrase       = out_trafo config
     beamingRewrite      = beam_trafo config
+    toGenLyPhrase       = out_trafo config
+    outputStep          = output_func config
+
+
+data LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o  = LilyPondPipeline2
+    { pipe2_beam_trafo1   :: BEAM.Phrase p1i Duration a1i -> BEAM.Phrase p1i Duration a1i
+    , pipe2_out_trafo1    :: BEAM.Phrase p1i Duration a1i -> LY.GenLyPhrase p1o a1o
+    , pipe2_beam_trafo2   :: BEAM.Phrase p2i Duration a2i -> BEAM.Phrase p2i Duration a2i
+    , pipe2_out_trafo2    :: BEAM.Phrase p2i Duration a2i -> LY.GenLyPhrase p2o a2o
+    , pipe2_output_func   :: LY.GenLyPhrase p1o a1o -> LY.GenLyPhrase p2o a2o -> Doc
+    }
+
+
+
+genOutputAsLilyPond2 :: LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o 
+                     -> Phrase p1i Duration a1i
+                     -> Phrase p2i Duration a2i
+                     -> Doc
+genOutputAsLilyPond2 config ph1 ph2 = 
+    let a = toGenLyPhrase1 $ beamingRewrite1 $ translateToBeam ph1
+        b = toGenLyPhrase2 $ beamingRewrite2 $ translateToBeam ph2
+    in outputStep a b
+  where
+    beamingRewrite1     = pipe2_beam_trafo1 config
+    toGenLyPhrase1      = pipe2_out_trafo1 config
+    beamingRewrite2     = pipe2_beam_trafo2 config
+    toGenLyPhrase2      = pipe2_out_trafo2 config
+    outputStep          = pipe2_output_func config
+
 
 
 outputAsLilyPond :: Anno anno => ScoreInfo -> StdPhraseAnno anno -> String

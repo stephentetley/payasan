@@ -45,7 +45,10 @@ module Payasan.Base.Monophonic.Notelist
   , printAsABC
 
   , MAIN.LilyPondPipeline(..)
+  , MAIN.LilyPondPipeline2(..)
   , genOutputAsLilyPond
+  , genOutputAsLilyPond2
+
   , outputAsLilyPond
   , printAsLilyPond
 
@@ -122,6 +125,16 @@ genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2
                     -> Phrase p1 Duration a1
                     -> Doc
 genOutputAsLilyPond config = MAIN.genOutputAsLilyPond config . translateToMain
+
+genOutputAsLilyPond2 :: MAIN.LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o
+                     -> Phrase p1i Duration a1i
+                     -> Phrase p2i Duration a2i
+                     -> Doc
+genOutputAsLilyPond2 config ph1 ph2 = 
+    MAIN.genOutputAsLilyPond2 config (translateToMain ph1) (translateToMain ph2)
+
+
+
 
 outputAsLilyPond :: ScoreInfo -> StdMonoPhrase -> String
 outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain

@@ -45,6 +45,8 @@ module Payasan.Base.Monophonic.Internal.Traversals
   , mapPitchAnno
   , foldPitchAnno
 
+  , censorPunctuation
+
   ) where
 
 
@@ -54,6 +56,7 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Data.Foldable (foldlM)
+import Data.Maybe
 
 type Mon st a = Rewrite st a
 
@@ -322,7 +325,7 @@ collectPA mf = genCollect elementC
 
 
 --------------------------------------------------------------------------------
--- Transformation
+-- Pitch Anno Transformation
 
 
 mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Phrase p1 drn a1 -> Phrase p2 drn a2
@@ -340,3 +343,23 @@ foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Phrase pch drn anno -> ac
 foldPitchAnno fn a0 ph = collectPA step a0 () ph
   where
     step ac p a   = pure $ fn ac p a
+
+
+--------------------------------------------------------------------------------
+-- Punctuation
+
+censorPunctuation :: Phrase pch drn anno -> Phrase pch drn anno
+censorPunctuation (Phrase info bs) = Phrase info (map bar1 bs)
+  where
+    bar1 (Bar cs)               = Bar $ catMaybes $ map noteGroup1 cs
+
+    noteGroup1 (Atom e)         = censor e >>= (return . Atom)
+    noteGroup1 (Tuplet spec cs) = let xs = catMaybes $ map noteGroup1 cs
+                                  in if null xs then Nothing 
+                                                else Just $ Tuplet spec xs
+
+
+    censor (Punctuation {})     = Nothing
+    censor e                    = Just e
+
+
