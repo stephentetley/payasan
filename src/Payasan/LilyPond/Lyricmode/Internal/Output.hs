@@ -29,7 +29,6 @@ import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import Payasan.Base.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.CommonSyntax
 

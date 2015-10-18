@@ -104,7 +104,7 @@ rest :: ABCParser ABCMonoElement
 rest = Rest <$> (char 'z' *> P.noteLength)
 
 note :: ABCParser ABCMonoElement
-note = (\p d -> Note p d ()) <$> pitch <*> P.noteLength
+note = (\p d -> Note p d () NO_TIE no_markup) <$> pitch <*> P.noteLength
     <?> "note"
 
 

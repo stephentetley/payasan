@@ -130,7 +130,7 @@ toScaleStepRepr = transformP step_algo
                               , element_trafoP = change
                               }
 
-    change (Note p d a)         = (\p1 -> Note p1 d a) <$> mf p
+    change (Note p d a t m)     = (\p1 -> Note p1 d a t m) <$> mf p
     change (Rest d)             = pure $ Rest d
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
@@ -145,7 +145,7 @@ fromScaleStepRepr = transformP step_algo
                               , element_trafoP = change
                               }
 
-    change (Note p d a)         = (\p1 -> Note p1 d a) <$> mf p
+    change (Note p d a t m)     = (\p1 -> Note p1 d a t m) <$> mf p
     change (Rest d)             = pure $ Rest d
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s

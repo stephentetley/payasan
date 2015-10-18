@@ -17,10 +17,8 @@
 module Payasan.Base.Internal.LilyPond.Utils
   ( 
 
-  -- * Output
-    Markup
-  , markup
-  , huge
+  -- * Markup
+    huge
   , large
   , normalSize
   , small
@@ -47,6 +45,7 @@ module Payasan.Base.Internal.LilyPond.Utils
   , meter
   , tupletSpec
 
+  , tie
   , rest
   , skip
 
@@ -67,36 +66,25 @@ import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
-                   
-newtype Markup = Markup { getMarkup :: Doc }
-
-markup :: Markup -> Doc
-markup a = char '^' <> command "markup" <+> getMarkup a
-
-
-instance Monoid Markup where
-  mempty = Markup $ empty
-  a `mappend` b = Markup $ getMarkup a <> getMarkup b
-
 
 huge            :: Doc -> Markup 
-huge d          = Markup $ command "huge" <+> d
+huge d          = markup $ command "huge" <+> d
 
 large           :: Doc -> Markup 
-large d         = Markup $ command "large" <+> d
+large d         = markup $ command "large" <+> d
 
 normalSize      :: Doc -> Markup 
-normalSize d    = Markup $ command "normalSize" <+> d
+normalSize d    = markup $ command "normalSize" <+> d
 
 small           :: Doc -> Markup 
-small d         = Markup $ command "small" <+> d
+small d         = markup $ command "small" <+> d
 
 
 tiny            :: Doc -> Markup 
-tiny d          = Markup $ command "tiny" <+> d
+tiny d          = markup $ command "tiny" <+> d
 
 teeny           :: Doc -> Markup 
-teeny d         = Markup $ command "teeny" <+> d
+teeny d         = markup $ command "teeny" <+> d
 
 
 --------------------------------------------------------------------------------
@@ -178,6 +166,11 @@ tupletSpec :: TupletSpec -> Doc
 tupletSpec (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) = 
     command "tuplet" <+> int n <> char '/' <> int t
      
+
+tie :: Tie -> Doc
+tie NO_TIE = empty
+tie TIE    = char '~'
+
 
 
 rest :: LyNoteLength -> Doc

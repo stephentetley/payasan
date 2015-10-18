@@ -33,7 +33,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
   ) where
 
-import Payasan.Base.Internal.Base
+import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Utils (command)
 import Payasan.Base.Monophonic.Internal.Syntax (Phrase)
 

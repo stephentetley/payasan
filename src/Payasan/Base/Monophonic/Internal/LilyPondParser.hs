@@ -81,7 +81,8 @@ makeLyParser def = fullInputParse phrase
     element = lexeme (rest <|> note)
 
     note :: LyParser (GenLyMonoElement pch anno)
-    note = Note <$> pPitch <*> P.noteLength <*> pAnno
+    note = (\p d a -> Note p d a NO_TIE no_markup) 
+             <$> pPitch <*> P.noteLength <*> pAnno
         <?> "note"
 
     rest :: LyParser (GenLyMonoElement pch anno)

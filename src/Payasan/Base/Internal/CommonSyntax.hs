@@ -26,6 +26,15 @@ module Payasan.Base.Internal.CommonSyntax
 
   , LocalContextInfo(..)
   , UnitNoteLength(..)
+
+  , Tie(..)
+  , Anno(..)
+
+  , Markup
+  , markup
+  , no_markup
+  , renderMarkup
+
   , Key(..)
   , Mode(..)
   , Meter(..)
@@ -49,9 +58,12 @@ import Payasan.Base.Internal.Base
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
+import Text.PrettyPrint.HughesPJ hiding (Mode)               -- package: pretty
 
 import Data.Data
 import Data.Ratio
+
+
 
 
 -- | Note - don\'t store LilyPond Absolute / Relative pitch
@@ -115,6 +127,46 @@ data LocalContextInfo = LocalContextInfo
     , local_bpm                 :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
+
+
+data Tie = TIE | NO_TIE
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+
+
+class Anno a where anno :: a -> Doc
+
+instance Anno () where anno = const empty
+
+
+-- | Unfortunately Markup has to be a String internally (not a 
+-- Doc) so it can have a Data instance.
+-- 
+data Markup = Markup !String
+  deriving (Data,Eq,Show,Typeable)
+
+
+instance Monoid Markup where
+  mempty = Markup ""
+  Markup a `mappend` Markup b 
+      | null a      = Markup b
+      | null b      = Markup a
+      | otherwise   = Markup $ a ++ (' ': b)                          
+
+
+markup :: Doc -> Markup
+markup d = Markup $ renderStyle (style {lineLength=500}) d
+
+no_markup :: Markup 
+no_markup = Markup ""
+
+renderMarkup :: Markup -> Doc
+renderMarkup (Markup s) 
+    | null s    = empty 
+    | otherwise = char '^' <> text "\\markup" <+> text s
+
+
+
 
 data Key = Key !PitchName !Mode
   deriving (Data,Eq,Ord,Show,Typeable)

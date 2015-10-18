@@ -99,7 +99,6 @@ import Payasan.Base.Internal.Output.Linear.OutputMain
 
 
 import Payasan.Base.Internal.AddBeams
-import Payasan.Base.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
 import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.CommonSyntax
@@ -289,7 +288,7 @@ genOutputAsRhythmicMarkup def info =
                                       . addBeams 
                                       . translateToBeam
   where
-    ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = markup }
+    ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = const empty }
 
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String

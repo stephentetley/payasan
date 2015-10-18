@@ -59,10 +59,10 @@ oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
 
 oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of
-    Note p d _      -> ppP p <> char ':' <> ppD d
-    Rest d          -> rest  <> ppD d 
-    Skip d          -> skip  <> ppD d 
-    Punctuation s   -> text s
+    Note p d _ _ _      -> ppP p <> char ':' <> ppD d
+    Rest d              -> rest  <> ppD d 
+    Skip d              -> skip  <> ppD d 
+    Punctuation s       -> text s
   where
     ppP = pp_pitch ppl
     ppD = pp_duration ppl

@@ -22,7 +22,6 @@ module Payasan.LilyPond.FretDiagram.Internal.Output
 import Payasan.LilyPond.FretDiagram.Internal.Base
 import Payasan.LilyPond.FretDiagram.Internal.Interpret
 
-import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.BeamSyntax (Phrase)
 

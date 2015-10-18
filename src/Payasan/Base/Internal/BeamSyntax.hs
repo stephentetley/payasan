@@ -91,10 +91,10 @@ data NoteGroup pch drn anno =
 -- Punctuation is for LilyPond only (may change).
 --
 data Element pch drn anno = 
-      NoteElem      (Note pch drn)  anno
+      NoteElem      (Note pch drn)  anno  Tie   Markup
     | Rest          drn
     | Skip          drn
-    | Chord         [pch]           drn    anno
+    | Chord         [pch]           drn   anno  Tie     Markup
     | Graces        [Note pch drn]
     | Punctuation   String
   deriving (Data,Eq,Show,Typeable)
@@ -123,12 +123,12 @@ sizeNoteGroup (Tuplet spec es)      = tupletUnitRDuration spec (firstOf es)
     firstOf []      = durationSize d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
-sizeElement (NoteElem (Note _ d) _) = durationSize d
-sizeElement (Rest d)                = durationSize d
-sizeElement (Skip d)                = durationSize d
-sizeElement (Chord _ d _)           = durationSize d
-sizeElement (Graces {})             = 0
-sizeElement (Punctuation {})        = 0
+sizeElement (NoteElem (Note _ d) _ _ _)   = durationSize d
+sizeElement (Rest d)                      = durationSize d
+sizeElement (Skip d)                      = durationSize d
+sizeElement (Chord _ d _ _ _)             = durationSize d
+sizeElement (Graces {})                   = 0
+sizeElement (Punctuation {})              = 0
 
 firstContextInfo :: Phrase pch drn anno -> Maybe LocalContextInfo
 firstContextInfo (Phrase [])    = Nothing

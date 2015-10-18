@@ -174,11 +174,13 @@ renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
     oNoteGroup (Tuplet spec cs)     = tupletSpec spec <+> hsep (map oNoteGroup cs)
 
     oElement :: GenLyElement pch anno -> Doc
-    oElement (NoteElem n a)         = oNote n <> pAnno a
+    oElement (NoteElem n a t m)     = 
+        oNote n <> pAnno a <> tie t <> renderMarkup m
+
     oElement (Rest d)               = rest d 
     oElement (Skip d)               = skip d 
-    oElement (Chord ps d a)         = 
-        chordForm (map pPitch ps) <> noteLength d <> pAnno a
+    oElement (Chord ps d a t m)     = 
+        chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t <> renderMarkup m
 
     oElement (Graces ns)            = graceForm (map oNote ns)
     oElement (Punctuation s)        = text s
@@ -186,3 +188,4 @@ renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
 
     oNote :: GenLyNote pch -> Doc
     oNote (Note p d)               = pPitch p <> noteLength d
+

@@ -104,13 +104,15 @@ makeLyParser def = fullInputParse phrase
 
 
     noteElem :: LyParser (GenLyElement pch anno)
-    noteElem = NoteElem <$> note <*> pAnno
+    noteElem = (\n a -> NoteElem n a NO_TIE no_markup) 
+                  <$> note <*> pAnno
 
     rest :: LyParser (GenLyElement pch anno)
     rest = Rest <$> (char 'z' *> noteLength)
 
     chord :: LyParser (GenLyElement pch anno)
-    chord = Chord <$> angles (many1 pPitch) <*> noteLength <*> pAnno
+    chord = (\ps n a -> Chord ps n a NO_TIE no_markup)
+                <$> angles (many1 pPitch) <*> noteLength <*> pAnno
 
 
     graces :: LyParser (GenLyElement pch anno)

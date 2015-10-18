@@ -132,7 +132,7 @@ data NoteGroup pch drn anno =
 -- Maybe+duration.
 --
 data Element pch drn anno = 
-      Note          pch   drn   anno
+      Note          pch   drn   anno  Tie   Markup
     | Rest          drn
     | Skip          drn
     | Punctuation   String
@@ -161,7 +161,7 @@ sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
     firstOf []      = durationSize d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
-sizeElement (Note _ d _)        = durationSize d
+sizeElement (Note _ d _ _ _)    = durationSize d
 sizeElement (Rest d)            = durationSize d
 sizeElement (Skip d)            = durationSize d
 sizeElement (Punctuation {})    = 0

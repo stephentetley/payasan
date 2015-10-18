@@ -49,7 +49,7 @@ fromNoteList locals tuning xss =
 
 
 chord :: FretDiagram -> Duration -> NoteListAtom
-chord p d = Atom $ Note p d ()
+chord p d = Atom $ Note p d () NO_TIE no_markup
 
 rest :: Duration -> NoteListAtom
 rest d = Atom $ Rest d 

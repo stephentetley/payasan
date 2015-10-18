@@ -100,12 +100,12 @@ contourAlgo :: (Pitch -> Pitch -> ctour)
 contourAlgo comp = MonoPitchAlgo { initial_stateP = Nothing
                                  , element_trafoP = fn }
   where   
-    fn (Note p d a)     = do { opt <- get 
+    fn (Note p d a t m) = do { opt <- get 
                              ; case opt of 
                                   Nothing -> put (Just p) >> return (Rest d)
                                   Just p0 -> 
                                      let ct = comp p0 p
-                                     in put (Just p) >> return (Note ct d a)
+                                     in put (Just p) >> return (Note ct d a t m)
                              }
 
     fn (Rest d)         = pure $ Rest d

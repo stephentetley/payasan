@@ -50,7 +50,7 @@ translateToMain = phraseT
 
 
     elementT :: Element pch drn anno -> T.Element pch drn anno
-    elementT (Note p d a)           = T.NoteElem (T.Note p d) a
+    elementT (Note p d a t m)       = T.NoteElem (T.Note p d) a t m
     elementT (Rest d)               = T.Rest d
     elementT (Skip d)               = T.Skip d
     elementT (Punctuation s)        = T.Punctuation s
@@ -82,11 +82,11 @@ chordTranslateToMain = phraseT
 
 
     elementT :: Element [pch] drn anno -> T.Element pch drn anno
-    elementT (Note p d a)           = 
+    elementT (Note p d a t m)         = 
         case p of 
           []  -> T.Rest d
-          [x] -> T.NoteElem (T.Note x d) a
-          xs  -> T.Chord xs d a
+          [x] -> T.NoteElem (T.Note x d) a t m
+          xs  -> T.Chord xs d a t m
 
     elementT (Rest d)               = T.Rest d
     elementT (Skip d)               = T.Skip d

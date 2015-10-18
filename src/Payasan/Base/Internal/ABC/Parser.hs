@@ -85,10 +85,10 @@ rest :: ABCParser ABCElement
 rest = Rest <$> (char 'z' *> noteLength)
 
 noteElem :: ABCParser ABCElement
-noteElem = (\e -> NoteElem e ()) <$> note
+noteElem = (\e -> NoteElem e () NO_TIE no_markup) <$> note
 
 chord :: ABCParser ABCElement
-chord = (\ps d -> Chord ps d ())
+chord = (\ps d -> Chord ps d () NO_TIE no_markup)
           <$> squares (many1 pitch) <*> noteLength
 
 graces :: ABCParser ABCElement

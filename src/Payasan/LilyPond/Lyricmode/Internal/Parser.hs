@@ -80,7 +80,7 @@ punctuation = doubleHyphen <|> pUscore
     uscoreK      = (Punctuation "__" <$ char '_') <|> (pure $ Punctuation "_")
 
 syllableNote :: LyParser LyLyricElement
-syllableNote = (\p d -> Note p d ()) <$> syllable <*> P.noteLength
+syllableNote = (\p d -> Note p d () NO_TIE no_markup) <$> syllable <*> P.noteLength
 
 syllable :: LyParser Syllable
 syllable = Syllable <$> many1 (letter <|> oneOf ".,")

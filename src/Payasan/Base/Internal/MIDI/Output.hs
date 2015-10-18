@@ -85,7 +85,7 @@ noteGroupT _  (Tuplet {})       = return []
 
 elementT :: (Duration -> Seconds) 
          -> Element T.MidiPitch Duration anno -> Mon [T.MidiNote]
-elementT df (NoteElem e _)      = (\x -> [x]) <$> noteT df e
+elementT df (NoteElem e _ _ _)  = (\x -> [x]) <$> noteT df e
 
 elementT df (Rest d)            = 
     do { let d1 = df d
@@ -100,7 +100,7 @@ elementT df (Skip d)            =
        ; return []
        }
 
-elementT df (Chord ps d _)      = 
+elementT df (Chord ps d _ _ _)  = 
     do { ot <- onset
        ; let d1 = df d
        ; advanceOnset d1
