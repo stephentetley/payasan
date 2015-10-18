@@ -48,6 +48,7 @@ module Payasan.Base.Internal.LilyPond.Utils
   , tupletSpec
 
   , rest
+  , skip
 
   , pitch
   , noteLength 
@@ -181,6 +182,9 @@ tupletSpec (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) =
 
 rest :: LyNoteLength -> Doc
 rest d = char 'r' <> noteLength d
+
+skip :: LyNoteLength -> Doc
+skip d = command "skip" <> noteLength d
 
 
 pitch :: LyPitch -> Doc

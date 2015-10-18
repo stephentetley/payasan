@@ -132,6 +132,7 @@ toScaleStepRepr = transformP step_algo
 
     change (Note p d a)         = (\p1 -> Note p1 d a) <$> mf p
     change (Rest d)             = pure $ Rest d
+    change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
     mf pch = (\key -> toChromaticPitch key pch) <$> asksLocal local_key
@@ -146,6 +147,7 @@ fromScaleStepRepr = transformP step_algo
 
     change (Note p d a)         = (\p1 -> Note p1 d a) <$> mf p
     change (Rest d)             = pure $ Rest d
+    change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
     mf oss = (\key -> fromChromaticPitch key oss) <$> asksLocal local_key

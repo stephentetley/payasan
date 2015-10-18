@@ -109,6 +109,7 @@ contourAlgo comp = MonoPitchAlgo { initial_stateP = Nothing
                              }
 
     fn (Rest d)         = pure $ Rest d
+    fn (Skip d)         = pure $ Skip d
     fn (Punctuation s)  = pure $ Punctuation s
 
 

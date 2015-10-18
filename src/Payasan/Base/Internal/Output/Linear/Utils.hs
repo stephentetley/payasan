@@ -18,6 +18,7 @@ module Payasan.Base.Internal.Output.Linear.Utils
   ( 
 
     rest
+  , skip
   , nullStar
   , duration
 
@@ -39,6 +40,9 @@ barStart n = char '=' <> int n
 
 rest :: Doc
 rest = char 'r'
+
+skip :: Doc
+skip = text "skip"
 
 nullStar :: Doc
 nullStar = char '*'

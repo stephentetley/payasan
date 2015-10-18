@@ -46,7 +46,7 @@ module Payasan.Base.Monophonic.Internal.Traversals
   , foldPitchAnno
 
   , censorPunctuation
-
+  , skipToRest
   ) where
 
 
@@ -148,6 +148,7 @@ collectP mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note p _ _)        = mf ac p
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
 
@@ -170,6 +171,7 @@ ctxMapPitch fn = transformP algo
 
     stepE (Note p d a)    = (\ks -> Note (fn ks p) d a) <$> asksLocal local_key
     stepE (Rest d)        = pure $ Rest d
+    stepE (Skip d)        = pure $ Skip d
     stepE (Punctuation s) = pure $ Punctuation s
 
 
@@ -210,6 +212,7 @@ collectD mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note _ d _)        = mf ac d
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
 --------------------------------------------------------------------------------
@@ -227,6 +230,7 @@ mapDuration fn = transformD algo
 
     stepE (Note p d a)          = pure $ Note p (fn d) a
     stepE (Rest d)              = pure $ Rest (fn d)
+    stepE (Skip d)              = pure $ Skip (fn d)
     stepE (Punctuation s)       = pure $ Punctuation s
 
 
@@ -265,6 +269,7 @@ collectA mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note _ _ a)        = mf ac a
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
 
@@ -281,6 +286,7 @@ mapAnno fn = transformA algo
 
     stepE (Note p d a)          = pure $ Note p d (fn a)
     stepE (Rest d)              = pure $ Rest d
+    stepE (Skip d)              = pure $ Skip d
     stepE (Punctuation s)       = pure $ Punctuation s
 
 
@@ -320,6 +326,7 @@ collectPA mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note p _ a)        = mf ac p a
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
 
@@ -337,6 +344,7 @@ mapPitchAnno fn = transformPA algo
 
     stepE (Note p d a)      = let (p1,a1) = fn p a in pure $ Note p1 d a1
     stepE (Rest d)          = pure $ Rest d
+    stepE (Skip d)          = pure $ Skip d
     stepE (Punctuation s)   = pure $ Punctuation s
 
 foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Phrase pch drn anno -> ac
@@ -363,3 +371,16 @@ censorPunctuation (Phrase info bs) = Phrase info (map bar1 bs)
     censor e                    = Just e
 
 
+--------------------------------------------------------------------------------
+-- Skip to rest
+
+skipToRest :: Phrase pch drn anno -> Phrase pch drn anno
+skipToRest (Phrase info bs) = Phrase info (map bar1 bs)
+  where
+    bar1 (Bar cs)               = Bar $ map noteGroup1 cs
+
+    noteGroup1 (Atom e)         = Atom $ changeSkip e
+    noteGroup1 (Tuplet spec cs) = Tuplet spec $ map noteGroup1 cs
+
+    changeSkip (Skip d)         = Rest d
+    changeSkip e                = e

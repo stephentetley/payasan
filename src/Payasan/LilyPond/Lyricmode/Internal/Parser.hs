@@ -86,4 +86,4 @@ syllable :: LyParser Syllable
 syllable = Syllable <$> many1 (letter <|> oneOf ".,")
 
 skip :: LyParser LyLyricElement
-skip = Rest <$> (symbol "\\skip" *> P.noteLength)
+skip = Skip <$> (symbol "\\skip" *> P.noteLength)

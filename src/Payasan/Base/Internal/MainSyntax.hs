@@ -71,12 +71,14 @@ data NoteGroup pch drn anno =
 --
 -- Punctuation is for LilyPond only (may change).
 -- 
--- TODO - skip and rest have different interpretations in LilyPond
--- they need to be differentiated.
+-- Skip is essentially a rest but they have different 
+-- interpretations in LilyPond and need to be 
+-- differentiated.
 --
 data Element pch drn anno = 
       NoteElem      (Note pch drn) anno
     | Rest          drn
+    | Skip          drn
     | Chord         [pch]          drn     anno
     | Graces        [Note pch drn]
     | Punctuation   String

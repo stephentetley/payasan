@@ -58,6 +58,7 @@ oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of
     NoteElem n _    -> oNote ppl n
     Rest d          -> rest <++> ppD d 
+    Skip d          -> skip <++> ppD d 
     Chord ps d _    -> oPitches ppl ps <+> ppD d 
     Graces xs       -> vcat $ map (oNote ppl) xs
     Punctuation {}  -> empty

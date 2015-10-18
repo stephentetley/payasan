@@ -76,6 +76,7 @@ setPrevPitch = put
 relElementP :: Element Pitch drn anno -> RelPMon (Element LyPitch drn anno)
 relElementP (NoteElem e a)      = (\e1 -> NoteElem e1 a) <$> relNoteP e
 relElementP (Rest d)            = pure $ Rest d
+relElementP (Skip d)            = pure $ Skip d
 relElementP (Chord ps d a)      = 
     (\ps1 -> Chord ps1 d a) <$> mapM changePitchRel ps
 
@@ -109,6 +110,7 @@ abs_pch_algo = BeamPitchAlgo
 absElementP :: Element Pitch drn anno -> AbsPMon (Element LyPitch drn anno)
 absElementP (NoteElem e a)      = (\e1 -> NoteElem e1 a) <$> absNoteP e
 absElementP (Rest d)            = pure $ Rest d
+absElementP (Skip d)            = pure $ Skip d
 absElementP (Chord ps d a)      = 
     (\ps1 -> Chord ps1 d a)  <$> mapM changePitchAbs ps
 
@@ -143,21 +145,25 @@ previousDuration = get
 setPrevDuration :: Duration -> DMon ()
 setPrevDuration d = put d
 
+resetDuration :: DMon ()
+resetDuration = put d_zero
+
 
 elementD :: Element pch Duration anno -> DMon (Element pch LyNoteLength anno)
 elementD (NoteElem e a)         = (\e1 -> NoteElem  e1 a) <$> noteD e
-elementD (Rest d)               = Rest      <$> changeDrn d
-elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
+elementD (Rest d)               = Rest      <$> changeDuration d
+elementD (Skip d)               = Skip      <$> skipDuration d
+elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDuration d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 elementD (Punctuation s)        = pure $ Punctuation s
 
 noteD :: Note pch Duration -> DMon (Note pch LyNoteLength)
-noteD (Note pch drn)            = Note pch <$> changeDrn drn
+noteD (Note pch drn)            = Note pch <$> changeDuration drn
 
 
 
-changeDrn :: Duration -> DMon LyNoteLength
-changeDrn d1 =
+changeDuration :: Duration -> DMon LyNoteLength
+changeDuration d1 =
    do { d0 <- previousDuration 
       ; if d1 == d0 
           then return DrnDefault
@@ -165,3 +171,10 @@ changeDrn d1 =
       }
 
 
+skipDuration :: Duration -> DMon LyNoteLength
+skipDuration d1 =
+   do { d0 <- previousDuration 
+      ; if d1 == d0 
+          then return DrnDefault
+          else resetDuration >> return (DrnExplicit d1)
+      }

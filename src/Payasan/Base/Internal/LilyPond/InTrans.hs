@@ -74,6 +74,7 @@ setPrevPitch = put
 relElementP :: Element LyPitch drn anno -> RelPMon (Element Pitch drn anno)
 relElementP (NoteElem e a)      = (\e1 -> NoteElem e1 a) <$> relNoteP e
 relElementP (Rest d)            = pure $ Rest d
+relElementP (Skip d)            = pure $ Skip d
 relElementP (Chord ps d a)      = 
     (\ps1 -> Chord ps1 d a) <$> mapM changePitchRel ps
 
@@ -110,6 +111,7 @@ abs_pch_algo = BeamPitchAlgo
 absElementP :: Element LyPitch drn anno -> AbsPMon (Element Pitch drn anno)
 absElementP (NoteElem e a)      = (\e1 -> NoteElem e1 a) <$> absNoteP e
 absElementP (Rest d)            = pure $ Rest d
+absElementP (Skip d)            = pure $ Skip d
 absElementP (Chord ps d a)      = 
     (\ps1 -> Chord ps1 d a) <$> mapM changePitchAbs ps
 
@@ -146,17 +148,22 @@ setPrevDuration d = put d
 
 elementD :: Element pch LyNoteLength anno -> DMon (Element pch Duration anno)
 elementD (NoteElem e a)         = (\e1 -> NoteElem e1 a) <$> noteD e
-elementD (Rest d)               = Rest      <$> changeDrn d
-elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDrn d
+elementD (Rest d)               = Rest      <$> changeDuration d
+elementD (Skip d)               = Rest      <$> skipDuration d
+elementD (Chord ps d a)         = (\d1 -> Chord ps d1 a) <$> changeDuration d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 elementD (Punctuation s)        = pure $ Punctuation s
 
 noteD :: Note pch LyNoteLength -> DMon (Note pch Duration)
-noteD (Note pch drn)            = Note pch <$> changeDrn drn
+noteD (Note pch drn)            = Note pch <$> changeDuration drn
 
 
 
-changeDrn :: LyNoteLength -> DMon Duration
-changeDrn (DrnDefault)    = previousDuration
-changeDrn (DrnExplicit d) = setPrevDuration d >> return d
+changeDuration :: LyNoteLength -> DMon Duration
+changeDuration (DrnDefault)    = previousDuration
+changeDuration (DrnExplicit d) = setPrevDuration d >> return d
+
+skipDuration :: LyNoteLength -> DMon Duration
+skipDuration (DrnDefault)    = previousDuration
+skipDuration (DrnExplicit d) = return d
 

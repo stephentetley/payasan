@@ -52,6 +52,7 @@ translateToMain = phraseT
     elementT :: Element pch drn anno -> T.Element pch drn anno
     elementT (Note p d a)           = T.NoteElem (T.Note p d) a
     elementT (Rest d)               = T.Rest d
+    elementT (Skip d)               = T.Skip d
     elementT (Punctuation s)        = T.Punctuation s
 
 
@@ -88,4 +89,5 @@ chordTranslateToMain = phraseT
           xs  -> T.Chord xs d a
 
     elementT (Rest d)               = T.Rest d
+    elementT (Skip d)               = T.Skip d
     elementT (Punctuation s)        = T.Punctuation s

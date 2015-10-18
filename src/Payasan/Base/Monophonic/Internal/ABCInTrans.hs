@@ -54,6 +54,7 @@ pch_algo = MonoPitchAlgo
 elementP :: Element ABCPitch drn anno -> PMon (Element Pitch drn anno) 
 elementP (Note p d a)           = (\p1 -> Note p1 d a) <$> transPch p
 elementP (Rest d)               = pure $ Rest d
+elementP (Skip d)               = pure $ Skip d
 elementP (Punctuation s)        = pure $ Punctuation s
 
 
@@ -74,11 +75,12 @@ drn_algo = MonoDurationAlgo
 
 
 elementD :: Element pch ABCNoteLength anno -> DMon (Element pch Duration anno)
-elementD (Note p d a)           = (\d1 -> Note p d1 a) <$> changeDrn d
-elementD (Rest d)               = Rest    <$> changeDrn d
+elementD (Note p d a)           = (\d1 -> Note p d1 a) <$> changeDuration d
+elementD (Rest d)               = Rest    <$> changeDuration d
+elementD (Skip d)               = Skip    <$> changeDuration d
 elementD (Punctuation s)        = pure $ Punctuation s
 
 
-changeDrn :: ABCNoteLength -> DMon Duration
-changeDrn d = (\unl -> toDuration unl d) <$> asksLocal local_unit_note_len
+changeDuration :: ABCNoteLength -> DMon Duration
+changeDuration d = (\unl -> toDuration unl d) <$> asksLocal local_unit_note_len
 

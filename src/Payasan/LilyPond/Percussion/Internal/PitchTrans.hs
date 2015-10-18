@@ -49,6 +49,7 @@ pch_algo = BeamPitchAlgo
 elementP :: Element DrumPitch drn anno -> PTMon (Element MidiPitch drn anno)
 elementP (NoteElem e a)         = (\n -> NoteElem n a) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
+elementP (Skip d)               = pure $ Skip d
 elementP (Chord ps d a)         = pure $ Chord (map toMidiPitch ps) d a
 elementP (Graces ns)            = Graces <$> mapM noteP ns
 elementP (Punctuation s)        = pure $ Punctuation s

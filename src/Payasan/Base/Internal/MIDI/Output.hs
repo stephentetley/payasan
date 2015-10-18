@@ -93,6 +93,13 @@ elementT df (Rest d)            =
        ; return []
        }
 
+-- Skip is same as Rest
+elementT df (Skip d)            = 
+    do { let d1 = df d
+       ; advanceOnset d1
+       ; return []
+       }
+
 elementT df (Chord ps d _)      = 
     do { ot <- onset
        ; let d1 = df d

@@ -176,6 +176,7 @@ renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
     oElement :: GenLyElement pch anno -> Doc
     oElement (NoteElem n a)         = oNote n <> pAnno a
     oElement (Rest d)               = rest d 
+    oElement (Skip d)               = skip d 
     oElement (Chord ps d a)         = 
         chordForm (map pPitch ps) <> noteLength d <> pAnno a
 

@@ -139,9 +139,12 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 
 -- | Punctuation is not used by ABC.
 --
+-- Skip is treated as a rest.
+--
 oElement :: ABCElement -> Doc
 oElement (NoteElem n _)         = note n
 oElement (Rest d)               = rest d 
+oElement (Skip d)               = rest d 
 oElement (Chord ps d _)         = chord ps d 
 oElement (Graces xs)            = graceForm $ map note xs
 oElement (Punctuation {})       = empty
