@@ -9,25 +9,47 @@ import Payasan.Base.Pitch
 
 import Payasan.Base.Monophonic.Notelist
 
+-- MONOPHONIC
+
+locals :: LocalContextInfo
+locals = default_local_info
+
+globals :: ScoreInfo
+globals = default_score_info { global_ly_octave_mode = RelPitch middle_c }
 
 
-phrase01 :: StdMonoPhrase
-phrase01 = fromABCWith manual_ri $ [abc| c G2 E2 C/2 | c |]
+phrase01abc :: StdMonoPhrase
+phrase01abc = fromABCWith locals $ [abc| B4 z B B - | BB B2 z4 |]
 
 
-
-manual_ri :: LocalContextInfo
-manual_ri = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
+-- Note - MonoPhrase cannot read beam group brackets
+-- TODO - Maybe it should ignore them?
+--
+phrase01ly :: StdMonoPhrase
+phrase01ly = fromLilyPondWith globals locals $ 
+    [lilypond| b'2 r8 b8 b4 ~ | b8 b b4 r2 |]
 
 
 demo01 :: IO ()
-demo01 = printAsABC default_score_info phrase01
-
-demo01a :: IO ()
-demo01a = writeAsMIDI "out/phrase1.mid" phrase01
+demo01 = shellOutABC globals $ outputAsABC globals $ phrase01abc
 
 demo02 :: IO ()
-demo02 = printAsTabular default_score_info phrase01
+demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01ly
 
-demo03 :: IO ()
-demo03 = printAsLinear default_score_info phrase01
+
+
+
+phrase10 :: StdMonoPhrase
+phrase10 = fromABCWith locals $ [abc| c G2 E2 C/2 | c |]
+
+demo10 :: IO ()
+demo10 = printAsABC default_score_info phrase10
+
+demo11 :: IO ()
+demo11 = writeAsMIDI "out/phrase1.mid" phrase10
+
+demo12 :: IO ()
+demo12 = printAsTabular default_score_info phrase10
+
+demo13 :: IO ()
+demo13 = printAsLinear default_score_info phrase10

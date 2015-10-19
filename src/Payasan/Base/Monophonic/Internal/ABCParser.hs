@@ -104,9 +104,8 @@ rest :: ABCParser ABCMonoElement
 rest = Rest <$> (char 'z' *> P.noteLength)
 
 note :: ABCParser ABCMonoElement
-note = (\p d -> Note p d () NO_TIE no_markup) <$> pitch <*> P.noteLength
+note = (\p d t -> Note p d () t no_markup) <$> pitch <*> P.noteLength <*> P.tie
     <?> "note"
-
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.

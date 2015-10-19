@@ -32,6 +32,7 @@ module Payasan.Base.Internal.LilyPond.Parser
   , noteLength
 
   , noAnno
+  , tie
 
   , makeTupletSpec
 
@@ -104,15 +105,15 @@ makeLyParser def = fullInputParse phrase
 
 
     noteElem :: LyParser (GenLyElement pch anno)
-    noteElem = (\n a -> NoteElem n a NO_TIE no_markup) 
-                  <$> note <*> pAnno
+    noteElem = (\n a t -> NoteElem n a t no_markup) 
+                  <$> note <*> pAnno <*> tie
 
     rest :: LyParser (GenLyElement pch anno)
-    rest = Rest <$> (char 'z' *> noteLength)
+    rest = Rest <$> (char 'r' *> noteLength)
 
     chord :: LyParser (GenLyElement pch anno)
-    chord = (\ps n a -> Chord ps n a NO_TIE no_markup)
-                <$> angles (many1 pPitch) <*> noteLength <*> pAnno
+    chord = (\ps n a t -> Chord ps n a t no_markup)
+                <$> angles (many1 pPitch) <*> noteLength <*> pAnno <*> tie
 
 
     graces :: LyParser (GenLyElement pch anno)
@@ -225,6 +226,14 @@ numeric = do { n <- int; ds <- many (char '.'); step n ds }
 
 noAnno :: LyParser ()
 noAnno = return ()
+
+
+tie :: LyParser Tie
+tie = atie <|> notie
+  where
+    atie  = TIE <$ try (whiteSpace >> symbol "~")
+    notie = return NO_TIE 
+
 
 --------------------------------------------------------------------------------
 -- Helpers

@@ -132,7 +132,7 @@ oNoteGroupList :: CatOp -> [ABCNoteGroup] -> Doc
 oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
 
 oNoteGroup :: CatOp -> ABCNoteGroup -> Doc
-oNoteGroup _  (Atom e)          = oElement e
+oNoteGroup op (Atom e)          = oElement op e
 oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 
@@ -141,10 +141,15 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 --
 -- Skip is treated as a rest.
 --
-oElement :: ABCElement -> Doc
-oElement (NoteElem n _ _ _)     = note n
-oElement (Rest d)               = rest d 
-oElement (Skip d)               = rest d 
-oElement (Chord ps d _ _ _)     = chord ps d 
-oElement (Graces xs)            = graceForm $ map note xs
-oElement (Punctuation {})       = empty
+oElement :: CatOp -> ABCElement -> Doc
+oElement op (NoteElem n _ t _)  = tied op (note n) t
+oElement _  (Rest d)            = rest d 
+oElement _  (Skip d)            = rest d 
+oElement op (Chord ps d _ t _)  = tied op (chord ps d) t
+oElement _  (Graces xs)         = graceForm $ map note xs
+oElement _  (Punctuation {})    = empty
+
+
+tied :: CatOp -> Doc -> Tie -> Doc
+tied _  d NO_TIE = d
+tied op d TIE    = d `op` char '-'

@@ -25,6 +25,8 @@ module Payasan.Base.Internal.ABC.Parser
   , pitchLetter
   , noteLength
   , tupletSpec
+  , tie
+
   ) where
 
 import Payasan.Base.Internal.ABC.Lexer
@@ -85,11 +87,11 @@ rest :: ABCParser ABCElement
 rest = Rest <$> (char 'z' *> noteLength)
 
 noteElem :: ABCParser ABCElement
-noteElem = (\e -> NoteElem e () NO_TIE no_markup) <$> note
+noteElem = (\e t -> NoteElem e () t no_markup) <$> note <*> tie
 
 chord :: ABCParser ABCElement
-chord = (\ps d -> Chord ps d () NO_TIE no_markup)
-          <$> squares (many1 pitch) <*> noteLength
+chord = (\ps d t -> Chord ps d () t no_markup)
+          <$> squares (many1 pitch) <*> noteLength <*> tie
 
 graces :: ABCParser ABCElement
 graces = Graces <$> braces (many1 note)
@@ -201,6 +203,12 @@ tupletSpec = symbol "(" *> int >>= step1
 
     decode2 n t = return $ TupletSpec n t n
 
+
+tie :: ABCParser Tie
+tie = atie <|> notie
+  where
+    atie  = TIE <$ try (whiteSpace >> symbol "-")
+    notie = return NO_TIE 
 
 --------------------------------------------------------------------------------
 -- Helpers
