@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MIDI.Output
+-- Module      :  Payasan.Base.Internal.MIDI.BeamToMIDI
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,13 +10,15 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Main syntax to MIDI syntax.
+-- Convert Beam syntax to MIDI syntax.
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MIDI.Output
+module Payasan.Base.Internal.MIDI.BeamToMIDI
   ( 
-    midiOutput
+
+    translateToMIDI
+
   ) where
 
 import qualified Payasan.Base.Internal.MIDI.RenderOutput as T
@@ -45,8 +47,8 @@ import Payasan.Base.Duration
 type Mon a = Rewrite Seconds a
 
 
-midiOutput :: T.TrackData -> Phrase T.MidiPitch Duration anno -> T.Track
-midiOutput td ph = T.render $ evalRewrite (phraseT td ph) 0
+translateToMIDI :: T.TrackData -> Phrase T.MidiPitch RDuration anno -> T.Track
+translateToMIDI td ph = T.render $ evalRewrite (phraseT td ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.
@@ -61,63 +63,47 @@ advanceOnset d = puts (\s -> s+d)
 onset :: Mon Seconds
 onset = get
 
-phraseT :: T.TrackData -> Phrase T.MidiPitch Duration anno -> Mon T.InterimTrack
-phraseT td (Phrase bs) = 
-    (\nss -> T.InterimTrack { T.track_config = td
-                            , T.track_notes  = concat nss
-                            })
-        <$> mapM barT bs
+phraseT :: T.TrackData -> Phrase T.MidiPitch RDuration anno -> Mon T.InterimTrack
+phraseT td ph = 
+    (\ns -> T.InterimTrack { T.track_config = td
+                           , T.track_notes  = concat ns
+                           })
+        <$> mapM elementT (makeTiedNoteStream ph)
  
 
 
-barT :: Bar T.MidiPitch Duration anno -> Mon [T.MidiNote]
-barT (Bar info cs)           = concat <$> mapM (noteGroupT df) cs
-  where
-    df = noteDuration (local_bpm info)
-     
+-- Ties have been coalesced at this point...
+--
+elementT :: Element T.MidiPitch Seconds anno -> Mon [T.MidiNote]
+elementT (NoteElem e _ _ _)     = (\x -> [x]) <$> noteT e
 
-
-noteGroupT :: (Duration -> Seconds) 
-           -> NoteGroup T.MidiPitch Duration anno -> Mon [T.MidiNote]
-noteGroupT df (Atom e)          = elementT df e
-noteGroupT df (Beamed es)       = concat <$> mapM (noteGroupT df) es
-noteGroupT _  (Tuplet {})       = return []
-
-elementT :: (Duration -> Seconds) 
-         -> Element T.MidiPitch Duration anno -> Mon [T.MidiNote]
-elementT df (NoteElem e _ _ _)  = (\x -> [x]) <$> noteT df e
-
-elementT df (Rest d)            = 
-    do { let d1 = df d
-       ; advanceOnset d1
+elementT (Rest d)               = 
+    do { advanceOnset d
        ; return []
        }
 
--- Skip is same as Rest
-elementT df (Skip d)            = 
-    do { let d1 = df d
-       ; advanceOnset d1
+-- MIDI: Skip is same as Rest
+elementT (Skip d)               = 
+    do { advanceOnset d
        ; return []
        }
 
-elementT df (Chord ps d _ _ _)  = 
+elementT (Chord ps d _ _ _)     = 
     do { ot <- onset
-       ; let d1 = df d
-       ; advanceOnset d1
-       ; return $ map (makeNote ot d1) ps
+       ; advanceOnset d
+       ; return $ map (makeNote ot d) ps
        }
 
-elementT _  (Graces {})         = return []
+elementT (Graces {})            = return []
 
-elementT _  (Punctuation {})    = return []
+elementT (Punctuation {})       = return []
 
 
-noteT :: (Duration -> Seconds) -> Note T.MidiPitch Duration -> Mon T.MidiNote
-noteT df (Note pch drn)        = 
+noteT :: Note T.MidiPitch Seconds -> Mon T.MidiNote
+noteT (Note pch drn)            = 
     do { ot <- onset
-       ; let d1 = df drn
-       ; advanceOnset d1
-       ; return $ makeNote ot d1 pch
+       ; advanceOnset drn
+       ; return $ makeNote ot drn pch
        }
 
 
@@ -135,9 +121,84 @@ makeNote ot d p = T.MidiNote
     }
 
 
-noteDuration :: BPM -> Duration -> Seconds
-noteDuration bpm d = realToFrac (durationSize d) * (4 * quarterNoteDuration bpm)
+noteDuration :: BPM -> RDuration -> Seconds
+noteDuration bpm d = realToFrac d * (4 * quarterNoteDuration bpm)
 
 quarterNoteDuration :: BPM -> Seconds
 quarterNoteDuration bpm = realToFrac $ 60 / bpm
+
+--------------------------------------------------------------------------------
+-- Coalesce tied notes and chords
+
+-- First step linearize and turn duration to seconds
+-- need to be in lear form to concat tied notes chords across 
+-- bar lines / note groups
+
+
+makeTiedNoteStream :: Phrase T.MidiPitch RDuration anno -> [Element T.MidiPitch Seconds anno]
+makeTiedNoteStream = coalesce . linearize
+
+
+linearize :: Phrase T.MidiPitch RDuration anno -> [Element T.MidiPitch Seconds anno]
+linearize (Phrase bs) = concatMap linearizeB bs
+
+linearizeB :: Bar T.MidiPitch RDuration anno -> [Element T.MidiPitch Seconds anno]
+linearizeB (Bar info cs) = 
+    let bpm = local_bpm info in concatMap (linearizeNG bpm) cs
+
+
+linearizeNG :: BPM -> NoteGroup T.MidiPitch RDuration anno -> [Element T.MidiPitch Seconds anno]
+linearizeNG bpm (Atom e)        = [linearizeE bpm e]
+linearizeNG bpm (Beamed es)     = concatMap (linearizeNG bpm) es
+linearizeNG _   (Tuplet {})     = []
+
+linearizeE :: BPM -> Element T.MidiPitch RDuration anno -> Element T.MidiPitch Seconds anno
+linearizeE bpm (NoteElem e a t m)   = NoteElem (linearizeN bpm e) a t m
+linearizeE bpm (Rest d)             = Rest $ noteDuration bpm d
+linearizeE bpm (Skip d)             = Skip $ noteDuration bpm d
+linearizeE bpm (Chord ps d a t m)   = Chord ps (noteDuration bpm d) a t m
+linearizeE bpm (Graces ns)          = Graces $ map (linearizeN bpm) ns
+linearizeE _   (Punctuation s)      = Punctuation s
+
+
+linearizeN :: BPM -> Note T.MidiPitch RDuration -> Note T.MidiPitch Seconds
+linearizeN bpm (Note pch drn)   = Note pch $ noteDuration bpm drn
+
+
+coalesce :: [Element T.MidiPitch Seconds anno] -> [Element T.MidiPitch Seconds anno]
+coalesce []     = []
+coalesce (x:xs) = step x xs
+  where
+    step a []     = [a]
+    step a (b:bs) = case together a b of
+                      Nothing -> a : step b bs
+                      Just t -> step t bs
+
+-- Join together notes or chords if tied (and have the same notes).
+--
+together :: Element T.MidiPitch Seconds anno 
+         -> Element T.MidiPitch Seconds anno 
+         -> Maybe (Element T.MidiPitch Seconds anno)
+together (NoteElem n1 _ t1 _)   (NoteElem n2 a t2 m)    = 
+    case together1 n1 n2 t1 of
+      Just note -> Just $ NoteElem note a t2 m
+      Nothing -> Nothing
+
+together (Chord ps1 d1 _ TIE _) (Chord ps2 d2 a t m)    = 
+    if ps1 == ps2 then Just $ Chord ps2 (d1+d2) a t m
+                  else Nothing
+
+together _                      _                       = Nothing
+
+
+
+-- Together for notes...
+--
+together1 :: Note T.MidiPitch Seconds 
+          -> Note T.MidiPitch Seconds 
+          -> Tie 
+          -> Maybe (Note T.MidiPitch Seconds)
+together1 (Note p1 d1) (Note p2 d2) t 
+    | p1 == p2 && t == TIE   = Just $ Note p1 (d1+d2)
+    | otherwise              = Nothing
 

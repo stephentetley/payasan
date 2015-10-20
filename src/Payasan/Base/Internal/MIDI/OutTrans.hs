@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MIDI.PitchTrans
+-- Module      :  Payasan.Base.Internal.MIDI.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,13 +10,13 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Main syntax to MIDI syntax.
+-- Convert Pitch to MidiPitch and Duration to RDuration.
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MIDI.PitchTrans
+module Payasan.Base.Internal.MIDI.OutTrans
   ( 
-    translate
+    translateToMidiPD
   ) where
 
 
@@ -28,11 +28,10 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-translate :: Phrase Pitch Duration anno -> Phrase MidiPitch Duration anno
-translate = transformP pch_algo
+translateToMidiPD :: Phrase Pitch Duration anno -> Phrase MidiPitch RDuration anno
+translateToMidiPD = transformD drn_algo . transformP pch_algo
 
 
-type PTMon   a      = Mon () a
 
 
 --------------------------------------------------------------------------------
@@ -42,18 +41,42 @@ type PTMon   a      = Mon () a
 pch_algo :: BeamPitchAlgo () Pitch MidiPitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
-    , element_trafoP    = elementP
+    , element_trafoP    = liftElementTrafo elementP
     }
 
 
-elementP :: Element Pitch drn anno -> PTMon (Element MidiPitch drn anno)
-elementP (NoteElem e a t m)     = (\n -> NoteElem n a t m) <$> noteP e
-elementP (Rest d)               = pure $ Rest d
-elementP (Skip d)               = pure $ Skip d
-elementP (Chord ps d a t m)     = pure $ Chord (map pitchToMidi ps) d a t m
-elementP (Graces ns)            = Graces <$> mapM noteP ns
-elementP (Punctuation s)        = pure $ Punctuation s
+elementP :: Element Pitch drn anno -> Element MidiPitch drn anno
+elementP (NoteElem e a t m)     = NoteElem (noteP e) a t m
+elementP (Rest d)               = Rest d
+elementP (Skip d)               = Skip d
+elementP (Chord ps d a t m)     = Chord (map pitchToMidi ps) d a t m
+elementP (Graces ns)            = Graces $ map noteP ns
+elementP (Punctuation s)        = Punctuation s
 
 
-noteP :: Note Pitch drn -> PTMon (Note MidiPitch drn)
-noteP (Note pch drn)            = pure $ Note (pitchToMidi pch) drn
+noteP :: Note Pitch drn -> Note MidiPitch drn
+noteP (Note pch drn)            = Note (pitchToMidi pch) drn
+
+
+--------------------------------------------------------------------------------
+-- Duration translation
+
+
+drn_algo :: BeamDurationAlgo () Duration RDuration
+drn_algo = BeamDurationAlgo
+    { initial_stateD    = ()
+    , element_trafoD    = liftElementTrafo elementD
+    }
+
+
+elementD :: Element pch Duration anno -> Element pch RDuration anno
+elementD (NoteElem e a t m)     = NoteElem (noteD e) a t m
+elementD (Rest d)               = Rest $ durationSize d
+elementD (Skip d)               = Skip $ durationSize d
+elementD (Chord ps d a t m)     = Chord ps (durationSize d) a t m
+elementD (Graces ns)            = Graces $ map noteD ns
+elementD (Punctuation s)        = Punctuation s
+
+
+noteD :: Note pch Duration -> Note pch RDuration
+noteD (Note pch drn)            = Note pch $ durationSize drn

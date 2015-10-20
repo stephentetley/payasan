@@ -87,9 +87,9 @@ import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
+import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
 import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
-import qualified Payasan.Base.Internal.MIDI.PitchTrans      as MIDI
+import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
 import Payasan.Base.Internal.Output.Common
@@ -308,11 +308,11 @@ ppRender = renderStyle (style {lineLength=500})
 
 writeAsMIDI :: FilePath -> StdPhrase -> IO ()
 writeAsMIDI path notes = 
-    let trk = MIDI.midiOutput (MIDI.simpleTrackData 1) (noteTrans notes)
+    let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 1) (noteTrans notes)
     in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhrase -> BEAM.Phrase MIDI.MidiPitch Duration ()
-noteTrans = MIDI.translate . translateToBeam
+noteTrans :: StdPhrase -> BEAM.Phrase MIDI.MidiPitch RDuration ()
+noteTrans = MIDI.translateToMidiPD . translateToBeam
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 

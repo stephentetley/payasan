@@ -37,6 +37,14 @@ demo02 :: IO ()
 demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01ly
 
 
+-- Just two notes...
+phrase02 :: StdMonoPhrase
+phrase02 = fromLilyPondWith globals locals $ 
+    [lilypond| b'2 r8 b8 ~ b4  |]
+
+demo03 :: IO ()
+demo03 = writeAsMIDI "out/tied01.mid" phrase02
+
 
 
 phrase10 :: StdMonoPhrase
