@@ -31,6 +31,7 @@ import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
 
+import Data.Ratio
 
 -- | Translate should operate on: 
 --
@@ -148,9 +149,11 @@ linearizeB (Bar info cs) =
 
 
 linearizeNG :: BPM -> NoteGroup T.MidiPitch RDuration anno -> [Element T.MidiPitch Seconds anno]
-linearizeNG bpm (Atom e)        = [linearizeE bpm e]
-linearizeNG bpm (Beamed es)     = concatMap (linearizeNG bpm) es
-linearizeNG _   (Tuplet {})     = []
+linearizeNG bpm (Atom e)            = [linearizeE bpm e]
+linearizeNG bpm (Beamed es)         = concatMap (linearizeNG bpm) es
+linearizeNG bpm (Tuplet spec es)    = map (scaleD (t%n)) $ concatMap (linearizeNG bpm) es
+  where
+    (TupletSpec t n _) = spec
 
 linearizeE :: BPM -> Element T.MidiPitch RDuration anno -> Element T.MidiPitch Seconds anno
 linearizeE bpm (NoteElem e a t m)   = NoteElem (linearizeN bpm e) a t m
@@ -163,6 +166,20 @@ linearizeE _   (Punctuation s)      = Punctuation s
 
 linearizeN :: BPM -> Note T.MidiPitch RDuration -> Note T.MidiPitch Seconds
 linearizeN bpm (Note pch drn)   = Note pch $ noteDuration bpm drn
+
+-- Simplistic scaling of Tuplets - does this really work?
+--
+scaleD :: Ratio Int -> Element pch Seconds anno -> Element pch Seconds anno
+scaleD sc elt = step (realToFrac sc) elt
+  where
+    step x (NoteElem n a t m)   = NoteElem (note x n) a t m
+    step x (Rest d)             = Rest $ x * d
+    step x (Skip d)             = Skip $ x * d
+    step x (Chord ps d a t m)   = Chord ps (x * d) a t m
+    step x (Graces ns)          = Graces $ map (note x) ns
+    step _ (Punctuation s)      = Punctuation s
+
+    note x (Note p d)           = Note p (x * d)
 
 
 coalesce :: [Element T.MidiPitch Seconds anno] -> [Element T.MidiPitch Seconds anno]
