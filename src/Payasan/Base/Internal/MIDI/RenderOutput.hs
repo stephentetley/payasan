@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Generate MIDI files.
+-- Generate MIDI files from /PrimitiveSyntax/.
 -- 
 --------------------------------------------------------------------------------
 

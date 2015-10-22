@@ -78,7 +78,7 @@ deltaKey (LocalContextInfo { local_key = k1 }) =
 --------------------------------------------------------------------------------
 
 
-abcOutput :: ScoreInfo -> ABCPhrase -> Doc
+abcOutput :: ScoreInfo -> GenABCPhrase anno -> Doc
 abcOutput info ph = header $+$ body
   where
     first_info  = maybe default_local_info id $ firstContextInfo ph
@@ -98,7 +98,7 @@ oHeader globals locals =
   where
     key_clef = (key $ local_key locals) <+> (clef $ global_clef globals)
 
-oABCPhrase :: ABCPhrase -> Mon Doc
+oABCPhrase :: GenABCPhrase anno -> Mon Doc
 oABCPhrase (Phrase [])          = return empty
 oABCPhrase (Phrase (x:xs))      = do { d <- oBar x; step d xs }
   where
@@ -112,7 +112,7 @@ oABCPhrase (Phrase (x:xs))      = do { d <- oBar x; step d xs }
                        }
 
 
-oBar :: ABCBar -> Mon Doc
+oBar :: GenABCBar anno -> Mon Doc
 oBar (Bar info cs)              = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
@@ -128,10 +128,10 @@ oBar (Bar info cs)              =
                                        <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
 
-oNoteGroupList :: CatOp -> [ABCNoteGroup] -> Doc
+oNoteGroupList :: CatOp -> [GenABCNoteGroup anno] -> Doc
 oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
 
-oNoteGroup :: CatOp -> ABCNoteGroup -> Doc
+oNoteGroup :: CatOp -> GenABCNoteGroup anno -> Doc
 oNoteGroup op (Atom e)          = oElement op e
 oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
@@ -141,7 +141,7 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 --
 -- Skip is treated as a rest.
 --
-oElement :: CatOp -> ABCElement -> Doc
+oElement :: CatOp -> GenABCElement anno -> Doc
 oElement op (NoteElem n _ t _)  = tied op (note n) t
 oElement _  (Rest d)            = rest d 
 oElement _  (Skip d)            = rest d 

@@ -17,6 +17,7 @@
 module Payasan.Base.Internal.MIDI.OutTrans
   ( 
     translateToMidiPD
+  , translateToMidiD
   ) where
 
 
@@ -30,6 +31,9 @@ import Payasan.Base.Pitch
 
 translateToMidiPD :: Phrase Pitch Duration anno -> Phrase MidiPitch RDuration anno
 translateToMidiPD = transformD drn_algo . transformP pch_algo
+
+translateToMidiD :: Phrase pch Duration anno -> Phrase pch RDuration anno
+translateToMidiD = transformD drn_algo
 
 
 

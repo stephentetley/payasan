@@ -198,14 +198,14 @@ fromLilyPondWithIO gi ri ph =
 
 
 
-outputAsABC :: ScoreInfo -> StdPhrase -> String
+outputAsABC :: ScoreInfo -> StdPhraseAnno anno -> String
 outputAsABC info = 
     ppRender . abcOutput info 
              . ABC.translateToOutput
              . addBeams 
              . translateToBeam
 
-printAsABC :: ScoreInfo -> StdPhrase -> IO ()
+printAsABC :: ScoreInfo -> StdPhraseAnno anno -> IO ()
 printAsABC info = putStrLn . outputAsABC info
 
 
@@ -291,7 +291,7 @@ genOutputAsRhythmicMarkup def info =
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = const empty }
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdPhraseAnno anno -> String
 outputAsRhythmicMarkup gi = ppRender . genOutputAsRhythmicMarkup def gi
   where
     def = LY.MarkupOutput { LY.asMarkup = \p -> teeny (braces $ pPrint p) }
@@ -306,13 +306,15 @@ ppRender :: Doc -> String
 ppRender = renderStyle (style {lineLength=500})
 
 
-writeAsMIDI :: FilePath -> StdPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdPhraseAnno anno -> IO ()
 writeAsMIDI path notes = 
     let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 1) (noteTrans notes)
     in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhrase -> BEAM.Phrase MIDI.MidiPitch RDuration ()
+noteTrans :: StdPhraseAnno anno -> BEAM.Phrase MIDI.MidiPitch RDuration anno
 noteTrans = MIDI.translateToMidiPD . translateToBeam
+
+
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 

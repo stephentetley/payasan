@@ -27,6 +27,12 @@ module Payasan.Base.Internal.ABC.Syntax
   , ABCElement
   , ABCNote
 
+  , GenABCPhrase
+  , GenABCBar
+  , GenABCNoteGroup
+  , GenABCElement
+  , GenABCNote
+
 
   , ABCPitch(..)
   , Accidental(..)
@@ -59,13 +65,23 @@ import Data.Ratio
 --------------------------------------------------------------------------------
 -- Syntax
 
--- | ABC is not annotated
+-- | ABC is not annotated, though polymorphic anno is used
+-- so that /more/ syntax can be printed.
 
-type ABCPhrase          = Phrase      ABCPitch ABCNoteLength ()
-type ABCBar             = Bar         ABCPitch ABCNoteLength ()
-type ABCNoteGroup       = NoteGroup   ABCPitch ABCNoteLength ()
-type ABCElement         = Element     ABCPitch ABCNoteLength ()
-type ABCNote            = Note        ABCPitch ABCNoteLength
+type ABCPhrase                  = GenABCPhrase    ()
+type ABCBar                     = GenABCBar       ()      
+type ABCNoteGroup               = GenABCNoteGroup ()
+type ABCElement                 = GenABCElement   ()
+type ABCNote                    = GenABCNote 
+
+
+-- Gen- prefix indicates the must general syntax allowed.
+
+type GenABCPhrase anno          = Phrase      ABCPitch ABCNoteLength anno
+type GenABCBar anno             = Bar         ABCPitch ABCNoteLength anno
+type GenABCNoteGroup anno       = NoteGroup   ABCPitch ABCNoteLength anno
+type GenABCElement anno         = Element     ABCPitch ABCNoteLength anno
+type GenABCNote                 = Note        ABCPitch ABCNoteLength
 
 
 -- Just give Picth and NoteLength ABC- prefix as they are 

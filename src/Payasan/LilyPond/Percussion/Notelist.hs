@@ -68,7 +68,8 @@ import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Linear.OutputMain
 import Payasan.Base.Internal.Output.Tabular.OutputMain
 
-import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
+import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
+import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDI
 import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
@@ -111,11 +112,12 @@ ppRender = MAIN.ppRender
 
 writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
 writeAsMIDI path notes = 
-   let trk = MIDI.midiOutput (MIDI.simpleTrackData 9) (noteTrans notes)
+   let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 9) (noteTrans notes)
    in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch Duration Accent
-noteTrans = PERC.translate . translateToBeam
+
+noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch RDuration Accent
+noteTrans = MIDI.translateToMidiD . PERC.translate . translateToBeam
 
 
 
