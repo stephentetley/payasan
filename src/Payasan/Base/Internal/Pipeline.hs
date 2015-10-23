@@ -88,7 +88,7 @@ import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
-import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
+import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
 import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
@@ -224,8 +224,8 @@ data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
 
 
 
-genOutputAsLilyPond :: LilyPondPipeline p1 a1 p2 a2
-                    -> Phrase p1 Duration a1
+genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
+                    -> Phrase p1i Duration a1i
                     -> Doc
 genOutputAsLilyPond config = 
     outputStep . toGenLyPhrase . beamingRewrite . translateToBeam
@@ -306,6 +306,12 @@ ppRender :: Doc -> String
 ppRender = renderStyle (style {lineLength=500})
 
 
+--------------------------------------------------------------------------------
+-- MIDI
+
+-- Should we have a @genOutputAsMIDI@ function?
+
+
 writeAsMIDI :: FilePath -> StdPhraseAnno anno -> IO ()
 writeAsMIDI path notes = 
     let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 1) (noteTrans notes)
@@ -315,7 +321,8 @@ noteTrans :: StdPhraseAnno anno -> BEAM.Phrase MIDI.MidiPitch RDuration anno
 noteTrans = MIDI.translateToMidiPD . translateToBeam
 
 
-
+--------------------------------------------------------------------------------
+-- Debug...
 
 outputAsTabular :: (Pretty pch, Pretty drn) 
                 => ScoreInfo -> Phrase pch drn anno -> String

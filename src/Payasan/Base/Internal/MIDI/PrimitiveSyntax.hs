@@ -43,11 +43,12 @@ import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Pitch
 
-import qualified ZMidi.Core as Z
 
 import Data.Function ( on )
 
-newtype Track = Track { getTrack :: Z.MidiTrack }
+
+
+newtype Track = Track { getTrack :: InterimTrack }
  
 
 

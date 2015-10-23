@@ -21,8 +21,7 @@ module Payasan.Base.Internal.MIDI.BeamToMIDI
 
   ) where
 
-import qualified Payasan.Base.Internal.MIDI.RenderOutput as T
-import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as T
+import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax     as T
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.BeamSyntax
@@ -49,7 +48,7 @@ type Mon a = Rewrite Seconds a
 
 
 translateToMIDI :: T.TrackData -> Phrase T.MidiPitch RDuration anno -> T.Track
-translateToMIDI td ph = T.render $ evalRewrite (phraseT td ph) 0
+translateToMIDI td ph = T.Track $ evalRewrite (phraseT td ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.

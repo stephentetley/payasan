@@ -69,8 +69,8 @@ import Payasan.Base.Internal.Output.Linear.OutputMain
 import Payasan.Base.Internal.Output.Tabular.OutputMain
 
 import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
+import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
 import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDI
-import qualified Payasan.Base.Internal.MIDI.RenderOutput    as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
 import qualified Payasan.Base.Notelist as MAIN

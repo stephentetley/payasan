@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MIDI.RenderOutput
+-- Module      :  Payasan.Base.Internal.MIDI.Output
 -- Copyright   :  (c) Stephen Tetley 2014-2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MIDI.RenderOutput
+module Payasan.Base.Internal.MIDI.Output
   ( 
     render
   , midiFileFormat0
@@ -51,13 +51,13 @@ delta_end_of_track = (0, Z.MetaEvent $ Z.EndOfTrack)
 
 
 -- render should make a Track...
-render :: InterimTrack -> Track
-render = Track . renderInterim
+render :: Track -> Z.MidiTrack
+render = renderInterim . getTrack
 
 
 midiFileFormat0 :: Track -> Z.MidiFile
 midiFileFormat0 trk = Z.MidiFile { Z.mf_header = header
-                           , Z.mf_tracks = [ getTrack trk ] }
+                                 , Z.mf_tracks = [ render trk ] }
   where
     header  :: Z.MidiHeader
     header  = Z.MidiHeader { Z.hdr_format    = Z.MF0
@@ -70,7 +70,7 @@ midiFileFormat0 trk = Z.MidiFile { Z.mf_header = header
 
 midiFileFormat1 :: [Track] -> Z.MidiFile
 midiFileFormat1 trks = Z.MidiFile { Z.mf_header = header
-                            , Z.mf_tracks = map getTrack trks }
+                                  , Z.mf_tracks = map render trks }
   where
     header  :: Z.MidiHeader
     header  = Z.MidiHeader { Z.hdr_format    = Z.MF1
@@ -85,6 +85,9 @@ writeMF0 path trk = Z.writeMidi path $ midiFileFormat0 trk
 writeMF1 :: FilePath -> [Track] -> IO ()
 writeMF1 path trks = Z.writeMidi path $ midiFileFormat1 trks
 
+
+--------------------------------------------------------------------------------
+-- Interim to ZMidi
 
 renderInterim :: InterimTrack -> Z.MidiTrack
 renderInterim (InterimTrack cfg xs) = Z.MidiTrack $ prolog $ body
