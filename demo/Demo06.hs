@@ -9,20 +9,21 @@ import Payasan.LilyPond.Chordmode.Notelist
 -- CHORDS -- 
 
 
+globals :: ScoreInfo
+globals = default_score_info
+
+
+locals :: LocalContextInfo
+locals = default_local_info
+
 
 phrase01 :: StdChordPhrase
-phrase01 = fromLilyPondWith globals locals $ 
+phrase01 = fromLilyPondWith locals $ 
     [chordmode| c2 f4:1.3+.5 g:dim7 |]
 
 
 
 
-globals :: ScoreInfo
-globals = default_score_info { global_ly_octave_mode = AbsPitch }
-
-
-locals :: LocalContextInfo
-locals = default_local_info
 
 
 

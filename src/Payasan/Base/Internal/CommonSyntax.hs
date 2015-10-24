@@ -19,10 +19,12 @@ module Payasan.Base.Internal.CommonSyntax
   ( 
 
     ScoreInfo(..)
+  , VoiceInfo(..)
   , OctaveMode(..)
   , Clef(..)
 
   , default_score_info
+  , default_voice_info 
 
   , LocalContextInfo(..)
   , UnitNoteLength(..)
@@ -76,18 +78,27 @@ import Data.Ratio
 -- Potentially there is a relationship between a user exposed 
 -- config and a larger internal one like Parsec\'s LanguageDef 
 -- and TokenParser
-
+--
+-- CORRECTION - AbsPitch / Relative Pitch is actually a voice level
+-- property.
+--
 
 
 data ScoreInfo = ScoreInfo
     { global_temp_abc_file      :: !String
     , global_temp_ly_file       :: !String
     , global_title              :: !String
-    , global_ly_octave_mode     :: !OctaveMode
     , global_ly_version         :: !String
-    , global_clef               :: !Clef
     }
   deriving (Data,Eq,Show,Typeable)
+
+
+data VoiceInfo = VoiceInfo 
+    { voice_ly_octave_mode      :: !OctaveMode
+    , voice_clef                :: !Clef
+    }
+  deriving (Data,Eq,Show,Typeable)
+
 
 data OctaveMode = AbsPitch 
                 | RelPitch !Pitch
@@ -102,9 +113,14 @@ default_score_info = ScoreInfo
     { global_temp_abc_file      = "abc_output.abc"
     , global_temp_ly_file       = "output.ly"
     , global_title              = ""
-    , global_ly_octave_mode     = RelPitch middle_c
     , global_ly_version         = "2.18.2"
-    , global_clef               = TREBLE
+    }
+
+
+default_voice_info :: VoiceInfo
+default_voice_info = VoiceInfo 
+    { voice_ly_octave_mode      = RelPitch middle_c
+    , voice_clef                = TREBLE
     }
 
 

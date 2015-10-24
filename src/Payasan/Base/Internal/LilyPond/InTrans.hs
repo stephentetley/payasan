@@ -33,13 +33,13 @@ import Payasan.Base.Pitch
 
 
 
-translateFromInput :: ScoreInfo 
+translateFromInput :: VoiceInfo 
                    -> Phrase LyPitch LyNoteLength anno 
                    -> Phrase Pitch Duration anno
 translateFromInput info = pitchTrafo . transformD drn_algo
   where
     -- If AbsPitch then /previous pitch/ will never be used
-    pitchTrafo = case global_ly_octave_mode info of
+    pitchTrafo = case voice_ly_octave_mode info of
                     RelPitch pch -> transformP (rel_pch_algo pch)
                     AbsPitch -> transformP abs_pch_algo
 

@@ -28,8 +28,11 @@ module Payasan.Base.Monophonic.Notelist
   , lilypond
 
   , ScoreInfo(..)        -- Re-export
-  , OctaveMode(..)
   , default_score_info
+
+  , VoiceInfo(..)
+  , OctaveMode(..)
+  , default_voice_info
 
   , LocalContextInfo(..)         -- Re-export
   , UnitNoteLength(..)
@@ -103,21 +106,24 @@ fromABCWith :: LocalContextInfo -> ABCMonoPhrase -> StdMonoPhrase
 fromABCWith ri = abcTranslate . pushContextInfo ri
 
 
-fromLilyPond :: ScoreInfo -> LyMonoPhrase () -> StdMonoPhrase
-fromLilyPond gi = fromLilyPondWith gi default_local_info
+fromLilyPond :: VoiceInfo -> LyMonoPhrase () -> StdMonoPhrase
+fromLilyPond infov = fromLilyPondWith infov default_local_info
 
-fromLilyPondWith :: ScoreInfo 
+fromLilyPondWith :: VoiceInfo 
                  -> LocalContextInfo 
                  -> LyMonoPhrase ()
                  -> StdMonoPhrase
-fromLilyPondWith gi ri = lilyPondTranslate gi . pushContextInfo ri
+fromLilyPondWith infov locals = 
+    lilyPondTranslate infov . pushContextInfo locals
 
 
-outputAsABC :: ScoreInfo -> StdMonoPhrase -> String
-outputAsABC gi = MAIN.outputAsABC gi . translateToMain
+outputAsABC :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> String
+outputAsABC infos infov = 
+    MAIN.outputAsABC infos infov . translateToMain
 
-printAsABC :: ScoreInfo -> StdMonoPhrase -> IO ()
-printAsABC gi = MAIN.printAsABC gi . translateToMain
+printAsABC :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> IO ()
+printAsABC infos infov = 
+    MAIN.printAsABC infos infov . translateToMain
 
 
 
@@ -136,26 +142,32 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 
-outputAsLilyPond :: ScoreInfo -> StdMonoPhrase -> String
-outputAsLilyPond gi = MAIN.outputAsLilyPond gi . translateToMain
+outputAsLilyPond :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> String
+outputAsLilyPond infos infov = 
+    MAIN.outputAsLilyPond infos infov . translateToMain
 
-printAsLilyPond :: ScoreInfo -> StdMonoPhrase -> IO ()
-printAsLilyPond gi = MAIN.printAsLilyPond gi . translateToMain
+printAsLilyPond :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> IO ()
+printAsLilyPond infos infov = 
+    MAIN.printAsLilyPond infos infov . translateToMain
 
 
 
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo 
+                          -> VoiceInfo
                           -> Phrase pch Duration anno
                           -> Doc
-genOutputAsRhythmicMarkup def gi = MAIN.genOutputAsRhythmicMarkup def gi . translateToMain
+genOutputAsRhythmicMarkup def infos infov = 
+    MAIN.genOutputAsRhythmicMarkup def infos infov . translateToMain
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> String
-outputAsRhythmicMarkup gi = MAIN.outputAsRhythmicMarkup gi . translateToMain
+outputAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> String
+outputAsRhythmicMarkup infos infov = 
+    MAIN.outputAsRhythmicMarkup infos infov . translateToMain
 
-printAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> IO ()
-printAsRhythmicMarkup gi = MAIN.printAsRhythmicMarkup gi . translateToMain
+printAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> IO ()
+printAsRhythmicMarkup infos infov = 
+    MAIN.printAsRhythmicMarkup infos infov . translateToMain
 
 
 

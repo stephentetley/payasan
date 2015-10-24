@@ -5,7 +5,6 @@ module Demo07 where
 
 import Payasan.LilyPond.Lyricmode.Notelist
 
-import Payasan.LilyPond.Lyricmode.Internal.Interpret    -- TEMP
 
 
 -- LYRICS -- 
@@ -21,7 +20,7 @@ phrase01 = fromLilyPondWith globals locals $
 
 
 globals :: ScoreInfo
-globals = default_score_info { global_ly_octave_mode = AbsPitch }
+globals = default_score_info
 
 
 locals :: LocalContextInfo

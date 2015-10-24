@@ -40,13 +40,13 @@ import Payasan.Base.Pitch
 
 
 
-lilyPondTranslate :: ScoreInfo
+lilyPondTranslate :: VoiceInfo
                   -> GenLyMonoPhrase LyPitch anno 
                   -> Phrase Pitch Duration anno
 lilyPondTranslate info = pitchTrafo . trafoDuration
   where
     -- If AbsPitch then /previous pitch/ will never be used
-    pitchTrafo = case global_ly_octave_mode info of
+    pitchTrafo = case voice_ly_octave_mode info of
                     RelPitch pch -> trafoRelPitch pch
                     AbsPitch -> trafoAbsPitch
 

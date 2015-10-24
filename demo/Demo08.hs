@@ -27,8 +27,7 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 globals :: ScoreInfo
-globals = default_score_info { global_ly_octave_mode = AbsPitch }
-
+globals = default_score_info
 
 locals :: LocalContextInfo
 locals = default_local_info
@@ -47,13 +46,15 @@ demo01 = shellOutLilyPond globals $ outputAsLilyPond globals [dia01,dia02] $
     fromNoteList locals standard_tuning [ [ chord dia01 d_whole ]
                                         , [ chord dia02 d_whole ] ]
 
+voice :: MONO.VoiceInfo
+voice = MONO.default_voice_info { MONO.voice_ly_octave_mode = AbsPitch }
 
 temp01 :: IO ()
-temp01 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
+temp01 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals voice $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ standard_tuning
 
 temp02 :: IO ()
-temp02 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
+temp02 = shellOutLilyPond globals $ MONO.outputAsLilyPond globals voice $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where
     pitches :: [Pitch]
@@ -69,7 +70,7 @@ test03 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;
 -- This was showing an error in transposeWithDiatonicInterval ** NOW FIXED
 --
 test04 :: IO ()
-test04 = MONO.shellOutLilyPond globals $ MONO.outputAsLilyPond globals $ 
+test04 = MONO.shellOutLilyPond globals $ MONO.outputAsLilyPond globals voice $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where
     pitches = let fn = transposeWithDiatonicInterval c_major 

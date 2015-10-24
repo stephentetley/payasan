@@ -27,8 +27,11 @@ module Payasan.Base.Internal.Pipeline
   , lilypond
 
   , ScoreInfo(..)
-  , OctaveMode(..)
   , default_score_info 
+
+  , VoiceInfo(..)
+  , OctaveMode(..)
+  , default_voice_info 
 
   , LocalContextInfo(..)
   , UnitNoteLength(..)
@@ -175,15 +178,15 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond :: ScoreInfo -> LY.LyPhrase () -> StdPhrase 
+fromLilyPond :: VoiceInfo -> LY.LyPhrase () -> StdPhrase 
 fromLilyPond gi = fromLilyPondWith gi default_local_info
 
 
-fromLilyPondWith :: ScoreInfo -> LocalContextInfo -> LY.LyPhrase () -> StdPhrase
+fromLilyPondWith :: VoiceInfo -> LocalContextInfo -> LY.LyPhrase () -> StdPhrase
 fromLilyPondWith gi ri = 
     translateToMain . LY.translateFromInput gi . BEAM.pushContextInfo ri
 
-fromLilyPondWithIO :: ScoreInfo 
+fromLilyPondWithIO :: VoiceInfo 
                    -> LocalContextInfo 
                    -> LY.LyPhrase () 
                    -> IO StdPhrase
@@ -198,15 +201,15 @@ fromLilyPondWithIO gi ri ph =
 
 
 
-outputAsABC :: ScoreInfo -> StdPhraseAnno anno -> String
-outputAsABC info = 
-    ppRender . abcOutput info 
+outputAsABC :: ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> String
+outputAsABC infos infov = 
+    ppRender . abcOutput infos infov
              . ABC.translateToOutput
              . addBeams 
              . translateToBeam
 
-printAsABC :: ScoreInfo -> StdPhraseAnno anno -> IO ()
-printAsABC info = putStrLn . outputAsABC info
+printAsABC :: ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> IO ()
+printAsABC infos infov = putStrLn . outputAsABC infos infov
 
 
 -- | This can capture both full score output and just notelist 
@@ -262,18 +265,20 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 
-outputAsLilyPond :: Anno anno => ScoreInfo -> StdPhraseAnno anno -> String
-outputAsLilyPond globals = ppRender . genOutputAsLilyPond config
+outputAsLilyPond :: Anno anno 
+                 => ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> String
+outputAsLilyPond infos infov = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
-                               , out_trafo   = LY.translateToOutput globals
-                               , output_func = LY.simpleScore std_def globals 
+                               , out_trafo   = LY.translateToOutput infov
+                               , output_func = LY.simpleScore std_def infos infov
                                }
     std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = anno }
 
 
-printAsLilyPond :: Anno anno => ScoreInfo -> StdPhraseAnno anno -> IO ()
-printAsLilyPond gi = putStrLn . outputAsLilyPond gi
+printAsLilyPond :: Anno anno 
+                => ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> IO ()
+printAsLilyPond infos infov = putStrLn . outputAsLilyPond infos infov
 
 
 
@@ -281,24 +286,26 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo
+                          -> VoiceInfo
                           -> Phrase pch Duration anno 
                           -> Doc
-genOutputAsRhythmicMarkup def info = 
-    LY.rhythmicMarkupScore ppDef info . LY.translateToRhythmicMarkup def
-                                      . addBeams 
-                                      . translateToBeam
+genOutputAsRhythmicMarkup def infos infov = 
+    LY.rhythmicMarkupScore ppDef infos infov . LY.translateToRhythmicMarkup def
+                                             . addBeams 
+                                             . translateToBeam
   where
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = const empty }
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdPhraseAnno anno -> String
-outputAsRhythmicMarkup gi = ppRender . genOutputAsRhythmicMarkup def gi
+outputAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> String
+outputAsRhythmicMarkup infos infov = 
+    ppRender . genOutputAsRhythmicMarkup def infos infov
   where
     def = LY.MarkupOutput { LY.asMarkup = \p -> teeny (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()
-printAsRhythmicMarkup gi = putStrLn . outputAsRhythmicMarkup gi
+printAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdPhrase -> IO ()
+printAsRhythmicMarkup infos infov = putStrLn . outputAsRhythmicMarkup infos infov
 
 
 

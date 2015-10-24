@@ -45,7 +45,8 @@ lyricsScore globals ph1 ph2 =
         header $+$ simultaneous1 (rhythm $+$ lyrics)
   where
     header          = scoreHeader globals
-    rhythm          = rhythmicMarkupVoice rhythm_def globals ph1
+    rhythm          = rhythmicMarkupVoice rhythm_def voice ph1
+    voice           = default_voice_info { voice_ly_octave_mode = AbsPitch }
     rhythm_def      = LyOutputDef { printPitch = pitch, printAnno = anno }
 
     lyrics          = lyricsVoice globals ph2

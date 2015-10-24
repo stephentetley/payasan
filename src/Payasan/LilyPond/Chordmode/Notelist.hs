@@ -86,21 +86,20 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 -- Use Monophonic syntax...
 
-fromLilyPond :: ScoreInfo -> LyChordPhrase -> StdChordPhrase
-fromLilyPond gi = fromLilyPondWith gi default_local_info
+fromLilyPond :: LyChordPhrase -> StdChordPhrase
+fromLilyPond = fromLilyPondWith default_local_info
 
-fromLilyPondWith :: ScoreInfo 
-                 -> LocalContextInfo 
+fromLilyPondWith :: LocalContextInfo 
                  -> LyChordPhrase 
                  -> StdChordPhrase
-fromLilyPondWith _gi ri = 
-    translateInput . MONO.pushContextInfo ri
+fromLilyPondWith locals = 
+    translateInput . MONO.pushContextInfo locals
 
 
 
 outputAsLilyPond :: ScoreInfo -> StdChordPhrase -> String
 outputAsLilyPond globals = 
-    MAIN.ppRender . MAIN.genOutputAsLilyPond config  
+    MAIN.ppRender . MAIN.genOutputAsLilyPond config
                   . MONO.translateToMain 
                   . translateOutput
   where
@@ -112,18 +111,19 @@ outputAsLilyPond globals =
 
 
 printAsLilyPond :: ScoreInfo -> StdChordPhrase -> IO ()
-printAsLilyPond gi = putStrLn . outputAsLilyPond gi
+printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> String
 outputAsRhythmicMarkup globals = 
-    MAIN.ppRender . MONO.genOutputAsRhythmicMarkup def globals
+    MAIN.ppRender . MONO.genOutputAsRhythmicMarkup def globals voice
   where
+    voice = default_voice_info { voice_ly_octave_mode = AbsPitch }
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
 
 
 printAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> IO ()
-printAsRhythmicMarkup gi = putStrLn . outputAsRhythmicMarkup gi
+printAsRhythmicMarkup globals = putStrLn . outputAsRhythmicMarkup globals
 
 
 ppRender :: Doc -> String

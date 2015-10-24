@@ -54,7 +54,7 @@ module Payasan.Base.Internal.LilyPond.Utils
   , beamForm
   , chordForm
   , graceForm
-
+  , tupletForm
  
   ) where
 
@@ -229,3 +229,5 @@ beamForm (d:ds) = d <> char '[' <> hsep ds <> char ']'
 beamForm []     = empty
 
 
+tupletForm :: TupletSpec -> [Doc] -> Doc
+tupletForm spec notes = tupletSpec spec <+> braces (hsep notes) 

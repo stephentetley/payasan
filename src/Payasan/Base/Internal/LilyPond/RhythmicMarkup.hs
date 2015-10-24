@@ -94,21 +94,21 @@ elementP mo elt = case elt of
 
 rhythmicMarkupScore :: LyOutputDef pch anno 
                     -> ScoreInfo 
-                    -> GenLyPhrase pch anno -> Doc
-rhythmicMarkupScore def info ph =
-        header $+$ simultaneous1 (rhythmicMarkupVoice def info ph)
+                    -> VoiceInfo -> GenLyPhrase pch anno -> Doc
+rhythmicMarkupScore def infos infov ph =
+        header $+$ simultaneous1 (rhythmicMarkupVoice def infov ph)
   where
-    header          = scoreHeader info
+    header          = scoreHeader infos
 
 
 rhythmicMarkupVoice :: LyOutputDef pch anno 
-                    -> ScoreInfo
+                    -> VoiceInfo
                     -> GenLyPhrase pch anno -> Doc
 rhythmicMarkupVoice def info ph = 
     block (Just rhythmic_staff) (modeBlockF $ (notes_header $+$ notes))
   where
     rhythmic_staff  = command "new" <+> text "RhythmicStaff"
-    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
+    modeBlockF      = octaveModeBlock (voice_ly_octave_mode info)
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = renderNotes def ph

@@ -77,12 +77,12 @@ data LyOutputDef pch anno = LyOutputDef
 
 simpleScore :: LyOutputDef pch anno 
             -> ScoreInfo 
-            -> GenLyPhrase pch anno -> Doc
-simpleScore def info ph = 
+            -> VoiceInfo -> GenLyPhrase pch anno -> Doc
+simpleScore def infos infov ph = 
         header 
-    $+$ anonBlock (simpleVoice def info ph)
+    $+$ anonBlock (simpleVoice def infov ph)
   where
-    header          = scoreHeader info
+    header          = scoreHeader infos
 
 
 scoreHeader :: ScoreInfo -> Doc
@@ -106,11 +106,11 @@ scoreHeader globals =
 -- Write alternative functions for other types of output.
 -- 
 simpleVoice :: LyOutputDef pch anno 
-            -> ScoreInfo 
+            -> VoiceInfo 
             -> GenLyPhrase pch anno -> Doc
 simpleVoice def info ph = modeBlockF (notes_header $+$ notes)
   where
-    modeBlockF      = octaveModeBlock (global_ly_octave_mode info)
+    modeBlockF      = octaveModeBlock (voice_ly_octave_mode info)
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = renderNotes def ph
@@ -171,7 +171,7 @@ renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
     oNoteGroup :: GenLyNoteGroup pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e
     oNoteGroup (Beamed cs)          = beamForm $ map oNoteGroup cs
-    oNoteGroup (Tuplet spec cs)     = tupletSpec spec <+> hsep (map oNoteGroup cs)
+    oNoteGroup (Tuplet spec cs)     = tupletForm spec (map oNoteGroup cs)
 
     oElement :: GenLyElement pch anno -> Doc
     oElement (NoteElem n a t m)     = 

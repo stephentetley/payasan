@@ -20,58 +20,61 @@ import Payasan.Base.ScaleDegree
 
 -- TRANSFORMATIONS -- 
 
+
+globals :: ScoreInfo
+globals = default_score_info
+
+voice :: VoiceInfo
+voice = default_voice_info { voice_ly_octave_mode = RelPitch middle_c  }
+
+locals :: LocalContextInfo
+locals = default_local_info { local_unit_note_len = UNIT_NOTE_4
+                             , local_key = d_minor  }
+
+
 phrase01 :: StdMonoPhrase
-phrase01 = fromLilyPondWith globals manuals $ 
+phrase01 = fromLilyPondWith voice locals $ 
     [lilypond| d2 a' | f d |]
 
 
 
-globals :: ScoreInfo
-globals = default_score_info { global_ly_octave_mode = RelPitch middle_c  }
-
-
-manuals :: LocalContextInfo
-manuals = default_local_info { local_unit_note_len = UNIT_NOTE_4
-                             , local_key = d_minor  }
-
-
 demo01 :: IO ()
 demo01 = 
-    do { printAsLilyPond globals phrase01
-       ; shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01
+    do { printAsLilyPond globals voice phrase01
+       ; shellOutLilyPond globals $ outputAsLilyPond globals voice $ phrase01
        ; putStrLn ""
-       ; printAsABC globals phrase01
-       ; shellOutABC globals $ outputAsABC globals $ phrase01
+       ; printAsABC globals voice phrase01
+       ; shellOutABC globals $ outputAsABC globals voice $ phrase01
        ; printAsTabular globals phrase01
        }
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ mapPitch (.+^ major_second) phrase01
+demo02 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ mapPitch (.+^ major_second) phrase01
 
 demo03 :: IO ()
-demo03 = printAsLilyPond globals $ augment phrase01
+demo03 = printAsLilyPond globals voice $ augment phrase01
 
 demo04 :: IO ()
-demo04 = shellOutABC globals $ outputAsABC globals $ augment phrase01
+demo04 = shellOutABC globals $ outputAsABC globals voice $ augment phrase01
 
 demo05 :: IO ()
-demo05 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
+demo05 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ 
     augment phrase01
 
 demo06 :: IO ()
-demo06 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
+demo06 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ 
     retrograde phrase01
 
 demo07 :: IO ()
-demo07 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
+demo07 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ 
     invertChromatic phrase01
 
 demo08 :: IO ()
-demo08 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
+demo08 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ 
     transposeDiatonic simple_second phrase01
 
 demo09 :: IO ()
-demo09 = shellOutLilyPond globals $ outputAsLilyPond globals $ 
+demo09 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ 
     invertDiatonic phrase01
 
 {-

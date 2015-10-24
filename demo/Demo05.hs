@@ -9,18 +9,22 @@ import Payasan.LilyPond.Percussion.Notelist
 
 -- DRUMS -- 
 
+globals :: ScoreInfo
+globals = default_score_info
+
+-- voice :: VoiceInfo
+-- voice = default_voice_info { voice_ly_octave_mode = AbsPitch }
+
+locals :: LocalContextInfo
+locals = default_local_info
+
+
 phrase01 :: StdDrumPhrase
-phrase01 = fromLilyPondWith globals locals $ 
+phrase01 = fromLilyPondWith locals $ 
     [drums| bda4-> bd bd bda | hh-> hh |]
 
 
 
-globals :: ScoreInfo
-globals = default_score_info { global_ly_octave_mode = AbsPitch }
-
-
-locals :: LocalContextInfo
-locals = default_local_info
 
 
 

@@ -73,10 +73,11 @@ outputAsLilyPond :: ScoreInfo -> StdLyricPhrase -> String
 outputAsLilyPond globals lyrics = 
     MAIN.ppRender $ MONO.genOutputAsLilyPond2 config2 beats lyrics
   where
+    voice           = default_voice_info { voice_ly_octave_mode = AbsPitch }
     beats           = MONO.censorPunctuation $ MONO.skipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
-                        , MAIN.pipe2_out_trafo1    = LY.translateToOutput globals
+                        , MAIN.pipe2_out_trafo1    = LY.translateToOutput voice
                         , MAIN.pipe2_beam_trafo2   = noBeams
                         , MAIN.pipe2_out_trafo2    = LY.translateToOutput_DurationOnly
                         , MAIN.pipe2_output_func   = lyricsScore globals

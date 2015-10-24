@@ -23,8 +23,11 @@ module Payasan.LilyPond.Percussion.Notelist
   , drums
 
   , ScoreInfo(..)
-  , OctaveMode(..)
   , default_score_info
+
+  , VoiceInfo(..)
+  , OctaveMode(..)
+  , default_voice_info
 
   , LocalContextInfo(..)
   , UnitNoteLength(..)
@@ -80,15 +83,14 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fromLilyPond :: ScoreInfo -> LyDrumPhrase -> StdDrumPhrase
-fromLilyPond gi = fromLilyPondWith gi default_local_info
+fromLilyPond :: LyDrumPhrase -> StdDrumPhrase
+fromLilyPond = fromLilyPondWith default_local_info
 
-fromLilyPondWith :: ScoreInfo 
-                 -> LocalContextInfo 
+fromLilyPondWith :: LocalContextInfo 
                  -> LyDrumPhrase
                  -> StdDrumPhrase
-fromLilyPondWith _gi ri = 
-    translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushContextInfo ri
+fromLilyPondWith locals = 
+    translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushContextInfo locals
 
 
 

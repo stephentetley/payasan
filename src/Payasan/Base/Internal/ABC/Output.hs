@@ -78,25 +78,25 @@ deltaKey (LocalContextInfo { local_key = k1 }) =
 --------------------------------------------------------------------------------
 
 
-abcOutput :: ScoreInfo -> GenABCPhrase anno -> Doc
-abcOutput info ph = header $+$ body
+abcOutput :: ScoreInfo -> VoiceInfo -> GenABCPhrase anno -> Doc
+abcOutput infos infov ph = header $+$ body
   where
     first_info  = maybe default_local_info id $ firstContextInfo ph
-    header      = oHeader info first_info
+    header      = oHeader infos infov first_info
     body        = evalRewrite (oABCPhrase ph) (stateZero first_info)
 
 -- | Note X field must be first K field should be last -
 -- see abcplus manual page 11.
 --
-oHeader :: ScoreInfo -> LocalContextInfo -> Doc
-oHeader globals locals = 
+oHeader :: ScoreInfo -> VoiceInfo -> LocalContextInfo -> Doc
+oHeader infos infov locals = 
         field 'X' (int 1)
-    $+$ field 'T' (text   $ global_title globals)
+    $+$ field 'T' (text   $ global_title infos)
     $+$ field 'M' (meter  $ local_meter locals)
     $+$ field 'L' (unitNoteLength $ local_unit_note_len locals)
     $+$ field 'K' key_clef 
   where
-    key_clef = (key $ local_key locals) <+> (clef $ global_clef globals)
+    key_clef = (key $ local_key locals) <+> (clef $ voice_clef infov)
 
 oABCPhrase :: GenABCPhrase anno -> Mon Doc
 oABCPhrase (Phrase [])          = return empty
