@@ -4,6 +4,8 @@
 module Demo03 where
 
 
+import qualified Payasan.Models.Polyrhythms.Base as POLY
+
 -- import Payasan.Base.Duration
 import Payasan.Base.Notelist
 import Payasan.Base.Pitch
@@ -33,22 +35,26 @@ locals :: LocalContextInfo
 locals = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
-phrase_top :: StdPhrase 
-phrase_top = fromLilyPondWith (voice { voice_ly_octave_mode = RelPitch c_5 }) locals $ 
-    [lilypond| e4 e \tuplet 3/4 { e e e } |]
+voiceA :: VoiceInfo 
+voiceA = default_voice_info { voice_ly_octave_mode = RelPitch c_5 }
 
-phrase_bottom :: StdPhrase 
-phrase_bottom = fromLilyPondWith voice locals $ 
+phraseA :: StdPhrase 
+phraseA = fromLilyPondWith voiceA locals $ 
+    [lilypond| e4 e \tuplet 3/2 { e e e } |]
+
+
+voiceB :: VoiceInfo 
+voiceB = default_voice_info { voice_ly_octave_mode = RelPitch middle_c }
+
+phraseB :: StdPhrase 
+phraseB = fromLilyPondWith voice locals $ 
     [lilypond| f4 f f f |]
 
 
-phrase01 :: StdPhrase 
-phrase01 = fromLilyPondWith (voice { voice_ly_octave_mode = RelPitch c_5 }) locals $ 
-    [lilypond| c4 d e fis | c' |]
-
 
 demo01 :: IO ()
-demo01 = shellOutLilyPond globals $ outputAsLilyPond globals voice (phrase_top <> phrase_bottom)
+demo01 = shellOutLilyPond globals $ 
+    POLY.outputAsLilyPond globals voiceA phraseA voiceB phraseB
 
 
 
@@ -56,6 +62,11 @@ debug01 :: IO StdPhrase
 debug01 = fromLilyPondWithIO voice locals $ 
     [lilypond| c4 d e fis | c' |]
 
+
+
+phrase01 :: StdPhrase 
+phrase01 = fromLilyPondWith (voice { voice_ly_octave_mode = RelPitch c_5 }) locals $ 
+    [lilypond| c4 d e fis | c' |]
 
 
 demo01a :: IO ()

@@ -35,6 +35,11 @@ module Payasan.Base.Internal.LilyPond.Utils
   , simultaneous1
   , simultaneous
   , definition
+  , newStaff
+  , newStaffDefn
+  , newVoice
+  , newVoiceDefn
+
 
   , version
   , title
@@ -124,6 +129,20 @@ simultaneous xs = text "<<" $+$ step xs $+$ text ">>"
 
 definition :: String -> Doc -> Doc 
 definition ss d = text ss <+> char '=' <+> doubleQuotes d
+
+
+
+newStaff :: Doc
+newStaff = command "new" <+> text "Staff"
+
+newStaffDefn :: String -> Doc
+newStaffDefn name = newStaff <+> char '=' <+> doubleQuotes (text name)
+
+newVoice :: Doc
+newVoice = command "new" <+> text "Voice"
+
+newVoiceDefn :: String -> Doc
+newVoiceDefn name = newVoice <+> char '=' <+> doubleQuotes (text name)
 
 
 version :: String -> Doc
