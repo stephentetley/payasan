@@ -29,9 +29,8 @@ module Payasan.Base.Internal.Pipeline
   , ScoreInfo(..)
   , default_score_info 
 
-  , VoiceInfo(..)
-  , OctaveMode(..)
-  , default_voice_info 
+  , StaffInfo(..)
+  , default_staff_info 
 
   , LocalContextInfo(..)
   , UnitNoteLength(..)
@@ -41,9 +40,10 @@ module Payasan.Base.Internal.Pipeline
   , fromABC
   , fromABCWith
   , fromABCWithIO       -- temp ?
-  , fromLilyPond
-  , fromLilyPondWith
-  , fromLilyPondWithIO  -- temp ?
+
+  , fromLilyPond_Relative
+  , fromLilyPondWith_Relative
+  , fromLilyPondWithIO_Relative  -- temp ?
   
   , outputAsABC
   , printAsABC
@@ -55,8 +55,8 @@ module Payasan.Base.Internal.Pipeline
   , genOutputAsLilyPond2
 
 
-  , outputAsLilyPond
-  , printAsLilyPond
+  , outputAsLilyPond_Relative
+  , printAsLilyPond_Relative
 
   , genOutputAsRhythmicMarkup
   , outputAsRhythmicMarkup
@@ -178,38 +178,39 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond :: VoiceInfo -> LY.LyPhrase () -> StdPhrase 
-fromLilyPond gi = fromLilyPondWith gi default_local_info
+fromLilyPond_Relative :: Pitch -> LY.LyPhrase () -> StdPhrase 
+fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
 
 
-fromLilyPondWith :: VoiceInfo -> LocalContextInfo -> LY.LyPhrase () -> StdPhrase
-fromLilyPondWith gi ri = 
-    translateToMain . LY.translateFromInput gi . BEAM.pushContextInfo ri
+fromLilyPondWith_Relative :: Pitch -> LocalContextInfo -> LY.LyPhrase () -> StdPhrase
+fromLilyPondWith_Relative pch locals = 
+    translateToMain . LY.translateFromInput_Relative pch . BEAM.pushContextInfo locals
 
-fromLilyPondWithIO :: VoiceInfo 
-                   -> LocalContextInfo 
-                   -> LY.LyPhrase () 
-                   -> IO StdPhrase
-fromLilyPondWithIO gi ri ph = 
+
+fromLilyPondWithIO_Relative :: Pitch
+                            -> LocalContextInfo 
+                            -> LY.LyPhrase () 
+                            -> IO StdPhrase
+fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
-    body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushContextInfo ri ph
-              ; ph2 <- debug (beamTabular pitch_duration_output) $ LY.translateFromInput gi ph1
+    body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushContextInfo locals ph
+              ; ph2 <- debug (beamTabular pitch_duration_output) $ LY.translateFromInput_Relative pch ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
               }
 
 
 
-outputAsABC :: ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> String
-outputAsABC infos infov = 
-    ppRender . abcOutput infos infov
+outputAsABC :: ScoreInfo -> StaffInfo -> StdPhraseAnno anno -> String
+outputAsABC infos staff = 
+    ppRender . abcOutput infos staff
              . ABC.translateToOutput
              . addBeams 
              . translateToBeam
 
-printAsABC :: ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> IO ()
-printAsABC infos infov = putStrLn . outputAsABC infos infov
+printAsABC :: ScoreInfo -> StaffInfo -> StdPhraseAnno anno -> IO ()
+printAsABC infos staff = putStrLn . outputAsABC infos staff
 
 
 -- | This can capture both full score output and just notelist 
@@ -265,47 +266,46 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 
-outputAsLilyPond :: Anno anno 
-                 => ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> String
-outputAsLilyPond infos infov = ppRender . genOutputAsLilyPond config
+outputAsLilyPond_Relative :: Anno anno 
+                          => ScoreInfo -> Pitch -> StdPhraseAnno anno -> String
+outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
-                               , out_trafo   = LY.translateToOutput infov
-                               , output_func = LY.simpleScore std_def infos infov
+                               , out_trafo   = LY.translateToOutput_Relative pch
+                               , output_func = LY.simpleScore_Relative std_def infos pch
                                }
     std_def = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = anno }
 
 
-printAsLilyPond :: Anno anno 
-                => ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> IO ()
-printAsLilyPond infos infov = putStrLn . outputAsLilyPond infos infov
+printAsLilyPond_Relative :: Anno anno 
+                         => ScoreInfo -> Pitch -> StdPhraseAnno anno -> IO ()
+printAsLilyPond_Relative infos pch = putStrLn . outputAsLilyPond_Relative infos pch
 
 
 
 -- Rhythmic markup generally should be beamed.
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
-                          -> ScoreInfo
-                          -> VoiceInfo
+                          -> ScoreInfo                          
                           -> Phrase pch Duration anno 
                           -> Doc
-genOutputAsRhythmicMarkup def infos infov = 
-    LY.rhythmicMarkupScore ppDef infos infov . LY.translateToRhythmicMarkup def
-                                             . addBeams 
-                                             . translateToBeam
+genOutputAsRhythmicMarkup def infos = 
+    LY.rhythmicMarkupScore ppDef infos . LY.translateToRhythmicMarkup def
+                                       . addBeams 
+                                       . translateToBeam
   where
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = const empty }
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdPhraseAnno anno -> String
-outputAsRhythmicMarkup infos infov = 
-    ppRender . genOutputAsRhythmicMarkup def infos infov
+outputAsRhythmicMarkup :: ScoreInfo -> StdPhraseAnno anno -> String
+outputAsRhythmicMarkup infos = 
+    ppRender . genOutputAsRhythmicMarkup def infos 
   where
     def = LY.MarkupOutput { LY.asMarkup = \p -> teeny (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdPhrase -> IO ()
-printAsRhythmicMarkup infos infov = putStrLn . outputAsRhythmicMarkup infos infov
+printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()
+printAsRhythmicMarkup infos = putStrLn . outputAsRhythmicMarkup infos
 
 
 

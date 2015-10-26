@@ -27,53 +27,51 @@ import Data.Monoid ( (<>) )
 globals :: ScoreInfo
 globals = default_score_info 
 
-voice :: VoiceInfo 
-voice = default_voice_info { voice_ly_octave_mode = RelPitch middle_c }
 
 
 locals :: LocalContextInfo
 locals = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
 
 
-voiceA :: VoiceInfo 
-voiceA = default_voice_info { voice_ly_octave_mode = RelPitch c_5 }
+relA :: Pitch
+relA = c_5
 
 phraseA :: StdPhrase 
-phraseA = fromLilyPondWith voiceA locals $ 
+phraseA = fromLilyPondWith_Relative relA locals $ 
     [lilypond| e4 e \tuplet 3/2 { e e e } |]
 
 
-voiceB :: VoiceInfo 
-voiceB = default_voice_info { voice_ly_octave_mode = RelPitch middle_c }
+relB :: Pitch
+relB = middle_c
 
 phraseB :: StdPhrase 
-phraseB = fromLilyPondWith voice locals $ 
+phraseB = fromLilyPondWith_Relative relB locals $ 
     [lilypond| f4 f f f |]
 
 
 
 demo01 :: IO ()
 demo01 = shellOutLilyPond globals $ 
-    POLY.outputAsLilyPond globals voiceA phraseA voiceB phraseB
+    POLY.outputAsLilyPond globals relA phraseA relB phraseB
 
 
 
 debug01 :: IO StdPhrase
-debug01 = fromLilyPondWithIO voice locals $ 
+debug01 = fromLilyPondWithIO_Relative middle_c  locals $ 
     [lilypond| c4 d e fis | c' |]
 
 
 
 phrase01 :: StdPhrase 
-phrase01 = fromLilyPondWith (voice { voice_ly_octave_mode = RelPitch c_5 }) locals $ 
+phrase01 = fromLilyPondWith_Relative c_5 locals $ 
     [lilypond| c4 d e fis | c' |]
 
 
 demo01a :: IO ()
-demo01a = printAsABC globals voice phrase01
+demo01a = printAsABC globals default_staff_info phrase01
 
 demo01b :: IO ()
-demo01b = printAsLilyPond globals voice phrase01
+demo01b = printAsLilyPond_Relative globals c_5 phrase01
 
 
 test01,test02, test03 :: Int

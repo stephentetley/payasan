@@ -17,8 +17,8 @@ locals = default_local_info
 globals :: ScoreInfo
 globals = default_score_info 
 
-voice :: VoiceInfo 
-voice = default_voice_info { voice_ly_octave_mode = RelPitch middle_c }
+staff :: StaffInfo 
+staff = default_staff_info
 
 
 phrase01abc :: StdMonoPhrase
@@ -29,20 +29,20 @@ phrase01abc = fromABCWith locals $ [abc| B4 z B B - | BB B2 z4 |]
 -- TODO - Maybe it should ignore them?
 --
 phrase01ly :: StdMonoPhrase
-phrase01ly = fromLilyPondWith voice locals $ 
+phrase01ly = fromLilyPondWith_Relative middle_c locals $ 
     [lilypond| b'2 r8 b8 b4 ~ | b8 b b4 r2 |]
 
 
 demo01 :: IO ()
-demo01 = shellOutABC globals $ outputAsABC globals voice $ phrase01abc
+demo01 = shellOutABC globals $ outputAsABC globals staff $ phrase01abc
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond globals voice $ phrase01ly
+demo02 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ phrase01ly
 
 
 -- Just two notes...
 phrase02 :: StdMonoPhrase
-phrase02 = fromLilyPondWith voice locals $ 
+phrase02 = fromLilyPondWith_Relative middle_c locals $ 
     [lilypond| b'2 r8 b8 ~ b4  |]
 
 demo03 :: IO ()
@@ -54,7 +54,7 @@ phrase10 :: StdMonoPhrase
 phrase10 = fromABCWith locals $ [abc| c G2 E2 C/2 | c |]
 
 demo10 :: IO ()
-demo10 = printAsABC default_score_info voice phrase10
+demo10 = printAsABC default_score_info staff phrase10
 
 demo11 :: IO ()
 demo11 = writeAsMIDI "out/phrase1.mid" phrase10

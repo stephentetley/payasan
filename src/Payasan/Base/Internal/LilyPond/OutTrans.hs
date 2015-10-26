@@ -17,7 +17,8 @@
 
 module Payasan.Base.Internal.LilyPond.OutTrans
   (
-    translateToOutput
+    translateToOutput_Relative
+  , translateToOutput_Absolute
   , translateToOutput_DurationOnly
   ) where
 
@@ -27,7 +28,6 @@ import Payasan.Base.Internal.LilyPond.Syntax
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
@@ -35,16 +35,17 @@ import Payasan.Base.Pitch
 
 
 
-translateToOutput :: VoiceInfo 
-                  -> Phrase Pitch Duration anno 
-                  -> Phrase LyPitch LyNoteLength anno
-translateToOutput info = pitchTrafo . transformD drn_algo
-  where
-    -- If AbsPitch then /previous pitch/ will never be used
-    pitchTrafo = case voice_ly_octave_mode info of
-                    RelPitch pch -> transformP (rel_pch_algo pch)
-                    AbsPitch -> transformP abs_pch_algo
+translateToOutput_Relative :: Pitch
+                           -> Phrase Pitch Duration anno 
+                           -> Phrase LyPitch LyNoteLength anno
+translateToOutput_Relative pch = 
+    transformP (rel_pch_algo pch) . transformD drn_algo
 
+
+translateToOutput_Absolute :: Phrase Pitch Duration anno 
+                           -> Phrase LyPitch LyNoteLength anno
+translateToOutput_Absolute = 
+    transformP abs_pch_algo . transformD drn_algo
 
 
 translateToOutput_DurationOnly :: Phrase pch Duration anno 

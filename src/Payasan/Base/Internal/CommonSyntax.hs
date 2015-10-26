@@ -19,12 +19,12 @@ module Payasan.Base.Internal.CommonSyntax
   ( 
 
     ScoreInfo(..)
-  , VoiceInfo(..)
-  , OctaveMode(..)
+  , StaffInfo(..)
+  , OctaveMode(..)      -- TO REMOVE...
   , Clef(..)
 
   , default_score_info
-  , default_voice_info 
+  , default_staff_info 
 
   , LocalContextInfo(..)
   , UnitNoteLength(..)
@@ -93,9 +93,8 @@ data ScoreInfo = ScoreInfo
   deriving (Data,Eq,Show,Typeable)
 
 
-data VoiceInfo = VoiceInfo 
-    { voice_ly_octave_mode      :: !OctaveMode
-    , voice_clef                :: !Clef
+data StaffInfo = StaffInfo 
+    { staff_clef                :: !Clef
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -117,10 +116,9 @@ default_score_info = ScoreInfo
     }
 
 
-default_voice_info :: VoiceInfo
-default_voice_info = VoiceInfo 
-    { voice_ly_octave_mode      = RelPitch middle_c
-    , voice_clef                = TREBLE
+default_staff_info :: StaffInfo
+default_staff_info = StaffInfo 
+    { staff_clef                = TREBLE
     }
 
 

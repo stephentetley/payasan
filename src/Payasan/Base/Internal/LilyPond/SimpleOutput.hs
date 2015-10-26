@@ -19,8 +19,11 @@ module Payasan.Base.Internal.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
 
-  , simpleScore
-  , simpleVoice
+  , simpleScore_Relative
+  , simpleScore_Absolute
+
+  , simpleVoice_Relative
+  , simpleVoice_Absolute
 
   , scoreHeader
   , renderNotes
@@ -32,6 +35,8 @@ import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+
+import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
@@ -75,12 +80,22 @@ data LyOutputDef pch anno = LyOutputDef
 
 
 
-simpleScore :: LyOutputDef pch anno 
-            -> ScoreInfo 
-            -> VoiceInfo -> GenLyPhrase pch anno -> Doc
-simpleScore def infos infov ph = 
+simpleScore_Relative :: LyOutputDef pch anno 
+                     -> ScoreInfo 
+                     -> Pitch
+                     -> GenLyPhrase pch anno -> Doc
+simpleScore_Relative def infos pch ph = 
         header 
-    $+$ anonBlock (simpleVoice def infov ph)
+    $+$ anonBlock (simpleVoice_Relative def pch ph)
+  where
+    header          = scoreHeader infos
+
+simpleScore_Absolute :: LyOutputDef pch anno 
+                     -> ScoreInfo 
+                     -> GenLyPhrase pch anno -> Doc
+simpleScore_Absolute def infos ph = 
+        header 
+    $+$ anonBlock (simpleVoice_Absolute def ph)
   where
     header          = scoreHeader infos
 
@@ -105,19 +120,27 @@ scoreHeader globals =
 --
 -- Write alternative functions for other types of output.
 -- 
-simpleVoice :: LyOutputDef pch anno 
-            -> VoiceInfo 
-            -> GenLyPhrase pch anno -> Doc
-simpleVoice def info ph = modeBlockF (notes_header $+$ notes)
+simpleVoice_Relative :: LyOutputDef pch anno 
+                     -> Pitch
+                     -> GenLyPhrase pch anno -> Doc
+simpleVoice_Relative def pch ph = 
+    block (Just $ relative pch) (notes_header $+$ notes)
   where
-    modeBlockF      = octaveModeBlock (voice_ly_octave_mode info)
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = renderNotes def ph
 
-octaveModeBlock :: OctaveMode -> Doc -> Doc
-octaveModeBlock (AbsPitch)   d  = absolute $+$ d
-octaveModeBlock (RelPitch p) d  = block (Just $ relative p) d
+
+simpleVoice_Absolute :: LyOutputDef pch anno
+                     -> GenLyPhrase pch anno -> Doc
+simpleVoice_Absolute def ph = 
+    command "aboslute" $+$ notes_header $+$ notes
+  where
+    local1          = maybe default_local_info id $ firstContextInfo ph
+    notes_header    = oPhraseHeader local1
+    notes           = renderNotes def ph
+
+
 
 oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = 

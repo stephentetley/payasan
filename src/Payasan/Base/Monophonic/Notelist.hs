@@ -30,9 +30,8 @@ module Payasan.Base.Monophonic.Notelist
   , ScoreInfo(..)        -- Re-export
   , default_score_info
 
-  , VoiceInfo(..)
-  , OctaveMode(..)
-  , default_voice_info
+  , StaffInfo(..)
+  , default_staff_info
 
   , LocalContextInfo(..)         -- Re-export
   , UnitNoteLength(..)
@@ -41,8 +40,9 @@ module Payasan.Base.Monophonic.Notelist
 
   , fromABC
   , fromABCWith
-  , fromLilyPond
-  , fromLilyPondWith
+
+  , fromLilyPond_Relative
+  , fromLilyPondWith_Relative
 
   , outputAsABC
   , printAsABC
@@ -52,8 +52,8 @@ module Payasan.Base.Monophonic.Notelist
   , genOutputAsLilyPond
   , genOutputAsLilyPond2
 
-  , outputAsLilyPond
-  , printAsLilyPond
+  , outputAsLilyPond_Relative
+  , printAsLilyPond_Relative
 
   , genOutputAsRhythmicMarkup
   , outputAsRhythmicMarkup
@@ -95,6 +95,7 @@ import Payasan.Base.Internal.Shell
 import qualified Payasan.Base.Notelist as MAIN
 
 import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
@@ -103,27 +104,27 @@ fromABC :: ABCMonoPhrase -> StdMonoPhrase
 fromABC  = fromABCWith default_local_info
 
 fromABCWith :: LocalContextInfo -> ABCMonoPhrase -> StdMonoPhrase
-fromABCWith ri = abcTranslate . pushContextInfo ri
+fromABCWith locals = abcTranslate . pushContextInfo locals
 
 
-fromLilyPond :: VoiceInfo -> LyMonoPhrase () -> StdMonoPhrase
-fromLilyPond infov = fromLilyPondWith infov default_local_info
+fromLilyPond_Relative :: Pitch -> LyMonoPhrase () -> StdMonoPhrase
+fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
 
-fromLilyPondWith :: VoiceInfo 
-                 -> LocalContextInfo 
-                 -> LyMonoPhrase ()
-                 -> StdMonoPhrase
-fromLilyPondWith infov locals = 
-    lilyPondTranslate infov . pushContextInfo locals
+fromLilyPondWith_Relative :: Pitch 
+                          -> LocalContextInfo 
+                          -> LyMonoPhrase ()
+                          -> StdMonoPhrase
+fromLilyPondWith_Relative pch locals = 
+    lilyPondTranslate_Relative pch . pushContextInfo locals
 
 
-outputAsABC :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> String
-outputAsABC infos infov = 
-    MAIN.outputAsABC infos infov . translateToMain
+outputAsABC :: ScoreInfo -> StaffInfo -> StdMonoPhrase -> String
+outputAsABC infos staff = 
+    MAIN.outputAsABC infos staff . translateToMain
 
-printAsABC :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> IO ()
-printAsABC infos infov = 
-    MAIN.printAsABC infos infov . translateToMain
+printAsABC :: ScoreInfo -> StaffInfo -> StdMonoPhrase -> IO ()
+printAsABC infos staff = 
+    MAIN.printAsABC infos staff . translateToMain
 
 
 
@@ -142,32 +143,32 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 
-outputAsLilyPond :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> String
-outputAsLilyPond infos infov = 
-    MAIN.outputAsLilyPond infos infov . translateToMain
+outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdMonoPhrase -> String
+outputAsLilyPond_Relative infos pch = 
+    MAIN.outputAsLilyPond_Relative infos pch . translateToMain
 
-printAsLilyPond :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> IO ()
-printAsLilyPond infos infov = 
-    MAIN.printAsLilyPond infos infov . translateToMain
+
+printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdMonoPhrase -> IO ()
+printAsLilyPond_Relative infos pch = 
+    MAIN.printAsLilyPond_Relative infos pch . translateToMain
 
 
 
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo 
-                          -> VoiceInfo
                           -> Phrase pch Duration anno
                           -> Doc
-genOutputAsRhythmicMarkup def infos infov = 
-    MAIN.genOutputAsRhythmicMarkup def infos infov . translateToMain
+genOutputAsRhythmicMarkup def infos = 
+    MAIN.genOutputAsRhythmicMarkup def infos . translateToMain
 
-outputAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> String
-outputAsRhythmicMarkup infos infov = 
-    MAIN.outputAsRhythmicMarkup infos infov . translateToMain
+outputAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> String
+outputAsRhythmicMarkup infos = 
+    MAIN.outputAsRhythmicMarkup infos . translateToMain
 
-printAsRhythmicMarkup :: ScoreInfo -> VoiceInfo -> StdMonoPhrase -> IO ()
-printAsRhythmicMarkup infos infov = 
-    MAIN.printAsRhythmicMarkup infos infov . translateToMain
+printAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> IO ()
+printAsRhythmicMarkup infos = 
+    MAIN.printAsRhythmicMarkup infos . translateToMain
 
 
 

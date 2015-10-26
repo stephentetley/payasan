@@ -17,7 +17,9 @@
 
 module Payasan.Base.Monophonic.Internal.LilyPondInTrans
   (
-    lilyPondTranslate
+
+    lilyPondTranslate_Relative
+  , lilyPondTranslate_Absolute
 
   , trafoRelPitch
   , trafoAbsPitch
@@ -32,7 +34,6 @@ import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.LilyPond.Syntax
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
@@ -40,15 +41,15 @@ import Payasan.Base.Pitch
 
 
 
-lilyPondTranslate :: VoiceInfo
-                  -> GenLyMonoPhrase LyPitch anno 
-                  -> Phrase Pitch Duration anno
-lilyPondTranslate info = pitchTrafo . trafoDuration
-  where
-    -- If AbsPitch then /previous pitch/ will never be used
-    pitchTrafo = case voice_ly_octave_mode info of
-                    RelPitch pch -> trafoRelPitch pch
-                    AbsPitch -> trafoAbsPitch
+lilyPondTranslate_Relative :: Pitch
+                           -> GenLyMonoPhrase LyPitch anno 
+                           -> Phrase Pitch Duration anno
+lilyPondTranslate_Relative pch = trafoRelPitch pch . trafoDuration
+
+
+lilyPondTranslate_Absolute :: GenLyMonoPhrase LyPitch anno 
+                           -> Phrase Pitch Duration anno
+lilyPondTranslate_Absolute = trafoAbsPitch . trafoDuration
 
 
 type DMon a    = Mon Duration a
