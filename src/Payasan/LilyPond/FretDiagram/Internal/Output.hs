@@ -52,7 +52,7 @@ fretDiagramOutput globals defs ph =
 
 oHeader :: ScoreInfo -> Doc
 oHeader globals  = 
-        version (global_ly_version globals)
+        version_ (global_ly_version globals)
     $+$ block (Just $ command "header") (title $ global_title globals)
 
 

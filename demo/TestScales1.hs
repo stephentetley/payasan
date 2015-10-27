@@ -18,7 +18,7 @@ import Payasan.Base.Monophonic.Internal.Plain   -- TEMP
 a_major_temp = [lilypond| a4 b cis d | e fis gis a |]
 
 a_major_ly :: StdMonoPhrase
-a_major_ly = fromLilyPondWith voice locals $ 
+a_major_ly = fromLilyPondWith_Relative middle_c locals $ 
     [lilypond| a4 b cis d | e fis gis a |]
 
 
@@ -35,9 +35,11 @@ a_major_plain = fromNoteList locals $
 globals :: ScoreInfo
 globals = default_score_info 
 
-voice :: VoiceInfo 
-voice = default_voice_info { voice_ly_octave_mode = RelPitch middle_c  }
+-- voice :: VoiceInfo 
+-- voice = default_voice_info { voice_ly_octave_mode = RelPitch middle_c  }
 
+staff :: StaffInfo
+staff = default_staff_info
 
 locals :: LocalContextInfo
 locals = default_local_info { local_unit_note_len = UNIT_NOTE_4
@@ -48,23 +50,23 @@ locals = default_local_info { local_unit_note_len = UNIT_NOTE_4
 demo01 :: IO ()
 demo01 = 
     do { printAsTabular globals a_major_ly
-       ; shellOutLilyPond globals $ outputAsLilyPond globals voice $ a_major_ly
-       ; shellOutABC globals $ outputAsABC globals voice $ a_major_ly
+       ; shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ a_major_ly
+       ; shellOutABC globals $ outputAsABC globals staff $ a_major_ly
        }
 
 
 demo02 :: IO ()
 demo02 = 
     do { printAsTabular globals a_major_abc
-       ; shellOutLilyPond globals $ outputAsLilyPond globals voice $ a_major_abc
-       ; shellOutABC globals $ outputAsABC globals voice $ a_major_abc
+       ; shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ a_major_abc
+       ; shellOutABC globals $ outputAsABC globals staff $ a_major_abc
        }
 
 demo03 :: IO ()
 demo03 = 
     do { printAsTabular globals a_major_plain
-       ; shellOutLilyPond globals $ outputAsLilyPond globals voice $ a_major_plain
-       ; shellOutABC globals $ outputAsABC globals voice $ a_major_plain
+       ; shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ a_major_plain
+       ; shellOutABC globals $ outputAsABC globals staff $ a_major_plain
        }
 
 

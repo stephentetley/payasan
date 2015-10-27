@@ -65,10 +65,9 @@ outputAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPhrase -> String
 outputAsLilyPond globals defs = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config . MONO.chordTranslateToMain 
   where
-    voice   = default_voice_info { voice_ly_octave_mode = AbsPitch }
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams
-                , MAIN.out_trafo   = LY.translateToOutput voice
+                , MAIN.out_trafo   = LY.translateToOutput_Absolute
                 , MAIN.output_func = fretDiagramOutput globals defs
                 }
 

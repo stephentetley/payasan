@@ -12,18 +12,20 @@
 --
 -- Helpers for LilyPond output (pretty printers).
 --
+-- Underscore suffix indicates a command.
+--
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.LilyPond.Utils
   ( 
 
   -- * Markup
-    huge
-  , large
-  , normalSize
-  , small
-  , tiny
-  , teeny
+    huge_
+  , large_
+  , normalSize_
+  , small_
+  , tiny_
+  , teeny_
 
   -- * pretty printers 
   , vsep
@@ -35,20 +37,21 @@ module Payasan.Base.Internal.LilyPond.Utils
   , simultaneous1
   , simultaneous
   , definition
-  , newStaff
+
+  , newStaff_
   , newStaffDefn
-  , newVoice
+  , newVoice_
   , newVoiceDefn
+  , newRhythmicStaff_
 
-
-  , version
+  , version_
   , title
-  , relative
-  , absolute
-  , key
-  , mode
-  , meter
-  , tupletSpec
+  , relative_
+  , absolute_
+  , key_
+  , mode_
+  , time_
+  , tuplet_
 
   , tie
   , rest
@@ -72,24 +75,24 @@ import Payasan.Base.Duration
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
 
-huge            :: Doc -> Markup 
-huge d          = markup $ command "huge" <+> d
+huge_           :: Doc -> Markup 
+huge_ d         = markup $ command "huge" <+> d
 
-large           :: Doc -> Markup 
-large d         = markup $ command "large" <+> d
+large_          :: Doc -> Markup 
+large_ d        = markup $ command "large" <+> d
 
-normalSize      :: Doc -> Markup 
-normalSize d    = markup $ command "normalSize" <+> d
+normalSize_     :: Doc -> Markup 
+normalSize_ d   = markup $ command "normalSize" <+> d
 
-small           :: Doc -> Markup 
-small d         = markup $ command "small" <+> d
+small_          :: Doc -> Markup 
+small_ d        = markup $ command "small" <+> d
 
 
-tiny            :: Doc -> Markup 
-tiny d          = markup $ command "tiny" <+> d
+tiny_           :: Doc -> Markup 
+tiny_ d         = markup $ command "tiny" <+> d
 
-teeny           :: Doc -> Markup 
-teeny d         = markup $ command "teeny" <+> d
+teeny_          :: Doc -> Markup 
+teeny_ d        = markup $ command "teeny" <+> d
 
 
 --------------------------------------------------------------------------------
@@ -132,34 +135,37 @@ definition ss d = text ss <+> char '=' <+> doubleQuotes d
 
 
 
-newStaff :: Doc
-newStaff = command "new" <+> text "Staff"
+newStaff_ :: Doc
+newStaff_ = command "new" <+> text "Staff"
 
 newStaffDefn :: String -> Doc
-newStaffDefn name = newStaff <+> char '=' <+> doubleQuotes (text name)
+newStaffDefn name = newStaff_ <+> char '=' <+> doubleQuotes (text name)
 
-newVoice :: Doc
-newVoice = command "new" <+> text "Voice"
+newVoice_ :: Doc
+newVoice_ = command "new" <+> text "Voice"
 
 newVoiceDefn :: String -> Doc
-newVoiceDefn name = newVoice <+> char '=' <+> doubleQuotes (text name)
+newVoiceDefn name = newVoice_ <+> char '=' <+> doubleQuotes (text name)
 
 
-version :: String -> Doc
-version ss = command "version" <+> doubleQuotes (text ss)
+newRhythmicStaff_ :: Doc
+newRhythmicStaff_ = command "new" <+> text "RhythmicStaff"
+
+version_ :: String -> Doc
+version_ ss = command "version" <+> doubleQuotes (text ss)
 
 title :: String -> Doc
 title ss = definition "title" (text ss)
 
-relative :: P.Pitch -> Doc
-relative pch = command "relative" <+> pitch (fromPitchAbs pch)
+relative_ :: P.Pitch -> Doc
+relative_ pch = command "relative" <+> pitch (fromPitchAbs pch)
 
-absolute :: Doc
-absolute = command "absolute"
+absolute_ :: Doc
+absolute_ = command "absolute"
 
 
-key :: Key -> Doc
-key (Key ps m)          = command "key" <+> pitchName ps <+> mode m
+key_ :: Key -> Doc
+key_ (Key ps m)         = command "key" <+> pitchName ps <+> mode_ m
 
 pitchName :: P.PitchName -> Doc
 pitchName (P.PitchName l a) = 
@@ -168,21 +174,21 @@ pitchName (P.PitchName l a) =
     fn NATURAL = empty
     fn x       = accidental x
 
-mode :: Mode -> Doc
-mode MAJOR              = command "major"
-mode MINOR              = command "minor"
-mode MIXOLYDIAN         = command "mixolydian"
-mode DORIAN             = command "dorian"
-mode PHRYGIAN           = command "phrygian"
-mode LYDIAN             = command "lydian"
-mode LOCRIAN            = command "locrian"
+mode_ :: Mode -> Doc
+mode_ MAJOR             = command "major"
+mode_ MINOR             = command "minor"
+mode_ MIXOLYDIAN        = command "mixolydian"
+mode_ DORIAN            = command "dorian"
+mode_ PHRYGIAN          = command "phrygian"
+mode_ LYDIAN            = command "lydian"
+mode_ LOCRIAN           = command "locrian"
 
 
-meter :: Meter -> Doc
-meter (Meter n d) = command "time" <+> int n <> char '/' <> int d
+time_ :: Meter -> Doc
+time_ (Meter n d) = command "time" <+> int n <> char '/' <> int d
 
-tupletSpec :: TupletSpec -> Doc
-tupletSpec (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) = 
+tuplet_ :: TupletSpec -> Doc
+tuplet_ (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) = 
     command "tuplet" <+> int n <> char '/' <> int t
      
 
@@ -249,4 +255,4 @@ beamForm []     = empty
 
 
 tupletForm :: TupletSpec -> [Doc] -> Doc
-tupletForm spec notes = tupletSpec spec <+> braces (hsep notes) 
+tupletForm spec notes = tuplet_ spec <+> braces (hsep notes) 

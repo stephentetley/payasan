@@ -69,7 +69,7 @@ polyrhythmScore :: Anno a1
                 -> BEAM.Phrase LyPitch LyNoteLength a1
                 -> Doc
 polyrhythmScore globals p1 p2 ph1 ph2 = 
-        header $+$ newStaff <+> simultaneous1 (upper $+$ lower)
+        header $+$ newStaff_ <+> simultaneous1 (upper $+$ lower)
   where
     header      = scoreHeader globals
     upper       = newVoiceDefn "first" $+$ anonBlock (command "voiceOne" <+> upper1)

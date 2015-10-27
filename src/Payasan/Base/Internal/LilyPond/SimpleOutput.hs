@@ -102,7 +102,7 @@ simpleScore_Absolute def infos ph =
 
 scoreHeader :: ScoreInfo -> Doc
 scoreHeader globals = 
-    version (global_ly_version globals) $+$ header
+    version_ (global_ly_version globals) $+$ header
   where
     header  = withString (global_title globals) $ \ss ->
                  block (Just $ command "header") (title ss)
@@ -124,7 +124,7 @@ simpleVoice_Relative :: LyOutputDef pch anno
                      -> Pitch
                      -> GenLyPhrase pch anno -> Doc
 simpleVoice_Relative def pch ph = 
-    block (Just $ relative pch) (notes_header $+$ notes)
+    block (Just $ relative_ pch) (notes_header $+$ notes)
   where
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
@@ -134,7 +134,7 @@ simpleVoice_Relative def pch ph =
 simpleVoice_Absolute :: LyOutputDef pch anno
                      -> GenLyPhrase pch anno -> Doc
 simpleVoice_Absolute def ph = 
-    command "aboslute" $+$ notes_header $+$ notes
+    absolute_ $+$ notes_header $+$ notes
   where
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
@@ -144,8 +144,8 @@ simpleVoice_Absolute def ph =
 
 oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = 
-        key   (local_key locals)
-    $+$ meter (local_meter locals)
+        key_  (local_key locals)
+    $+$ time_ (local_meter locals)
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -179,17 +179,17 @@ renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
 
     oBar :: GenLyBar pch anno -> Mon Doc
     oBar (Bar locals cs)            = 
-          do { dkey    <- deltaKey locals
-             ; dmeter  <- deltaMetrical locals
-             ; let ans = hsep (map oNoteGroup cs)
+          do { dkey     <- deltaKey locals
+             ; dtime    <- deltaMetrical locals
+             ; let ans  = hsep (map oNoteGroup cs)
              ; setInfo locals
-             ; return $ prefixM dmeter $ prefixK dkey $ ans
+             ; return $ prefixT dtime $ prefixK dkey $ ans
              }
         where
           prefixK Nothing   = (empty <>)
-          prefixK (Just k)  = (key k $+$)
-          prefixM Nothing   = (empty <>)
-          prefixM (Just m)  = (meter m $+$)
+          prefixK (Just k)  = (key_ k $+$)
+          prefixT Nothing   = (empty <>)
+          prefixT (Just t)  = (time_ t $+$)
 
     oNoteGroup :: GenLyNoteGroup pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e

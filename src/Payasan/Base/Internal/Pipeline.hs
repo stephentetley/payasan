@@ -301,7 +301,7 @@ outputAsRhythmicMarkup :: ScoreInfo -> StdPhraseAnno anno -> String
 outputAsRhythmicMarkup infos = 
     ppRender . genOutputAsRhythmicMarkup def infos 
   where
-    def = LY.MarkupOutput { LY.asMarkup = \p -> teeny (braces $ pPrint p) }
+    def = LY.MarkupOutput { LY.asMarkup = \p -> teeny_ (braces $ pPrint p) }
 
 
 printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()

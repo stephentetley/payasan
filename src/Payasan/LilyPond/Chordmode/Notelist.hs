@@ -23,7 +23,6 @@ module Payasan.LilyPond.Chordmode.Notelist
   , chordmode
 
   , ScoreInfo(..)
-  , OctaveMode(..)
   , default_score_info
 
   , LocalContextInfo(..)
@@ -116,10 +115,9 @@ printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> String
 outputAsRhythmicMarkup globals = 
-    MAIN.ppRender . MONO.genOutputAsRhythmicMarkup def globals voice
+    MAIN.ppRender . MONO.genOutputAsRhythmicMarkup def globals
   where
-    voice = default_voice_info { voice_ly_octave_mode = AbsPitch }
-    def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny (braces $ pPrint p) }
+    def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny_ (braces $ pPrint p) }
 
 
 printAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> IO ()

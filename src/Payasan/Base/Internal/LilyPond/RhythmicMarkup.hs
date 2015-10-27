@@ -104,9 +104,8 @@ rhythmicMarkupScore def infos ph =
 rhythmicMarkupVoice :: LyOutputDef pch anno 
                     -> GenLyPhrase pch anno -> Doc
 rhythmicMarkupVoice def ph = 
-    block (Just rhythmic_staff) (absolute $+$ notes_header $+$ notes)
+    block (Just newRhythmicStaff_) (absolute_ $+$ notes_header $+$ notes)
   where
-    rhythmic_staff  = command "new" <+> text "RhythmicStaff"
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = renderNotes def ph
@@ -114,7 +113,7 @@ rhythmicMarkupVoice def ph =
 
 oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = 
-        key   (local_key locals)
-    $+$ meter (local_meter locals)
+        key_  (local_key locals)
+    $+$ time_ (local_meter locals)
 
 
