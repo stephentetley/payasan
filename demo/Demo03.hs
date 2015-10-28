@@ -51,7 +51,7 @@ phraseB = fromLilyPondWith_Relative relB locals $
 
 
 demo01 :: IO ()
-demo01 = shellOutLilyPond globals $ 
+demo01 = shellOutLilyPond default_shell_info $ 
     POLY.outputAsLilyPond globals relA phraseA relB phraseB
 
 

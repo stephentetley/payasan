@@ -23,7 +23,6 @@ module Payasan.LilyPond.Lyricmode.Notelist
   , lyricmode
 
   , ScoreInfo(..)        -- Re-export
-  , OctaveMode(..)
   , default_score_info
 
   , LocalContextInfo(..)         -- Re-export

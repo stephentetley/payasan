@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -22,16 +23,19 @@ module Payasan.Base.Internal.Shell
   , outputDirectory
   , showOutputDirectory
 
+  , ShellInfo(..)
+  , default_shell_info
   , shellOutABC
   , shellOutLilyPond
 
   ) where
 
 
-import Payasan.Base.Internal.CommonSyntax
 
 import Control.Monad
 import Control.Exception ( try )
+
+import Data.Data
 
 import System.Directory
 import System.Environment
@@ -80,19 +84,32 @@ envLookup name = liftM fn $ try $ getEnv name
     fn (Right a) = Just a
 
 
-shellOutABC :: ScoreInfo -> String -> IO ()
+data ShellInfo = ShellInfo
+    { shell_temp_abc_file       :: !String
+    , shell_temp_ly_file        :: !String
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+
+default_shell_info :: ShellInfo
+default_shell_info = ShellInfo
+    { shell_temp_abc_file       = "abc_output.abc"
+    , shell_temp_ly_file        = "output.ly"
+    }
+
+shellOutABC :: ShellInfo -> String -> IO ()
 shellOutABC info abc = 
     do { root <- outputDirectory
-       ; let outfile = root </> global_temp_abc_file info
+       ; let outfile = root </> shell_temp_abc_file info
        ; writeFile outfile abc
        ; return ()
        }
 
 
-shellOutLilyPond :: ScoreInfo -> String -> IO ()
+shellOutLilyPond :: ShellInfo -> String -> IO ()
 shellOutLilyPond info ly = 
     do { root <- outputDirectory
-       ; let outfile = root </> global_temp_ly_file info
+       ; let outfile = root </> shell_temp_ly_file info
        ; writeFile outfile ly
        ; return ()
        }

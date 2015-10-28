@@ -102,9 +102,9 @@ simpleScore_Absolute def infos ph =
 
 scoreHeader :: ScoreInfo -> Doc
 scoreHeader globals = 
-    version_ (global_ly_version globals) $+$ header
+    version_ (score_ly_version globals) $+$ header
   where
-    header  = withString (global_title globals) $ \ss ->
+    header  = withString (score_title globals) $ \ss ->
                  block (Just $ command "header") (title ss)
 
 

@@ -20,7 +20,6 @@ module Payasan.Base.Internal.CommonSyntax
 
     ScoreInfo(..)
   , StaffInfo(..)
-  , OctaveMode(..)      -- TO REMOVE...
   , Clef(..)
 
   , default_score_info
@@ -85,10 +84,8 @@ import Data.Ratio
 
 
 data ScoreInfo = ScoreInfo
-    { global_temp_abc_file      :: !String
-    , global_temp_ly_file       :: !String
-    , global_title              :: !String
-    , global_ly_version         :: !String
+    { score_title               :: !String
+    , score_ly_version          :: !String
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -99,20 +96,14 @@ data StaffInfo = StaffInfo
   deriving (Data,Eq,Show,Typeable)
 
 
-data OctaveMode = AbsPitch 
-                | RelPitch !Pitch
-  deriving (Data,Eq,Show,Typeable)
-
 data Clef = TREBLE | BASS
   deriving (Data,Eq,Show,Typeable)
 
 
 default_score_info :: ScoreInfo
 default_score_info = ScoreInfo
-    { global_temp_abc_file      = "abc_output.abc"
-    , global_temp_ly_file       = "output.ly"
-    , global_title              = ""
-    , global_ly_version         = "2.18.2"
+    { score_title               = ""
+    , score_ly_version          = "2.18.2"
     }
 
 

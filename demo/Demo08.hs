@@ -42,17 +42,20 @@ dia02 = pushName "chordY" $ [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
 
 
 demo01 :: IO ()
-demo01 = shellOutLilyPond globals $ outputAsLilyPond globals [dia01,dia02] $ 
+demo01 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond globals [dia01,dia02] $ 
     fromNoteList locals standard_tuning [ [ chord dia01 d_whole ]
                                         , [ chord dia02 d_whole ] ]
 
 
 temp01 :: IO ()
-temp01 = shellOutLilyPond globals $ MONO.outputAsLilyPond_Relative globals middle_c $ 
+temp01 = shellOutLilyPond default_shell_info $ 
+    MONO.outputAsLilyPond_Relative globals middle_c $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ standard_tuning
 
 temp02 :: IO ()
-temp02 = shellOutLilyPond globals $ MONO.outputAsLilyPond_Relative globals middle_c $ 
+temp02 = shellOutLilyPond default_shell_info $ 
+    MONO.outputAsLilyPond_Relative globals middle_c $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where
     pitches :: [Pitch]
@@ -68,7 +71,8 @@ test03 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;
 -- This was showing an error in transposeWithDiatonicInterval ** NOW FIXED
 --
 test04 :: IO ()
-test04 = MONO.shellOutLilyPond globals $ MONO.outputAsLilyPond_Relative globals middle_c $ 
+test04 = MONO.shellOutLilyPond default_shell_info $ 
+    MONO.outputAsLilyPond_Relative globals middle_c $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where
     pitches = let fn = transposeWithDiatonicInterval c_major 

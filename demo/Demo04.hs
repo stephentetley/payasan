@@ -44,42 +44,43 @@ phrase01 = fromLilyPondWith_Relative middle_c locals $
 demo01 :: IO ()
 demo01 = 
     do { printAsLilyPond_Relative globals middle_c phrase01
-       ; shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ phrase01
+       ; shellOutLilyPond default_shell_info $ outputAsLilyPond_Relative globals middle_c $ phrase01
        ; putStrLn ""
        ; printAsABC globals staff phrase01
-       ; shellOutABC globals $ outputAsABC globals staff $ phrase01
+       ; shellOutABC default_shell_info $ outputAsABC globals staff $ phrase01
        ; printAsTabular globals phrase01
        }
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ 
-    mapPitch (.+^ major_second) phrase01
+demo02 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ mapPitch (.+^ major_second) phrase01
 
 demo03 :: IO ()
 demo03 = printAsLilyPond_Relative globals middle_c $ augment phrase01
 
 demo04 :: IO ()
-demo04 = shellOutABC globals $ outputAsABC globals staff $ augment phrase01
+demo04 = shellOutABC default_shell_info $ 
+    outputAsABC globals staff $ augment phrase01
 
 demo05 :: IO ()
-demo05 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ 
-    augment phrase01
+demo05 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ augment phrase01
 
 demo06 :: IO ()
-demo06 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ 
-    retrograde phrase01
+demo06 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ retrograde phrase01
 
 demo07 :: IO ()
-demo07 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ 
-    invertChromatic phrase01
+demo07 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ invertChromatic phrase01
 
 demo08 :: IO ()
-demo08 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ 
-    transposeDiatonic simple_second phrase01
+demo08 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ transposeDiatonic simple_second phrase01
 
 demo09 :: IO ()
-demo09 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ 
-    invertDiatonic phrase01
+demo09 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ invertDiatonic phrase01
 
 {-
 

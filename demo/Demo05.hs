@@ -34,7 +34,7 @@ demo01 = printAsLilyPond globals phrase01
 
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01
+demo02 = shellOutLilyPond default_shell_info $ outputAsLilyPond globals $ phrase01
 
 demo03 :: IO ()
 demo03 = writeAsMIDI "out/drums01.mid" phrase01

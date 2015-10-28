@@ -21,7 +21,6 @@ module Payasan.LilyPond.FretDiagram.Notelist
   , module Payasan.LilyPond.FretDiagram.Internal.Plain
 
   , ScoreInfo(..)               -- Re-export
-  , OctaveMode(..)
   , default_score_info
 
   , LocalContextInfo(..)        -- Re-export

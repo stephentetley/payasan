@@ -34,10 +34,12 @@ phrase01ly = fromLilyPondWith_Relative middle_c locals $
 
 
 demo01 :: IO ()
-demo01 = shellOutABC globals $ outputAsABC globals staff $ phrase01abc
+demo01 = shellOutABC default_shell_info $ 
+    outputAsABC globals staff $ phrase01abc
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond_Relative globals middle_c $ phrase01ly
+demo02 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ phrase01ly
 
 
 -- Just two notes...

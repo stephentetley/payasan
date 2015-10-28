@@ -31,7 +31,7 @@ demo01 :: IO ()
 demo01 = printAsLilyPond globals phrase01
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond globals $ outputAsLilyPond globals $ phrase01
+demo02 = shellOutLilyPond default_shell_info $ outputAsLilyPond globals $ phrase01
 
 demo03 :: IO ()
 demo03 = writeAsMIDI "out/chords01.mid" phrase01
@@ -44,5 +44,5 @@ demo05 :: IO ()
 demo05 = printAsLinear globals phrase01
 
 demo06 :: IO ()
-demo06 = shellOutLilyPond globals $ outputAsRhythmicMarkup globals $ phrase01
+demo06 = shellOutLilyPond default_shell_info $ outputAsRhythmicMarkup globals $ phrase01
 

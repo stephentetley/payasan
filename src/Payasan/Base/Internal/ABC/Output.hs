@@ -91,7 +91,7 @@ abcOutput infos staff ph = header $+$ body
 oHeader :: ScoreInfo -> StaffInfo -> LocalContextInfo -> Doc
 oHeader infos staff locals = 
         field 'X' (int 1)
-    $+$ field 'T' (text   $ global_title infos)
+    $+$ field 'T' (text   $ score_title infos)
     $+$ field 'M' (meter  $ local_meter locals)
     $+$ field 'L' (unitNoteLength $ local_unit_note_len locals)
     $+$ field 'K' key_clef 
