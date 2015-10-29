@@ -26,7 +26,8 @@ module Payasan.Base.Internal.LilyPond.SimpleOutput
   , simpleVoice_Absolute
 
   , scoreHeader
-  , renderNotes
+
+  , lilypondNotes
 
   ) where
 
@@ -128,7 +129,7 @@ simpleVoice_Relative def pch ph =
   where
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
-    notes           = renderNotes def ph
+    notes           = lilypondNotes def local1 ph
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
@@ -138,8 +139,7 @@ simpleVoice_Absolute def ph =
   where
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
-    notes           = renderNotes def ph
-
+    notes           = lilypondNotes def local1 ph
 
 
 oPhraseHeader :: LocalContextInfo -> Doc
@@ -154,9 +154,9 @@ oPhraseHeader locals =
 -- Should allow different pch (standard, drum note, etc.)
 -- to be printed. 
 --
-renderNotes :: forall pch anno. 
-               LyOutputDef pch anno -> GenLyPhrase pch anno -> Doc
-renderNotes def ph = evalRewrite (oLyPhrase ph) (stateZero first_info)
+lilypondNotes :: forall pch anno. 
+                 LyOutputDef pch anno -> LocalContextInfo -> GenLyPhrase pch anno -> Doc
+lilypondNotes def locals ph = evalRewrite (oLyPhrase ph) (stateZero locals)
   where
     first_info :: LocalContextInfo
     first_info  = maybe default_local_info id $ firstContextInfo ph

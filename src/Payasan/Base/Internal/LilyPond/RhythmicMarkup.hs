@@ -108,7 +108,7 @@ rhythmicMarkupVoice def ph =
   where
     local1          = maybe default_local_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
-    notes           = renderNotes def ph
+    notes           = lilypondNotes def local1 ph
 
 
 oPhraseHeader :: LocalContextInfo -> Doc

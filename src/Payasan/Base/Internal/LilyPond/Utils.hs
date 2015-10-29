@@ -48,6 +48,7 @@ module Payasan.Base.Internal.LilyPond.Utils
   , title
   , relative_
   , absolute_
+  , clef_
   , key_
   , mode_
   , time_
@@ -164,8 +165,13 @@ absolute_ :: Doc
 absolute_ = command "absolute"
 
 
+clef_ :: Clef -> Doc
+clef_ TREBLE    = command "clef" <+> text "treble"
+clef_ BASS      = command "clef" <+> text "bass"
+
 key_ :: Key -> Doc
 key_ (Key ps m)         = command "key" <+> pitchName ps <+> mode_ m
+
 
 pitchName :: P.PitchName -> Doc
 pitchName (P.PitchName l a) = 
