@@ -54,6 +54,10 @@ demo01 :: IO ()
 demo01 = shellOutLilyPond default_shell_info $ 
     POLY.outputAsLilyPond globals default_staff_info relA phraseA relB phraseB
 
+demo02 :: IO ()
+demo02 = shellOutLilyPond default_shell_info $ 
+    POLY.outputTimbalesStyle globals phraseA phraseB
+
 
 
 debug01 :: IO StdPhrase

@@ -32,17 +32,26 @@ module Payasan.Base.Internal.LilyPond.Utils
   , withString
 
   , command
+  , value
   , block 
   , anonBlock
   , simultaneous1
   , simultaneous
   , definition
 
+  , score_
+  , new_
   , newStaff_
   , newStaffDefn
   , newVoice_
   , newVoiceDefn
+  , newVoiceWith_
+  , newDrumVoice_
+
+
   , newRhythmicStaff_
+  , newDrumStaff_
+  , newDrumStaffWith_
 
   , version_
   , title
@@ -53,6 +62,12 @@ module Payasan.Base.Internal.LilyPond.Utils
   , mode_
   , time_
   , tuplet_
+  , stemUp_
+  , stemDown_
+  , with_
+  , withBlock_ 
+  , override_
+  , drummode_
 
   , tie
   , rest
@@ -112,6 +127,10 @@ withString ss f = if null ss then empty else f ss
 command :: String -> Doc
 command = text . ('\\' :)
 
+
+value           :: String -> Doc
+value ss        = text $ '#':ss
+
 block :: Maybe Doc -> Doc -> Doc
 block prefix body = maybe inner (\d -> d <+> inner) prefix
   where
@@ -132,25 +151,44 @@ simultaneous xs = text "<<" $+$ step xs $+$ text ">>"
 
 
 definition :: String -> Doc -> Doc 
-definition ss d = text ss <+> char '=' <+> doubleQuotes d
+definition ss d = text ss <+> char '=' <+> d
 
+score_          :: Doc
+score_          = command "score"
+       
+new_            :: Doc
+new_            = command "new"
 
-
-newStaff_ :: Doc
-newStaff_ = command "new" <+> text "Staff"
+newStaff_       :: Doc
+newStaff_       = new_ <+> text "Staff"
 
 newStaffDefn :: String -> Doc
 newStaffDefn name = newStaff_ <+> char '=' <+> doubleQuotes (text name)
 
-newVoice_ :: Doc
-newVoice_ = command "new" <+> text "Voice"
+newVoice_       :: Doc
+newVoice_       = new_ <+> text "Voice"
 
 newVoiceDefn :: String -> Doc
 newVoiceDefn name = newVoice_ <+> char '=' <+> doubleQuotes (text name)
 
+-- | supplied arg enclosed in a block
+--
+newVoiceWith_ :: Doc -> Doc
+newVoiceWith_ d = newVoice_ <+> withBlock_ d
+
+newDrumVoice_ :: Doc
+newDrumVoice_ = new_ <+> text "DrumVoice"
+
 
 newRhythmicStaff_ :: Doc
 newRhythmicStaff_ = command "new" <+> text "RhythmicStaff"
+
+newDrumStaff_ :: Doc
+newDrumStaff_ = command "new" <+> text "DrumStaff"
+
+newDrumStaffWith_ :: Doc -> Doc
+newDrumStaffWith_ d = newDrumStaff_ <+> withBlock_ d
+
 
 version_ :: String -> Doc
 version_ ss = command "version" <+> doubleQuotes (text ss)
@@ -196,7 +234,33 @@ time_ (Meter n d) = command "time" <+> int n <> char '/' <> int d
 tuplet_ :: TupletSpec -> Doc
 tuplet_ (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) = 
     command "tuplet" <+> int n <> char '/' <> int t
-     
+
+
+stemUp_         :: Doc
+stemUp_         = command "stemUp"
+
+stemDown_       :: Doc
+stemDown_       = command "stemDown"
+
+
+-- | Overrides are expected to be copy-paste fragments from 
+-- LilyPond. 
+--
+-- So, it seems more efficient just to supply them with the 
+-- quoted string.
+-- 
+override_ :: String -> Doc
+override_ ss = command "override" <+> text ss
+
+with_           :: Doc
+with_           = command "with"
+
+withBlock_      :: Doc -> Doc
+withBlock_ d    = with_ <+> anonBlock d
+
+
+drummode_       :: Doc
+drummode_       = command "drummode"
 
 tie :: Tie -> Doc
 tie NO_TIE = empty

@@ -155,12 +155,13 @@ oPhraseHeader locals =
 -- to be printed. 
 --
 lilypondNotes :: forall pch anno. 
-                 LyOutputDef pch anno -> LocalContextInfo -> GenLyPhrase pch anno -> Doc
-lilypondNotes def locals ph = evalRewrite (oLyPhrase ph) (stateZero locals)
+                 LyOutputDef pch anno 
+              -> LocalContextInfo 
+              -> GenLyPhrase pch anno 
+              -> Doc
+lilypondNotes def prefix_locals ph = 
+    evalRewrite (oLyPhrase ph) (stateZero prefix_locals)
   where
-    first_info :: LocalContextInfo
-    first_info  = maybe default_local_info id $ firstContextInfo ph
-
     pPitch :: pch -> Doc
     pPitch = printPitch def
 
