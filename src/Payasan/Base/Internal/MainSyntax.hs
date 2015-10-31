@@ -78,6 +78,7 @@ data NoteGroup pch drn anno =
 data Element pch drn anno = 
       NoteElem      (Note pch drn) anno   Tie   Markup
     | Rest          drn
+    | Spacer        drn
     | Skip          drn
     | Chord         [pch]          drn    anno   Tie  Markup
     | Graces        [Note pch drn]

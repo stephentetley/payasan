@@ -31,6 +31,7 @@ module Payasan.Base.Internal.ABC.Utils
   , mode
   , note
   , rest
+  , spacer
   , chord
   , graceForm
   , chordForm
@@ -122,6 +123,12 @@ note (Note p d) = pitch p <> noteLength d
 
 rest :: ABCNoteLength -> Doc
 rest d = char 'z' <> noteLength d
+
+
+-- | As @x@...
+--
+spacer :: ABCNoteLength -> Doc
+spacer d = char 'x' <> noteLength d
 
 
 chord :: [ABCPitch] -> ABCNoteLength -> Doc

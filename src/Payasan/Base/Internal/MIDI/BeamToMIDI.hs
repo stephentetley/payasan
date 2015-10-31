@@ -82,6 +82,12 @@ elementT (Rest d)               =
        ; return []
        }
 
+-- MIDI: Spacer is same as Rest
+elementT (Spacer d)             = 
+    do { advanceOnset d
+       ; return []
+       }
+
 -- MIDI: Skip is same as Rest
 elementT (Skip d)               = 
     do { advanceOnset d
@@ -157,6 +163,7 @@ linearizeNG bpm (Tuplet spec es)    = map (scaleD (t%n)) $ concatMap (linearizeN
 linearizeE :: BPM -> Element T.MidiPitch RDuration anno -> Element T.MidiPitch Seconds anno
 linearizeE bpm (NoteElem e a t m)   = NoteElem (linearizeN bpm e) a t m
 linearizeE bpm (Rest d)             = Rest $ noteDuration bpm d
+linearizeE bpm (Spacer d)           = Spacer $ noteDuration bpm d
 linearizeE bpm (Skip d)             = Skip $ noteDuration bpm d
 linearizeE bpm (Chord ps d a t m)   = Chord ps (noteDuration bpm d) a t m
 linearizeE bpm (Graces ns)          = Graces $ map (linearizeN bpm) ns
@@ -173,6 +180,7 @@ scaleD sc elt = step (realToFrac sc) elt
   where
     step x (NoteElem n a t m)   = NoteElem (note x n) a t m
     step x (Rest d)             = Rest $ x * d
+    step x (Spacer d)           = Spacer $ x * d
     step x (Skip d)             = Skip $ x * d
     step x (Chord ps d a t m)   = Chord ps (x * d) a t m
     step x (Graces ns)          = Graces $ map (note x) ns

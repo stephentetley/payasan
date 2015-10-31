@@ -62,6 +62,7 @@ pch_algo = BeamPitchAlgo
 elementP :: Element Pitch drn anno -> PTMon (Element ABCPitch drn anno)
 elementP (NoteElem e a t m)     = (\e1 -> NoteElem e1 a t m) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
+elementP (Spacer d)             = pure $ Spacer d
 elementP (Skip d)               = pure $ Skip d
 elementP (Chord ps d a t m)     = 
     (\ps1 -> Chord ps1 d a t m) <$> mapM transPch ps
@@ -94,6 +95,7 @@ drn_algo = BeamDurationAlgo
 elementD :: Element pch Duration anno -> DTMon (Element pch ABCNoteLength anno)
 elementD (NoteElem e a t m)     = (\e1 -> NoteElem e1 a t m) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
+elementD (Spacer d)             = Spacer    <$> changeDrn d
 elementD (Skip d)               = Skip      <$> changeDrn d
 elementD (Chord ps d a t m)     = (\d1 -> Chord ps d1 a t m) <$> changeDrn d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns

@@ -132,6 +132,7 @@ toScaleStepRepr = transformP step_algo
 
     change (Note p d a t m)     = (\p1 -> Note p1 d a t m) <$> mf p
     change (Rest d)             = pure $ Rest d
+    change (Spacer d)           = pure $ Spacer d
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
@@ -147,6 +148,7 @@ fromScaleStepRepr = transformP step_algo
 
     change (Note p d a t m)     = (\p1 -> Note p1 d a t m) <$> mf p
     change (Rest d)             = pure $ Rest d
+    change (Spacer d)           = pure $ Spacer d
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 

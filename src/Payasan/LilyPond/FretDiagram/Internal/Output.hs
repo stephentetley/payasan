@@ -23,9 +23,9 @@ import Payasan.LilyPond.FretDiagram.Internal.Base
 import Payasan.LilyPond.FretDiagram.Internal.Interpret
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.BeamSyntax (Phrase)
+import Payasan.Base.Internal.BeamSyntax (Phrase, firstContextInfo)
 
-import Payasan.Base.Internal.LilyPond.SimpleOutput ( LyOutputDef(..), renderNotes )
+import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
@@ -41,8 +41,9 @@ fretDiagramOutput globals defs ph =
     $+$ vsep (map fretDef defs)
     $+$ phraseBlock notes
   where
-    header          = oHeader globals
-    notes           = renderNotes fret_def ph
+    header          = scoreHeader globals
+    locals1         = maybe default_local_info id $ firstContextInfo ph
+    notes           = lilypondNotes fret_def locals1 ph
 
     fret_def        :: LyOutputDef LyPitch FretDiagramRef
     fret_def        = LyOutputDef { printPitch = pitch
@@ -50,10 +51,6 @@ fretDiagramOutput globals defs ph =
 
 
 
-oHeader :: ScoreInfo -> Doc
-oHeader globals  = 
-        version_ (score_ly_version globals)
-    $+$ block (Just $ command "header") (title $ score_title globals)
 
 
 fretDef :: FretDiagram -> Doc

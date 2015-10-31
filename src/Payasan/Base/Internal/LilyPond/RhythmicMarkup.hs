@@ -73,6 +73,7 @@ elementP :: forall pch drn anno.
 elementP mo elt = case elt of 
     NoteElem e a t _    -> NoteElem (notePA e) a t (markupPA e)
     Rest d              -> Rest d
+    Spacer d            -> Spacer d
     Skip d              -> Skip d
     Chord ps d a t _    -> 
         NoteElem (Note middle_c d) a t (mconcat $ map markupF ps)

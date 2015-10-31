@@ -58,6 +58,7 @@ lyricsVoice :: ScoreInfo -> BEAM.Phrase Syllable LyNoteLength a -> Doc
 lyricsVoice _globals ph = block (Just prefix) notes
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
-    notes       = renderNotes lyric_def ph
+    locals1     = maybe default_local_info id $ BEAM.firstContextInfo ph
+    notes       = lilypondNotes lyric_def locals1 ph
     lyric_def   = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
 

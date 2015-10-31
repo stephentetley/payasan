@@ -23,6 +23,7 @@ module Payasan.Base.Internal.Output.Tabular.Utils
   , exclusive
   , barStart
   , rest
+  , spacer
   , skip
   , nullDot
   , endSpine
@@ -54,6 +55,9 @@ exclusive d = text "**" <> d
 
 rest :: Doc
 rest = char 'r'
+
+spacer :: Doc
+spacer = char 's'
 
 skip :: Doc
 skip = text "skip"

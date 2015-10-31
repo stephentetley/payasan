@@ -93,6 +93,7 @@ data NoteGroup pch drn anno =
 data Element pch drn anno = 
       NoteElem      (Note pch drn)  anno  Tie   Markup
     | Rest          drn
+    | Spacer        drn
     | Skip          drn
     | Chord         [pch]           drn   anno  Tie     Markup
     | Graces        [Note pch drn]
@@ -125,6 +126,7 @@ sizeNoteGroup (Tuplet spec es)      = tupletUnitRDuration spec (firstOf es)
 sizeElement :: Element pch Duration anno -> RDuration
 sizeElement (NoteElem (Note _ d) _ _ _)   = durationSize d
 sizeElement (Rest d)                      = durationSize d
+sizeElement (Spacer d)                    = durationSize d
 sizeElement (Skip d)                      = durationSize d
 sizeElement (Chord _ d _ _ _)             = durationSize d
 sizeElement (Graces {})                   = 0

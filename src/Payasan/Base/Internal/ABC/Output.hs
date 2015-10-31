@@ -139,12 +139,13 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 
 -- | Punctuation is not used by ABC.
 --
--- Skip is treated as a rest.
+-- Skip is treated as a spacer.
 --
 oElement :: CatOp -> GenABCElement anno -> Doc
 oElement op (NoteElem n _ t _)  = tied op (note n) t
 oElement _  (Rest d)            = rest d 
-oElement _  (Skip d)            = rest d 
+oElement _  (Spacer d)          = spacer d 
+oElement _  (Skip d)            = spacer d 
 oElement op (Chord ps d _ t _)  = tied op (chord ps d) t
 oElement _  (Graces xs)         = graceForm $ map note xs
 oElement _  (Punctuation {})    = empty

@@ -71,6 +71,7 @@ module Payasan.Base.Internal.LilyPond.Utils
 
   , tie
   , rest
+  , spacer
   , skip
 
   , pitch
@@ -270,6 +271,9 @@ tie TIE    = char '~'
 
 rest :: LyNoteLength -> Doc
 rest d = char 'r' <> noteLength d
+
+spacer :: LyNoteLength -> Doc
+spacer d = char 's' <> noteLength d
 
 skip :: LyNoteLength -> Doc
 skip d = command "skip" <> noteLength d

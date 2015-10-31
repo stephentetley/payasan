@@ -202,6 +202,7 @@ lilypondNotes def prefix_locals ph =
         oNote n <> pAnno a <> tie t <> renderMarkup m
 
     oElement (Rest d)               = rest d 
+    oElement (Spacer d)             = spacer d 
     oElement (Skip d)               = skip d 
     oElement (Chord ps d a t m)     = 
         chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t <> renderMarkup m

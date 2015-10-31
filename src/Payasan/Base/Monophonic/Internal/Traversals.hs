@@ -150,6 +150,7 @@ collectP mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note p _ _ _ _)    = mf ac p
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
@@ -173,6 +174,7 @@ ctxMapPitch fn = transformP algo
 
     stepE (Note p d a t m)  = (\ks -> Note (fn ks p) d a t m) <$> asksLocal local_key
     stepE (Rest d)          = pure $ Rest d
+    stepE (Spacer d)        = pure $ Spacer d
     stepE (Skip d)          = pure $ Skip d
     stepE (Punctuation s)   = pure $ Punctuation s
 
@@ -214,6 +216,7 @@ collectD mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note _ d _ _ _)    = mf ac d
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
@@ -232,6 +235,7 @@ mapDuration fn = transformD algo
 
     stepE (Note p d a t m)      = pure $ Note p (fn d) a t m
     stepE (Rest d)              = pure $ Rest (fn d)
+    stepE (Spacer d)            = pure $ Spacer (fn d)
     stepE (Skip d)              = pure $ Skip (fn d)
     stepE (Punctuation s)       = pure $ Punctuation s
 
@@ -271,6 +275,7 @@ collectA mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note _ _ a _ _ )   = mf ac a
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
@@ -288,6 +293,7 @@ mapAnno fn = transformA algo
 
     stepE (Note p d a t m)      = pure $ Note p d (fn a) t m
     stepE (Rest d)              = pure $ Rest d
+    stepE (Spacer d)            = pure $ Spacer d
     stepE (Skip d)              = pure $ Skip d
     stepE (Punctuation s)       = pure $ Punctuation s
 
@@ -328,6 +334,7 @@ collectPA mf = genCollect elementC
     elementC :: ac -> Element pch drn anno -> Mon st ac
     elementC ac (Note p _ a _ _)    = mf ac p a
     elementC ac (Rest {})           = pure $ ac
+    elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
     elementC ac (Punctuation {})    = pure $ ac
 
@@ -346,6 +353,7 @@ mapPitchAnno fn = transformPA algo
 
     stepE (Note p d a t m)  = let (p1,a1) = fn p a in pure $ Note p1 d a1 t m
     stepE (Rest d)          = pure $ Rest d
+    stepE (Spacer d)        = pure $ Spacer d
     stepE (Skip d)          = pure $ Skip d
     stepE (Punctuation s)   = pure $ Punctuation s
 

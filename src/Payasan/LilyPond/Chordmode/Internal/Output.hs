@@ -21,8 +21,10 @@ module Payasan.LilyPond.Chordmode.Internal.Output
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 
+import qualified Payasan.Base.Internal.BeamSyntax    as BEAM
+
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.SimpleOutput ( LyOutputDef(..), renderNotes )
+import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Utils
 
 
@@ -35,17 +37,14 @@ chordmodeOutput globals ph =
         header
     $+$ chordmodeBlock notes
   where
-    header          = oHeader globals
-    notes           = renderNotes chord_def ph
+    header          = scoreHeader globals
+    local1          = maybe default_local_info id $ BEAM.firstContextInfo ph
+    notes           = lilypondNotes chord_def local1 ph
     chord_def       = LyOutputDef { printPitch = pitch
                                   , printAnno  = oChordSuffix }
 
 
 
-oHeader :: ScoreInfo -> Doc
-oHeader globals  = 
-        version_ (score_ly_version globals)
-    $+$ block (Just $ command "header") (title $ score_title globals)
 
 
 chordmodeBlock :: Doc -> Doc

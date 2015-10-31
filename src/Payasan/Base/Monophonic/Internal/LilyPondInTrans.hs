@@ -81,6 +81,7 @@ setPrevPitch = put
 relElementP :: Element LyPitch drn anno -> RelPMon (Element Pitch drn anno)
 relElementP (Note p d a t m)    = (\p1 -> Note p1 d a t m) <$> changePitchRel p
 relElementP (Rest d)            = pure $ Rest d
+relElementP (Spacer d)          = pure $ Spacer d
 relElementP (Skip d)            = pure $ Skip d
 relElementP (Punctuation s)     = pure $ Punctuation s
 
@@ -114,6 +115,7 @@ abs_pch_algo = MonoPitchAlgo
 absElementP :: Element LyPitch drn anno -> AbsPMon (Element Pitch drn anno)
 absElementP (Note p d a t m)    = (\p1 -> Note p1 d a t m) <$> changePitchAbs p
 absElementP (Rest d)            = pure $ Rest d
+absElementP (Spacer d)          = pure $ Spacer d
 absElementP (Skip d)            = pure $ Skip d
 absElementP (Punctuation s)     = pure $ Punctuation s
 
@@ -147,6 +149,7 @@ setPrevDuration d = put d
 elementD :: Element pch LyNoteLength anno -> DMon (Element pch Duration anno)
 elementD (Note p d a t m)       = (\d1 -> Note p d1 a t m) <$> changeDuration d
 elementD (Rest d)               = Rest   <$> changeDuration d
+elementD (Spacer d)             = Spacer <$> changeDuration d
 elementD (Skip d)               = Skip   <$> skipDuration d
 elementD (Punctuation s)        = pure $ Punctuation s
 

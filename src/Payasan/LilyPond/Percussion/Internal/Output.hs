@@ -22,7 +22,7 @@ module Payasan.LilyPond.Percussion.Internal.Output
 import Payasan.LilyPond.Percussion.Internal.Base
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.SimpleOutput ( LyOutputDef(..), renderNotes )
+import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Utils
 
 
@@ -35,17 +35,12 @@ drumsOutput globals ph =
         header
     $+$ drumsBlock notes
   where
-    header          = oHeader globals
-    notes           = renderNotes drum_def ph
+    header          = scoreHeader globals
+    notes           = lilypondNotes drum_def default_local_info ph
     drum_def        = LyOutputDef { printPitch = text . shortName
                                   , printAnno  = ppAccent }
 
 
-
-oHeader :: ScoreInfo -> Doc
-oHeader globals  = 
-        version_ (score_ly_version globals)
-    $+$ block (Just $ command "header") (title $ score_title globals)
 
 
 drumsBlock :: Doc -> Doc

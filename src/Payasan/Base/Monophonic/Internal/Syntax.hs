@@ -48,6 +48,7 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , Element(..)
 
   , pushContextInfo
+  , contextInfo
   , sizeNoteGroup
 
   ) where
@@ -134,6 +135,7 @@ data NoteGroup pch drn anno =
 data Element pch drn anno = 
       Note          pch   drn   anno  Tie   Markup
     | Rest          drn
+    | Spacer          drn
     | Skip          drn
     | Punctuation   String
   deriving (Data,Eq,Show,Typeable)
@@ -152,6 +154,9 @@ pushContextInfo ri (Phrase { phrase_bars = bs }) =
            , phrase_bars   = bs }
 
 
+contextInfo :: Phrase pch drn anno -> LocalContextInfo
+contextInfo = phrase_header
+
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
 sizeNoteGroup (Atom e)          = sizeElement e
@@ -163,6 +168,7 @@ sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
 sizeElement :: Element pch Duration anno -> RDuration
 sizeElement (Note _ d _ _ _)    = durationSize d
 sizeElement (Rest d)            = durationSize d
+sizeElement (Spacer d)          = durationSize d
 sizeElement (Skip d)            = durationSize d
 sizeElement (Punctuation {})    = 0
 

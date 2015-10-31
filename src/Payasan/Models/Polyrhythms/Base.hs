@@ -99,6 +99,7 @@ elementP :: forall pch drn anno.
 elementP dpitch elt = case elt of 
     NoteElem e a t m    -> NoteElem (noteP e) a t m
     Rest d              -> Rest d
+    Spacer d            -> Spacer d
     Skip d              -> Skip d
     Chord _ d a t m     -> 
         NoteElem (Note dpitch d) a t m
