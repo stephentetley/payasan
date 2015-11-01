@@ -61,13 +61,18 @@ module Payasan.Base.Internal.LilyPond.Utils
   , key_
   , mode_
   , time_
+  , numericTimeSignature_
   , tuplet_
   , stemUp_
   , stemDown_
   , with_
   , withBlock_ 
+
   , override_
+  , hide_
+
   , drummode_
+
 
   , tie
   , rest
@@ -232,6 +237,11 @@ mode_ LOCRIAN           = command "locrian"
 time_ :: Meter -> Doc
 time_ (Meter n d) = command "time" <+> int n <> char '/' <> int d
 
+
+numericTimeSignature_   :: Doc 
+numericTimeSignature_   = command "numericTimeSignature"
+
+
 tuplet_ :: TupletSpec -> Doc
 tuplet_ (TupletSpec { tuplet_num = n, tuplet_time_mult = t}) = 
     command "tuplet" <+> int n <> char '/' <> int t
@@ -252,6 +262,15 @@ stemDown_       = command "stemDown"
 -- 
 override_ :: String -> Doc
 override_ ss = command "override" <+> text ss
+
+
+-- | Hides are expected to be copy-paste fragments from 
+-- LilyPond. 
+--
+hide_ :: String -> Doc
+hide_ ss = command "hide" <+> text ss
+
+
 
 with_           :: Doc
 with_           = command "with"

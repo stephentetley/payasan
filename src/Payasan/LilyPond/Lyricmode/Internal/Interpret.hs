@@ -26,10 +26,11 @@ import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
+import Payasan.Base.Names.Pitch
 
 
 -- TODO - need to remove punctuation as well.
 --
 extractRhythm :: StdLyricPhrase -> Phrase Pitch Duration ()
-extractRhythm = mapPitch (const middle_c)
+extractRhythm = mapPitch (const c_5)
 

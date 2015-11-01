@@ -165,6 +165,14 @@ markup d = Markup $ renderStyle (style {lineLength=500}) d
 no_markup :: Markup 
 no_markup = Markup ""
 
+
+-- | TODO - markup can be above @^@, below @_@ or default @-@.
+--
+-- See 5.4.2 Direction and placement
+-- 
+-- Does putting placement inside Markup conflict with concat or
+-- can each markup have its own placement?
+--
 renderMarkup :: Markup -> Doc
 renderMarkup (Markup s) 
     | null s    = empty 

@@ -24,7 +24,6 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
-import Payasan.Base.Internal.LilyPond.RhythmicMarkup
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
@@ -45,17 +44,25 @@ lyricsScore globals ph1 ph2 =
         header $+$ simultaneous1 (rhythm $+$ lyrics)
   where
     header          = scoreHeader globals
-    rhythm          = rhythmicMarkupVoice rhythm_def  ph1
-    rhythm_def      = LyOutputDef { printPitch = pitch, printAnno = anno }
-
-    lyrics          = lyricsVoice globals ph2
+    rhythm          = rhythmVoice ph1
+    lyrics          = lyricsVoice ph2
                       
 
 
+rhythmVoice :: Anno a => BEAM.Phrase LyPitch LyNoteLength a -> Doc
+rhythmVoice ph = newStaff_ <+> anonBlock body
+  where
+    body        = vcat [ hide_ "Staff.StaffSymbol" 
+                       , hide_ "Staff.Clef"
+                       , numericTimeSignature_
+                       , stemDown_
+                       , simpleVoice_Absolute def ph
+                       ]
+    def         = LyOutputDef { printPitch = pitch, printAnno = anno }
+                      
 
-
-lyricsVoice :: ScoreInfo -> BEAM.Phrase Syllable LyNoteLength a -> Doc
-lyricsVoice _globals ph = block (Just prefix) notes
+lyricsVoice :: BEAM.Phrase Syllable LyNoteLength a -> Doc
+lyricsVoice ph = block (Just prefix) notes
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
     locals1     = maybe default_local_info id $ BEAM.firstContextInfo ph
