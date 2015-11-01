@@ -30,6 +30,8 @@ module Payasan.Base.Internal.CommonSyntax
 
   , Tie(..)
   , Anno(..)
+  , AnnoDU(..)
+
 
   , Markup
   , markup
@@ -142,6 +144,9 @@ data Tie = TIE | NO_TIE
 class Anno a where anno :: a -> Doc
 
 instance Anno () where anno = const empty
+
+
+data AnnoDU a = AnnoDU { defs :: Doc, use :: a -> Doc }
 
 
 -- | Unfortunately Markup has to be a String internally (not a 

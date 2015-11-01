@@ -46,7 +46,7 @@ module Payasan.Base.Monophonic.Internal.Traversals
   , foldPitchAnno
 
   , censorPunctuation
-  , censorMarkup
+  , censorAnno
   , skipToRest
 
   ) where
@@ -148,7 +148,7 @@ collectP :: forall st pch drn anno ac.
 collectP mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note p _ _ _ _)    = mf ac p
+    elementC ac (Note p _ _ _)      = mf ac p
     elementC ac (Rest {})           = pure $ ac
     elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
@@ -172,7 +172,7 @@ ctxMapPitch fn = transformP algo
                           , element_trafoP    = stepE 
                           }
 
-    stepE (Note p d a t m)  = (\ks -> Note (fn ks p) d a t m) <$> asksLocal local_key
+    stepE (Note p d a t)    = (\ks -> Note (fn ks p) d a t) <$> asksLocal local_key
     stepE (Rest d)          = pure $ Rest d
     stepE (Spacer d)        = pure $ Spacer d
     stepE (Skip d)          = pure $ Skip d
@@ -214,7 +214,7 @@ collectD :: forall st pch drn anno ac.
 collectD mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note _ d _ _ _)    = mf ac d
+    elementC ac (Note _ d _ _)      = mf ac d
     elementC ac (Rest {})           = pure $ ac
     elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
@@ -233,7 +233,7 @@ mapDuration fn = transformD algo
                              , element_trafoD   = stepE 
                              }
 
-    stepE (Note p d a t m)      = pure $ Note p (fn d) a t m
+    stepE (Note p d a t)        = pure $ Note p (fn d) a t
     stepE (Rest d)              = pure $ Rest (fn d)
     stepE (Spacer d)            = pure $ Spacer (fn d)
     stepE (Skip d)              = pure $ Skip (fn d)
@@ -273,7 +273,7 @@ collectA :: forall st pch drn anno ac.
 collectA mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note _ _ a _ _ )   = mf ac a
+    elementC ac (Note _ _ a _)      = mf ac a
     elementC ac (Rest {})           = pure $ ac
     elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
@@ -291,7 +291,7 @@ mapAnno fn = transformA algo
                          , element_trafoA   = stepE 
                          }
 
-    stepE (Note p d a t m)      = pure $ Note p d (fn a) t m
+    stepE (Note p d a t)        = pure $ Note p d (fn a) t
     stepE (Rest d)              = pure $ Rest d
     stepE (Spacer d)            = pure $ Spacer d
     stepE (Skip d)              = pure $ Skip d
@@ -332,7 +332,7 @@ collectPA :: forall st pch drn anno ac.
 collectPA mf = genCollect elementC
   where
     elementC :: ac -> Element pch drn anno -> Mon st ac
-    elementC ac (Note p _ a _ _)    = mf ac p a
+    elementC ac (Note p _ a _)      = mf ac p a
     elementC ac (Rest {})           = pure $ ac
     elementC ac (Spacer {})         = pure $ ac
     elementC ac (Skip {})           = pure $ ac
@@ -351,7 +351,7 @@ mapPitchAnno fn = transformPA algo
                               , element_trafoPA   = stepE 
                               }
 
-    stepE (Note p d a t m)  = let (p1,a1) = fn p a in pure $ Note p1 d a1 t m
+    stepE (Note p d a t)    = let (p1,a1) = fn p a in pure $ Note p1 d a1 t
     stepE (Rest d)          = pure $ Rest d
     stepE (Spacer d)        = pure $ Spacer d
     stepE (Skip d)          = pure $ Skip d
@@ -384,16 +384,19 @@ censorPunctuation (Phrase info bs) = Phrase info (map bar1 bs)
 --------------------------------------------------------------------------------
 -- Markup
 
-censorMarkup :: Phrase pch drn anno -> Phrase pch drn anno
-censorMarkup (Phrase info bs) = Phrase info (map bar1 bs)
+censorAnno :: Phrase pch drn anno -> Phrase pch drn ()
+censorAnno (Phrase info bs) = Phrase info (map bar1 bs)
   where
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
     noteGroup1 (Atom e)         = Atom $ changeNote e
     noteGroup1 (Tuplet spec cs) = Tuplet spec $ map noteGroup1 cs
 
-    changeNote (Note p d a t _) = Note p d a t no_markup
-    changeNote e                = e
+    changeNote (Note p d _ t)   = Note p d () t
+    changeNote (Rest d)         = Rest d
+    changeNote (Spacer d)       = Spacer d
+    changeNote (Skip d)         = Skip d
+    changeNote (Punctuation s)  = Punctuation s
 
 
 --------------------------------------------------------------------------------

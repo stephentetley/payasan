@@ -43,11 +43,11 @@ noteGroupT (Atom e)             = T.Atom $ elementT e
 noteGroupT (Tuplet spec cs)     = T.Tuplet spec $ map noteGroupT cs
 
 elementT :: Element pch drn anno -> T.Element pch drn anno
-elementT (NoteElem e a t m)     = T.NoteElem (noteT e) a t m
+elementT (NoteElem e a t)       = T.NoteElem (noteT e) a t
 elementT (Rest d)               = T.Rest d
 elementT (Spacer d)             = T.Spacer d
 elementT (Skip d)               = T.Skip d
-elementT (Chord ps d a t m)     = T.Chord ps d a t m
+elementT (Chord ps d a t)       = T.Chord ps d a t
 elementT (Graces ns)            = T.Graces $ map noteT ns
 elementT (Punctuation s)        = T.Punctuation s
 

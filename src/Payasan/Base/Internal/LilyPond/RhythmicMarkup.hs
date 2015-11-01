@@ -49,9 +49,9 @@ data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Markup }
 
 translateToRhythmicMarkup :: MarkupOutput pch
                           -> Phrase pch Duration anno 
-                          -> Phrase LyPitch LyNoteLength anno
+                          -> Phrase LyPitch LyNoteLength Markup
 translateToRhythmicMarkup mo = 
-    transformP (markup_algo mo) . translateToOutput_DurationOnly
+    transformPA (markup_algo mo) . translateToOutput_DurationOnly
 
 
 
@@ -59,24 +59,24 @@ translateToRhythmicMarkup mo =
 --------------------------------------------------------------------------------
 -- Pitch to markup translation
 
-markup_algo :: MarkupOutput pch -> BeamPitchAlgo () pch LyPitch
-markup_algo mo = BeamPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = liftElementTrafo $ elementP mo
+markup_algo :: MarkupOutput pch -> BeamPitchAnnoAlgo () pch anno LyPitch Markup
+markup_algo mo = BeamPitchAnnoAlgo
+    { initial_statePA   = ()
+    , element_trafoPA   = liftElementTrafo $ elementP mo
     }
 
 
 elementP :: forall pch drn anno. 
             MarkupOutput pch 
          -> Element pch drn anno 
-         -> Element LyPitch drn anno
+         -> Element LyPitch drn Markup
 elementP mo elt = case elt of 
-    NoteElem e a t _    -> NoteElem (notePA e) a t (markupPA e)
+    NoteElem e _ t      -> NoteElem (notePA e) (markupPA e) t
     Rest d              -> Rest d
     Spacer d            -> Spacer d
     Skip d              -> Skip d
-    Chord ps d a t _    -> 
-        NoteElem (Note middle_c d) a t (mconcat $ map markupF ps)
+    Chord ps d _ t      -> 
+        NoteElem (Note middle_c d) (mconcat $ map markupF ps) t
 
     Graces ns           -> Graces $ map notePA ns
     Punctuation s       -> Punctuation s

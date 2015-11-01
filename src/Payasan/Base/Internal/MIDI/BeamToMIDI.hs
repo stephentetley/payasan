@@ -75,7 +75,7 @@ phraseT td ph =
 -- Ties have been coalesced at this point...
 --
 elementT :: Element T.MidiPitch Seconds anno -> Mon [T.MidiNote]
-elementT (NoteElem e _ _ _)     = (\x -> [x]) <$> noteT e
+elementT (NoteElem e _ _)       = (\x -> [x]) <$> noteT e
 
 elementT (Rest d)               = 
     do { advanceOnset d
@@ -94,7 +94,7 @@ elementT (Skip d)               =
        ; return []
        }
 
-elementT (Chord ps d _ _ _)     = 
+elementT (Chord ps d _ _)       = 
     do { ot <- onset
        ; advanceOnset d
        ; return $ map (makeNote ot d) ps
@@ -161,11 +161,11 @@ linearizeNG bpm (Tuplet spec es)    = map (scaleD (t%n)) $ concatMap (linearizeN
     (TupletSpec t n _) = spec
 
 linearizeE :: BPM -> Element T.MidiPitch RDuration anno -> Element T.MidiPitch Seconds anno
-linearizeE bpm (NoteElem e a t m)   = NoteElem (linearizeN bpm e) a t m
+linearizeE bpm (NoteElem e a t)     = NoteElem (linearizeN bpm e) a t
 linearizeE bpm (Rest d)             = Rest $ noteDuration bpm d
 linearizeE bpm (Spacer d)           = Spacer $ noteDuration bpm d
 linearizeE bpm (Skip d)             = Skip $ noteDuration bpm d
-linearizeE bpm (Chord ps d a t m)   = Chord ps (noteDuration bpm d) a t m
+linearizeE bpm (Chord ps d a t)     = Chord ps (noteDuration bpm d) a t
 linearizeE bpm (Graces ns)          = Graces $ map (linearizeN bpm) ns
 linearizeE _   (Punctuation s)      = Punctuation s
 
@@ -178,11 +178,11 @@ linearizeN bpm (Note pch drn)   = Note pch $ noteDuration bpm drn
 scaleD :: Ratio Int -> Element pch Seconds anno -> Element pch Seconds anno
 scaleD sc elt = step (realToFrac sc) elt
   where
-    step x (NoteElem n a t m)   = NoteElem (note x n) a t m
+    step x (NoteElem n a t)     = NoteElem (note x n) a t
     step x (Rest d)             = Rest $ x * d
     step x (Spacer d)           = Spacer $ x * d
     step x (Skip d)             = Skip $ x * d
-    step x (Chord ps d a t m)   = Chord ps (x * d) a t m
+    step x (Chord ps d a t)     = Chord ps (x * d) a t
     step x (Graces ns)          = Graces $ map (note x) ns
     step _ (Punctuation s)      = Punctuation s
 
@@ -203,16 +203,16 @@ coalesce (x:xs) = step x xs
 together :: Element T.MidiPitch Seconds anno 
          -> Element T.MidiPitch Seconds anno 
          -> Maybe (Element T.MidiPitch Seconds anno)
-together (NoteElem n1 _ t1 _)   (NoteElem n2 a t2 m)    = 
+together (NoteElem n1 _ t1)     (NoteElem n2 a t2)    = 
     case together1 n1 n2 t1 of
-      Just note -> Just $ NoteElem note a t2 m
+      Just note -> Just $ NoteElem note a t2
       Nothing -> Nothing
 
-together (Chord ps1 d1 _ TIE _) (Chord ps2 d2 a t m)    = 
-    if ps1 == ps2 then Just $ Chord ps2 (d1+d2) a t m
+together (Chord ps1 d1 _ TIE)   (Chord ps2 d2 a t)    = 
+    if ps1 == ps2 then Just $ Chord ps2 (d1+d2) a t
                   else Nothing
 
-together _                      _                       = Nothing
+together _                      _                     = Nothing
 
 
 

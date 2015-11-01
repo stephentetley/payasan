@@ -198,14 +198,13 @@ lilypondNotes def prefix_locals ph =
     oNoteGroup (Tuplet spec cs)     = tupletForm spec (map oNoteGroup cs)
 
     oElement :: GenLyElement pch anno -> Doc
-    oElement (NoteElem n a t m)     = 
-        oNote n <> pAnno a <> tie t <> renderMarkup m
+    oElement (NoteElem n a t)       = oNote n <> pAnno a <> tie t
 
     oElement (Rest d)               = rest d 
     oElement (Spacer d)             = spacer d 
     oElement (Skip d)               = skip d 
-    oElement (Chord ps d a t m)     = 
-        chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t <> renderMarkup m
+    oElement (Chord ps d a t)       = 
+        chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t
 
     oElement (Graces ns)            = graceForm (map oNote ns)
     oElement (Punctuation s)        = text s

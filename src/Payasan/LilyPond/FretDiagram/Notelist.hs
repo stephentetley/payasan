@@ -61,17 +61,17 @@ import qualified Payasan.Base.Notelist as MAIN
 
 
 outputAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPhrase -> String
-outputAsLilyPond globals defs = 
+outputAsLilyPond globals diags = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config . MONO.chordTranslateToMain 
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams
                 , MAIN.out_trafo   = LY.translateToOutput_Absolute
-                , MAIN.output_func = fretDiagramOutput globals defs
+                , MAIN.output_func = fretDiagramOutput globals diags
                 }
 
 
 
 printAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPhrase -> IO ()
-printAsLilyPond info defs = putStrLn . outputAsLilyPond info defs 
+printAsLilyPond info diags = putStrLn . outputAsLilyPond info diags
 

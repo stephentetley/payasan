@@ -4,6 +4,8 @@
 module Demo07 where
 
 import Payasan.LilyPond.Lyricmode.Notelist
+import qualified Payasan.Models.Lyrics.Base  as NEW  -- TEMP
+import Payasan.Models.Lyrics.Plain
 
 
 

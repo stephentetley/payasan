@@ -37,7 +37,7 @@ fromNoteList :: LocalContextInfo -> [NoteListAtom] -> StdMonoPhrase
 fromNoteList ri xs = recalcBars $ Phrase ri [Bar xs]
 
 note :: Pitch -> Duration -> NoteListAtom
-note p d = Atom $ Note p d () NO_TIE no_markup
+note p d = Atom $ Note p d () NO_TIE
 
 rest :: Duration -> NoteListAtom
 rest d = Atom $ Rest d 

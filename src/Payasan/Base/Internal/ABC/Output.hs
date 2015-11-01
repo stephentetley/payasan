@@ -142,11 +142,11 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 -- Skip is treated as a spacer.
 --
 oElement :: CatOp -> GenABCElement anno -> Doc
-oElement op (NoteElem n _ t _)  = tied op (note n) t
+oElement op (NoteElem n _ t)    = tied op (note n) t
 oElement _  (Rest d)            = rest d 
 oElement _  (Spacer d)          = spacer d 
 oElement _  (Skip d)            = spacer d 
-oElement op (Chord ps d _ t _)  = tied op (chord ps d) t
+oElement op (Chord ps d _ t)    = tied op (chord ps d) t
 oElement _  (Graces xs)         = graceForm $ map note xs
 oElement _  (Punctuation {})    = empty
 

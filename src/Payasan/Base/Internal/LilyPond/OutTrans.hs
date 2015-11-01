@@ -75,12 +75,12 @@ setPrevPitch = put
 
 
 relElementP :: Element Pitch drn anno -> RelPMon (Element LyPitch drn anno)
-relElementP (NoteElem e a t m)  = (\e1 -> NoteElem e1 a t m) <$> relNoteP e
+relElementP (NoteElem e a t)    = (\e1 -> NoteElem e1 a t) <$> relNoteP e
 relElementP (Rest d)            = pure $ Rest d
 relElementP (Spacer d)          = pure $ Spacer d
 relElementP (Skip d)            = pure $ Skip d
-relElementP (Chord ps d a t m)  = 
-    (\ps1 -> Chord ps1 d a t m) <$> mapM changePitchRel ps
+relElementP (Chord ps d a t)    = 
+    (\ps1 -> Chord ps1 d a t) <$> mapM changePitchRel ps
 
 relElementP (Graces ns)         = Graces <$> mapM relNoteP ns
 relElementP (Punctuation s)     = pure $ Punctuation s
@@ -110,12 +110,12 @@ abs_pch_algo = BeamPitchAlgo
 
 
 absElementP :: Element Pitch drn anno -> AbsPMon (Element LyPitch drn anno)
-absElementP (NoteElem e a t m)  = (\e1 -> NoteElem e1 a t m) <$> absNoteP e
+absElementP (NoteElem e a t)    = (\e1 -> NoteElem e1 a t) <$> absNoteP e
 absElementP (Rest d)            = pure $ Rest d
 absElementP (Spacer d)          = pure $ Spacer d
 absElementP (Skip d)            = pure $ Skip d
-absElementP (Chord ps d a t m)  = 
-    (\ps1 -> Chord ps1 d a t m) <$> mapM changePitchAbs ps
+absElementP (Chord ps d a t)    = 
+    (\ps1 -> Chord ps1 d a t) <$> mapM changePitchAbs ps
 
 absElementP (Graces ns)         = Graces <$> mapM absNoteP ns
 absElementP (Punctuation s)     = pure $ Punctuation s
@@ -154,11 +154,11 @@ resetDuration = put d_zero
 -- | Spacer and Skip treated differently...
 --
 elementD :: Element pch Duration anno -> DMon (Element pch LyNoteLength anno)
-elementD (NoteElem e a t m)     = (\e1 -> NoteElem e1 a t m) <$> noteD e
+elementD (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDuration d
 elementD (Spacer d)             = Spacer    <$> changeDuration d
 elementD (Skip d)               = Skip      <$> skipDuration d
-elementD (Chord ps d a t m)     = (\d1 -> Chord ps d1 a t m) <$> changeDuration d
+elementD (Chord ps d a t)       = (\d1 -> Chord ps d1 a t) <$> changeDuration d
 elementD (Graces ns)            = Graces    <$> mapM noteD ns
 elementD (Punctuation s)        = pure $ Punctuation s
 

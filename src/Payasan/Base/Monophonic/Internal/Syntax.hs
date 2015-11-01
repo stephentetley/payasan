@@ -133,9 +133,9 @@ data NoteGroup pch drn anno =
 -- Maybe+duration.
 --
 data Element pch drn anno = 
-      Note          pch   drn   anno  Tie   Markup
+      Note          pch   drn   anno  Tie
     | Rest          drn
-    | Spacer          drn
+    | Spacer        drn
     | Skip          drn
     | Punctuation   String
   deriving (Data,Eq,Show,Typeable)
@@ -166,7 +166,7 @@ sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
     firstOf []      = durationSize d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
-sizeElement (Note _ d _ _ _)    = durationSize d
+sizeElement (Note _ d _ _)      = durationSize d
 sizeElement (Rest d)            = durationSize d
 sizeElement (Spacer d)          = durationSize d
 sizeElement (Skip d)            = durationSize d

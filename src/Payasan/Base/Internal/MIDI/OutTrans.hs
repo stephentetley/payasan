@@ -50,11 +50,11 @@ pch_algo = BeamPitchAlgo
 
 
 elementP :: Element Pitch drn anno -> Element MidiPitch drn anno
-elementP (NoteElem e a t m)     = NoteElem (noteP e) a t m
+elementP (NoteElem e a t)       = NoteElem (noteP e) a t
 elementP (Rest d)               = Rest d
 elementP (Spacer d)             = Spacer d
 elementP (Skip d)               = Skip d
-elementP (Chord ps d a t m)     = Chord (map pitchToMidi ps) d a t m
+elementP (Chord ps d a t)       = Chord (map pitchToMidi ps) d a t
 elementP (Graces ns)            = Graces $ map noteP ns
 elementP (Punctuation s)        = Punctuation s
 
@@ -75,11 +75,11 @@ drn_algo = BeamDurationAlgo
 
 
 elementD :: Element pch Duration anno -> Element pch RDuration anno
-elementD (NoteElem e a t m)     = NoteElem (noteD e) a t m
+elementD (NoteElem e a t)       = NoteElem (noteD e) a t
 elementD (Rest d)               = Rest $ durationSize d
 elementD (Spacer d)             = Spacer $ durationSize d
 elementD (Skip d)               = Skip $ durationSize d
-elementD (Chord ps d a t m)     = Chord ps (durationSize d) a t m
+elementD (Chord ps d a t)       = Chord ps (durationSize d) a t
 elementD (Graces ns)            = Graces $ map noteD ns
 elementD (Punctuation s)        = Punctuation s
 

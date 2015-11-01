@@ -36,7 +36,7 @@ fromNoteList :: LocalContextInfo -> [[NoteListAtom]] -> Phrase Pitch Duration ()
 fromNoteList ri xss = Phrase $ map (Bar ri) xss
 
 note :: Pitch -> Duration -> NoteListAtom
-note p d = Atom $ NoteElem (Note p d) () NO_TIE no_markup
+note p d = Atom $ NoteElem (Note p d) () NO_TIE
 
 rest :: Duration -> NoteListAtom
 rest d = Atom $ Rest d 

@@ -36,9 +36,9 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Phrase LyPitch LyNoteLength FretDiagramRef -> Doc
-fretDiagramOutput globals defs ph = 
+fretDiagramOutput globals diags ph = 
         header
-    $+$ vsep (map fretDef defs)
+    $+$ vsep (map fretDef diags)
     $+$ phraseBlock notes
   where
     header          = scoreHeader globals

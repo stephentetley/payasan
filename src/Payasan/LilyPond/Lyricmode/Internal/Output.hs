@@ -18,6 +18,8 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
   ( 
    
     lyricsScore
+  , lyricsScoreDU
+  , rhythmVoice
   , lyricsVoice
 
   ) where
@@ -44,13 +46,30 @@ lyricsScore globals ph1 ph2 =
         header $+$ simultaneous1 (rhythm $+$ lyrics)
   where
     header          = scoreHeader globals
-    rhythm          = rhythmVoice ph1
+    rhythm          = rhythmVoice anno ph1
+    lyrics          = lyricsVoice ph2
+                      
+
+lyricsScoreDU :: AnnoDU a
+              -> ScoreInfo 
+              -> BEAM.Phrase LyPitch LyNoteLength a
+              -> BEAM.Phrase Syllable LyNoteLength az
+              -> Doc
+lyricsScoreDU annos globals ph1 ph2 = 
+        header $+$ defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
+  where
+    header          = scoreHeader globals
+    rhythm          = rhythmVoice (use annos) ph1
     lyrics          = lyricsVoice ph2
                       
 
 
-rhythmVoice :: Anno a => BEAM.Phrase LyPitch LyNoteLength a -> Doc
-rhythmVoice ph = newStaff_ <+> anonBlock body
+
+-- rhythmVoice would be better with an explicit annof printer 
+-- than the Anno instance... 
+
+rhythmVoice :: (a -> Doc) -> BEAM.Phrase LyPitch LyNoteLength a -> Doc
+rhythmVoice annof ph = newStaff_ <+> anonBlock body
   where
     body        = vcat [ hide_ "Staff.StaffSymbol" 
                        , hide_ "Staff.Clef"
@@ -58,7 +77,7 @@ rhythmVoice ph = newStaff_ <+> anonBlock body
                        , stemDown_
                        , simpleVoice_Absolute def ph
                        ]
-    def         = LyOutputDef { printPitch = pitch, printAnno = anno }
+    def         = LyOutputDef { printPitch = pitch, printAnno = annof }
                       
 
 lyricsVoice :: BEAM.Phrase Syllable LyNoteLength a -> Doc

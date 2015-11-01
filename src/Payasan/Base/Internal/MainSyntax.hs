@@ -76,11 +76,11 @@ data NoteGroup pch drn anno =
 -- differentiated.
 --
 data Element pch drn anno = 
-      NoteElem      (Note pch drn) anno   Tie   Markup
+      NoteElem      (Note pch drn) anno   Tie
     | Rest          drn
     | Spacer        drn
     | Skip          drn
-    | Chord         [pch]          drn    anno   Tie  Markup
+    | Chord         [pch]          drn    anno   Tie
     | Graces        [Note pch drn]
     | Punctuation   String
   deriving (Data,Eq,Show,Typeable)

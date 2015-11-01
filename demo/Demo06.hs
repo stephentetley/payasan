@@ -26,12 +26,11 @@ phrase01 = fromLilyPondWith locals $
 
 
 
-
 demo01 :: IO ()
-demo01 = printAsLilyPond globals phrase01
+demo01 = shellOutLilyPond default_shell_info $ outputAsLilyPond globals $ phrase01
 
 demo02 :: IO ()
-demo02 = shellOutLilyPond default_shell_info $ outputAsLilyPond globals $ phrase01
+demo02 = printAsLilyPond globals phrase01
 
 demo03 :: IO ()
 demo03 = writeAsMIDI "out/chords01.mid" phrase01

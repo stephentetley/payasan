@@ -73,6 +73,9 @@ module Payasan.Base.Internal.Pipeline
   , outputAsLinear
   , printAsLinear
 
+  , beamAsTabular
+  , beamAsLinear
+
   ) where
 
 import qualified Payasan.Base.Internal.ABC.InTrans          as ABC
@@ -98,6 +101,7 @@ import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Tabular.OutputBeam
 import Payasan.Base.Internal.Output.Tabular.OutputMain
+import Payasan.Base.Internal.Output.Linear.OutputBeam
 import Payasan.Base.Internal.Output.Linear.OutputMain
 
 
@@ -357,3 +361,24 @@ outputAsLinear _gi ph = ppRender $ mainLinear lo ph
 printAsLinear :: (Pretty pch, Pretty drn) 
               => ScoreInfo -> Phrase pch drn anno ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi
+
+
+
+beamAsLinear :: (Pretty pch, Pretty drn) 
+             => ScoreInfo -> BEAM.Phrase pch drn anno -> String
+beamAsLinear _gi ph = ppRender $ beamLinear lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
+beamAsTabular :: (Pretty pch, Pretty drn) 
+              => ScoreInfo -> BEAM.Phrase pch drn anno -> String
+beamAsTabular _gi ph = ppRender $ beamTabular lo ph
+  where
+    lo = LeafOutput { pp_pitch     = pPrint
+                    , pp_duration  = pPrint
+                    , pp_anno      = const empty
+                    }
+
