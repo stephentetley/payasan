@@ -49,7 +49,7 @@ fromNoteList locals tuning xss =
 
 
 chord :: FretDiagram -> Duration -> NoteListAtom
-chord p d = Atom $ Note p d () NO_TIE
+chord diag d = Atom $ Note diag d () NO_TIE
 
 rest :: Duration -> NoteListAtom
 rest d = Atom $ Rest d 
@@ -57,6 +57,6 @@ rest d = Atom $ Rest d
 -- Use @chordTranslateToMain@ with this representation.
 --
 changeNote :: Key -> GuitarTuning 
-              -> FretDiagram -> a0 -> ([Pitch], FretDiagramRef)
+              -> FretDiagram -> a0 -> ([Pitch], FretDiagram)
 changeNote key tuning fd  _     = 
-    let ps = interpretFretDiagram key tuning fd in (ps,FretDiagramRef $ fd_name fd)
+    let ps = interpretFretDiagram key tuning fd in (ps,fd)

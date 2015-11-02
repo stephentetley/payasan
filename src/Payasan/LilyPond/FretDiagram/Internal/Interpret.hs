@@ -16,24 +16,17 @@
 
 module Payasan.LilyPond.FretDiagram.Internal.Interpret
   ( 
-     
     interpretFretDiagram
-
-  , asDefinition
-  , asReference
-
   ) where
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.Utils
 
 import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Pitch
 import Payasan.Base.ScaleDegree
 
-import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Maybe
 
@@ -62,9 +55,3 @@ applyIntervals key gt ivs = catMaybes $ zipWith fn ivs gt
     fn mb p = fmap (\ivl -> transposeWithDiatonicInterval key ivl p) mb
 
 
-asDefinition :: FretDiagram -> Doc
-asDefinition fd@(FretDiagram { fd_name = s }) = 
-    text s <+> char '=' <+> block (Just $ command "markup") (pPrint fd)
-
-asReference :: FretDiagramRef -> Doc
-asReference = pPrint

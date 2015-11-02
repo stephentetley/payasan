@@ -64,14 +64,12 @@ temp02 = shellOutLilyPond default_shell_info $
 
 
 test01 = pPrint $ [fret_diagram| 6-x;5-x;4-o;3-2;2-3;1-2;  |]
-test02 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
-test03 = asDefinition $ pushName "mychord" $ [fret_diagram| c:6-1-1;6-1;5-1;4-1;3-2;2-3;1-1;  |]
 
 
 -- This was showing an error in transposeWithDiatonicInterval ** NOW FIXED
 --
-test04 :: IO ()
-test04 = MONO.shellOutLilyPond default_shell_info $ 
+test02 :: IO ()
+test02 = MONO.shellOutLilyPond default_shell_info $ 
     MONO.outputAsLilyPond_Relative globals middle_c $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where

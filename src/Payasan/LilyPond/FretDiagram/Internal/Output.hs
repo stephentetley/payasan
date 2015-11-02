@@ -20,7 +20,6 @@ module Payasan.LilyPond.FretDiagram.Internal.Output
   ) where
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
-import Payasan.LilyPond.FretDiagram.Internal.Interpret
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.BeamSyntax (Phrase, firstContextInfo)
@@ -35,26 +34,23 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Phrase LyPitch LyNoteLength FretDiagramRef -> Doc
+fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Phrase LyPitch LyNoteLength FretDiagram -> Doc
 fretDiagramOutput globals diags ph = 
         header
-    $+$ vsep (map fretDef diags)
+    $+$ defs defuse
     $+$ phraseBlock notes
   where
+    defuse          = diagramDU diags
     header          = scoreHeader globals
     locals1         = maybe default_local_info id $ firstContextInfo ph
     notes           = lilypondNotes fret_def locals1 ph
 
-    fret_def        :: LyOutputDef LyPitch FretDiagramRef
+    fret_def        :: LyOutputDef LyPitch FretDiagram
     fret_def        = LyOutputDef { printPitch = pitch
-                                  , printAnno  = anno }
+                                  , printAnno  = use defuse }
 
 
 
-
-
-fretDef :: FretDiagram -> Doc
-fretDef = asDefinition
 
 phraseBlock :: Doc -> Doc
 phraseBlock doc  = simultaneous1 $ anonBlock doc

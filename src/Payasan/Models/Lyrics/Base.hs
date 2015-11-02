@@ -39,11 +39,6 @@ data Stress = PRIMARY | SECONDARY | UNSTRESSED
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-stressUse :: Stress -> Doc
-stressUse PRIMARY       = command "primary"
-stressUse SECONDARY     = command "secondary"
-stressUse UNSTRESSED    = command "unstressed"
-
 stressDefs :: Doc
 stressDefs = p $+$ s $+$ u
   where
@@ -51,6 +46,11 @@ stressDefs = p $+$ s $+$ u
     s = definition "secondary"  $ renderMarkup $ teeny_ (text "//")
     u = definition "unstressed" $ renderMarkup $ teeny_ (char '_')
 
+
+stressUse :: Stress -> Doc
+stressUse PRIMARY       = command "primary"
+stressUse SECONDARY     = command "secondary"
+stressUse UNSTRESSED    = command "unstressed"
 
 
 lyricsScore :: ScoreInfo 

@@ -20,7 +20,6 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
     FretDiagramPhrase
   , FretDiagram(..)
-  , FretDiagramRef(..)
   , Fingering(..)
   , BarreIndicator(..)
   , StringNumber
@@ -31,10 +30,12 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
   , GuitarTuning
   , standard_tuning
 
+  , diagramDU
+
   ) where
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.LilyPond.Utils (command)
+import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Monophonic.Internal.Syntax (Phrase)
 
 import Payasan.Base.Duration
@@ -47,7 +48,7 @@ import Data.Data
 import Data.List (sortBy)
 
 
-type FretDiagramPhrase = Phrase [Pitch] Duration FretDiagramRef
+type FretDiagramPhrase = Phrase [Pitch] Duration FretDiagram
 
 
 data FretDiagram = FretDiagram
@@ -57,8 +58,6 @@ data FretDiagram = FretDiagram
      }
   deriving (Data,Eq,Show,Typeable)
 
-data FretDiagramRef = FretDiagramRef { ref_name :: !String }
-  deriving (Data,Eq,Show,Typeable)
 
 
 data Fingering = Fingering  
@@ -110,10 +109,6 @@ instance Pretty FretDiagram where
                               ; Nothing -> strings }
       
  
-instance Pretty FretDiagramRef where
-  pPrint (FretDiagramRef s) = char '^' <> command s
-
-instance Anno FretDiagramRef where anno = pPrint
 
 instance Pretty Fingering where
   pPrint (Fingering { fingering_string = s
@@ -138,3 +133,21 @@ dashSep :: [Doc] -> Doc
 dashSep []      = empty
 dashSep [d]     = d
 dashSep (d:ds)  = d <> char '-' <> dashSep ds
+
+-- | Note - the @universe@ of defs is not closed.
+--
+-- There are as many defs as there are diagrams defined.
+--
+diagramDU :: [FretDiagram] -> AnnoDU FretDiagram
+diagramDU fs = AnnoDU { defs  = vcat $ map diagramDef fs
+                      , use   = diagramUse
+                      }
+
+diagramDef :: FretDiagram -> Doc
+diagramDef fd@(FretDiagram { fd_name = s }) = 
+    text s <+> char '=' <+> block (Just $ command "markup") (pPrint fd)
+
+diagramUse :: FretDiagram -> Doc
+diagramUse (FretDiagram { fd_name = s }) = char '^' <> command s
+
+
