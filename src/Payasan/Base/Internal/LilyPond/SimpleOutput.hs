@@ -84,7 +84,7 @@ data LyOutputDef pch anno = LyOutputDef
 simpleScore_Relative :: LyOutputDef pch anno 
                      -> ScoreInfo 
                      -> Pitch
-                     -> GenLyPhrase pch anno -> Doc
+                     -> LyPhrase2 pch anno -> Doc
 simpleScore_Relative def infos pch ph = 
         header 
     $+$ anonBlock (simpleVoice_Relative def pch ph)
@@ -93,7 +93,7 @@ simpleScore_Relative def infos pch ph =
 
 simpleScore_Absolute :: LyOutputDef pch anno 
                      -> ScoreInfo 
-                     -> GenLyPhrase pch anno -> Doc
+                     -> LyPhrase2 pch anno -> Doc
 simpleScore_Absolute def infos ph = 
         header 
     $+$ anonBlock (simpleVoice_Absolute def ph)
@@ -123,7 +123,7 @@ scoreHeader globals =
 -- 
 simpleVoice_Relative :: LyOutputDef pch anno 
                      -> Pitch
-                     -> GenLyPhrase pch anno -> Doc
+                     -> LyPhrase2 pch anno -> Doc
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
@@ -133,7 +133,7 @@ simpleVoice_Relative def pch ph =
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
-                     -> GenLyPhrase pch anno -> Doc
+                     -> LyPhrase2 pch anno -> Doc
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
@@ -157,7 +157,7 @@ oPhraseHeader locals =
 lilypondNotes :: forall pch anno. 
                  LyOutputDef pch anno 
               -> LocalContextInfo 
-              -> GenLyPhrase pch anno 
+              -> LyPhrase2 pch anno 
               -> Doc
 lilypondNotes def prefix_locals ph = 
     evalRewrite (oLyPhrase ph) (stateZero prefix_locals)
@@ -168,7 +168,7 @@ lilypondNotes def prefix_locals ph =
     pAnno  :: anno -> Doc
     pAnno  = printAnno def
 
-    oLyPhrase :: GenLyPhrase pch anno -> Mon Doc
+    oLyPhrase :: LyPhrase2 pch anno -> Mon Doc
     oLyPhrase (Phrase [])           = return empty
     oLyPhrase (Phrase (x:xs))       = do { d <- oBar x; step d xs }
       where
@@ -178,7 +178,7 @@ lilypondNotes def prefix_locals ph =
                            ; step ac bs 
                            }
 
-    oBar :: GenLyBar pch anno -> Mon Doc
+    oBar :: LyBar2 pch anno -> Mon Doc
     oBar (Bar locals cs)            = 
           do { dkey     <- deltaKey locals
              ; dtime    <- deltaMetrical locals
@@ -192,12 +192,12 @@ lilypondNotes def prefix_locals ph =
           prefixT Nothing   = (empty <>)
           prefixT (Just t)  = (time_ t $+$)
 
-    oNoteGroup :: GenLyNoteGroup pch anno -> Doc
+    oNoteGroup :: LyNoteGroup2 pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e
     oNoteGroup (Beamed cs)          = beamForm $ map oNoteGroup cs
     oNoteGroup (Tuplet spec cs)     = tupletForm spec (map oNoteGroup cs)
 
-    oElement :: GenLyElement pch anno -> Doc
+    oElement :: LyElement2 pch anno -> Doc
     oElement (NoteElem n a t)       = oNote n <> pAnno a <> tie t
 
     oElement (Rest d)               = rest d 
@@ -210,6 +210,6 @@ lilypondNotes def prefix_locals ph =
     oElement (Punctuation s)        = text s
 
 
-    oNote :: GenLyNote pch -> Doc
+    oNote :: LyNote2 pch anno -> Doc
     oNote (Note p d)               = pPitch p <> noteLength d
 

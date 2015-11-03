@@ -19,7 +19,7 @@ module Payasan.LilyPond.Lyricmode.Notelist
 
     module Payasan.Base.Internal.Shell
    
-  , StdLyricPhrase
+  , LyricPhrase1
   , lyricmode
 
   , ScoreInfo(..)        -- Re-export
@@ -55,20 +55,20 @@ import Payasan.Base.Internal.Shell
 
 
 
-fromLilyPond :: ScoreInfo -> LyLyricPhrase -> StdLyricPhrase
+fromLilyPond :: ScoreInfo -> LyLyricPhrase -> LyricPhrase1 ()
 fromLilyPond globals = fromLilyPondWith globals default_local_info
 
 fromLilyPondWith :: ScoreInfo 
                  -> LocalContextInfo 
                  -> LyLyricPhrase
-                 -> StdLyricPhrase
+                 -> LyricPhrase1 ()
 fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals
 
 
 -- Lyrics should not beam.
 -- Print two simultaneous interpretations.
 --
-outputAsLilyPond :: ScoreInfo -> StdLyricPhrase -> String
+outputAsLilyPond :: ScoreInfo -> LyricPhrase1 () -> String
 outputAsLilyPond globals lyrics = 
     MAIN.ppRender $ MONO.genOutputAsLilyPond2 config2 beats lyrics
   where
@@ -82,6 +82,6 @@ outputAsLilyPond globals lyrics =
                         }
 
 
-printAsLilyPond :: ScoreInfo -> StdLyricPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> LyricPhrase1 () -> IO ()
 printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 

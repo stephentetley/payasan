@@ -30,7 +30,7 @@ import Payasan.Base.Internal.LilyPond.Utils
 
 
 
-import Text.PrettyPrint.HughesPJ        -- package: pretty
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
@@ -55,3 +55,20 @@ fretDiagramOutput globals diags ph =
 phraseBlock :: Doc -> Doc
 phraseBlock doc  = simultaneous1 $ anonBlock doc
 
+
+
+-- | Note - the @universe@ of defs is not closed.
+--
+-- There are as many defs as there are diagrams defined.
+--
+diagramDU :: [FretDiagram] -> AnnoDU FretDiagram
+diagramDU fs = AnnoDU { defs  = vcat $ map diagramDef fs
+                      , use   = diagramUse
+                      }
+
+diagramDef :: FretDiagram -> Doc
+diagramDef fd@(FretDiagram { fd_name = s }) = 
+    text s <+> char '=' <+> block (Just $ command "markup") (pPrint fd)
+
+diagramUse :: FretDiagram -> Doc
+diagramUse (FretDiagram { fd_name = s }) = char '^' <> command s

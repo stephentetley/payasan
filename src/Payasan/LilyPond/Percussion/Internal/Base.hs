@@ -18,8 +18,8 @@
 module Payasan.LilyPond.Percussion.Internal.Base
   ( 
    
-    LyDrumPhrase
-  , StdDrumPhrase
+    StdDrumPhrase
+  , LyDrumPhrase
 
   , Accent(..)
   , DrumPitch(..)
@@ -41,8 +41,8 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
-type LyDrumPhrase       = BEAM.Phrase DrumPitch LyNoteLength Accent
 type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration     Accent
+type LyDrumPhrase       = BEAM.Phrase DrumPitch LyNoteLength Accent
 
 data Accent = ACCENT | NO_ACCENT
   deriving (Data,Eq,Ord,Show,Typeable)

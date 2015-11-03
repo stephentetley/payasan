@@ -78,7 +78,7 @@ deltaKey (LocalContextInfo { local_key = k1 }) =
 --------------------------------------------------------------------------------
 
 
-abcOutput :: ScoreInfo -> StaffInfo -> GenABCPhrase anno -> Doc
+abcOutput :: ScoreInfo -> StaffInfo -> ABCPhrase1 anno -> Doc
 abcOutput infos staff ph = header $+$ body
   where
     first_info  = maybe default_local_info id $ firstContextInfo ph
@@ -98,7 +98,7 @@ oHeader infos staff locals =
   where
     key_clef = (key $ local_key locals) <+> (clef $ staff_clef staff)
 
-oABCPhrase :: GenABCPhrase anno -> Mon Doc
+oABCPhrase :: ABCPhrase1 anno -> Mon Doc
 oABCPhrase (Phrase [])          = return empty
 oABCPhrase (Phrase (x:xs))      = do { d <- oBar x; step d xs }
   where
@@ -112,7 +112,7 @@ oABCPhrase (Phrase (x:xs))      = do { d <- oBar x; step d xs }
                        }
 
 
-oBar :: GenABCBar anno -> Mon Doc
+oBar :: ABCBar1 anno -> Mon Doc
 oBar (Bar info cs)              = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
@@ -128,10 +128,10 @@ oBar (Bar info cs)              =
                                        <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
 
-oNoteGroupList :: CatOp -> [GenABCNoteGroup anno] -> Doc
+oNoteGroupList :: CatOp -> [ABCNoteGroup1 anno] -> Doc
 oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
 
-oNoteGroup :: CatOp -> GenABCNoteGroup anno -> Doc
+oNoteGroup :: CatOp -> ABCNoteGroup1 anno -> Doc
 oNoteGroup op (Atom e)          = oElement op e
 oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
@@ -141,7 +141,7 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 --
 -- Skip is treated as a spacer.
 --
-oElement :: CatOp -> GenABCElement anno -> Doc
+oElement :: CatOp -> ABCElement1 anno -> Doc
 oElement op (NoteElem n _ t)    = tied op (note n) t
 oElement _  (Rest d)            = rest d 
 oElement _  (Spacer d)          = spacer d 

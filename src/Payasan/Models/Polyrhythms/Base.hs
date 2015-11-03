@@ -149,7 +149,7 @@ oPhraseHeader staff locals =
 polyVoice_Relative :: LyOutputDef pch anno 
                    -> Pitch
                    -> LocalContextInfo
-                   -> GenLyPhrase pch anno -> Doc
+                   -> LyPhrase2 pch anno -> Doc
 polyVoice_Relative def pch locals ph = 
     block (Just $ relative_ pch) notes
   where
@@ -187,13 +187,13 @@ timbalesStyle globals ph1 ph2 =
 
 
 phraseDef :: Anno anno
-          => String -> LocalContextInfo -> GenLyPhrase DrumPitch anno -> Doc
+          => String -> LocalContextInfo -> LyPhrase2 DrumPitch anno -> Doc
 phraseDef name locals ph = 
     definition name $ polyVoice_Drum locals ph
 
 
 polyVoice_Drum :: Anno anno
-               => LocalContextInfo -> GenLyPhrase DrumPitch anno -> Doc
+               => LocalContextInfo -> LyPhrase2 DrumPitch anno -> Doc
 polyVoice_Drum locals ph = 
     block (Just $ drummode_) notes
   where

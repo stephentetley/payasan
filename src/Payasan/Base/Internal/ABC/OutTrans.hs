@@ -38,7 +38,7 @@ import Payasan.Base.Pitch
 
 
 
-translateToOutput :: Phrase Pitch Duration anno -> GenABCPhrase anno
+translateToOutput :: StdBeamPhrase1 anno -> ABCPhrase1 anno
 translateToOutput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a

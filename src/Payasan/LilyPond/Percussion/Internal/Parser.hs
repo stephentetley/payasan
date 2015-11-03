@@ -55,7 +55,7 @@ drums = QuasiQuoter
 -- Parser
 
 
-parseLyDrums :: String -> Either ParseError (GenLyPhrase DrumPitch Accent)
+parseLyDrums :: String -> Either ParseError (LyPhrase2 DrumPitch Accent)
 parseLyDrums = parseLyPhrase parsedef
   where
     parsedef = LyParserDef { pitchParser = drumPitch, annoParser = accent }

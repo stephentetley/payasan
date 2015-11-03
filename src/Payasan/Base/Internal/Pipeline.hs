@@ -17,13 +17,12 @@
 module Payasan.Base.Internal.Pipeline
   ( 
 
-    StdPhrase
-  , StdPhraseAnno
-
+    StdPhrase           -- * re-export
+  
   , ABCPhrase           -- * re-export
   , abc                 -- * re-export
 
-  , LyPhrase
+  , LyPhrase1           -- * re-export
   , lilypond
 
   , ScoreInfo(..)
@@ -90,7 +89,7 @@ import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
 import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
-import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase)
+import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase1)
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
@@ -122,8 +121,6 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-type StdPhrase          = Phrase Pitch Duration () 
-type StdPhraseAnno anno = Phrase Pitch Duration anno
 
 
 --------------------------------------------------------------------------------
@@ -182,18 +179,18 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond_Relative :: Pitch -> LY.LyPhrase () -> StdPhrase 
+fromLilyPond_Relative :: Pitch -> LY.LyPhrase1 () -> StdPhrase 
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
 
 
-fromLilyPondWith_Relative :: Pitch -> LocalContextInfo -> LY.LyPhrase () -> StdPhrase
+fromLilyPondWith_Relative :: Pitch -> LocalContextInfo -> LY.LyPhrase1 () -> StdPhrase
 fromLilyPondWith_Relative pch locals = 
     translateToMain . LY.translateFromInput_Relative pch . BEAM.pushContextInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
                             -> LocalContextInfo 
-                            -> LY.LyPhrase () 
+                            -> LY.LyPhrase1 () 
                             -> IO StdPhrase
 fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
@@ -206,14 +203,14 @@ fromLilyPondWithIO_Relative pch locals ph =
 
 
 
-outputAsABC :: ScoreInfo -> StaffInfo -> StdPhraseAnno anno -> String
+outputAsABC :: ScoreInfo -> StaffInfo -> StdPhrase1 anno -> String
 outputAsABC infos staff = 
     ppRender . abcOutput infos staff
              . ABC.translateToOutput
              . addBeams 
              . translateToBeam
 
-printAsABC :: ScoreInfo -> StaffInfo -> StdPhraseAnno anno -> IO ()
+printAsABC :: ScoreInfo -> StaffInfo -> StdPhrase1 anno -> IO ()
 printAsABC infos staff = putStrLn . outputAsABC infos staff
 
 
@@ -225,8 +222,8 @@ printAsABC infos staff = putStrLn . outputAsABC infos staff
 --
 data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
     { beam_trafo    :: BEAM.Phrase p1i Duration a1i -> BEAM.Phrase p1i Duration a1i
-    , out_trafo     :: BEAM.Phrase p1i Duration a1i -> LY.GenLyPhrase p1o a1o
-    , output_func   :: LY.GenLyPhrase p1o a1o -> Doc
+    , out_trafo     :: BEAM.Phrase p1i Duration a1i -> LY.LyPhrase2 p1o a1o
+    , output_func   :: LY.LyPhrase2 p1o a1o -> Doc
     }
 
 
@@ -245,10 +242,10 @@ genOutputAsLilyPond config =
 
 data LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o  = LilyPondPipeline2
     { pipe2_beam_trafo1   :: BEAM.Phrase p1i Duration a1i -> BEAM.Phrase p1i Duration a1i
-    , pipe2_out_trafo1    :: BEAM.Phrase p1i Duration a1i -> LY.GenLyPhrase p1o a1o
+    , pipe2_out_trafo1    :: BEAM.Phrase p1i Duration a1i -> LY.LyPhrase2 p1o a1o
     , pipe2_beam_trafo2   :: BEAM.Phrase p2i Duration a2i -> BEAM.Phrase p2i Duration a2i
-    , pipe2_out_trafo2    :: BEAM.Phrase p2i Duration a2i -> LY.GenLyPhrase p2o a2o
-    , pipe2_output_func   :: LY.GenLyPhrase p1o a1o -> LY.GenLyPhrase p2o a2o -> Doc
+    , pipe2_out_trafo2    :: BEAM.Phrase p2i Duration a2i -> LY.LyPhrase2 p2o a2o
+    , pipe2_output_func   :: LY.LyPhrase2 p1o a1o -> LY.LyPhrase2 p2o a2o -> Doc
     }
 
 
@@ -271,7 +268,7 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> Pitch -> StdPhraseAnno anno -> String
+                          => ScoreInfo -> Pitch -> StdPhrase1 anno -> String
 outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
@@ -282,7 +279,7 @@ outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
 
 
 printAsLilyPond_Relative :: Anno anno 
-                         => ScoreInfo -> Pitch -> StdPhraseAnno anno -> IO ()
+                         => ScoreInfo -> Pitch -> StdPhrase1 anno -> IO ()
 printAsLilyPond_Relative infos pch = putStrLn . outputAsLilyPond_Relative infos pch
 
 
@@ -301,7 +298,7 @@ genOutputAsRhythmicMarkup def infos =
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = const empty }
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdPhraseAnno anno -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase1 anno -> String
 outputAsRhythmicMarkup infos = 
     ppRender . genOutputAsRhythmicMarkup def infos 
   where
@@ -323,12 +320,12 @@ ppRender = renderStyle (style {lineLength=500})
 -- Should we have a @genOutputAsMIDI@ function?
 
 
-writeAsMIDI :: FilePath -> StdPhraseAnno anno -> IO ()
+writeAsMIDI :: FilePath -> StdPhrase1 anno -> IO ()
 writeAsMIDI path notes = 
     let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 1) (noteTrans notes)
     in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhraseAnno anno -> BEAM.Phrase MIDI.MidiPitch RDuration anno
+noteTrans :: StdPhrase1 anno -> BEAM.Phrase MIDI.MidiPitch RDuration anno
 noteTrans = MIDI.translateToMidiPD . translateToBeam
 
 

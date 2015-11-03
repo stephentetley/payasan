@@ -42,13 +42,13 @@ import Payasan.Base.Pitch
 
 
 lilyPondTranslate_Relative :: Pitch
-                           -> GenLyMonoPhrase LyPitch anno 
-                           -> Phrase Pitch Duration anno
+                           -> LyMonoPhrase2 LyPitch anno 
+                           -> StdMonoPhrase1 anno
 lilyPondTranslate_Relative pch = trafoRelPitch pch . trafoDuration
 
 
-lilyPondTranslate_Absolute :: GenLyMonoPhrase LyPitch anno 
-                           -> Phrase Pitch Duration anno
+lilyPondTranslate_Absolute :: LyMonoPhrase2 LyPitch anno 
+                           -> StdMonoPhrase1 anno
 lilyPondTranslate_Absolute = trafoAbsPitch . trafoDuration
 
 

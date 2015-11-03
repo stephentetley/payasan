@@ -27,11 +27,10 @@ module Payasan.Base.Internal.ABC.Syntax
   , ABCElement
   , ABCNote
 
-  , GenABCPhrase
-  , GenABCBar
-  , GenABCNoteGroup
-  , GenABCElement
-  , GenABCNote
+  , ABCPhrase1
+  , ABCBar1
+  , ABCNoteGroup1
+  , ABCElement1
 
 
   , ABCPitch(..)
@@ -50,7 +49,7 @@ module Payasan.Base.Internal.ABC.Syntax
 
   ) where
 
-import Payasan.Base.Internal.BeamSyntax
+import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Scale
 
@@ -68,20 +67,19 @@ import Data.Ratio
 -- | ABC is not annotated, though polymorphic anno is used
 -- so that /more/ syntax can be printed.
 
-type ABCPhrase                  = GenABCPhrase    ()
-type ABCBar                     = GenABCBar       ()      
-type ABCNoteGroup               = GenABCNoteGroup ()
-type ABCElement                 = GenABCElement   ()
-type ABCNote                    = GenABCNote 
+type ABCPhrase                  = ABCPhrase1    ()
+type ABCBar                     = ABCBar1       ()      
+type ABCNoteGroup               = ABCNoteGroup1 ()
+type ABCElement                 = ABCElement1   ()
+type ABCNote                    = BEAM.Note     ABCPitch ABCNoteLength
 
 
 -- Gen- prefix indicates the must general syntax allowed.
 
-type GenABCPhrase anno          = Phrase      ABCPitch ABCNoteLength anno
-type GenABCBar anno             = Bar         ABCPitch ABCNoteLength anno
-type GenABCNoteGroup anno       = NoteGroup   ABCPitch ABCNoteLength anno
-type GenABCElement anno         = Element     ABCPitch ABCNoteLength anno
-type GenABCNote                 = Note        ABCPitch ABCNoteLength
+type ABCPhrase1 anno             = BEAM.Phrase      ABCPitch ABCNoteLength anno
+type ABCBar1 anno                = BEAM.Bar         ABCPitch ABCNoteLength anno
+type ABCNoteGroup1 anno          = BEAM.NoteGroup   ABCPitch ABCNoteLength anno
+type ABCElement1 anno            = BEAM.Element     ABCPitch ABCNoteLength anno
 
 
 -- Just give Picth and NoteLength ABC- prefix as they are 

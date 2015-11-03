@@ -24,7 +24,7 @@ module Payasan.Base.Monophonic.Notelist
   , StdMonoPhrase
   , ABCMonoPhrase
   , abc
-  , LyMonoPhrase
+  , LyMonoPhrase1
   , lilypond
 
   , ScoreInfo(..)        -- Re-export
@@ -107,12 +107,12 @@ fromABCWith :: LocalContextInfo -> ABCMonoPhrase -> StdMonoPhrase
 fromABCWith locals = abcTranslate . pushContextInfo locals
 
 
-fromLilyPond_Relative :: Pitch -> LyMonoPhrase () -> StdMonoPhrase
+fromLilyPond_Relative :: Pitch -> LyMonoPhrase1 () -> StdMonoPhrase
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
 
 fromLilyPondWith_Relative :: Pitch 
                           -> LocalContextInfo 
-                          -> LyMonoPhrase ()
+                          -> LyMonoPhrase1 ()
                           -> StdMonoPhrase
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushContextInfo locals

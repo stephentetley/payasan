@@ -14,7 +14,7 @@ import Payasan.Models.Lyrics.Plain
 -- NOTE - do not beam lyrics...
 
 
-phrase01 :: StdLyricPhrase
+phrase01 :: LyricPhrase1 ()
 phrase01 = fromLilyPondWith default_score_info locals $ 
     [lyricmode| Shake4 ba8 -- by8 shake2 | Shake4 ba8 -- by8 shake.2 |  |]
 

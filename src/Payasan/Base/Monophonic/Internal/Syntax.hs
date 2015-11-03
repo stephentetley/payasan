@@ -19,28 +19,36 @@
 module Payasan.Base.Monophonic.Internal.Syntax
   ( 
 
-    GenMonoPhrase
-  , GenMonoBar
-  , GenMonoNoteGroup
-  , GenMonoElement
+    StdMonoPhrase
+  , StdMonoBar
+  , StdMonoNoteGroup
+  , StdMonoElement
 
-  , GenLyMonoPhrase
-  , GenLyMonoBar
-  , GenLyMonoNoteGroup
-  , GenLyMonoElement
+  , StdMonoPhrase1
+  , StdMonoBar1
+  , StdMonoNoteGroup1
+  , StdMonoElement1
+
+  , StdMonoPhrase2
+  , StdMonoBar2
+  , StdMonoNoteGroup2
+  , StdMonoElement2
+
+  , LyMonoPhrase1
+  , LyMonoBar1
+  , LyMonoNoteGroup1
+  , LyMonoElement1
+
+  , LyMonoPhrase2
+  , LyMonoBar2
+  , LyMonoNoteGroup2
+  , LyMonoElement2
 
   , ABCMonoPhrase
   , ABCMonoBar
   , ABCMonoNoteGroup
   , ABCMonoElement
   
-  , StdMonoPhrase
-  , StdMonoBar
-  , StdMonoNoteGroup
-  , StdMonoElement
-
-  , LyMonoPhrase
-
 
   , Phrase(..)
   , Bar(..)
@@ -65,29 +73,39 @@ import Data.Data
 -- Syntax
 
 
+type StdMonoPhrase                  = StdMonoPhrase1    ()
+type StdMonoBar                     = StdMonoBar1       ()
+type StdMonoNoteGroup               = StdMonoNoteGroup1 ()
+type StdMonoElement                 = StdMonoElement1   ()
 
-type GenMonoPhrase pch anno         = Phrase    pch Duration anno
-type GenMonoBar pch anno            = Bar       pch Duration anno
-type GenMonoNoteGroup pch anno      = NoteGroup pch Duration anno
-type GenMonoElement pch anno        = Element   pch Duration anno
 
-type GenLyMonoPhrase pch anno       = Phrase    pch LyNoteLength anno
-type GenLyMonoBar pch anno          = Bar       pch LyNoteLength anno
-type GenLyMonoNoteGroup pch anno    = NoteGroup pch LyNoteLength anno
-type GenLyMonoElement pch anno      = Element   pch LyNoteLength anno
+type StdMonoPhrase1     anno        = Phrase    Pitch Duration anno
+type StdMonoBar1        anno        = Bar       Pitch Duration anno
+type StdMonoNoteGroup1  anno        = NoteGroup Pitch Duration anno
+type StdMonoElement1    anno        = Element   Pitch Duration anno
+
+type StdMonoPhrase2     pch anno    = Phrase    pch Duration anno
+type StdMonoBar2        pch anno    = Bar       pch Duration anno
+type StdMonoNoteGroup2  pch anno    = NoteGroup pch Duration anno
+type StdMonoElement2    pch anno    = Element   pch Duration anno
+
+type LyMonoPhrase1      anno        = LyMonoPhrase2     LyPitch anno
+type LyMonoBar1         anno        = LyMonoBar2        LyPitch anno
+type LyMonoNoteGroup1   anno        = LyMonoNoteGroup2  LyPitch anno
+type LyMonoElement1     anno        = LyMonoElement2    LyPitch anno
+
+type LyMonoPhrase2      pch anno    = Phrase    pch LyNoteLength anno
+type LyMonoBar2         pch anno    = Bar       pch LyNoteLength anno
+type LyMonoNoteGroup2   pch anno    = NoteGroup pch LyNoteLength anno
+type LyMonoElement2     pch anno    = Element   pch LyNoteLength anno
+
 
 type ABCMonoPhrase                  = Phrase    ABCPitch ABCNoteLength ()
 type ABCMonoBar                     = Bar       ABCPitch ABCNoteLength ()
 type ABCMonoNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
 type ABCMonoElement                 = Element   ABCPitch ABCNoteLength ()
 
-type StdMonoPhrase                  = Phrase    Pitch Duration ()
-type StdMonoBar                     = Bar       Pitch Duration ()
-type StdMonoNoteGroup               = NoteGroup Pitch Duration ()
-type StdMonoElement                 = Element   Pitch Duration ()
 
-
-type LyMonoPhrase anno              = Phrase LyPitch  LyNoteLength anno
 
 
 -- | Parametric on pitch so we can have the same syntax to 

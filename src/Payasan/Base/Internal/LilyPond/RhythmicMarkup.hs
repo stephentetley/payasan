@@ -95,7 +95,7 @@ elementP mo elt = case elt of
 
 rhythmicMarkupScore :: LyOutputDef pch anno 
                     -> ScoreInfo 
-                    -> GenLyPhrase pch anno -> Doc
+                    -> LyPhrase2 pch anno -> Doc
 rhythmicMarkupScore def infos ph =
         header $+$ simultaneous1 (rhythmicMarkupVoice def ph)
   where
@@ -103,7 +103,7 @@ rhythmicMarkupScore def infos ph =
 
 
 rhythmicMarkupVoice :: LyOutputDef pch anno 
-                    -> GenLyPhrase pch anno -> Doc
+                    -> LyPhrase2 pch anno -> Doc
 rhythmicMarkupVoice def ph = 
     block (Just newRhythmicStaff_) (absolute_ $+$ notes_header $+$ notes)
   where

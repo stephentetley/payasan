@@ -18,7 +18,7 @@
 module Payasan.LilyPond.Lyricmode.Internal.Base
   ( 
    
-    StdLyricPhrase
+    LyricPhrase1
   , LyLyricPhrase
   , LyLyricBar
   , LyLyricNoteGroup
@@ -31,24 +31,23 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
   ) where
 
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
-import qualified Payasan.Base.Monophonic.Internal.Syntax as MONO
+import Payasan.Base.Monophonic.Internal.Syntax
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
 
-import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 
 
-type StdLyricPhrase     = MONO.Phrase Syllable Duration ()
+type LyricPhrase1 anno  = StdMonoPhrase2 Syllable anno
 
-type LyLyricPhrase      = MONO.Phrase     Syllable LyNoteLength ()
-type LyLyricBar         = MONO.Bar        Syllable LyNoteLength ()
-type LyLyricNoteGroup   = MONO.NoteGroup  Syllable LyNoteLength ()
-type LyLyricElement     = MONO.Element    Syllable LyNoteLength ()
+type LyLyricPhrase      = Phrase     Syllable LyNoteLength ()
+type LyLyricBar         = Bar        Syllable LyNoteLength ()
+type LyLyricNoteGroup   = NoteGroup  Syllable LyNoteLength ()
+type LyLyricElement     = Element    Syllable LyNoteLength ()
 
 
 data Syllable = Syllable String
@@ -77,9 +76,7 @@ instance Pretty Syllable where
   pPrint (Syllable s)   = text s
 
 
-inTrans :: ScoreInfo 
-        -> LyLyricPhrase
-        -> StdLyricPhrase
+inTrans :: ScoreInfo -> LyLyricPhrase -> LyricPhrase1 ()
 inTrans _info = trafoDuration
 
 

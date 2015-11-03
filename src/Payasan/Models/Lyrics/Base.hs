@@ -16,8 +16,9 @@
 --------------------------------------------------------------------------------
 
 module Payasan.Models.Lyrics.Base
-  ( 
-    Stress(..)
+  (
+    LyricsPhrase 
+  , Stress(..)
   , lyricsScore
   ) where
 
@@ -27,13 +28,18 @@ import qualified Payasan.LilyPond.Lyricmode.Internal.Output     as LY
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Internal.BeamSyntax as BEAM
+import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
+
+import qualified Payasan.Base.Internal.BeamSyntax               as BEAM
 import Payasan.Base.Internal.CommonSyntax
 
+import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
+
+type LyricsPhrase = MONO.Phrase     LY.Syllable Duration Stress
 
 data Stress = PRIMARY | SECONDARY | UNSTRESSED
   deriving (Data,Eq,Ord,Show,Typeable)

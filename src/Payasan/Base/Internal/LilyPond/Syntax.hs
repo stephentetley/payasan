@@ -21,17 +21,17 @@
 module Payasan.Base.Internal.LilyPond.Syntax
   ( 
 
-    LyPhrase
-  , LyBar
-  , LyNoteGroup
-  , LyElement
-  , LyNote
+    LyPhrase1
+  , LyBar1
+  , LyNoteGroup1
+  , LyElement1
+  , LyNote1
 
-  , GenLyPhrase
-  , GenLyBar
-  , GenLyNoteGroup
-  , GenLyElement
-  , GenLyNote
+  , LyPhrase2
+  , LyBar2
+  , LyNoteGroup2
+  , LyElement2
+  , LyNote2
 
   , LyTupletSpec(..)
   , LyPitch(..)
@@ -75,19 +75,18 @@ import Data.Data
 -- Syntax
 
 
-type LyPhrase anno              = Phrase      LyPitch LyNoteLength anno
-type LyBar anno                 = Bar         LyPitch LyNoteLength anno
-type LyNoteGroup anno           = NoteGroup   LyPitch LyNoteLength anno
-type LyElement anno             = Element     LyPitch LyNoteLength anno
-type LyNote                     = Note        LyPitch LyNoteLength
+type LyPhrase1 anno              = LyPhrase2      LyPitch anno
+type LyBar1 anno                 = LyBar2         LyPitch anno
+type LyNoteGroup1 anno           = LyNoteGroup2   LyPitch anno
+type LyElement1 anno             = LyElement2     LyPitch anno
+type LyNote1 anno                = LyNote2        LyPitch anno
 
 
-type GenLyPhrase pch anno       = Phrase      pch LyNoteLength anno
-type GenLyBar pch anno          = Bar         pch LyNoteLength anno
-type GenLyNoteGroup pch anno    = NoteGroup   pch LyNoteLength anno
-type GenLyElement pch anno      = Element     pch LyNoteLength anno
-type GenLyNote pch              = Note        pch LyNoteLength
-
+type LyPhrase2      pch anno    = Phrase      pch LyNoteLength anno
+type LyBar2         pch anno    = Bar         pch LyNoteLength anno
+type LyNoteGroup2   pch anno    = NoteGroup   pch LyNoteLength anno
+type LyElement2     pch anno    = Element     pch LyNoteLength anno
+type LyNote2        pch anno    = Note        pch LyNoteLength
 
 -- | LilyPond has a simpler Tuplet spec than ABC which we 
 -- expand during parsing.

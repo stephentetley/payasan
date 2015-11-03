@@ -21,7 +21,18 @@
 module Payasan.Base.Internal.MainSyntax
   ( 
    
-    Phrase(..)
+    StdPhrase
+  , StdBar
+  , StdNoteGroup
+  , StdElement
+  , StdNote
+
+  , StdPhrase1
+  , StdBar1
+  , StdNoteGroup1
+  , StdElement1
+
+  , Phrase(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -32,12 +43,29 @@ module Payasan.Base.Internal.MainSyntax
 
 import Payasan.Base.Internal.CommonSyntax
 
+import Payasan.Base.Duration
+import Payasan.Base.Pitch
+
 import Data.Data
 
 
 
 --------------------------------------------------------------------------------
 -- Syntax
+
+
+type StdPhrase          = Phrase    Pitch Duration () 
+type StdBar             = Bar       Pitch Duration () 
+type StdNoteGroup       = NoteGroup Pitch Duration () 
+type StdElement         = Element   Pitch Duration ()
+type StdNote            = Note      Pitch Duration
+
+type StdPhrase1 anno    = Phrase    Pitch Duration anno
+type StdBar1 anno       = Bar       Pitch Duration anno
+type StdNoteGroup1 anno = NoteGroup Pitch Duration anno
+type StdElement1 anno   = Element   Pitch Duration anno
+
+
 
 
 data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }

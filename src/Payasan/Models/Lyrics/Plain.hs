@@ -17,7 +17,13 @@
 
 module Payasan.Models.Lyrics.Plain
   ( 
-     LyricsAtom
+    LyricsAtom
+  , fromLyrics
+  , primary
+  , secondary
+  , unstressed
+  , rest
+
   ) where
 
 import Payasan.Models.Lyrics.Base
@@ -33,5 +39,23 @@ import Payasan.Base.Duration
 type LyricsAtom = NoteGroup Syllable Duration Stress
 
 
+
+fromLyrics :: [[LyricsAtom]] -> LyricsPhrase
+fromLyrics xss = Phrase default_local_info $ map Bar xss
+
+
+
+atom :: Stress -> String -> Duration -> LyricsAtom
+atom str syl d = Atom $ Note (Syllable syl) d str NO_TIE
+
 primary :: String -> Duration -> LyricsAtom
-primary s d = Atom $ Note (Syllable s) d PRIMARY NO_TIE
+primary = atom PRIMARY
+
+secondary :: String -> Duration -> LyricsAtom
+secondary = atom PRIMARY
+
+unstressed :: String -> Duration -> LyricsAtom
+unstressed = atom UNSTRESSED
+
+rest :: Duration -> LyricsAtom
+rest d = Atom $ Rest d

@@ -30,11 +30,9 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
   , GuitarTuning
   , standard_tuning
 
-  , diagramDU
 
   ) where
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Monophonic.Internal.Syntax (Phrase)
 
@@ -133,21 +131,4 @@ dashSep :: [Doc] -> Doc
 dashSep []      = empty
 dashSep [d]     = d
 dashSep (d:ds)  = d <> char '-' <> dashSep ds
-
--- | Note - the @universe@ of defs is not closed.
---
--- There are as many defs as there are diagrams defined.
---
-diagramDU :: [FretDiagram] -> AnnoDU FretDiagram
-diagramDU fs = AnnoDU { defs  = vcat $ map diagramDef fs
-                      , use   = diagramUse
-                      }
-
-diagramDef :: FretDiagram -> Doc
-diagramDef fd@(FretDiagram { fd_name = s }) = 
-    text s <+> char '=' <+> block (Just $ command "markup") (pPrint fd)
-
-diagramUse :: FretDiagram -> Doc
-diagramUse (FretDiagram { fd_name = s }) = char '^' <> command s
-
 

@@ -43,12 +43,12 @@ import Text.Parsec                              -- package: parsec
 
 parseLyPhrase :: P.LyParserDef pch anno
               -> String 
-              -> Either ParseError (GenLyMonoPhrase pch anno)
+              -> Either ParseError (LyMonoPhrase2 pch anno)
 parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. 
-                P.LyParserDef pch anno -> LyParser (GenLyMonoPhrase pch anno)
+                P.LyParserDef pch anno -> LyParser (LyMonoPhrase2 pch anno)
 makeLyParser def = fullInputParse phrase
   where
     pPitch :: LyParser pch
@@ -57,35 +57,35 @@ makeLyParser def = fullInputParse phrase
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    phrase :: LyParser (GenLyMonoPhrase pch anno)
+    phrase :: LyParser (LyMonoPhrase2 pch anno)
     phrase = Phrase default_local_info <$> bars
 
-    bars :: LyParser [GenLyMonoBar pch anno]
+    bars :: LyParser [LyMonoBar2 pch anno]
     bars = sepBy bar P.barline
 
-    bar :: LyParser (GenLyMonoBar pch anno)
+    bar :: LyParser (LyMonoBar2 pch anno)
     bar = Bar <$> noteGroups 
 
-    noteGroups :: LyParser [GenLyMonoNoteGroup pch anno]
+    noteGroups :: LyParser [LyMonoNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup
 
-    noteGroup :: LyParser (GenLyMonoNoteGroup pch anno)
+    noteGroup :: LyParser (LyMonoNoteGroup2 pch anno)
     noteGroup = tuplet <|> (Atom <$> element)
 
-    tuplet :: LyParser (GenLyMonoNoteGroup pch anno)
+    tuplet :: LyParser (LyMonoNoteGroup2 pch anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
             <$> P.tupletSpec <*> braces (noteGroups)
 
-    element :: LyParser (GenLyMonoElement pch anno)
+    element :: LyParser (LyMonoElement2 pch anno)
     element = lexeme (rest <|> note)
 
-    note :: LyParser (GenLyMonoElement pch anno)
+    note :: LyParser (LyMonoElement2 pch anno)
     note = (\p d a t -> Note p d a t) 
              <$> pPitch <*> P.noteLength <*> pAnno <*> P.tie
         <?> "note"
 
-    rest :: LyParser (GenLyMonoElement pch anno)
+    rest :: LyParser (LyMonoElement2 pch anno)
     rest = Rest <$> (char 'r' *> P.noteLength)
 
 

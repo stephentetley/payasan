@@ -23,7 +23,20 @@
 module Payasan.Base.Internal.BeamSyntax
   ( 
 
-    Phrase(..)
+  -- * Common Aliases
+    StdBeamPhrase
+  , StdBeamBar
+  , StdBeamNoteGroup
+  , StdBeamElement
+  , StdNote
+
+  , StdBeamPhrase1
+  , StdBeamBar1
+  , StdBeamNoteGroup1
+  , StdBeamElement1
+  
+  -- * Syntax
+  , Phrase(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -41,11 +54,21 @@ module Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
 
 import Data.Data
 
+type StdBeamPhrase              = StdBeamPhrase1    ()
+type StdBeamBar                 = StdBeamBar1       ()
+type StdBeamNoteGroup           = StdBeamNoteGroup1 ()
+type StdBeamElement             = StdBeamElement1   ()
+type StdNote                    = Note Pitch Duration
 
+type StdBeamPhrase1 anno        = Phrase    Pitch Duration anno
+type StdBeamBar1 anno           = Bar       Pitch Duration anno
+type StdBeamNoteGroup1 anno     = NoteGroup Pitch Duration anno
+type StdBeamElement1 anno       = Element   Pitch Duration anno
 
 --------------------------------------------------------------------------------
 -- Syntax
