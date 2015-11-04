@@ -32,12 +32,6 @@ module Payasan.Base.Internal.CommonSyntax
   , Anno(..)
   , AnnoDU(..)
 
-
-  , Markup
-  , markup
-  , no_markup
-  , renderMarkup
-
   , Key(..)
   , Mode(..)
   , Meter(..)
@@ -147,42 +141,6 @@ instance Anno () where anno = const empty
 
 
 data AnnoDU a = AnnoDU { defs :: Doc, use :: a -> Doc }
-
-
--- | Unfortunately Markup has to be a String internally (not a 
--- Doc) so it can have a Data instance.
--- 
-data Markup = Markup !String
-  deriving (Data,Eq,Show,Typeable)
-
-
-instance Monoid Markup where
-  mempty = Markup ""
-  Markup a `mappend` Markup b 
-      | null a      = Markup b
-      | null b      = Markup a
-      | otherwise   = Markup $ a ++ (' ': b)                          
-
-
-markup :: Doc -> Markup
-markup d = Markup $ renderStyle (style {lineLength=500}) d
-
-no_markup :: Markup 
-no_markup = Markup ""
-
-
--- | TODO - markup can be above @^@, below @_@ or default @-@.
---
--- See 5.4.2 Direction and placement
--- 
--- Does putting placement inside Markup conflict with concat or
--- can each markup have its own placement?
---
-renderMarkup :: Markup -> Doc
-renderMarkup (Markup s) 
-    | null s    = empty 
-    | otherwise = char '^' <> text "\\markup" <+> text s
-
 
 
 

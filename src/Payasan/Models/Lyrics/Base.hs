@@ -19,18 +19,16 @@ module Payasan.Models.Lyrics.Base
   (
     LyricsPhrase 
   , Stress(..)
-  , lyricsScore
+  , outputAsLilyPond
   ) where
 
 import qualified Payasan.LilyPond.Lyricmode.Internal.Base       as LY
-import qualified Payasan.LilyPond.Lyricmode.Internal.Output     as LY
+import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
-import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
 
-import qualified Payasan.Base.Internal.BeamSyntax               as BEAM
 import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Duration
@@ -41,26 +39,28 @@ import Data.Data
 
 type LyricsPhrase = MONO.Phrase     LY.Syllable Duration Stress
 
-data Stress = PRIMARY | SECONDARY | UNSTRESSED
+
+-- | We need blank
+--
+data Stress = PRIMARY | SECONDARY | UNSTRESSED | BLANK
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
 stressDefs :: Doc
 stressDefs = p $+$ s $+$ u
   where
-    p = definition "primary"    $ renderMarkup $ teeny_ (char '/')
-    s = definition "secondary"  $ renderMarkup $ teeny_ (text "//")
-    u = definition "unstressed" $ renderMarkup $ teeny_ (char '_')
+    p = definition "primary"    $ markup_ $ teeny_ $ quotedText "/"
+    s = definition "secondary"  $ markup_ $ teeny_ $ quotedText "//"
+    u = definition "unstressed" $ markup_ $ teeny_ $ quotedText "_"
 
 
 stressUse :: Stress -> Doc
-stressUse PRIMARY       = command "primary"
-stressUse SECONDARY     = command "secondary"
-stressUse UNSTRESSED    = command "unstressed"
+stressUse PRIMARY       = above $ command "primary"
+stressUse SECONDARY     = above $ command "secondary"
+stressUse UNSTRESSED    = above $ command "unstressed"
+stressUse BLANK         = empty
 
 
-lyricsScore :: ScoreInfo 
-            -> BEAM.Phrase LyPitch LyNoteLength Stress
-            -> BEAM.Phrase LY.Syllable LyNoteLength anno
-            -> Doc
-lyricsScore = LY.lyricsScoreDU (AnnoDU  { defs = stressDefs, use = stressUse })
+outputAsLilyPond :: ScoreInfo -> LyricsPhrase -> String
+outputAsLilyPond = LY.outputAsLilyPondDU (AnnoDU { defs = stressDefs, use = stressUse })
+

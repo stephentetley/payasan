@@ -44,12 +44,12 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Markup }
+data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Doc }
 
 
 translateToRhythmicMarkup :: MarkupOutput pch
                           -> Phrase pch Duration anno 
-                          -> Phrase LyPitch LyNoteLength Markup
+                          -> Phrase LyPitch LyNoteLength Doc
 translateToRhythmicMarkup mo = 
     transformPA (markup_algo mo) . translateToOutput_DurationOnly
 
@@ -59,7 +59,7 @@ translateToRhythmicMarkup mo =
 --------------------------------------------------------------------------------
 -- Pitch to markup translation
 
-markup_algo :: MarkupOutput pch -> BeamPitchAnnoAlgo () pch anno LyPitch Markup
+markup_algo :: MarkupOutput pch -> BeamPitchAnnoAlgo () pch anno LyPitch Doc
 markup_algo mo = BeamPitchAnnoAlgo
     { initial_statePA   = ()
     , element_trafoPA   = liftElementTrafo $ elementP mo
@@ -69,7 +69,7 @@ markup_algo mo = BeamPitchAnnoAlgo
 elementP :: forall pch drn anno. 
             MarkupOutput pch 
          -> Element pch drn anno 
-         -> Element LyPitch drn Markup
+         -> Element LyPitch drn Doc
 elementP mo elt = case elt of 
     NoteElem e _ t      -> NoteElem (notePA e) (markupPA e) t
     Rest d              -> Rest d
@@ -86,7 +86,7 @@ elementP mo elt = case elt of
     notePA   :: Note pch drn -> (Note LyPitch drn)
     notePA (Note _ drn)         = Note middle_c drn
 
-    markupPA :: Note pch drn -> Markup
+    markupPA :: Note pch drn -> Doc
     markupPA (Note pch _)       = markupF pch
 
 

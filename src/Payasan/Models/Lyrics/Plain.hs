@@ -22,6 +22,7 @@ module Payasan.Models.Lyrics.Plain
   , primary
   , secondary
   , unstressed
+  , hyphen
   , rest
 
   ) where
@@ -52,10 +53,14 @@ primary :: String -> Duration -> LyricsAtom
 primary = atom PRIMARY
 
 secondary :: String -> Duration -> LyricsAtom
-secondary = atom PRIMARY
+secondary = atom SECONDARY
 
 unstressed :: String -> Duration -> LyricsAtom
 unstressed = atom UNSTRESSED
+
+hyphen :: LyricsAtom
+hyphen = Atom $ Punctuation "--"
+
 
 rest :: Duration -> LyricsAtom
 rest d = Atom $ Rest d

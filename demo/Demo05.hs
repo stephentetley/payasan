@@ -18,7 +18,8 @@ globals = default_score_info
 locals :: LocalContextInfo
 locals = default_local_info
 
-
+-- TODO - above accents look better...
+--
 phrase01 :: StdDrumPhrase
 phrase01 = fromLilyPondWith locals $ 
     [drums| bda4-> bd bd bda | hh-> hh |]

@@ -7,7 +7,7 @@ import Payasan.LilyPond.Lyricmode.Notelist
 import qualified Payasan.Models.Lyrics.Base  as NEW  -- TEMP
 import Payasan.Models.Lyrics.Plain
 
-
+import Payasan.Base.Names.Duration
 
 -- LYRICS -- 
 
@@ -33,8 +33,25 @@ locals = default_local_info
 demo01  :: IO ()
 demo01 = shellOutLilyPond globals $ outputAsLilyPond default_score_info $ phrase01
 
-demo02 :: IO ()
-demo02 = printAsLilyPond default_score_info phrase01
+-- demo02 :: IO ()
+-- demo02 = printAsLilyPond default_score_info phrase01
 
 
+phrase01b :: NEW.LyricsPhrase
+phrase01b = fromLyrics $
+    [ [ unstressed "Shake"      drn_4
+      , secondary  "ba"         drn_8
+      , hyphen
+      , unstressed "by"         drn_8
+      , primary    "shake"      drn_2
+      ]
+    , [ unstressed "Shake"      drn_4
+      , secondary  "ba"         drn_8
+      , hyphen
+      , unstressed "by"         drn_8
+      , primary    "shake."     drn_2
+      ]
+    ]
 
+demo02  :: IO ()
+demo02 = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ phrase01b

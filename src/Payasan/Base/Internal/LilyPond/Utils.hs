@@ -33,13 +33,18 @@ module Payasan.Base.Internal.LilyPond.Utils
 
   , command
   , value
+  , quotedText
   , block 
   , anonBlock
   , simultaneous1
   , simultaneous
   , definition
 
+
   , score_
+  , markup_
+  , above
+  , below
   , new_
   , newStaff_
   , newStaffDefn
@@ -97,24 +102,24 @@ import Payasan.Base.Duration
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
 
-huge_           :: Doc -> Markup 
-huge_ d         = markup $ command "huge" <+> d
+huge_           :: Doc -> Doc 
+huge_ d         = command "huge" <+> d
 
-large_          :: Doc -> Markup 
-large_ d        = markup $ command "large" <+> d
+large_          :: Doc -> Doc 
+large_ d        = command "large" <+> d
 
-normalSize_     :: Doc -> Markup 
-normalSize_ d   = markup $ command "normalSize" <+> d
+normalSize_     :: Doc -> Doc 
+normalSize_ d   = command "normalSize" <+> d
 
-small_          :: Doc -> Markup 
-small_ d        = markup $ command "small" <+> d
+small_          :: Doc -> Doc 
+small_ d        = command "small" <+> d
 
 
-tiny_           :: Doc -> Markup 
-tiny_ d         = markup $ command "tiny" <+> d
+tiny_           :: Doc -> Doc 
+tiny_ d         = command "tiny" <+> d
 
-teeny_          :: Doc -> Markup 
-teeny_ d        = markup $ command "teeny" <+> d
+teeny_          :: Doc -> Doc 
+teeny_ d        = command "teeny" <+> d
 
 
 --------------------------------------------------------------------------------
@@ -136,6 +141,9 @@ command = text . ('\\' :)
 
 value           :: String -> Doc
 value ss        = text $ '#':ss
+
+quotedText      :: String -> Doc
+quotedText s    = doubleQuotes (text s)
 
 block :: Maybe Doc -> Doc -> Doc
 block prefix body = maybe inner (\d -> d <+> inner) prefix
@@ -159,20 +167,33 @@ simultaneous xs = text "<<" $+$ step xs $+$ text ">>"
 definition :: String -> Doc -> Doc 
 definition ss d = text ss <+> char '=' <+> d
 
+
 score_          :: Doc
 score_          = command "score"
        
-new_            :: Doc
-new_            = command "new"
+new_            :: Doc -> Doc
+new_ d          = command "new" <+> d
+
+markup_         :: Doc -> Doc
+markup_ d       = command "markup" <+> d        
+
+
+above           :: Doc -> Doc
+above d         = char '^' <> d
+
+below           :: Doc -> Doc
+below d         = char '_' <> d
+
+
 
 newStaff_       :: Doc
-newStaff_       = new_ <+> text "Staff"
+newStaff_       = new_ $ text "Staff"
 
 newStaffDefn :: String -> Doc
 newStaffDefn name = newStaff_ <+> char '=' <+> doubleQuotes (text name)
 
 newVoice_       :: Doc
-newVoice_       = new_ <+> text "Voice"
+newVoice_       = new_ $ text "Voice"
 
 newVoiceDefn :: String -> Doc
 newVoiceDefn name = newVoice_ <+> char '=' <+> doubleQuotes (text name)
@@ -183,7 +204,7 @@ newVoiceWith_ :: Doc -> Doc
 newVoiceWith_ d = newVoice_ <+> withBlock_ d
 
 newDrumVoice_ :: Doc
-newDrumVoice_ = new_ <+> text "DrumVoice"
+newDrumVoice_ = new_ $ text "DrumVoice"
 
 
 newRhythmicStaff_ :: Doc
