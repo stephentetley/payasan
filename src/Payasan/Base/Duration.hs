@@ -35,7 +35,7 @@ module Payasan.Base.Duration
   , components
   , symbolicComponents
   , lilyPondComponents
-  , durationSize
+  , toRDuration
   , rationalToDuration
 
   -- * Named durations
@@ -207,9 +207,9 @@ lilyPondComponents (Drn n dc)   = (fn n, dc)
 -- | 'extent' - get the size of a Duration as a Rational 
 -- (DurationMeasure).
 --
-durationSize :: Duration -> RDuration
-durationSize (DZero)    = 0 
-durationSize (Drn n dc) 
+toRDuration :: Duration -> RDuration
+toRDuration (DZero)    = 0 
+toRDuration (Drn n dc) 
     | dc <= 0           = toRat n
     | otherwise         = let r = toRat n in step r (r/2) dc
   where

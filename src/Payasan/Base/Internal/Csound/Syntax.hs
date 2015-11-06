@@ -37,19 +37,16 @@ module Payasan.Base.Internal.Csound.Syntax
 
   , middle_c
 
-{-
-  , toPitch
-  , fromPitch
-
-  , toDuration
-  , fromDuration
--}
+  , toCpsPitch
+  , toSeconds
 
   ) where
 
 import Payasan.Base.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 
+import Payasan.Base.Duration
+import Payasan.Base.Pitch hiding ( middle_c )
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -75,10 +72,6 @@ type CsNoteGroup1 anno          = BEAM.NoteGroup  CpsPitch Seconds anno
 type CsElement1 anno            = BEAM.Element    CpsPitch Seconds anno
 
 
--- Just give Pitch and NoteLength Cs- prefix as they are 
--- likely to otherwise cause confusion in debug output and 
--- conversion code.
-
 
 -- Use CpsPch - we can always print it as Hz if prefered.
 -- 
@@ -93,6 +86,24 @@ middle_c :: CpsPitch
 middle_c = CpsPitch 8.000
 
 
+
+toCpsPitch :: Pitch -> CpsPitch
+toCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
+  where
+    o    = fromIntegral $ 4 + ove
+    semis = fromPitchLetter l + fromAlteration a
+    frac = (realToFrac semis) / 100
+
+
+
+toSeconds :: BPM -> Duration -> Seconds
+toSeconds bpm a = qnToSeconds bpm $ 4.0 * toRDuration a
+
+
+-- 1.0 represents a quarter note
+qnToSeconds :: BPM -> Rational -> Seconds
+qnToSeconds bpm a = let dwn_secs = (realToFrac $ 60 / bpm)
+                    in realToFrac a * dwn_secs
 
 
 --------------------------------------------------------------------------------

@@ -220,7 +220,7 @@ unitLength UNIT_NOTE_16 = 1%16
 
 fromDuration :: UnitNoteLength -> Duration -> ABCNoteLength
 fromDuration unl nd = 
-    (fn . fork numerator denominator) $ (durationSize nd) / unitLength unl
+    (fn . fork numerator denominator) $ (toRDuration nd) / unitLength unl
   where  
     fork f g a = (f a, g a)
     fn (1,1)   = DNL

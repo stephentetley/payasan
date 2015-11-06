@@ -39,6 +39,8 @@ module Payasan.Base.Pitch
 
   , toAlteration
   , fromAlteration
+  , fromPitchLetter
+
 
   , semitoneCount
   , midiSemitoneCount
@@ -188,22 +190,23 @@ fromAlteration SHARP     = 1
 fromAlteration DBL_SHARP = 2
 
 
+fromPitchLetter :: PitchLetter -> Int
+fromPitchLetter C       = 0
+fromPitchLetter D       = 2
+fromPitchLetter E       = 4
+fromPitchLetter F       = 5
+fromPitchLetter G       = 7
+fromPitchLetter A       = 9
+fromPitchLetter B       = 11
+
 
 -- | Middle C is 48 - to get MIDI semitone count add 12
 --
 semitoneCount :: Pitch -> Int
 semitoneCount (Pitch (PitchName l a) o) = 
-    octavePosition l + fromAlteration a + 12 * o
+    fromPitchLetter l + fromAlteration a + 12 * o
 
 
-octavePosition :: PitchLetter -> Int
-octavePosition C        = 0
-octavePosition D        = 2
-octavePosition E        = 4
-octavePosition F        = 5
-octavePosition G        = 7
-octavePosition A        = 9
-octavePosition B        = 11
 
 
 
@@ -240,10 +243,10 @@ fromNatural :: Natural -> Pitch
 fromNatural (Natural l o) = Pitch (PitchName l NAT) o
 
 semitones :: Natural -> Int
-semitones (Natural l o) = octavePosition l + 12 * o
+semitones (Natural l o) = fromPitchLetter l + 12 * o
 
 toPosition :: Natural -> Int
-toPosition (Natural l o ) = fromEnum l + 7 * o
+toPosition (Natural l o) = fromEnum l + 7 * o
 
 fromPosition :: Int -> Natural 
 fromPosition n = let (o,i) = n `divMod` 7 in Natural (toEnum i) o

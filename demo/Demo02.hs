@@ -9,10 +9,6 @@ import Payasan.Base.Pitch
 
 import Payasan.Base.Monophonic.Notelist
 
-import qualified Payasan.Base.Internal.Csound.Syntax    as CS     -- TEMP
-import qualified Payasan.Base.Internal.Csound.IStmt     as CS     -- TEMP
-import qualified Payasan.Base.Internal.Csound.Output    as CS     -- TEMP
-
 
 -- MONOPHONIC
 

@@ -23,7 +23,7 @@ module Payasan.Base.Internal.Csound.Output
   , ColumnFormat(..)
 
   , render
---  , columnSpecs
+  , columnSpecs
   , defaultFormat
   , intFormat
   ) where
@@ -123,12 +123,10 @@ ppDuration = rightPadDecimal 7 3
 --------------------------------------------------------------------------------
 
 
-{-
-columnSpecs :: CsOrch a 
-            => [ (a,[ColumnFormat]) ] -> ColumnSpecs
-columnSpecs = 
-    foldr (\(inst,body) acc -> IM.insert (instNumber inst) body acc) IM.empty 
--}
+
+columnSpecs :: [(Int,[ColumnFormat])] -> ColumnSpecs
+columnSpecs = IM.fromList
+
 
 defaultFormat :: String -> ColumnFormat
 defaultFormat name = ColumnFormat { column_name       = name

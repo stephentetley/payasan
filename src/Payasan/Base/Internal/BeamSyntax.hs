@@ -144,14 +144,14 @@ sizeNoteGroup (Beamed es)           = sum $ map sizeNoteGroup es
 sizeNoteGroup (Tuplet spec es)      = tupletUnitRDuration spec (firstOf es)
   where
     firstOf (x:_)   = sizeNoteGroup x
-    firstOf []      = durationSize d_eighth
+    firstOf []      = toRDuration d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
-sizeElement (NoteElem (Note _ d) _ _)   = durationSize d
-sizeElement (Rest d)                    = durationSize d
-sizeElement (Spacer d)                  = durationSize d
-sizeElement (Skip d)                    = durationSize d
-sizeElement (Chord _ d _ _)             = durationSize d
+sizeElement (NoteElem (Note _ d) _ _)   = toRDuration d
+sizeElement (Rest d)                    = toRDuration d
+sizeElement (Spacer d)                  = toRDuration d
+sizeElement (Skip d)                    = toRDuration d
+sizeElement (Chord _ d _ _)             = toRDuration d
 sizeElement (Graces {})                 = 0
 sizeElement (Punctuation {})            = 0
 

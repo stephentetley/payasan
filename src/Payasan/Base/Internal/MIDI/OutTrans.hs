@@ -76,13 +76,13 @@ drn_algo = BeamDurationAlgo
 
 elementD :: Element pch Duration anno -> Element pch RDuration anno
 elementD (NoteElem e a t)       = NoteElem (noteD e) a t
-elementD (Rest d)               = Rest $ durationSize d
-elementD (Spacer d)             = Spacer $ durationSize d
-elementD (Skip d)               = Skip $ durationSize d
-elementD (Chord ps d a t)       = Chord ps (durationSize d) a t
-elementD (Graces ns)            = Graces $ map noteD ns
+elementD (Rest d)               = Rest      $ toRDuration d
+elementD (Spacer d)             = Spacer    $ toRDuration d
+elementD (Skip d)               = Skip      $ toRDuration d
+elementD (Chord ps d a t)       = Chord ps (toRDuration d) a t
+elementD (Graces ns)            = Graces    $ map noteD ns
 elementD (Punctuation s)        = Punctuation s
 
 
 noteD :: Note pch Duration -> Note pch RDuration
-noteD (Note pch drn)            = Note pch $ durationSize drn
+noteD (Note pch drn)            = Note pch $ toRDuration drn
