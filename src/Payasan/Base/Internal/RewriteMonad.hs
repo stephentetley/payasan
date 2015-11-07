@@ -24,8 +24,8 @@ module Payasan.Base.Internal.RewriteMonad
   , gets
   , put
   , puts
-  , askLocal
-  , asksLocal
+  , ask
+  , asks
   , local
 
   )  where
@@ -73,11 +73,11 @@ puts :: (st -> st) -> Rewrite st ()
 puts f = Rewrite $ \_ s -> (f s,())
 
 
-askLocal :: Rewrite st LocalContextInfo
-askLocal = Rewrite $ \r s -> (s,r)
+ask :: Rewrite st LocalContextInfo
+ask = Rewrite $ \r s -> (s,r)
 
-asksLocal :: (LocalContextInfo -> a) -> Rewrite st a
-asksLocal f = Rewrite $ \r s -> (s,f r)
+asks :: (LocalContextInfo -> a) -> Rewrite st a
+asks f = Rewrite $ \r s -> (s,f r)
 
 local :: LocalContextInfo -> Rewrite st a -> Rewrite st a
 local r ma = Rewrite $ \_ s -> getRewrite ma r s

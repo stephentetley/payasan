@@ -61,7 +61,7 @@ elementP (Punctuation s)        = pure $ Punctuation s
 
 
 transPch :: ABCPitch -> PMon Pitch
-transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asksLocal local_key
+transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks local_key
 
 --------------------------------------------------------------------------------
 -- Translate duration
@@ -84,5 +84,5 @@ elementD (Punctuation s)        = pure $ Punctuation s
 
 
 changeDuration :: ABCNoteLength -> DMon Duration
-changeDuration d = (\unl -> toDuration unl d) <$> asksLocal local_unit_note_len
+changeDuration d = (\unl -> toDuration unl d) <$> asks local_unit_note_len
 

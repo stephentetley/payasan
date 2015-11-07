@@ -32,8 +32,8 @@ module Payasan.Base.Internal.Csound.Syntax
   , CsNoteGroup1
   , CsElement1
 
-
   , CpsPitch(..)
+  , Seconds             -- re-export
 
   , middle_c
 
