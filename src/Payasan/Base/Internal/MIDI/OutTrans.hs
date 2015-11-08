@@ -16,8 +16,7 @@
 
 module Payasan.Base.Internal.MIDI.OutTrans
   ( 
-    translateToMidiPD
-  , translateToMidiD
+    translateToMidiP
   ) where
 
 
@@ -25,16 +24,15 @@ import Payasan.Base.Internal.MIDI.PrimitiveSyntax (MidiPitch, pitchToMidi)
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
 
-import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-translateToMidiPD :: Phrase Pitch Duration anno -> Phrase MidiPitch RDuration anno
-translateToMidiPD = transformD drn_algo . transformP pch_algo
+translateToMidiP :: Phrase Pitch drn anno -> Phrase MidiPitch drn anno
+translateToMidiP = transformP pch_algo
 
-translateToMidiD :: Phrase pch Duration anno -> Phrase pch RDuration anno
-translateToMidiD = transformD drn_algo
 
+-- No need for a Duration translation. This is done together with
+-- coalescing ties.
 
 
 
@@ -63,26 +61,3 @@ noteP :: Note Pitch drn -> Note MidiPitch drn
 noteP (Note pch drn)            = Note (pitchToMidi pch) drn
 
 
---------------------------------------------------------------------------------
--- Duration translation
-
-
-drn_algo :: BeamDurationAlgo () Duration RDuration
-drn_algo = BeamDurationAlgo
-    { initial_stateD    = ()
-    , element_trafoD    = liftElementTrafo elementD
-    }
-
-
-elementD :: Element pch Duration anno -> Element pch RDuration anno
-elementD (NoteElem e a t)       = NoteElem (noteD e) a t
-elementD (Rest d)               = Rest      $ toRDuration d
-elementD (Spacer d)             = Spacer    $ toRDuration d
-elementD (Skip d)               = Skip      $ toRDuration d
-elementD (Chord ps d a t)       = Chord ps (toRDuration d) a t
-elementD (Graces ns)            = Graces    $ map noteD ns
-elementD (Punctuation s)        = Punctuation s
-
-
-noteD :: Note pch Duration -> Note pch RDuration
-noteD (Note pch drn)            = Note pch $ toRDuration drn

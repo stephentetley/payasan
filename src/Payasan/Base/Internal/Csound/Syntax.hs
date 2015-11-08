@@ -21,16 +21,7 @@
 module Payasan.Base.Internal.Csound.Syntax
   ( 
 
-    CsPhrase
-  , CsBar
-  , CsNoteGroup
-  , CsElement
-  , CsNote
-
-  , CsPhrase1
-  , CsBar1
-  , CsNoteGroup1
-  , CsElement1
+    CsoundNoteStream
 
   , CpsPitch(..)
   , Seconds             -- re-export
@@ -38,14 +29,12 @@ module Payasan.Base.Internal.Csound.Syntax
   , middle_c
 
   , toCpsPitch
-  , toSeconds
 
   ) where
 
 import Payasan.Base.Internal.Base
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 
-import Payasan.Base.Duration
 import Payasan.Base.Pitch hiding ( middle_c )
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
@@ -56,20 +45,9 @@ import Data.Fixed
 --------------------------------------------------------------------------------
 -- Syntax
 
--- | TODO - annos potentially allow expressive variation in 
--- notelist output.
 
-type CsPhrase                   = CsPhrase1     ()
-type CsBar                      = CsBar1        ()      
-type CsNoteGroup                = CsNoteGroup1  ()
-type CsElement                  = CsElement1    ()
-type CsNote                     = BEAM.Note     CpsPitch Seconds
+type CsoundNoteStream anno = [BEAM.Element CpsPitch Seconds anno]
 
-
-type CsPhrase1 anno             = BEAM.Phrase     CpsPitch Seconds anno
-type CsBar1 anno                = BEAM.Bar        CpsPitch Seconds anno
-type CsNoteGroup1 anno          = BEAM.NoteGroup  CpsPitch Seconds anno
-type CsElement1 anno            = BEAM.Element    CpsPitch Seconds anno
 
 
 
@@ -94,16 +72,6 @@ toCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
     semis = fromPitchLetter l + fromAlteration a
     frac = (realToFrac semis) / 100
 
-
-
-toSeconds :: BPM -> Duration -> Seconds
-toSeconds bpm a = qnToSeconds bpm $ 4.0 * toRDuration a
-
-
--- 1.0 represents a quarter note
-qnToSeconds :: BPM -> Rational -> Seconds
-qnToSeconds bpm a = let dwn_secs = (realToFrac $ 60 / bpm)
-                    in realToFrac a * dwn_secs
 
 
 --------------------------------------------------------------------------------

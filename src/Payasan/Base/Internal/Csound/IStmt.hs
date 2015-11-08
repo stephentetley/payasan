@@ -74,7 +74,6 @@ data Value = VStr   !String
 
 
 
-
 timeSpanIStmt :: IStmt -> TimeSpan
 timeSpanIStmt stmt = TimeSpan (istart stmt) (iduration stmt)
 

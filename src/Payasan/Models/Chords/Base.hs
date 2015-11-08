@@ -46,7 +46,6 @@ module Payasan.Models.Chords.Base
 
   ) where
 
-import Payasan.Base.Internal.Base
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Interval
 

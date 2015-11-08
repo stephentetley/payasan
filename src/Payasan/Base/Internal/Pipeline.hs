@@ -325,8 +325,8 @@ writeAsMIDI path notes =
     let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 1) (noteTrans notes)
     in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhrase1 anno -> BEAM.Phrase MIDI.MidiPitch RDuration anno
-noteTrans = MIDI.translateToMidiPD . translateToBeam
+noteTrans :: StdPhrase1 anno -> BEAM.Phrase MIDI.MidiPitch Duration anno
+noteTrans = MIDI.translateToMidiP . translateToBeam
 
 
 --------------------------------------------------------------------------------

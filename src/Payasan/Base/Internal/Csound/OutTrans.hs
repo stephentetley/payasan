@@ -10,30 +10,26 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Pitch to CpsPitch and Duration to Seconds.
+-- Convert Pitch to CpsPitch.
 -- 
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Internal.Csound.OutTrans
   ( 
-    translateToCsoundPD
+    translateToCsoundP
   ) where
 
 
 import Payasan.Base.Internal.Csound.Syntax
 
-import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
-import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.RewriteMonad
 
-import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-translateToCsoundPD :: Phrase Pitch Duration anno -> Phrase CpsPitch Seconds anno
-translateToCsoundPD = transformD drn_algo . transformP pch_algo
+translateToCsoundP :: Phrase Pitch drn anno -> Phrase CpsPitch drn anno
+translateToCsoundP = transformP pch_algo
 
 
 
@@ -61,34 +57,3 @@ elementP (Punctuation s)        = Punctuation s
 noteP :: Note Pitch drn -> Note CpsPitch drn
 noteP (Note pch drn)            = Note (toCpsPitch pch) drn
 
-
---------------------------------------------------------------------------------
--- Duration translation
-
-
-drn_algo :: BeamDurationAlgo () Duration Seconds
-drn_algo = BeamDurationAlgo
-    { initial_stateD    = ()
-    , element_trafoD    = elementD
-    }
-
-
-elementD :: Element pch Duration anno -> Mon () (Element pch Seconds anno)
-elementD (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteD e
-elementD (Rest d)               = withBPM $ \bpm -> Rest (toSeconds bpm d)
-elementD (Spacer d)             = withBPM $ \bpm -> Spacer (toSeconds bpm d)
-elementD (Skip d)               = withBPM $ \bpm -> Skip (toSeconds bpm d)
-
-elementD (Chord ps d a t)       = 
-    withBPM $ \bpm -> Chord ps (toSeconds bpm d) a t
-
-elementD (Graces ns)            = Graces <$> mapM noteD ns
-elementD (Punctuation s)        = pure $ Punctuation s
-
-
-noteD :: Note pch Duration -> Mon () (Note pch Seconds)
-noteD (Note pch drn)            = withBPM $ \bpm -> Note pch $ toSeconds bpm drn
-
-
-withBPM :: (BPM -> a) -> Mon () a
-withBPM f = f <$> asks local_bpm
