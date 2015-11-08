@@ -17,12 +17,10 @@
 module Payasan.Base.Internal.Csound.Output
   ( 
 
-    PartName
-  , CsPart(..)
-  , ColumnSpecs
+    ColumnSpecs
   , ColumnFormat(..)
 
-  , render
+  , csoundOutput
   , columnSpecs
   , defaultFormat
   , intFormat
@@ -41,9 +39,6 @@ import Data.List ( sortBy, groupBy, mapAccumL )
 import Numeric
 
 
-type PartName = String
-
-data CsPart = CsPart PartName [IStmt]
 
 
 type ColumnSpecs = IM.IntMap [ColumnFormat]
@@ -57,16 +52,11 @@ data ColumnFormat = ColumnFormat
 
 
 
-render :: ColumnSpecs -> [CsPart] -> Doc
-render specs = vcrush . map (renderPrimPart specs)
-
-renderPrimPart :: ColumnSpecs -> CsPart -> Doc
-renderPrimPart specs (CsPart name xs) = 
-    partHeader name $+$ renderIStmts specs xs
 
 -- List of stmts does not need to be in order...
-renderIStmts :: ColumnSpecs -> [IStmt] -> Doc
-renderIStmts specs xs = 
+
+csoundOutput :: ColumnSpecs -> [IStmt] -> Doc
+csoundOutput specs xs = 
     let gs      = groupBy sameInst $ sortBy compareIStmt xs
         docs    = map (printGroup specs) gs
     in vcrush docs
@@ -85,8 +75,6 @@ columnHeaders i im = maybe P.empty fn $ IM.lookup i im
     prefix = text ";ins" <+> rightPadString 7 "st" <+> rightPadString 7 "drn"
     fn xs = prefix <+> hsep (map columnHeader1 xs) 
 
-partHeader :: PartName -> Doc
-partHeader name = text ("; " ++ name)
 
 
 initialEvent :: ColumnSpecs -> IStmt -> Doc

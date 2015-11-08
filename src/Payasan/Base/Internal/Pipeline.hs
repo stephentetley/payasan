@@ -66,6 +66,9 @@ module Payasan.Base.Internal.Pipeline
 
   , writeAsMIDI
 
+  , outputAsCsound
+  , printAsCsound
+
   , outputAsTabular
   , printAsTabular
 
@@ -77,11 +80,15 @@ module Payasan.Base.Internal.Pipeline
 
   ) where
 
-import qualified Payasan.Base.Internal.ABC.InTrans          as ABC
-import qualified Payasan.Base.Internal.ABC.OutTrans         as ABC
+import qualified Payasan.Base.Internal.ABC.InTrans              as ABC
+import qualified Payasan.Base.Internal.ABC.OutTrans             as ABC
 import Payasan.Base.Internal.ABC.Output (abcOutput)
 import Payasan.Base.Internal.ABC.Parser (abc)
 import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
+
+import Payasan.Base.Internal.Csound.BeamToCsound
+import Payasan.Base.Internal.Csound.Output
+import qualified Payasan.Base.Internal.Csound.OutTrans          as CS
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans         as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
@@ -92,10 +99,10 @@ import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase1)
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
-import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
-import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDI
-import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
+import qualified Payasan.Base.Internal.MIDI.BeamToMIDI          as MIDI
+import qualified Payasan.Base.Internal.MIDI.Output              as MIDI
+import qualified Payasan.Base.Internal.MIDI.OutTrans            as MIDI
+import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax     as MIDI
 
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Tabular.OutputBeam
@@ -105,7 +112,7 @@ import Payasan.Base.Internal.Output.Linear.OutputMain
 
 
 import Payasan.Base.Internal.AddBeams
-import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
+import qualified Payasan.Base.Internal.BeamSyntax               as BEAM
 import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.MainToBeam
@@ -321,12 +328,24 @@ ppRender = renderStyle (style {lineLength=500})
 
 
 writeAsMIDI :: FilePath -> StdPhrase1 anno -> IO ()
-writeAsMIDI path notes = 
-    let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 1) (noteTrans notes)
+writeAsMIDI path ph = 
+    let notes   = MIDI.translateToMidiP $ translateToBeam ph
+        trk     = MIDI.translateToMIDI (MIDI.simpleTrackData 1) notes
     in MIDI.writeMF1 path [trk]
 
-noteTrans :: StdPhrase1 anno -> BEAM.Phrase MIDI.MidiPitch Duration anno
-noteTrans = MIDI.translateToMidiP . translateToBeam
+
+--------------------------------------------------------------------------------
+-- MIDI
+
+
+outputAsCsound :: ColumnSpecs -> GenIStmt anno -> StdPhrase1 anno -> String
+outputAsCsound cols gf ph =
+    let notes   = CS.translateToCsoundP $ translateToBeam ph
+        stmts   = translateToCsound gf notes
+    in ppRender $ csoundOutput cols stmts
+
+printAsCsound :: ColumnSpecs -> GenIStmt anno -> StdPhrase1 anno -> IO ()
+printAsCsound cols gf = putStrLn . outputAsCsound cols gf
 
 
 --------------------------------------------------------------------------------
