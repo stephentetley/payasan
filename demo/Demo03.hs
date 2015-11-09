@@ -13,6 +13,12 @@ import Payasan.Base.Names.Pitch
 
 import Payasan.Base.Internal.LilyPond.Syntax (fromPitchRel, LyPitch)
 
+import Payasan.Base.Internal.Csound.BeamToCsound
+import Payasan.Base.Internal.Csound.IStmt
+import Payasan.Base.Internal.Csound.Output
+import Payasan.Base.Internal.Csound.Syntax hiding (middle_c)
+
+
 import Payasan.Base.Names.Pitch
 
 import Payasan.Base.Internal.Output.Common
@@ -23,6 +29,8 @@ import Data.Monoid ( (<>) )
 -- POLYRHYTHM
 
 
+shell_info :: ShellInfo
+shell_info = default_shell_info { shell_pathto_csound_template = "template.csd" }
 
 globals :: ScoreInfo
 globals = default_score_info 
@@ -58,6 +66,29 @@ demo02 :: IO ()
 demo02 = shellOutLilyPond default_shell_info $ 
     POLY.outputTimbalesStyle globals phraseA phraseB
 
+
+temp02 :: IO ()
+temp02 = shellOutCsound shell_info $ 
+    outputAsCsound (columnSpecs []) gf phraseA
+
+
+
+-- Csound
+makeNote :: CpsPitch -> anno -> Seconds -> Seconds -> IStmt
+makeNote p _ ot d = IStmt 
+    { inst_num      = 1
+    , istart        = ot
+    , iduration     = d
+    , ivalues       = [ VFloat 0.7
+                      , cpsPitchValue p
+                      , VFloat 0.0
+                      , VInt 0
+                      ]
+    }
+
+gf = makeGenIStmt makeNote
+
+-- OLD --
 
 
 debug01 :: IO StdPhrase

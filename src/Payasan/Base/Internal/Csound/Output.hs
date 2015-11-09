@@ -159,11 +159,20 @@ columnInterior = (subtract 1) . column_width
 
 
 ppValue :: ColumnFormat -> Value -> Doc
-ppValue fmt (VBool b)    = rightPadInt (columnInterior fmt) (if b then 1 else 0)
-ppValue fmt (VStr s)     = rightPadString (columnInterior fmt) s
-ppValue fmt (VInt i)     = rightPadInt (columnInterior fmt) i
-ppValue fmt (VFloat d)   = 
+ppValue fmt (VBool b)           = 
+    rightPadInt (columnInterior fmt) (if b then 1 else 0)
+
+ppValue fmt (VStr s)            = rightPadString (columnInterior fmt) s
+
+ppValue fmt (VInt i)            = rightPadInt (columnInterior fmt) i
+
+ppValue fmt (VFloat d)          = 
     rightPadDecimal (columnInterior fmt) (column_precision fmt) (realToFrac d)
+
+ppValue fmt (VCpsPitch d)       = 
+    rightPadDecimal (columnInterior fmt) (column_precision fmt) (realToFrac d)
+
+
 
 ppEllision :: ColumnFormat -> Doc
 ppEllision fmt = rightPadString (columnInterior fmt) "."
@@ -186,6 +195,7 @@ rightPadDecimal colw prec d =
   where
     d1 :: Double
     d1 = realToFrac d
+
 
 rightPadInt :: Int -> Int -> Doc
 rightPadInt colw i = rightPadString colw $ show i

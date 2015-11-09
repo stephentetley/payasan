@@ -30,9 +30,12 @@ module Payasan.Base.Internal.Csound.Syntax
 
   , toCpsPitch
 
+  , cpsPitchValue 
+
   ) where
 
-import Payasan.Base.Internal.Base
+import Payasan.Base.Internal.Csound.IStmt
+
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 
 import Payasan.Base.Pitch hiding ( middle_c )
@@ -53,7 +56,7 @@ type CsoundNoteStream anno = [BEAM.Element CpsPitch Seconds anno]
 
 -- Use CpsPch - we can always print it as Hz if prefered.
 -- 
-data CpsPitch = CpsPitch Milli
+data CpsPitch = CpsPitch { getCpsPitch :: Milli }
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
@@ -72,6 +75,12 @@ toCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
     semis = fromPitchLetter l + fromAlteration a
     frac = (realToFrac semis) / 100
 
+
+-- TODO - Probably should have a CPitch constructor in Value to 
+-- ensure nice printing...
+--
+cpsPitchValue :: CpsPitch -> Value
+cpsPitchValue = VCpsPitch . getCpsPitch
 
 
 --------------------------------------------------------------------------------

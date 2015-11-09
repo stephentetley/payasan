@@ -21,6 +21,8 @@ module Payasan.Base.Internal.Csound.IStmt
   , Value(..)
   , TimeSpan(..)
 
+  , Seconds             -- re-export
+
   , timeSpanIStmt
   , ellipsisEq
   , sameInst
@@ -32,14 +34,15 @@ import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.Utils
 
 
+import Data.Fixed
 import Data.Function ( on )
 
 -- Just encode i-stmts, f-stmts can be added during rendering.
 
 data IStmt = IStmt 
     { inst_num      :: Int
-    , istart        :: Decimal
-    , iduration     :: Decimal
+    , istart        :: Seconds
+    , iduration     :: Seconds
     , ivalues       :: [Value]
     }
   deriving (Eq,Show)
@@ -64,10 +67,11 @@ type IStmtList = H IStmt
 -- This represents the value in an i- or f-statement in a Csound 
 -- score.
 -- 
-data Value = VStr   !String
-           | VInt   !Int
-           | VFloat !Decimal
-           | VBool  !Bool
+data Value = VStr       !String
+           | VInt       !Int
+           | VFloat     !Decimal
+           | VBool      !Bool
+           | VCpsPitch  !Milli
   deriving (Eq,Show)
 
 

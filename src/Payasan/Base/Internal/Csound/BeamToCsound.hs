@@ -109,18 +109,3 @@ noteT gf anno (Note pch drn)            =
        }
 
 
-{-
-
--- TODO should have some individual control over velocities.
---
-makeNote :: Seconds -> Seconds -> CpsPitch -> IStmt
-makeNote ot d p = MidiNote 
-    { note_start    = ot
-    , note_dur      = d
-    , note_value    = NoteValue { note_pitch = p
-                                    , note_velo_on  = 127
-                                    , note_velo_off = 0
-                                    }
-    }
-
--}
