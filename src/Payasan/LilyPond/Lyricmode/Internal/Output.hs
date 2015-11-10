@@ -81,10 +81,13 @@ rhythmVoice annof ph = newStaff_ <+> anonBlock body
                       
 
 lyricsVoice :: BEAM.Phrase Syllable LyNoteLength a -> Doc
-lyricsVoice ph = block (Just prefix) notes
+lyricsVoice ph = block (Just prefix) (overrides $+$ notes)
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
     locals1     = maybe default_local_info id $ BEAM.firstContextInfo ph
+    overrides   = vcat [ override_ "LyricText #'font-size = #-1"
+                       , override_ "Lyrics.LyricSpace.minimum-distance = #1.4"
+                       ]         
     notes       = lilypondNotes lyric_def locals1 ph
     lyric_def   = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
 
