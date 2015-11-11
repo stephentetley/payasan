@@ -20,11 +20,15 @@ module Payasan.Models.Lyrics.Base
     LyricsPhrase 
   , Stress(..)
   , outputAsLilyPond
+  , lyrics
+
   ) where
 
 import qualified Payasan.LilyPond.Lyricmode.Internal.Base       as LY
+import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
 import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
+import Payasan.Base.Internal.LilyPond.Lexer
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
@@ -34,6 +38,10 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
+import Text.Parsec                              -- package: parsec
+
+import Language.Haskell.TH.Quote
 
 import Data.Data
 
@@ -64,3 +72,28 @@ stressUse BLANK         = empty
 outputAsLilyPond :: ScoreInfo -> LyricsPhrase -> String
 outputAsLilyPond = LY.outputAsLilyPondDU (AnnoDU { defs = stressDefs, use = stressUse })
 
+
+
+lyrics :: QuasiQuoter
+lyrics = QuasiQuoter
+    { quoteExp = \s -> case parseLyrics s of
+                         Left err -> error $ show err
+                         Right xs -> dataToExpQ (const Nothing) xs
+    , quoteType = \_ -> error "QQ - no Score Type"
+    , quoteDec  = \_ -> error "QQ - no Score Decl"
+    , quotePat  = \_ -> error "QQ - no Score Patt" 
+    } 
+
+
+
+parseLyrics :: String -> Either ParseError (LY.LyLyricPhrase1 Stress)
+parseLyrics = runParser (LY.makeLyricParser pStress) () ""
+
+
+pStress :: LyParser Stress
+pStress = stress <|> return BLANK
+  where
+    stress  = choice [pri, sec, uns]
+    pri     = PRIMARY    <$ (LY.command "primary"    <|> LY.command "pri")
+    sec     = SECONDARY  <$ (LY.command "secondary"  <|> LY.command "sec")
+    uns     = UNSTRESSED <$ (LY.command "unstressed" <|> LY.command "uns")

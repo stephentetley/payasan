@@ -61,8 +61,8 @@ fromLilyPond globals = fromLilyPondWith globals default_local_info
 
 fromLilyPondWith :: ScoreInfo 
                  -> LocalContextInfo 
-                 -> LyLyricPhrase
-                 -> LyricPhrase1 ()
+                 -> LyLyricPhrase1 anno
+                 -> LyricPhrase1 anno
 fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals
 
 

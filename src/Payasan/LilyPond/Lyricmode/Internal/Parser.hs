@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -18,6 +19,9 @@ module Payasan.LilyPond.Lyricmode.Internal.Parser
   ( 
    
     lyricmode
+  , makeLyricParser
+
+  , command -- TEMP export from here
 
   ) where
 
@@ -49,41 +53,48 @@ lyricmode = QuasiQuoter
 
 
 parseLyricMode :: String -> Either ParseError LyLyricPhrase
-parseLyricMode = runParser (fullInputParse phrase) () ""
+parseLyricMode = runParser (makeLyricParser P.noAnno) () ""
 
 
-
-phrase :: LyParser LyLyricPhrase
-phrase = Phrase default_local_info <$> bars
-
-bars :: LyParser [LyLyricBar]
-bars = sepBy bar P.barline
-
-bar :: LyParser LyLyricBar
-bar = Bar <$> many atom
-
-
-atom :: LyParser LyLyricNoteGroup
-atom = Atom <$> (syllableNote <|> skip <|> punctuation)
-
--- \skip is symbol for rest...
 
 -- This parser is so different from LilyPond that it might be better 
 -- to code it from scratch.
 
-punctuation :: LyParser LyLyricElement
-punctuation = doubleHyphen <|> pUscore
+
+makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricPhrase1 anno)
+makeLyricParser pAnno = fullInputParse phrase
   where
-    doubleHyphen :: LyParser LyLyricElement
-    doubleHyphen = lexeme (Punctuation <$> symbol "--")
-    pUscore      = lexeme (char '_' >> uscoreK)
-    uscoreK      = (Punctuation "__" <$ char '_') <|> (pure $ Punctuation "_")
+    phrase :: LyParser (LyLyricPhrase1 anno)
+    phrase = Phrase default_local_info <$> bars
 
-syllableNote :: LyParser LyLyricElement
-syllableNote = (\p d -> Note p d () NO_TIE) <$> syllable <*> P.noteLength
+    bars :: LyParser [LyLyricBar1 anno]
+    bars = sepBy bar P.barline
 
-syllable :: LyParser Syllable
-syllable = Syllable <$> many1 (letter <|> oneOf ".,")
+    bar :: LyParser (LyLyricBar1 anno)
+    bar = Bar <$> many atom
 
-skip :: LyParser LyLyricElement
-skip = Skip <$> (symbol "\\skip" *> P.noteLength)
+    atom :: LyParser (LyLyricNoteGroup1 anno)
+    atom = Atom <$> (syllableNote <|> skip <|> punctuation)
+
+    -- \skip is symbol for rest...
+
+    
+    punctuation :: LyParser (LyLyricElement1 anno)
+    punctuation = doubleHyphen <|> pUscore
+      where
+        doubleHyphen = lexeme (Punctuation <$> symbol "--")
+        pUscore      = lexeme (char '_' >> uscoreK)
+        uscoreK      = (Punctuation "__" <$ char '_') <|> (pure $ Punctuation "_")
+
+    syllableNote :: LyParser (LyLyricElement1 anno)
+    syllableNote = (\p d a -> Note p d a NO_TIE) <$> syllable <*> P.noteLength <*> pAnno
+
+    syllable :: LyParser Syllable
+    syllable = Syllable <$> many1 (letter <|> oneOf ".,")
+
+    skip :: LyParser (LyLyricElement1 anno)
+    skip = Skip <$> (command "skip" *> P.noteLength)
+
+
+command :: String -> LyParser String
+command s = try $ symbol ('\\' : s)

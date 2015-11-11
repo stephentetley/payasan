@@ -16,19 +16,38 @@ import Payasan.Base.Names.Duration
 -- NOTE - do not beam lyrics...
 
 
-phrase01 :: LyricPhrase1 ()
-phrase01 = fromLilyPondWith default_score_info locals $ 
-    [lyricmode| Shake4 ba8 -- by8 shake2 | Shake4 ba8 -- by8 shake.2 |  |]
-
-
-
-
 globals :: ShellInfo
 globals = default_shell_info
 
 
 locals :: LocalContextInfo
 locals = default_local_info
+
+
+-- Annos not handled (yet)...
+--
+-- Visually, quasiquote is definitely the most pleasing
+-- representation...
+--
+phrase01 :: LyricPhrase1 ()
+phrase01 = fromLilyPondWith default_score_info locals $ 
+    [lyricmode| Shake4 ba8 -- by8 shake2
+              | Shake4 ba8 -- by8 shake.2 
+              |]
+
+
+
+phrase01a :: LyricPhrase1 NEW.Stress
+phrase01a = fromLilyPondWith default_score_info locals $ 
+    [NEW.lyrics| Shake4\uns ba8\sec -- by8\uns shake2\primary
+               | Shake4\uns ba8\sec -- by8\uns shake.2\pri               
+               |]
+
+
+demo01a  :: IO ()
+demo01a = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ phrase01a
+
+
 
 
 
@@ -60,7 +79,8 @@ demo02 = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ ph
 
 
 
-
+-- Bars and stress annos not convenient in this formulation...
+--
 phrase01c :: Lyrics ()
 phrase01c = tell "Shake" drn_4 >> tell "ba-"   drn_8
          >> tell "by"    drn_8 >> tell "shake" drn_2
@@ -69,3 +89,6 @@ phrase01c = tell "Shake" drn_4 >> tell "ba-"   drn_8
 demo03  :: IO ()
 demo03 = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ fromLyricsM phrase01c
 
+
+
+-- Hey Ar-chae-op-ter-yx where d'you learn those tricks?

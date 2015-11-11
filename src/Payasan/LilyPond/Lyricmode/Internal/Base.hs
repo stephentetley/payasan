@@ -19,10 +19,16 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
   ( 
    
     LyricPhrase1
+
   , LyLyricPhrase
   , LyLyricBar
   , LyLyricNoteGroup
   , LyLyricElement
+
+  , LyLyricPhrase1
+  , LyLyricBar1
+  , LyLyricNoteGroup1
+  , LyLyricElement1
 
   , Syllable(..)
 
@@ -31,7 +37,7 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
   ) where
 
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
-import Payasan.Base.Monophonic.Internal.Syntax
+import qualified Payasan.Base.Monophonic.Internal.Syntax    as MONO
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
@@ -42,12 +48,17 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
-type LyricPhrase1 anno  = StdMonoPhrase2 Syllable anno
+type LyricPhrase1 anno  = MONO.StdMonoPhrase2 Syllable anno
 
-type LyLyricPhrase      = Phrase     Syllable LyNoteLength ()
-type LyLyricBar         = Bar        Syllable LyNoteLength ()
-type LyLyricNoteGroup   = NoteGroup  Syllable LyNoteLength ()
-type LyLyricElement     = Element    Syllable LyNoteLength ()
+type LyLyricPhrase      = MONO.Phrase     Syllable LyNoteLength ()
+type LyLyricBar         = MONO.Bar        Syllable LyNoteLength ()
+type LyLyricNoteGroup   = MONO.NoteGroup  Syllable LyNoteLength ()
+type LyLyricElement     = MONO.Element    Syllable LyNoteLength ()
+
+type LyLyricPhrase1 anno        = MONO.Phrase     Syllable LyNoteLength anno
+type LyLyricBar1 anno           = MONO.Bar        Syllable LyNoteLength anno
+type LyLyricNoteGroup1 anno     = MONO.NoteGroup  Syllable LyNoteLength anno
+type LyLyricElement1 anno       = MONO.Element    Syllable LyNoteLength anno
 
 
 data Syllable = Syllable String
@@ -76,7 +87,7 @@ instance Pretty Syllable where
   pPrint (Syllable s)   = text s
 
 
-inTrans :: ScoreInfo -> LyLyricPhrase -> LyricPhrase1 ()
+inTrans :: ScoreInfo -> LyLyricPhrase1 anno -> LyricPhrase1 anno
 inTrans _info = trafoDuration
 
 
