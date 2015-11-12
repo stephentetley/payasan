@@ -72,11 +72,9 @@ import Payasan.Base.Internal.Output.Tabular.OutputMain
 
 import qualified Payasan.Base.Internal.MIDI.BeamToMIDI      as MIDI
 import qualified Payasan.Base.Internal.MIDI.Output          as MIDI
-import qualified Payasan.Base.Internal.MIDI.OutTrans        as MIDI
 import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax as MIDI
 
 import qualified Payasan.Base.Notelist as MAIN
-import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -112,13 +110,11 @@ ppRender = MAIN.ppRender
 
 
 writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
-writeAsMIDI path notes = 
-   let trk = MIDI.translateToMIDI (MIDI.simpleTrackData 9) (noteTrans notes)
+writeAsMIDI path ph = 
+   let notes = PERC.translate $ translateToBeam ph
+       trk   = MIDI.translateToMIDI (MIDI.simpleTrackData 9) notes
    in MIDI.writeMF1 path [trk]
 
-
-noteTrans :: StdDrumPhrase -> BEAM.Phrase MIDI.MidiPitch RDuration Accent
-noteTrans = MIDI.translateToMidiD . PERC.translate . translateToBeam
 
 
 

@@ -20,6 +20,7 @@ module Payasan.Base.Internal.LilyPond.Parser
   (
     LyParserDef (..)
   , parseLyPhrase
+  , makeLyParser
 
   -- * Primitives
   , tupletSpec

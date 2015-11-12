@@ -18,6 +18,7 @@
 module Payasan.LilyPond.Percussion.Internal.Parser
   (
     drums
+  , makeDrumsParser
 
   ) where
 
@@ -56,10 +57,15 @@ drums = QuasiQuoter
 
 
 parseLyDrums :: String -> Either ParseError (LyPhrase2 DrumPitch Accent)
-parseLyDrums = parseLyPhrase parsedef
-  where
-    parsedef = LyParserDef { pitchParser = drumPitch, annoParser = accent }
+parseLyDrums = parseLyPhrase (makeDrumsDef accent)
 
+
+makeDrumsParser :: LyParser anno -> LyParser (LyPhrase2 DrumPitch anno)
+makeDrumsParser pAnno = makeLyParser (makeDrumsDef pAnno)
+
+
+makeDrumsDef :: LyParser anno -> LyParserDef DrumPitch anno
+makeDrumsDef pAnno = LyParserDef { pitchParser = drumPitch, annoParser = pAnno }
 
 accent :: LyParser Accent
 accent = try acc1 <|> return NO_ACCENT
