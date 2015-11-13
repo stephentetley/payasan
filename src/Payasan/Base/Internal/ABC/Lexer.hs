@@ -19,7 +19,7 @@ module Payasan.Base.Internal.ABC.Lexer
   (
     ABCParser
   , ABCLexer
-  , fullInputParse
+  , fullParseABC
   , symbol 
   , reservedOp
   , int
@@ -29,31 +29,20 @@ module Payasan.Base.Internal.ABC.Lexer
   , whiteSpace
   ) where
 
+import Payasan.Base.Internal.Utils
 
-import Text.Parsec                              -- package: parsec
-import Text.Parsec.Language
+import Text.Parsec.Language                             -- package: parser
 import qualified Text.Parsec.Token as P
 
 
-import Control.Monad.Identity
-import Data.Char (isSpace)
 
-type ABCParser a        = ParsecT String () Identity a
-type ABCLexer           = P.GenTokenParser String () Identity
+type ABCParser a        = ParsecParser a
+type ABCLexer           = ParsecLexer
 
 
 
-fullInputParse :: forall a. ABCParser a -> ABCParser a
-fullInputParse p = whiteSpace *> parseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-
-    parseK :: ABCParser (a, SourcePos, String)
-    parseK = (,,) <$> p <*> getPosition <*> getInput
+fullParseABC :: forall a. ABCParser a -> ABCParser a
+fullParseABC = fullInputParse whiteSpace
 
 
 --------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -19,7 +20,11 @@
 module Payasan.Base.Internal.Utils
   ( 
     
-    divModS1
+    ParsecParser
+  , ParsecLexer
+  , fullInputParse
+
+  , divModS1
   , divS1
   , modS1
 
@@ -36,6 +41,31 @@ module Payasan.Base.Internal.Utils
 
 
   )  where
+
+
+import Text.Parsec                              -- package: parsec
+import Text.Parsec.Token
+
+import Control.Monad.Identity
+import Data.Char (isSpace)
+
+
+type ParsecParser a        = ParsecT String () Identity a
+type ParsecLexer           = GenTokenParser String () Identity
+
+
+
+fullInputParse :: forall a. ParsecParser () -> ParsecParser a -> ParsecParser a
+fullInputParse white p = white *> parseK >>= step
+  where 
+    isTrail             = all (isSpace)
+    step (ans,_,ss) 
+        | isTrail ss    = return ans
+        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
+
+
+    parseK :: ParsecParser (a, SourcePos, String)
+    parseK = (,,) <$> p <*> getPosition <*> getInput
 
 
 

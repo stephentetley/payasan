@@ -19,9 +19,8 @@ module Payasan.Base.Internal.LilyPond.Lexer
   (
     LyParser
   , LyLexer
-  , fullInputParse
+  , fullParseLy
   , symbol 
-  , reserved
   , reservedOp
   , int
   , braces
@@ -31,37 +30,31 @@ module Payasan.Base.Internal.LilyPond.Lexer
   ) where
 
 
+import Payasan.Base.Internal.Utils
+
 import Text.Parsec                              -- package: parsec
 import Text.Parsec.Language
 import qualified Text.Parsec.Token as P
 
 
-import Control.Monad.Identity
-import Data.Char (isSpace)
 
-type LyParser a         = ParsecT String () Identity a
-type LyLexer            = P.GenTokenParser String () Identity
+type LyParser a         = ParsecParser a
+type LyLexer            = ParsecLexer
 
 
 
 
-fullInputParse :: forall a. LyParser a -> LyParser a
-fullInputParse p = whiteSpace *> parseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-
-    parseK :: LyParser (a, SourcePos, String)
-    parseK = (,,) <$> p <*> getPosition <*> getInput
+fullParseLy :: forall a. LyParser a -> LyParser a
+fullParseLy = fullInputParse whiteSpace
 
 
 --------------------------------------------------------------------------------
 -- Tokens
 --------------------------------------------------------------------------------
 
+
+-- TODO - this is too underhand...
+--
 whiteSpace          :: LyParser ()
 whiteSpace          = whiteSpace1 <|> reservedOp "[" <|> reservedOp "]"
 
@@ -69,8 +62,7 @@ whiteSpace          = whiteSpace1 <|> reservedOp "[" <|> reservedOp "]"
 symbol              :: String -> LyParser String
 symbol              = P.symbol lilypond_lex
 
-reserved            :: String -> LyParser ()
-reserved            = P.reserved lilypond_lex
+
 
 reservedOp          :: String -> LyParser ()
 reservedOp          = P.reservedOp lilypond_lex
@@ -91,11 +83,11 @@ lexeme              = P.lexeme lilypond_lex
 whiteSpace1         :: LyParser ()
 whiteSpace1         = P.whiteSpace lilypond_lex
 
+
 lilypond_lex        :: LyLexer
 lilypond_lex        = P.makeTokenParser $ 
     emptyDef { P.reservedOpNames  = ["|", "/", "[", "]"]
-             , P.reservedNames    = [ "\\maxima", "\\longa", "\\breve"
-                                    , "\\tuplet", "\\grace"
-                                    ]
+             , P.reservedNames    = [ ]
+             , P.commentLine      = "%"
              }
 

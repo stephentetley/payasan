@@ -59,7 +59,7 @@ abc = QuasiQuoter
 
 
 parseABCPhrase :: String -> Either ParseError ABCPhrase
-parseABCPhrase = runParser (fullInputParse phrase) () ""
+parseABCPhrase = runParser (fullParseABC phrase) () ""
 
 
 phrase :: ABCParser ABCPhrase

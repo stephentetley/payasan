@@ -21,8 +21,6 @@ module Payasan.LilyPond.Lyricmode.Internal.Parser
     lyricmode
   , makeLyricParser
 
-  , command -- TEMP export from here
-
   ) where
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
@@ -62,7 +60,7 @@ parseLyricMode = runParser (makeLyricParser P.noAnno) () ""
 
 
 makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricPhrase1 anno)
-makeLyricParser pAnno = fullInputParse phrase
+makeLyricParser pAnno = fullParseLy phrase
   where
     phrase :: LyParser (LyLyricPhrase1 anno)
     phrase = Phrase default_local_info <$> bars
@@ -93,8 +91,5 @@ makeLyricParser pAnno = fullInputParse phrase
     syllable = Syllable <$> many1 (letter <|> oneOf ".,")
 
     skip :: LyParser (LyLyricElement1 anno)
-    skip = Skip <$> (command "skip" *> P.noteLength)
+    skip = Skip <$> (P.command "skip" *> P.noteLength)
 
-
-command :: String -> LyParser String
-command s = try $ symbol ('\\' : s)

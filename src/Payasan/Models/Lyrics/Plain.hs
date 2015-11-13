@@ -26,7 +26,7 @@ module Payasan.Models.Lyrics.Plain
 
   ) where
 
-import Payasan.Models.Lyrics.Base
+import Payasan.Models.Lyrics.Internal.Base
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 

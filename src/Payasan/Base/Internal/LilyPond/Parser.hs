@@ -25,6 +25,7 @@ module Payasan.Base.Internal.LilyPond.Parser
   -- * Primitives
   , tupletSpec
   , barline
+  , command
 
   , pitch
   , accidental
@@ -68,7 +69,7 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (LyPhrase2 pch anno)
-makeLyParser def = fullInputParse phrase
+makeLyParser def = fullParseLy phrase
   where
     pPitch :: LyParser pch
     pPitch = pitchParser def
@@ -118,7 +119,7 @@ makeLyParser def = fullInputParse phrase
 
 
     graces :: LyParser (LyElement2 pch anno)
-    graces = Graces <$> (reserved "\\grace" *> (multi <|> single))
+    graces = Graces <$> (command "grace" *> (multi <|> single))
       where
         multi   = braces (many1 note)
         single  = (\a -> [a]) <$> note
@@ -130,11 +131,15 @@ makeLyParser def = fullInputParse phrase
 
 
 tupletSpec :: LyParser (Int,Int)
-tupletSpec = (,) <$> (reserved "\\tuplet" *> int) <*> (reservedOp "/" *> int)
+tupletSpec = (,) <$> (command "tuplet" *> int) <*> (reservedOp "/" *> int)
 
 barline :: LyParser ()
 barline = reservedOp "|"
 
+
+
+command :: String -> LyParser String
+command s = try $ symbol ('\\' : s)
 
 --------------------------------------------------------------------------------
 -- Pitch Parser
@@ -204,9 +209,9 @@ duration :: LyParser Duration
 duration = maxima <|> longa <|> breve <|> numeric
         <?> "duration"
   where
-    maxima  = d_maxima <$ reserved "\\maxima"
-    longa   = d_longa  <$ reserved "\\longa"
-    breve   = d_breve  <$ reserved "\\breve"
+    maxima  = d_maxima <$ command "maxima"
+    longa   = d_longa  <$ command "longa"
+    breve   = d_breve  <$ command "breve"
     
 
 numeric :: LyParser Duration

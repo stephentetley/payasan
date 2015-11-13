@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Models.Lyrics.Base
+-- Module      :  Payasan.Models.Lyrics.Internal.Base
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Models.Lyrics.Base
+module Payasan.Models.Lyrics.Internal.Base
   (
     LyricsPhrase 
   , Stress(..)
@@ -29,6 +29,7 @@ import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
 import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
 import Payasan.Base.Internal.LilyPond.Lexer
+import qualified Payasan.Base.Internal.LilyPond.Parser          as P
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
@@ -94,6 +95,6 @@ pStress :: LyParser Stress
 pStress = stress <|> return BLANK
   where
     stress  = choice [pri, sec, uns]
-    pri     = PRIMARY    <$ (LY.command "primary"    <|> LY.command "pri")
-    sec     = SECONDARY  <$ (LY.command "secondary"  <|> LY.command "sec")
-    uns     = UNSTRESSED <$ (LY.command "unstressed" <|> LY.command "uns")
+    pri     = PRIMARY    <$ (P.command "primary"    <|> P.command "pri")
+    sec     = SECONDARY  <$ (P.command "secondary"  <|> P.command "sec")
+    uns     = UNSTRESSED <$ (P.command "unstressed" <|> P.command "uns")

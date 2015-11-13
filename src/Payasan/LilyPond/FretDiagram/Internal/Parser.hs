@@ -48,7 +48,7 @@ fret_diagram = QuasiQuoter
 
 
 parseFretDiagram :: String -> Either ParseError FretDiagram
-parseFretDiagram = runParser (fullInputParse fretDiagram) () ""
+parseFretDiagram = runParser (fullParseLy fretDiagram) () ""
 
 fretDiagram :: LyParser FretDiagram
 fretDiagram = (\a b -> FretDiagram { fd_name       = ""

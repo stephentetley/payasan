@@ -49,7 +49,7 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 
 makeLyParser :: forall pch anno. 
                 P.LyParserDef pch anno -> LyParser (LyMonoPhrase2 pch anno)
-makeLyParser def = fullInputParse phrase
+makeLyParser def = fullParseLy phrase
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
