@@ -6,7 +6,7 @@ module Demo07 where
 import Payasan.LilyPond.Lyricmode.Notelist
 
 import qualified Payasan.Models.Lyrics.Internal.Base        as NEW  -- TEMP
--- import qualified Payasan.Models.Lyrics.Internal.Syllable    as NEW  -- TEMP
+import qualified Payasan.Models.Lyrics.Internal.Syllable    as NEW2  -- TEMP
 
 import Payasan.Models.Lyrics.Plain
 import Payasan.Models.Lyrics.Monad
@@ -97,4 +97,11 @@ demo03 = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ fr
 -- Hey Ar-chae-op-ter-yx where d'you learn those tricks?
 
 
+words01 :: NEW2.Lyrics
+words01 =  
+    [NEW2.lyrics| Hey Ar-chae-op-ter-yx where d'you learn those tricks?
+                |]
+
+
 -- Specifying lyrics as syllables with stress but no duration seems useful...
+

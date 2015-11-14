@@ -22,19 +22,21 @@ module Payasan.Models.Lyrics.Internal.Base
   , outputAsLilyPond
   , lyrics
 
+  , pStress
+
   ) where
 
 import qualified Payasan.LilyPond.Lyricmode.Internal.Base       as LY
 import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
 import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
-import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser          as P
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
 
 import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.Utils (ParsecParser)
 
 import Payasan.Base.Duration
 
@@ -91,7 +93,7 @@ parseLyrics :: String -> Either ParseError (LY.LyLyricPhrase1 Stress)
 parseLyrics = runParser (LY.makeLyricParser pStress) () ""
 
 
-pStress :: LyParser Stress
+pStress :: ParsecParser Stress
 pStress = stress <|> return BLANK
   where
     stress  = choice [pri, sec, uns]

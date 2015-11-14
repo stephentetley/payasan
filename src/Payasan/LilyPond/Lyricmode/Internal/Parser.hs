@@ -88,7 +88,7 @@ makeLyricParser pAnno = fullParseLy phrase
     syllableNote = (\p d a -> Note p d a NO_TIE) <$> syllable <*> P.noteLength <*> pAnno
 
     syllable :: LyParser Syllable
-    syllable = Syllable <$> many1 (letter <|> oneOf ".,")
+    syllable = Syllable <$> many1 (letter <|> oneOf "?!.,'")
 
     skip :: LyParser (LyLyricElement1 anno)
     skip = Skip <$> (P.command "skip" *> P.noteLength)
