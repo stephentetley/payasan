@@ -86,6 +86,8 @@ hyphen =  try dash
     dash = HYPHEN <$ symbol "-"
 
 
+--------------------------------------------------------------------------------
+-- Lexer
 
 symbol              :: String -> ParsecParser String
 symbol              = P.symbol syllable_lex
@@ -97,6 +99,8 @@ lexeme              = P.lexeme syllable_lex
 
 whiteSpace          :: ParsecParser ()
 whiteSpace          = P.whiteSpace syllable_lex
+
+
 
 syllable_lex        :: ParsecLexer
 syllable_lex        = P.makeTokenParser $ 

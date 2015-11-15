@@ -69,7 +69,7 @@ lyricsScoreDU annos globals ph1 ph2 =
 -- than the Anno instance... 
 
 rhythmVoice :: (a -> Doc) -> BEAM.Phrase LyPitch LyNoteLength a -> Doc
-rhythmVoice annof ph = newStaff_ <+> anonBlock body
+rhythmVoice annof ph = newVoiceDefn "rhythm" <+> anonBlock body
   where
     body        = vcat [ hide_ "Staff.StaffSymbol" 
                        , hide_ "Staff.Clef"
@@ -87,6 +87,7 @@ lyricsVoice ph = block (Just prefix) (overrides $+$ notes)
     locals1     = maybe default_local_info id $ BEAM.firstContextInfo ph
     overrides   = vcat [ override_ "LyricText #'font-size = #-1"
                        , override_ "Lyrics.LyricSpace.minimum-distance = #1.4"
+                       , set_ "associatedVoice = #\"rhythm\""
                        ]         
     notes       = lilypondNotes lyric_def locals1 ph
     lyric_def   = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }

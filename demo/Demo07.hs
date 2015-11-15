@@ -34,9 +34,12 @@ locals = default_local_info
 --
 phrase01 :: LyricPhrase1 ()
 phrase01 = fromLilyPondWith default_score_info locals $ 
-    [lyricmode| Shake4 ba8 -- by8 shake2
-              | Shake4 ba8 -- by8 shake.2 
+    [lyricmode| Shake4 ba8 -- by8 shake4 __ \skip4
+              | Shake4 ba8 -- by8 shake.2
               |]
+
+demo01  :: IO ()
+demo01 = shellOutLilyPond globals $ outputAsLilyPond default_score_info $ phrase01
 
 
 
@@ -54,8 +57,6 @@ demo01a = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ p
 
 
 
-demo01  :: IO ()
-demo01 = shellOutLilyPond globals $ outputAsLilyPond default_score_info $ phrase01
 
 -- demo02 :: IO ()
 -- demo02 = printAsLilyPond default_score_info phrase01

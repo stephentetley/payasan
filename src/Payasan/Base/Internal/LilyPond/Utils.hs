@@ -74,6 +74,7 @@ module Payasan.Base.Internal.LilyPond.Utils
   , withBlock_ 
 
   , override_
+  , set_
   , hide_
 
   , drummode_
@@ -281,15 +282,21 @@ stemDown_       = command "stemDown"
 -- So, it seems more efficient just to supply them with the 
 -- quoted string.
 -- 
-override_ :: String -> Doc
-override_ ss = command "override" <+> text ss
+override_       :: String -> Doc
+override_ ss    = command "override" <+> text ss
 
 
--- | Hides are expected to be copy-paste fragments from 
+-- | Uses of set_ are expected to be copy-paste fragments from 
 -- LilyPond. 
 --
-hide_ :: String -> Doc
-hide_ ss = command "hide" <+> text ss
+set_            :: String -> Doc
+set_ ss         = command "set" <+> text ss
+
+-- | Uses of hide are expected to be copy-paste fragments from 
+-- LilyPond. 
+--
+hide_           :: String -> Doc
+hide_ ss        = command "hide" <+> text ss
 
 
 

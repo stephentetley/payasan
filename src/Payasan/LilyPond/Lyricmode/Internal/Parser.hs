@@ -74,15 +74,14 @@ makeLyricParser pAnno = fullParseLy phrase
     atom :: LyParser (LyLyricNoteGroup1 anno)
     atom = Atom <$> (syllableNote <|> skip <|> punctuation)
 
-    -- \skip is symbol for rest...
-
-    
+    -- Use __ for extenders, _ is not recognized because we manually
+    -- specify lyric duration in the output.
+    --
     punctuation :: LyParser (LyLyricElement1 anno)
-    punctuation = doubleHyphen <|> pUscore
+    punctuation = doubleHyphen <|> doubleUnder
       where
         doubleHyphen = lexeme (Punctuation <$> symbol "--")
-        pUscore      = lexeme (char '_' >> uscoreK)
-        uscoreK      = (Punctuation "__" <$ char '_') <|> (pure $ Punctuation "_")
+        doubleUnder  = lexeme (Punctuation <$> symbol "__")
 
     syllableNote :: LyParser (LyLyricElement1 anno)
     syllableNote = (\p d a -> Note p d a NO_TIE) <$> syllable <*> P.noteLength <*> pAnno
@@ -90,6 +89,7 @@ makeLyricParser pAnno = fullParseLy phrase
     syllable :: LyParser Syllable
     syllable = Syllable <$> many1 (letter <|> oneOf "?!.,'")
 
+    -- \skip is symbol for rest...
     skip :: LyParser (LyLyricElement1 anno)
     skip = Skip <$> (P.command "skip" *> P.noteLength)
 

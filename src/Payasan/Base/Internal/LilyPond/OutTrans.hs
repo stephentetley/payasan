@@ -176,10 +176,8 @@ changeDuration d1 =
       }
 
 
+-- | skip always prints an explicit duration, it also resets the 
+-- duration so the next note is explicit too.
+--
 skipDuration :: Duration -> DMon LyNoteLength
-skipDuration d1 =
-   do { d0 <- previousDuration 
-      ; if d1 == d0 
-          then return DrnDefault
-          else resetDuration >> return (DrnExplicit d1)
-      }
+skipDuration d1 = resetDuration >> return (DrnExplicit d1)
