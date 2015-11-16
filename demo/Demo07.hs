@@ -7,9 +7,7 @@ import Payasan.LilyPond.Lyricmode.Notelist
 
 import qualified Payasan.Models.Lyrics.Internal.Base        as NEW  -- TEMP
 import qualified Payasan.Models.Lyrics.Internal.Syllable    as NEW2  -- TEMP
-
-import Payasan.Models.Lyrics.Plain
-import Payasan.Models.Lyrics.Monad
+import Payasan.Models.Lyrics.Internal.Plain
 
 
 import Payasan.Base.Names.Duration
@@ -82,16 +80,6 @@ demo02  :: IO ()
 demo02 = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ phrase01b
 
 
-
--- Bars and stress annos not convenient in this formulation...
---
-phrase01c :: Lyrics ()
-phrase01c = tell "Shake" drn_4 >> tell "ba-"   drn_8
-         >> tell "by"    drn_8 >> tell "shake" drn_2
-
-
-demo03  :: IO ()
-demo03 = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ fromLyricsM phrase01c
 
 
 

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Models.Lyrics.Plain
+-- Module      :  Payasan.Models.Lyrics.Internal.Plain
 -- Copyright   :  (c Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Models.Lyrics.Plain
+module Payasan.Models.Lyrics.Internal.Plain
   ( 
     LyricsAtom
   , fromLyrics

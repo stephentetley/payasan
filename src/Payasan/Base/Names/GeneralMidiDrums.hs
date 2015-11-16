@@ -71,7 +71,7 @@ module Payasan.Base.Names.GeneralMidiDrums
   ) where
 
 
-import Payasan.Base.Internal.MIDI.Syntax
+import Payasan.Base.Internal.MIDI.PrimitiveSyntax
 
 -------------------------------------------------------------------------------
 -- GM drums
