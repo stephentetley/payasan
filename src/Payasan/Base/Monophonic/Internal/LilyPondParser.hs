@@ -18,10 +18,11 @@
 module Payasan.Base.Monophonic.Internal.LilyPondParser
   (
 
-    LyParserDef (..)    -- re-export
+    lilypond
+  , LyParserDef (..)    -- re-export
   , parseLyPhrase
-  , pitch
-  , noAnno
+  , pitch               -- re-export
+  , noAnno              -- re-export
 
   ) where
 
@@ -36,9 +37,33 @@ import Payasan.Base.Internal.CommonSyntax
 
 import Text.Parsec                              -- package: parsec
 
+import Language.Haskell.TH.Quote                -- package: template-haskell
+
+
+
+
+--------------------------------------------------------------------------------
+-- Quasiquote
+
+lilypond :: QuasiQuoter
+lilypond = QuasiQuoter
+    { quoteExp = \s -> case parseLilyPondNoAnno s of
+                         Left err -> error $ show err
+                         Right xs -> dataToExpQ (const Nothing) xs
+    , quoteType = \_ -> error "QQ - no Score Type"
+    , quoteDec  = \_ -> error "QQ - no Score Decl"
+    , quotePat  = \_ -> error "QQ - no Score Patt" 
+    } 
+
 
 --------------------------------------------------------------------------------
 -- Parser
+
+
+parseLilyPondNoAnno :: String -> Either ParseError (LyMonoPhrase1 ())
+parseLilyPondNoAnno = parseLyPhrase parsedef
+  where
+    parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 
 
 parseLyPhrase :: P.LyParserDef pch anno

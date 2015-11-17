@@ -79,7 +79,7 @@ module Payasan.Base.Monophonic.Notelist
 import Payasan.Base.Monophonic.Internal.ABCInTrans
 import Payasan.Base.Monophonic.Internal.ABCParser (abc)
 import Payasan.Base.Monophonic.Internal.LilyPondInTrans
-import Payasan.Base.Monophonic.Internal.LilyPondQuasiquote (lilypond)
+import Payasan.Base.Monophonic.Internal.LilyPondParser (lilypond)
 import Payasan.Base.Monophonic.Internal.LinearOutput
 import Payasan.Base.Monophonic.Internal.MonoToMain
 import Payasan.Base.Monophonic.Internal.Syntax

@@ -18,7 +18,9 @@
 
 module Payasan.Base.Internal.LilyPond.Parser
   (
-    LyParserDef (..)
+
+    lilypond
+  , LyParserDef (..)
   , parseLyPhrase
   , makeLyParser
 
@@ -49,16 +51,37 @@ import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec
 
+import Language.Haskell.TH.Quote                -- package: template-haskell
+
+
+
+--------------------------------------------------------------------------------
+-- Quasiquote
+
+lilypond :: QuasiQuoter
+lilypond = QuasiQuoter
+    { quoteExp = \s -> case parseLilyPondNoAnno s of
+                         Left err -> error $ show err
+                         Right xs -> dataToExpQ (const Nothing) xs
+    , quoteType = \_ -> error "QQ - no Score Type"
+    , quoteDec  = \_ -> error "QQ - no Score Decl"
+    , quotePat  = \_ -> error "QQ - no Score Patt" 
+    } 
 
 --------------------------------------------------------------------------------
 -- Parser
-
 
 
 data LyParserDef pch anno = LyParserDef 
     { pitchParser :: LyParser pch
     , annoParser  :: LyParser anno
     }
+
+
+parseLilyPondNoAnno :: String -> Either ParseError (LyPhrase1 ())
+parseLilyPondNoAnno = parseLyPhrase parsedef
+  where
+    parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 
 
 parseLyPhrase :: LyParserDef pch anno

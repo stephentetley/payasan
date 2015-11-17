@@ -93,8 +93,8 @@ import qualified Payasan.Base.Internal.Csound.OutTrans          as CS
 import qualified Payasan.Base.Internal.LilyPond.InTrans         as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
+import Payasan.Base.Internal.LilyPond.Parser (lilypond)
 import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
-import Payasan.Base.Internal.LilyPond.Quasiquote (lilypond)
 import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
 import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase1)
 import Payasan.Base.Internal.LilyPond.Utils
