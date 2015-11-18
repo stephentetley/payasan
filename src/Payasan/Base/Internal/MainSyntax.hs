@@ -80,7 +80,7 @@ instance Monoid (Phrase pch drn anno) where
 --
 data Bar pch drn anno = Bar 
     { bar_info          :: !LocalContextInfo
-    , bar_elements      :: [NoteGroup pch drn anno]
+    , bar_groups        :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 

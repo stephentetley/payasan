@@ -91,6 +91,19 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 
+--
+-- TODO - the parser should probably read beam groups literally 
+-- even though they will be lost in the translation to Main syntax.
+-- [Beaming is re-synthesized for final output].
+--
+-- Because beaming is not strictly nested in LilyPond (e.g. b[eam])
+-- it might be easier to have a post processing step to reconcile
+-- the first member of the beam group.
+--
+
+
+
+
 makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (LyPhrase2 pch anno)
 makeLyParser def = fullParseLy phrase
   where

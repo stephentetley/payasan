@@ -128,7 +128,7 @@ data Phrase pch drn anno = Phrase
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn anno = Bar 
-    { bar_elements      :: [NoteGroup pch drn anno]
+    { bar_groups        :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
