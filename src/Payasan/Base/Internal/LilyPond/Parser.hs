@@ -92,18 +92,11 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 --
--- TODO - the parser should probably read beam groups literally 
--- even though they will be lost in the translation to Main syntax.
+-- | This parser reads beam groups literally even though they are 
+-- lost in the translation to Main syntax.
+--
 -- [Beaming is re-synthesized for final output].
 --
--- Because beaming is not strictly nested in LilyPond (e.g. b[eam])
--- it might be easier to have a post processing step to reconcile
--- the first member of the beam group.
---
-
-
-
-
 makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (LyPhrase2 pch anno)
 makeLyParser def = fullParseLy phrase
   where
@@ -119,16 +112,25 @@ makeLyParser def = fullParseLy phrase
     bars :: LyParser [LyBar2 pch anno]
     bars = sepBy bar barline
 
+    -- Beaming is not strictly nested in LilyPond (e.g. b[eam]), 
+    -- so we do a post-processing step to reconcile the first 
+    -- member of the beam group.
+    --
     bar :: LyParser (LyBar2 pch anno)
-    bar = Bar default_local_info <$> noteGroups 
+    bar = (Bar default_local_info . reconcileBeamHeads) <$> noteGroups 
 
     noteGroups :: LyParser [LyNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup
 
     noteGroup :: LyParser (LyNoteGroup2 pch anno)
-    noteGroup = tuplet <|> (Atom <$> element)
+    noteGroup = tuplet <|> beamTail <|> atom
 
-    -- | Unlike ABC, LilyPond does not need to count the number
+
+    beamTail :: LyParser (LyNoteGroup2 pch anno)
+    beamTail = Beamed <$> squares noteGroups
+
+
+    -- Unlike ABC, LilyPond does not need to count the number
     -- of notes in the tuplet to parse (they are properly enclosed 
     -- in braces).
     --
@@ -137,6 +139,10 @@ makeLyParser def = fullParseLy phrase
         (\spec notes -> Tuplet (makeTupletSpec spec (length notes)) notes)
             <$> tupletSpec <*> braces (noteGroups)
 
+
+
+    atom :: LyParser (LyNoteGroup2 pch anno)
+    atom = Atom <$> element
 
     element :: LyParser (LyElement2 pch anno)
     element = lexeme (rest <|> noteElem <|> chord <|> graces)
@@ -176,6 +182,21 @@ barline = reservedOp "|"
 
 command :: String -> LyParser String
 command s = try $ symbol ('\\' : s)
+
+
+-- | @reconcileBeamHeads@ expects sensible beam groups. 
+-- It does not test for duration < quarter, or similar.
+--
+reconcileBeamHeads :: [LyNoteGroup2 pch anno] -> [LyNoteGroup2 pch anno]
+reconcileBeamHeads = step1
+  where
+    step1 []               = []
+    step1 (x:xs)           = step2 x xs
+   
+    step2 a (Beamed gs:bs) = Beamed (a:gs) : step1 bs
+    step2 a (b:bs)         = a : step2 b bs
+    step2 a []             = [a]
+
 
 --------------------------------------------------------------------------------
 -- Pitch Parser

@@ -25,6 +25,7 @@ module Payasan.Base.Internal.LilyPond.Lexer
   , int
   , braces
   , angles
+  , squares
   , lexeme
   , whiteSpace
   ) where
@@ -32,8 +33,7 @@ module Payasan.Base.Internal.LilyPond.Lexer
 
 import Payasan.Base.Internal.Utils
 
-import Text.Parsec                              -- package: parsec
-import Text.Parsec.Language
+import Text.Parsec.Language                           -- package: parsec
 import qualified Text.Parsec.Token as P
 
 
@@ -53,10 +53,6 @@ fullParseLy = fullInputParse whiteSpace
 --------------------------------------------------------------------------------
 
 
--- TODO - this is too underhand...
---
-whiteSpace          :: LyParser ()
-whiteSpace          = whiteSpace1 <|> reservedOp "[" <|> reservedOp "]"
 
 
 symbol              :: String -> LyParser String
@@ -77,11 +73,15 @@ braces              = P.braces lilypond_lex
 angles              :: LyParser a -> LyParser a
 angles              = P.angles lilypond_lex
 
+squares             :: LyParser a -> LyParser a
+squares             = P.squares lilypond_lex
+
+
 lexeme              :: LyParser a -> LyParser a
 lexeme              = P.lexeme lilypond_lex
 
-whiteSpace1         :: LyParser ()
-whiteSpace1         = P.whiteSpace lilypond_lex
+whiteSpace          :: LyParser ()
+whiteSpace          = P.whiteSpace lilypond_lex
 
 
 lilypond_lex        :: LyLexer

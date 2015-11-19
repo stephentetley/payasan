@@ -86,18 +86,26 @@ makeLyParser def = fullParseLy phrase
     pAnno  = P.annoParser def
 
     phrase :: LyParser (LyCadenzaPhrase2 pch anno)
-    phrase = Phrase default_local_info <$> noteGroups
+    phrase = (Phrase default_local_info . reconcileBeamHeads) <$> noteGroups
 
     noteGroups :: LyParser [LyCadenzaNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup
 
     noteGroup :: LyParser (LyCadenzaNoteGroup2 pch anno)
-    noteGroup = tuplet <|> (Atom <$> element)
+    noteGroup = tuplet <|> beamTail <|> atom
+
+
+    beamTail :: LyParser (LyCadenzaNoteGroup2 pch anno)
+    beamTail = Beamed <$> squares noteGroups
+
 
     tuplet :: LyParser (LyCadenzaNoteGroup2 pch anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
             <$> P.tupletSpec <*> braces (noteGroups)
+
+    atom :: LyParser (LyCadenzaNoteGroup2 pch anno)
+    atom = Atom <$> element
 
     element :: LyParser (LyCadenzaElement2 pch anno)
     element = lexeme (rest <|> note)
@@ -110,6 +118,22 @@ makeLyParser def = fullParseLy phrase
     rest :: LyParser (LyCadenzaElement2 pch anno)
     rest = Rest <$> (char 'r' *> P.noteLength)
 
+
+
+
+-- | @reconcileBeamHeads@ expects sensible beam groups. 
+-- It does not test for duration < quarter, or similar.
+--
+reconcileBeamHeads :: [LyCadenzaNoteGroup2 pch anno] 
+                   -> [LyCadenzaNoteGroup2 pch anno]
+reconcileBeamHeads = step1
+  where
+    step1 []               = []
+    step1 (x:xs)           = step2 x xs
+   
+    step2 a (Beamed gs:bs) = Beamed (a:gs) : step1 bs
+    step2 a (b:bs)         = a : step2 b bs
+    step2 a []             = [a]
 
 
 

@@ -1,11 +1,13 @@
 payasan
 =======
 
-Payasan is an embedded DSL for music composition. It's novel 
-feature is round-tripping through subsets of ABC and LilyPond.
+Payasan intends to be a framework for building DSLs and models 
+for music composition and computer aided songwriting.
 
-This affords a concise input syntax and a familiar (read 
-"musically useful") output format.
+
+It's novel feature is round-tripping through subsets of ABC and 
+LilyPond. This affords a concise input syntax and a familiar (read 
+"musically recognizable") output format. 
 
 
 

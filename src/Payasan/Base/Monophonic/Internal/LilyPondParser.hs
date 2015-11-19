@@ -92,7 +92,7 @@ makeLyParser def = fullParseLy phrase
     bar = Bar <$> noteGroups 
 
     noteGroups :: LyParser [LyMonoNoteGroup2 pch anno]
-    noteGroups = whiteSpace *> many noteGroup
+    noteGroups = whiteSpace *> many (ignoreSquares noteGroup)
 
     noteGroup :: LyParser (LyMonoNoteGroup2 pch anno)
     noteGroup = tuplet <|> (Atom <$> element)
@@ -114,5 +114,10 @@ makeLyParser def = fullParseLy phrase
     rest = Rest <$> (char 'r' *> P.noteLength)
 
 
+ignoreSquares :: LyParser a -> LyParser a
+ignoreSquares p = open *> p <* close
+  where
+    open  = try (symbol "[") <|> pure ""
+    close = try (symbol "]") <|> pure ""
 
 

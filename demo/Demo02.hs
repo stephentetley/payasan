@@ -26,12 +26,12 @@ phrase01abc :: StdMonoPhrase
 phrase01abc = fromABCWith locals $ [abc| B4 z B B - | BB B2 z4 |]
 
 
--- Note - MonoPhrase cannot read beam group brackets
--- TODO - Maybe it should ignore them?
+-- Note - MonoPhrase reads (and ignores) beam group brackets.
+-- Beams are re-synthesized in the output.
 --
 phrase01ly :: StdMonoPhrase
 phrase01ly = fromLilyPondWith_Relative middle_c locals $ 
-    [lilypond| b'2 r8 b8 b4 ~ | b8 b b4 r2 |]
+    [lilypond| b'2 r8 b8 b4 ~ | b8[b] b4 r2 |]
 
 
 demo01 :: IO ()
