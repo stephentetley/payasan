@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Cadenza.Internal.LilyPondParser
+-- Module      :  Payasan.LilyPond.Cadenza.Internal.Parser
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,23 +11,23 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Monophonic notelist using LilyPond notation. 
+-- Parser for LilyPond'\s unmetered Cadenza mode. 
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Cadenza.Internal.LilyPondParser
+module Payasan.LilyPond.Cadenza.Internal.Parser
   (
 
-    lilypond
+    cadenza
   , LyParserDef (..)    -- re-export
-  , parseLyPhrase
+  , parseCadenza
   , pitch               -- re-export
   , noAnno              -- re-export
 
   ) where
 
 
-import Payasan.Base.Cadenza.Internal.Syntax
+import Payasan.LilyPond.Cadenza.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P
@@ -45,9 +45,9 @@ import Language.Haskell.TH.Quote                -- package: template-haskell
 --------------------------------------------------------------------------------
 -- Quasiquote
 
-lilypond :: QuasiQuoter
-lilypond = QuasiQuoter
-    { quoteExp = \s -> case parseLilyPondNoAnno s of
+cadenza :: QuasiQuoter
+cadenza = QuasiQuoter
+    { quoteExp = \s -> case parseCadenzaNoAnno s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -60,24 +60,24 @@ lilypond = QuasiQuoter
 -- Parser
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyCadenzaPhrase1 ())
-parseLilyPondNoAnno = parseLyPhrase parsedef
+parseCadenzaNoAnno :: String -> Either ParseError (LyCadenzaPhrase1 ())
+parseCadenzaNoAnno = parseCadenza parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 
 
-parseLyPhrase :: P.LyParserDef pch anno
+parseCadenza :: P.LyParserDef pch anno
               -> String 
               -> Either ParseError (LyCadenzaPhrase2 pch anno)
-parseLyPhrase def = runParser (makeLyParser def) () ""
+parseCadenza def = runParser (makeParser def) () ""
 
 
 
 -- TODO - handle beaming... 
 
-makeLyParser :: forall pch anno. 
-                P.LyParserDef pch anno -> LyParser (LyCadenzaPhrase2 pch anno)
-makeLyParser def = fullParseLy phrase
+makeParser :: forall pch anno. 
+              P.LyParserDef pch anno -> LyParser (LyCadenzaPhrase2 pch anno)
+makeParser def = fullParseLy phrase
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def

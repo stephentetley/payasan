@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Cadenza.Internal.Syntax
+-- Module      :  Payasan.LilyPond.Cadenza.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Cadenza.Internal.Syntax
+module Payasan.LilyPond.Cadenza.Internal.Syntax
   ( 
 
     StdCadenzaPhrase
@@ -38,10 +38,6 @@ module Payasan.Base.Cadenza.Internal.Syntax
   , LyCadenzaNoteGroup2
   , LyCadenzaElement2
 
-  , ABCCadenzaPhrase
-  , ABCCadenzaNoteGroup
-  , ABCCadenzaElement  
-
   , Phrase(..)
   , NoteGroup(..)
   , Element(..)
@@ -53,7 +49,6 @@ module Payasan.Base.Cadenza.Internal.Syntax
 
   ) where
 
-import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Duration
@@ -88,18 +83,18 @@ type LyCadenzaNoteGroup2   pch anno     = NoteGroup pch LyNoteLength anno
 type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
 
 
-type ABCCadenzaPhrase                   = Phrase    ABCPitch ABCNoteLength ()
-type ABCCadenzaNoteGroup                = NoteGroup ABCPitch ABCNoteLength ()
-type ABCCadenzaElement                  = Element   ABCPitch ABCNoteLength ()
-
+-- NOTE - we could accommodate ABC but parsing the input syntax
+-- is thorny (whitespace sensitive) and ABC is already a second 
+-- class citizen in Payasan because it has no rival to all the
+-- nice modes in LilyPond (percussion etc.).
 
 
 
 -- | Parametric on pitch so we can have the same syntax to 
 -- represent scale degrees, drum notes, etc.
 --
--- Parametric on duration so we can read ABC and decode duration
--- multipliers in a post-parsing phase.
+-- Parametric on duration so we can read LilyPond and decode
+-- omitted durations in a post-parsing phase.
 --
 -- LocalRenderInfo is annotated at the Phrase level - while this
 -- prevents concatenation it simplifies transformation.
