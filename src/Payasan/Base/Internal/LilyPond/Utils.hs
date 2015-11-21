@@ -256,8 +256,8 @@ mode_ LYDIAN            = command "lydian"
 mode_ LOCRIAN           = command "locrian"
 
 
-time_ :: Meter -> Doc
-time_ (Meter n d) = command "time" <+> int n <> char '/' <> int d
+time_ :: Time -> Doc
+time_ (Time n d) = command "time" <+> int n <> char '/' <> int d
 
 
 numericTimeSignature_   :: Doc 

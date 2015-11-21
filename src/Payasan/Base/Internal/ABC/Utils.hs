@@ -25,6 +25,7 @@ module Payasan.Base.Internal.ABC.Utils
 
   , tupletSpec
   , meter
+  , time
   , unitNoteLength
   , key
   , clef
@@ -78,9 +79,12 @@ tupletSpec (TupletSpec { tuplet_num       = n
     char '(' <> int n <> char ':' <> int t <> char ':' <> int x
 
 
-
 meter :: Meter -> Doc
-meter (Meter n d)  = int n <> char '/' <> int d
+meter (Unmetered)       = text "none"
+meter (TimeSig t)       = time t
+
+time :: Time -> Doc
+time (Time n d)  = int n <> char '/' <> int d
 
 unitNoteLength :: UnitNoteLength -> Doc
 unitNoteLength UNIT_NOTE_4      = text "1/4"

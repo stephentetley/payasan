@@ -35,6 +35,7 @@ module Payasan.Base.Internal.CommonSyntax
   , Key(..)
   , Mode(..)
   , Meter(..)
+  , Time(..)
 
   , default_local_info
 
@@ -156,8 +157,13 @@ data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
 --
 -- TODO - add free metered.
 --
-data Meter = Meter Int Int
+data Meter = Unmetered | TimeSig Time
   deriving (Data,Eq,Ord,Show,Typeable)
+
+
+data Time = Time Int Int
+  deriving (Data,Eq,Ord,Show,Typeable)
+
 
 -- TODO - span bars with meter pattern (e.g. for 2-bar patterns
 -- as in South American music).
@@ -176,7 +182,7 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
 default_local_info :: LocalContextInfo
 default_local_info = LocalContextInfo 
     { local_key                 = c_maj
-    , local_meter               = Meter 4 4 
+    , local_meter               = TimeSig $ Time 4 4 
     , local_meter_patn          = [1%2,1%2]
     , local_unit_note_len       = UNIT_NOTE_8
     , local_bpm                 = 120
@@ -187,8 +193,8 @@ default_local_info = LocalContextInfo
 
 
 
-barLength :: Meter -> RDuration
-barLength (Meter n d) = (fromIntegral n) * fn d
+barLength :: Time -> RDuration
+barLength (Time n d) = (fromIntegral n) * fn d
   where
     fn i = 1 % fromIntegral i
 

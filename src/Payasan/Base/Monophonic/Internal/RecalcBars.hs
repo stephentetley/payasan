@@ -53,8 +53,9 @@ segment info bs = Segment { segment_header = info
 
 
 remake :: Segment pch anno -> [Bar pch Duration anno]
-remake (Segment info es) = 
-    map Bar $ split (barLength $ local_meter info) es
+remake (Segment info es) = case local_meter info of
+    Unmetered -> [Bar es]
+    TimeSig t -> map Bar $ split (barLength t) es
 
 split :: RDuration 
       -> [NoteGroup pch Duration anno]

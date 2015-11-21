@@ -143,9 +143,11 @@ simpleVoice_Absolute def ph =
 
 
 oPhraseHeader :: LocalContextInfo -> Doc
-oPhraseHeader locals = 
-        key_  (local_key locals)
-    $+$ time_ (local_meter locals)
+oPhraseHeader locals = case local_meter locals of
+    Unmetered -> keyline
+    TimeSig t -> keyline $+$ time_ t
+  where
+    keyline = key_  (local_key locals)
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -190,7 +192,8 @@ lilypondNotes def prefix_locals ph =
           prefixK Nothing   = (empty <>)
           prefixK (Just k)  = (key_ k $+$)
           prefixT Nothing   = (empty <>)
-          prefixT (Just t)  = (time_ t $+$)
+          prefixT (Just t)  = case t of Unmetered -> (empty <>) 
+                                        TimeSig t1 -> (time_ t1 $+$)
 
     oNoteGroup :: LyNoteGroup2 pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e

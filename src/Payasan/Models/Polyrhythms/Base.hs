@@ -138,12 +138,14 @@ polyrhythmScore globals staff p1 p2 ph1 ph2 =
     def         = LyOutputDef { printPitch = pitch, printAnno = anno }
 
 
-
+-- TODO - avoid extra line for unmetered...
+--
 oPhraseHeader :: StaffInfo -> LocalContextInfo -> Doc
 oPhraseHeader staff locals = 
         clef_ (staff_clef staff)
     $+$ key_  (local_key locals)
-    $+$ time_ (local_meter locals)
+    $+$ case local_meter locals of Unmetered -> empty
+                                   TimeSig t -> time_ t
 
 
 polyVoice_Relative :: LyOutputDef pch anno 

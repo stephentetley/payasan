@@ -112,9 +112,11 @@ rhythmicMarkupVoice def ph =
     notes           = lilypondNotes def local1 ph
 
 
+
+-- TODO - this should be common...
 oPhraseHeader :: LocalContextInfo -> Doc
-oPhraseHeader locals = 
-        key_  (local_key locals)
-    $+$ time_ (local_meter locals)
-
-
+oPhraseHeader locals = case local_meter locals of
+    Unmetered -> keyline
+    TimeSig t -> keyline $+$ time_ t
+  where
+    keyline = key_  (local_key locals)
