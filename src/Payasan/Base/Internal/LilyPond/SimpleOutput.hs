@@ -144,7 +144,7 @@ simpleVoice_Absolute def ph =
 
 oPhraseHeader :: LocalContextInfo -> Doc
 oPhraseHeader locals = case local_meter locals of
-    Unmetered -> keyline
+    Unmetered -> cadenzaOn_ $+$ keyline
     TimeSig t -> keyline $+$ time_ t
   where
     keyline = key_  (local_key locals)
@@ -186,14 +186,17 @@ lilypondNotes def prefix_locals ph =
              ; dtime    <- deltaMetrical locals
              ; let ans  = hsep (map oNoteGroup cs)
              ; setInfo locals
-             ; return $ prefixT dtime $ prefixK dkey $ ans
+             ; return $ wrapT dtime $ prefixK dkey $ ans
              }
         where
-          prefixK Nothing   = (empty <>)
-          prefixK (Just k)  = (key_ k $+$)
-          prefixT Nothing   = (empty <>)
-          prefixT (Just t)  = case t of Unmetered -> (empty <>) 
-                                        TimeSig t1 -> (time_ t1 $+$)
+          prefixK (Nothing) d   = d
+          prefixK (Just k)  d   = key_ k $+$ d
+          wrapT (Nothing) d     = d
+          wrapT (Just m)  d     = case m of 
+              Unmetered -> cadenzaOn_ $+$ d $+$ cadenzaOff_
+              TimeSig t -> time_ t $+$ d
+
+
 
     oNoteGroup :: LyNoteGroup2 pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e

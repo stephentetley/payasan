@@ -60,6 +60,8 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
+
+
 fromLilyPond_Relative :: Pitch 
                       -> LyCadenzaPhrase1 anno 
                       -> StdCadenzaPhrase1 anno
@@ -70,7 +72,7 @@ fromLilyPondWith_Relative :: Pitch
                           -> LyCadenzaPhrase1 anno
                           -> StdCadenzaPhrase1 anno
 fromLilyPondWith_Relative pch locals = 
-    lilyPondTranslate_Relative pch . pushContextInfo locals
+    lilyPondTranslate_Relative pch . pushContextInfo (locals { local_meter = Unmetered })
 
 
 

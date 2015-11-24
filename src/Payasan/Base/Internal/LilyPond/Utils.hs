@@ -66,6 +66,8 @@ module Payasan.Base.Internal.LilyPond.Utils
   , key_
   , mode_
   , time_
+  , cadenzaOn_
+  , cadenzaOff_
   , numericTimeSignature_
   , tuplet_
   , stemUp_
@@ -259,6 +261,11 @@ mode_ LOCRIAN           = command "locrian"
 time_ :: Time -> Doc
 time_ (Time n d) = command "time" <+> int n <> char '/' <> int d
 
+cadenzaOn_      :: Doc
+cadenzaOn_      = command "cadenzaOn"
+
+cadenzaOff_     :: Doc
+cadenzaOff_     = command "cadenzaOff"
 
 numericTimeSignature_   :: Doc 
 numericTimeSignature_   = command "numericTimeSignature"
