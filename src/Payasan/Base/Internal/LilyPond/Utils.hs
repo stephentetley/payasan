@@ -28,6 +28,8 @@ module Payasan.Base.Internal.LilyPond.Utils
   , teeny_
 
   -- * pretty printers 
+  , ($?+$)
+
   , vsep
   , withString
 
@@ -136,6 +138,18 @@ vsep (d:ds) = d $+$ vsep ds
 
 withString :: String -> (String -> Doc) -> Doc
 withString ss f = if null ss then empty else f ss
+
+
+
+
+infixl 5 $?+$ 
+
+($?+$) :: Maybe Doc -> Doc -> Doc
+($?+$) (Nothing) d2 = d2
+($?+$) (Just d1) d2 = d1 $+$ d2
+
+
+
 
 
 command :: String -> Doc

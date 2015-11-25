@@ -44,14 +44,28 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 type Mon a = Rewrite State a
 
-data State = State { prev_info  :: !LocalContextInfo }
+data State = State 
+    { prev_info         :: !LocalContextInfo
+    , opt_terminator    :: Maybe Doc 
+    }
 
 stateZero :: LocalContextInfo -> State
-stateZero info = State { prev_info  = info }
+stateZero info = 
+    State { prev_info  = info
+          , opt_terminator = case local_meter info of 
+                               Unmetered -> Just cadenzaOff_ 
+                               _ -> Nothing 
+          }
 
 
 setInfo :: LocalContextInfo -> Mon () 
 setInfo info = puts (\s -> s { prev_info = info })
+
+getTerminator :: Mon (Maybe Doc)
+getTerminator = gets opt_terminator
+
+setTerminator :: Maybe Doc -> Mon ()
+setTerminator optd = puts (\s -> s { opt_terminator = optd })
 
 
 deltaMetrical :: LocalContextInfo -> Mon (Maybe Meter)
@@ -162,8 +176,13 @@ lilypondNotes :: forall pch anno.
               -> LyPhrase2 pch anno 
               -> Doc
 lilypondNotes def prefix_locals ph = 
-    evalRewrite (oLyPhrase ph) (stateZero prefix_locals)
+    evalRewrite (final =<< oLyPhrase ph) (stateZero prefix_locals)
   where
+    final d = do { od <- getTerminator
+                 ; case od of Nothing -> return d
+                              Just d1 -> return (d $+$ d1)
+                 }
+
     pPitch :: pch -> Doc
     pPitch = printPitch def
 
@@ -180,21 +199,27 @@ lilypondNotes def prefix_locals ph =
                            ; step ac bs 
                            }
 
+
     oBar :: LyBar2 pch anno -> Mon Doc
     oBar (Bar locals cs)            = 
           do { dkey     <- deltaKey locals
              ; dtime    <- deltaMetrical locals
              ; let ans  = hsep (map oNoteGroup cs)
              ; setInfo locals
-             ; return $ wrapT dtime $ prefixK dkey $ ans
+             ; mwrapT dtime $ prefixK dkey $ ans
              }
         where
           prefixK (Nothing) d   = d
           prefixK (Just k)  d   = key_ k $+$ d
-          wrapT (Nothing) d     = d
-          wrapT (Just m)  d     = case m of 
-              Unmetered -> cadenzaOn_ $+$ d $+$ cadenzaOff_
-              TimeSig t -> time_ t $+$ d
+          mwrapT (Nothing)  d   = return d
+          mwrapT (Just m)   d   = 
+                do { d0 <- getTerminator
+                   ; case m of  
+                       Unmetered -> setTerminator (Just cadenzaOff_) >>
+                                    return (d0 $?+$ cadenzaOn_ $+$ d)
+                       TimeSig t -> setTerminator Nothing >> 
+                                    return (time_ t $+$ d)
+                   }
 
 
 
