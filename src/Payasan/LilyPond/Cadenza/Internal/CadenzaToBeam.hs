@@ -25,7 +25,6 @@ import Payasan.LilyPond.Cadenza.Internal.Syntax
 
 import qualified Payasan.Base.Internal.BeamSyntax as T
 
--- TODO ContextInfo must handle free meter time signature...
 
 translateToBeam :: Phrase pch drn anno -> T.Phrase pch drn anno
 translateToBeam                 = phraseT
