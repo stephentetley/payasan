@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
@@ -29,10 +28,8 @@ module Payasan.Base.Monophonic.Internal.Metrics
 
   , semitoneInterval
 
-  , GrossContour(..)
   , grossContour
 
-  , RefinedContour(..)
   , refinedContour
 
 
@@ -43,12 +40,11 @@ import Payasan.Base.Monophonic.Internal.Syntax
 import Payasan.Base.Monophonic.Internal.Traversals
 
 import Payasan.Base.Internal.Base
+import Payasan.Base.Internal.Contour
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Pitch
 import Payasan.Base.ScaleDegree
-
-import Data.Data
 
 
 
@@ -124,23 +120,15 @@ semitoneInterval = transformP (contourAlgo comp)
 
 
 
-data GrossContour = DOWN | GSAME | UP
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
-
-
 grossContour :: forall drn anno. 
                 Phrase Pitch drn anno -> Phrase GrossContour drn anno
 grossContour = transformP (contourAlgo comp)
   where
     comp pold pnew | pnew `isHigher` pold = UP
                    | pnew `isLower`  pold = DOWN
-                   | otherwise            = GSAME
+                   | otherwise            = GROSS_SAME
 
 
-
-
-data RefinedContour = LEAP_DOWN | STEP_DOWN | RSAME | STEP_UP | LEAP_UP
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
 refinedContour :: forall drn anno. 
@@ -156,4 +144,4 @@ refinedContour = transformP (contourAlgo comp)
                                  in if interval_distance ival > 2 
                                     then LEAP_DOWN else STEP_DOWN
 
-        | otherwise            = RSAME
+        | otherwise            = REFINED_SAME

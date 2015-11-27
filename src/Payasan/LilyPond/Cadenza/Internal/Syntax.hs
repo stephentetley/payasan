@@ -120,8 +120,8 @@ data NoteGroup pch drn anno =
   deriving (Data,Eq,Show,Typeable)
 
 
--- TODO - should Element follow Main syntax (include chords and 
--- graces) or Monophonic syntax (and omit them)?
+-- Element currently follows Monophonic syntax (omitting chords 
+-- and graces).
 --
 data Element pch drn anno = 
       Note          pch drn   anno  Tie
