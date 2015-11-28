@@ -79,7 +79,7 @@ instance Monoid (Phrase pch drn anno) where
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn anno = Bar 
-    { bar_info          :: !LocalContextInfo
+    { bar_info          :: !SectionInfo
     , bar_groups        :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)

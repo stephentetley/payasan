@@ -89,7 +89,7 @@ instance Monoid (Phrase pch drn anno) where
 -- | Note Beaming is not captured in parsing.
 --
 data Bar pch drn anno = Bar 
-    { bar_header        :: LocalContextInfo
+    { bar_header        :: SectionInfo
     , bar_groups        :: [NoteGroup pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
@@ -130,7 +130,7 @@ data Note pch drn = Note pch drn
 --------------------------------------------------------------------------------
 -- Operations (maybe should be in another module)
 
-pushContextInfo :: LocalContextInfo 
+pushContextInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
 pushContextInfo ri (Phrase bs) = Phrase $ map upd bs
@@ -155,6 +155,6 @@ sizeElement (Chord _ d _ _)             = toRDuration d
 sizeElement (Graces {})                 = 0
 sizeElement (Punctuation {})            = 0
 
-firstContextInfo :: Phrase pch drn anno -> Maybe LocalContextInfo
+firstContextInfo :: Phrase pch drn anno -> Maybe SectionInfo
 firstContextInfo (Phrase [])    = Nothing
 firstContextInfo (Phrase (b:_)) = Just $ bar_header b

@@ -25,7 +25,7 @@ module Payasan.Base.Internal.CommonSyntax
   , default_score_info
   , default_staff_info 
 
-  , LocalContextInfo(..)
+  , SectionInfo(..)
   , UnitNoteLength(..)
 
   , Tie(..)
@@ -37,7 +37,7 @@ module Payasan.Base.Internal.CommonSyntax
   , Meter(..)
   , Time(..)
 
-  , default_local_info
+  , default_section_info
 
   , barLength
 
@@ -86,7 +86,9 @@ data ScoreInfo = ScoreInfo
     }
   deriving (Data,Eq,Show,Typeable)
 
-
+-- | TODO - are there any more fields to add to this?
+-- If not we should just use Clef.
+--
 data StaffInfo = StaffInfo 
     { staff_clef                :: !Clef
     }
@@ -110,7 +112,7 @@ default_staff_info = StaffInfo
     }
 
 
--- | Note - @LocalRenderInfo@ is stored as a header to a Bar in
+-- | Note - @LocalContextInfo@ is stored as a header to a Bar in
 -- Beam and Main syntax.
 -- 
 -- This allows concatenating bars together (and tempo and key 
@@ -121,12 +123,12 @@ default_staff_info = StaffInfo
 -- @LocalRenderInfo@ at the start of the phrase
 --
 
-data LocalContextInfo = LocalContextInfo
-    { local_key                 :: !Key
-    , local_meter               :: !Meter
-    , local_meter_patn          :: !MeterPattern
-    , local_unit_note_len       :: !UnitNoteLength
-    , local_bpm                 :: !BPM
+data SectionInfo = SectionInfo
+    { info_key                  :: !Key
+    , info_meter                :: !Meter
+    , info_meter_pattern        :: !MeterPattern
+    , info_unit_note_len        :: !UnitNoteLength
+    , info_bpm                  :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -179,13 +181,13 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
 
 
 
-default_local_info :: LocalContextInfo
-default_local_info = LocalContextInfo 
-    { local_key                 = c_maj
-    , local_meter               = TimeSig $ Time 4 4 
-    , local_meter_patn          = [1%2,1%2]
-    , local_unit_note_len       = UNIT_NOTE_8
-    , local_bpm                 = 120
+default_section_info :: SectionInfo
+default_section_info = SectionInfo 
+    { info_key                  = c_maj
+    , info_meter                = TimeSig $ Time 4 4 
+    , info_meter_pattern        = [1%2,1%2]
+    , info_unit_note_len        = UNIT_NOTE_8
+    , info_bpm                  = 120
     }
 
 

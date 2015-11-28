@@ -37,7 +37,7 @@ import Payasan.Base.Internal.CommonSyntax
 
 -- | Rewrite monad - Reader+State.
 newtype Rewrite st a = Rewrite { 
-    getRewrite :: LocalContextInfo -> st -> (st, a) }
+    getRewrite :: SectionInfo -> st -> (st, a) }
 
 instance Functor (Rewrite st) where
   fmap f ma = Rewrite $ \r1 s -> 
@@ -57,7 +57,7 @@ instance Monad (Rewrite st) where
  
 evalRewrite :: Rewrite st a -> st -> a
 evalRewrite ma s = 
-    let (_,a) = getRewrite ma default_local_info s in a
+    let (_,a) = getRewrite ma default_section_info s in a
 
 
 get :: Rewrite st st
@@ -73,11 +73,11 @@ puts :: (st -> st) -> Rewrite st ()
 puts f = Rewrite $ \_ s -> (f s,())
 
 
-ask :: Rewrite st LocalContextInfo
+ask :: Rewrite st SectionInfo
 ask = Rewrite $ \r s -> (s,r)
 
-asks :: (LocalContextInfo -> a) -> Rewrite st a
+asks :: (SectionInfo -> a) -> Rewrite st a
 asks f = Rewrite $ \r s -> (s,f r)
 
-local :: LocalContextInfo -> Rewrite st a -> Rewrite st a
+local :: SectionInfo -> Rewrite st a -> Rewrite st a
 local r ma = Rewrite $ \_ s -> getRewrite ma r s

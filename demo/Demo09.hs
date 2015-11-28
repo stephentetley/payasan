@@ -15,8 +15,8 @@ import qualified Payasan.LilyPond.Cadenza.Internal.Transform      as TEMP
 
 -- MONOPHONIC
 
-locals :: LocalContextInfo
-locals = default_local_info
+locals :: SectionInfo
+locals = default_section_info
 
 globals :: ScoreInfo
 globals = default_score_info 

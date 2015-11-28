@@ -31,9 +31,9 @@ module Payasan.Base.Internal.Pipeline
   , StaffInfo(..)
   , default_staff_info 
 
-  , LocalContextInfo(..)
+  , SectionInfo(..)
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
 
   , fromABC
@@ -168,13 +168,13 @@ debug f a = tell (f a) >> return a
 -- 
 
 fromABC :: ABCPhrase -> StdPhrase
-fromABC = fromABCWith default_local_info
+fromABC = fromABCWith default_section_info
 
-fromABCWith :: LocalContextInfo -> ABCPhrase -> StdPhrase
+fromABCWith :: SectionInfo -> ABCPhrase -> StdPhrase
 fromABCWith locals = translateToMain . ABC.translateFromInput . BEAM.pushContextInfo locals
 
 
-fromABCWithIO :: LocalContextInfo -> ABCPhrase -> IO StdPhrase
+fromABCWithIO :: SectionInfo -> ABCPhrase -> IO StdPhrase
 fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -187,16 +187,16 @@ fromABCWithIO locals ph =
 
 
 fromLilyPond_Relative :: Pitch -> LY.LyPhrase1 () -> StdPhrase 
-fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
+fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 
-fromLilyPondWith_Relative :: Pitch -> LocalContextInfo -> LY.LyPhrase1 () -> StdPhrase
+fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPhrase1 () -> StdPhrase
 fromLilyPondWith_Relative pch locals = 
     translateToMain . LY.translateFromInput_Relative pch . BEAM.pushContextInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
-                            -> LocalContextInfo 
+                            -> SectionInfo 
                             -> LY.LyPhrase1 () 
                             -> IO StdPhrase
 fromLilyPondWithIO_Relative pch locals ph = 

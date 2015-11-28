@@ -45,20 +45,20 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 type Mon a = Rewrite State a
 
 data State = State 
-    { prev_info         :: !LocalContextInfo
+    { prev_info         :: !SectionInfo
     , opt_terminator    :: Maybe Doc 
     }
 
-stateZero :: LocalContextInfo -> State
+stateZero :: SectionInfo -> State
 stateZero info = 
     State { prev_info  = info
-          , opt_terminator = case local_meter info of 
+          , opt_terminator = case info_meter info of 
                                Unmetered -> Just cadenzaOff_ 
                                _ -> Nothing 
           }
 
 
-setInfo :: LocalContextInfo -> Mon () 
+setInfo :: SectionInfo -> Mon () 
 setInfo info = puts (\s -> s { prev_info = info })
 
 getTerminator :: Mon (Maybe Doc)
@@ -68,21 +68,21 @@ setTerminator :: Maybe Doc -> Mon ()
 setTerminator optd = puts (\s -> s { opt_terminator = optd })
 
 
-deltaMetrical :: LocalContextInfo -> Mon (Maybe Meter)
-deltaMetrical (LocalContextInfo { local_meter = m1 }) = 
+deltaMetrical :: SectionInfo -> Mon (Maybe Meter)
+deltaMetrical (SectionInfo { info_meter = m1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
-        | local_meter prev == m1 = Nothing
-        | otherwise              = Just m1
+        | info_meter prev == m1 = Nothing
+        | otherwise             = Just m1
 
-deltaKey :: LocalContextInfo -> Mon (Maybe Key)
-deltaKey (LocalContextInfo { local_key = k1 }) = 
+deltaKey :: SectionInfo -> Mon (Maybe Key)
+deltaKey (SectionInfo { info_key = k1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
-        | local_key prev == k1 = Nothing
-        | otherwise            = Just k1
+        | info_key prev == k1 = Nothing
+        | otherwise           = Just k1
 
 
 --------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ simpleVoice_Relative :: LyOutputDef pch anno
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
-    local1          = maybe default_local_info id $ firstContextInfo ph
+    local1          = maybe default_section_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = lilypondNotes def local1 ph
 
@@ -151,17 +151,17 @@ simpleVoice_Absolute :: LyOutputDef pch anno
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
-    local1          = maybe default_local_info id $ firstContextInfo ph
+    local1          = maybe default_section_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = lilypondNotes def local1 ph
 
 
-oPhraseHeader :: LocalContextInfo -> Doc
-oPhraseHeader locals = case local_meter locals of
+oPhraseHeader :: SectionInfo -> Doc
+oPhraseHeader locals = case info_meter locals of
     Unmetered -> cadenzaOn_ $+$ keyline
     TimeSig t -> keyline $+$ time_ t
   where
-    keyline = key_  (local_key locals)
+    keyline = key_ (info_key locals)
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -172,7 +172,7 @@ oPhraseHeader locals = case local_meter locals of
 --
 lilypondNotes :: forall pch anno. 
                  LyOutputDef pch anno 
-              -> LocalContextInfo 
+              -> SectionInfo 
               -> LyPhrase2 pch anno 
               -> Doc
 lilypondNotes def prefix_locals ph = 

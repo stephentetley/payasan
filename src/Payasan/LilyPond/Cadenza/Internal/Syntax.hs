@@ -100,7 +100,7 @@ type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
 -- prevents concatenation it simplifies transformation.
 -- 
 data Phrase pch drn anno = Phrase 
-    { phrase_header     :: !LocalContextInfo
+    { phrase_header     :: !SectionInfo
     , phrase_groups     :: [NoteGroup pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
@@ -137,7 +137,7 @@ data Element pch drn anno =
 -- Push RenderInfo into bars.
 
 
-pushContextInfo :: LocalContextInfo 
+pushContextInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
 pushContextInfo ri (Phrase { phrase_groups = gs }) = 
@@ -145,7 +145,7 @@ pushContextInfo ri (Phrase { phrase_groups = gs }) =
            , phrase_groups = gs }
 
 
-contextInfo :: Phrase pch drn anno -> LocalContextInfo
+contextInfo :: Phrase pch drn anno -> SectionInfo
 contextInfo = phrase_header
 
 

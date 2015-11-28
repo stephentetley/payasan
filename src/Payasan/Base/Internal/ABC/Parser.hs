@@ -72,7 +72,7 @@ barline :: ABCParser ()
 barline = reservedOp "|"
 
 bar :: ABCParser ABCBar
-bar = Bar default_local_info <$> noteGroups 
+bar = Bar default_section_info <$> noteGroups 
 
 noteGroups :: ABCParser [ABCNoteGroup]
 noteGroups = whiteSpace *> many noteGroup

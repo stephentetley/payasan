@@ -77,7 +77,7 @@ noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 -- This should be optimized to not make a scale each time!
 --
 transPch :: Pitch -> PTMon ABCPitch
-transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asks local_key
+transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asks info_key
 
 --------------------------------------------------------------------------------
 -- Translate duration
@@ -108,6 +108,6 @@ noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 changeDrn :: Duration -> DTMon ABCNoteLength
 changeDrn d                     = 
-    (\unl -> fromDuration unl d) <$> asks local_unit_note_len
+    (\unl -> fromDuration unl d) <$> asks info_unit_note_len
 
 

@@ -86,7 +86,7 @@ makeParser def = fullParseLy phrase
     pAnno  = P.annoParser def
 
     phrase :: LyParser (LyCadenzaPhrase2 pch anno)
-    phrase = (Phrase default_local_info . reconcileBeamHeads) <$> noteGroups
+    phrase = (Phrase default_section_info . reconcileBeamHeads) <$> noteGroups
 
     noteGroups :: LyParser [LyCadenzaNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup

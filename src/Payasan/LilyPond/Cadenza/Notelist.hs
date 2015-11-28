@@ -26,9 +26,9 @@ module Payasan.LilyPond.Cadenza.Notelist
   , default_score_info
 
 
-  , LocalContextInfo(..)         -- Re-export
+  , SectionInfo(..)         -- Re-export
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
   , fromLilyPond_Relative
   , fromLilyPondWith_Relative
@@ -65,14 +65,14 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 fromLilyPond_Relative :: Pitch 
                       -> LyCadenzaPhrase1 anno 
                       -> StdCadenzaPhrase1 anno
-fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
+fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch  
-                          -> LocalContextInfo
+                          -> SectionInfo
                           -> LyCadenzaPhrase1 anno
                           -> StdCadenzaPhrase1 anno
 fromLilyPondWith_Relative pch locals = 
-    lilyPondTranslate_Relative pch . pushContextInfo (locals { local_meter = Unmetered })
+    lilyPondTranslate_Relative pch . pushContextInfo (locals { info_meter = Unmetered })
 
 
 

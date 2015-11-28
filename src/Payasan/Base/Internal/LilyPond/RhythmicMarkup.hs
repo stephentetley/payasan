@@ -107,16 +107,16 @@ rhythmicMarkupVoice :: LyOutputDef pch anno
 rhythmicMarkupVoice def ph = 
     block (Just newRhythmicStaff_) (absolute_ $+$ notes_header $+$ notes)
   where
-    local1          = maybe default_local_info id $ firstContextInfo ph
+    local1          = maybe default_section_info id $ firstContextInfo ph
     notes_header    = oPhraseHeader local1
     notes           = lilypondNotes def local1 ph
 
 
 
 -- TODO - this should be common...
-oPhraseHeader :: LocalContextInfo -> Doc
-oPhraseHeader locals = case local_meter locals of
+oPhraseHeader :: SectionInfo -> Doc
+oPhraseHeader locals = case info_meter locals of
     Unmetered -> keyline
     TimeSig t -> keyline $+$ time_ t
   where
-    keyline = key_  (local_key locals)
+    keyline = key_  (info_key locals)

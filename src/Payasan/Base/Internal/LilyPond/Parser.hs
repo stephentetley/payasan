@@ -117,7 +117,7 @@ makeLyParser def = fullParseLy phrase
     -- member of the beam group.
     --
     bar :: LyParser (LyBar2 pch anno)
-    bar = (Bar default_local_info . reconcileBeamHeads) <$> noteGroups 
+    bar = (Bar default_section_info . reconcileBeamHeads) <$> noteGroups 
 
     noteGroups :: LyParser [LyNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup
