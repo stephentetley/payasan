@@ -30,7 +30,7 @@ import Payasan.Base.Duration
 
 translateToMono :: Time -> Phrase pch Duration anno -> T.Phrase pch Duration anno
 translateToMono ts (Phrase info gs) = 
-    let info1 = info { info_meter = TimeSig ts } 
+    let info1 = info { section_meter = TimeSig ts } 
     in T.recalcBars $ phraseT (Phrase info1 gs) 
 
 

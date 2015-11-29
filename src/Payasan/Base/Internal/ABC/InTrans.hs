@@ -77,7 +77,7 @@ noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 -- signature
 
 transPch :: ABCPitch -> PTMon Pitch
-transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks info_key
+transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
 
 
 
@@ -107,6 +107,6 @@ noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 changeDrn :: ABCNoteLength -> DTMon Duration
 changeDrn d                     = 
-    (\unl -> toDuration unl d) <$> asks info_unit_note_len
+    (\unl -> toDuration unl d) <$> asks section_unit_note_len
 
 

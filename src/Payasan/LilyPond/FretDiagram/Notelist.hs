@@ -23,9 +23,9 @@ module Payasan.LilyPond.FretDiagram.Notelist
   , ScoreInfo(..)               -- Re-export
   , default_score_info
 
-  , LocalContextInfo(..)        -- Re-export
+  , SectionInfo(..)        -- Re-export
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
   , FretDiagram                 -- Re-export
   , pushName

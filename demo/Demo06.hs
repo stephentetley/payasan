@@ -13,8 +13,8 @@ globals :: ScoreInfo
 globals = default_score_info
 
 
-locals :: LocalContextInfo
-locals = default_local_info
+locals :: SectionInfo
+locals = default_section_info
 
 
 phrase01 :: StdChordPhrase

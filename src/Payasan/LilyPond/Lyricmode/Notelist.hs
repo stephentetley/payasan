@@ -25,9 +25,9 @@ module Payasan.LilyPond.Lyricmode.Notelist
   , ScoreInfo(..)        -- Re-export
   , default_score_info
 
-  , LocalContextInfo(..)         -- Re-export
+  , SectionInfo(..)         -- Re-export
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
   , fromLilyPond
   , fromLilyPondWith
@@ -57,10 +57,10 @@ import Payasan.Base.Internal.Shell
 
 
 fromLilyPond :: ScoreInfo -> LyLyricPhrase -> LyricPhrase1 ()
-fromLilyPond globals = fromLilyPondWith globals default_local_info
+fromLilyPond globals = fromLilyPondWith globals default_section_info
 
 fromLilyPondWith :: ScoreInfo 
-                 -> LocalContextInfo 
+                 -> SectionInfo 
                  -> LyLyricPhrase1 anno
                  -> LyricPhrase1 anno
 fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals

@@ -15,8 +15,8 @@ globals = default_score_info
 -- voice :: VoiceInfo
 -- voice = default_voice_info { voice_ly_octave_mode = AbsPitch }
 
-locals :: LocalContextInfo
-locals = default_local_info
+locals :: SectionInfo
+locals = default_section_info
 
 -- TODO - above accents look better...
 --

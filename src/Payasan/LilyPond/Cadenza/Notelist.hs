@@ -72,7 +72,7 @@ fromLilyPondWith_Relative :: Pitch
                           -> LyCadenzaPhrase1 anno
                           -> StdCadenzaPhrase1 anno
 fromLilyPondWith_Relative pch locals = 
-    lilyPondTranslate_Relative pch . pushContextInfo (locals { info_meter = Unmetered })
+    lilyPondTranslate_Relative pch . pushContextInfo (locals { section_meter = Unmetered })
 
 
 

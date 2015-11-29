@@ -38,7 +38,7 @@ translateToMain = phraseT
     phraseT (Phrase info bs)        = T.Phrase $ map (barT info) bs
 
 
-    barT :: LocalContextInfo -> Bar pch drn anno -> T.Bar pch drn anno
+    barT :: SectionInfo -> Bar pch drn anno -> T.Bar pch drn anno
     barT info (Bar cs)              = T.Bar info $ concatMap noteGroupT cs
 
 
@@ -71,7 +71,7 @@ chordTranslateToMain = phraseT
     phraseT (Phrase info bs)        = T.Phrase $ map (barT info) bs
 
 
-    barT :: LocalContextInfo -> Bar [pch] drn anno -> T.Bar pch drn anno
+    barT :: SectionInfo -> Bar [pch] drn anno -> T.Bar pch drn anno
     barT info (Bar cs)              = T.Bar info $ concatMap noteGroupT cs
 
 

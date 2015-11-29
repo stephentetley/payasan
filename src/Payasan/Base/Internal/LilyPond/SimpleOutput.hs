@@ -52,7 +52,7 @@ data State = State
 stateZero :: SectionInfo -> State
 stateZero info = 
     State { prev_info  = info
-          , opt_terminator = case info_meter info of 
+          , opt_terminator = case section_meter info of 
                                Unmetered -> Just cadenzaOff_ 
                                _ -> Nothing 
           }
@@ -69,19 +69,19 @@ setTerminator optd = puts (\s -> s { opt_terminator = optd })
 
 
 deltaMetrical :: SectionInfo -> Mon (Maybe Meter)
-deltaMetrical (SectionInfo { info_meter = m1 }) = 
+deltaMetrical (SectionInfo { section_meter = m1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
-        | info_meter prev == m1 = Nothing
+        | section_meter prev == m1 = Nothing
         | otherwise             = Just m1
 
 deltaKey :: SectionInfo -> Mon (Maybe Key)
-deltaKey (SectionInfo { info_key = k1 }) = 
+deltaKey (SectionInfo { section_key = k1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
-        | info_key prev == k1 = Nothing
+        | section_key prev == k1 = Nothing
         | otherwise           = Just k1
 
 
@@ -157,11 +157,11 @@ simpleVoice_Absolute def ph =
 
 
 oPhraseHeader :: SectionInfo -> Doc
-oPhraseHeader locals = case info_meter locals of
+oPhraseHeader locals = case section_meter locals of
     Unmetered -> cadenzaOn_ $+$ keyline
     TimeSig t -> keyline $+$ time_ t
   where
-    keyline = key_ (info_key locals)
+    keyline = key_ (section_key locals)
 
 
 -- | Pitch should be \"context free\" at this point.

@@ -36,7 +36,7 @@ drumsOutput globals ph =
     $+$ drumsBlock notes
   where
     header          = scoreHeader globals
-    notes           = lilypondNotes drum_def default_local_info ph
+    notes           = lilypondNotes drum_def default_section_info ph
     drum_def        = LyOutputDef { printPitch = text . shortName
                                   , printAnno  = ppAccent }
 

@@ -30,9 +30,9 @@ globals = default_score_info
 staff :: StaffInfo
 staff = default_staff_info
 
-locals :: LocalContextInfo
-locals = default_local_info { local_unit_note_len = UNIT_NOTE_4
-                             , local_key = d_minor  }
+locals :: SectionInfo
+locals = default_section_info { section_unit_note_len = UNIT_NOTE_4
+                              , section_key = d_minor  }
 
 
 phrase01 :: StdMonoPhrase

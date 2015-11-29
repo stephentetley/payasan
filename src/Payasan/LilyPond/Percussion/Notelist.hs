@@ -28,9 +28,9 @@ module Payasan.LilyPond.Percussion.Notelist
   , StaffInfo(..)
   , default_staff_info
 
-  , LocalContextInfo(..)
+  , SectionInfo(..)
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
 
   , fromLilyPond
@@ -81,9 +81,9 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 fromLilyPond :: LyDrumPhrase -> StdDrumPhrase
-fromLilyPond = fromLilyPondWith default_local_info
+fromLilyPond = fromLilyPondWith default_section_info
 
-fromLilyPondWith :: LocalContextInfo 
+fromLilyPondWith :: SectionInfo 
                  -> LyDrumPhrase
                  -> StdDrumPhrase
 fromLilyPondWith locals = 

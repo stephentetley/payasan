@@ -37,7 +37,7 @@ addBeams (Phrase { phrase_bars = bs }) = Phrase $ map beamBar bs
 
 beamBar :: Bar pch Duration anno -> Bar pch Duration anno
 beamBar (Bar info cs) = 
-    let mpat  = info_meter_pattern info
+    let mpat  = section_meter_pattern info
         segs1 = detachExtremities $ singleout $ segment mpat cs
     in Bar info $ beamSegments segs1
 

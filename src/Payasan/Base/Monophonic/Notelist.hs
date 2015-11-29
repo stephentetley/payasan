@@ -33,9 +33,9 @@ module Payasan.Base.Monophonic.Notelist
   , StaffInfo(..)
   , default_staff_info
 
-  , LocalContextInfo(..)         -- Re-export
+  , SectionInfo(..)         -- Re-export
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
 
   , fromABC
@@ -101,17 +101,17 @@ import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
 fromABC :: ABCMonoPhrase -> StdMonoPhrase
-fromABC  = fromABCWith default_local_info
+fromABC  = fromABCWith default_section_info
 
-fromABCWith :: LocalContextInfo -> ABCMonoPhrase -> StdMonoPhrase
+fromABCWith :: SectionInfo -> ABCMonoPhrase -> StdMonoPhrase
 fromABCWith locals = abcTranslate . pushContextInfo locals
 
 
 fromLilyPond_Relative :: Pitch -> LyMonoPhrase1 () -> StdMonoPhrase
-fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_local_info
+fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch 
-                          -> LocalContextInfo 
+                          -> SectionInfo 
                           -> LyMonoPhrase1 ()
                           -> StdMonoPhrase
 fromLilyPondWith_Relative pch locals = 

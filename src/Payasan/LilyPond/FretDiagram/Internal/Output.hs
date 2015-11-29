@@ -42,7 +42,7 @@ fretDiagramOutput globals diags ph =
   where
     defuse          = diagramDU diags
     header          = scoreHeader globals
-    locals1         = maybe default_local_info id $ firstContextInfo ph
+    locals1         = maybe default_section_info id $ firstContextInfo ph
     notes           = lilypondNotes fret_def locals1 ph
 
     fret_def        :: LyOutputDef LyPitch FretDiagram

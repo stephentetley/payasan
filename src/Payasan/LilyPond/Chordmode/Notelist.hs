@@ -25,9 +25,9 @@ module Payasan.LilyPond.Chordmode.Notelist
   , ScoreInfo(..)
   , default_score_info
 
-  , LocalContextInfo(..)
+  , SectionInfo(..)
   , UnitNoteLength(..)
-  , default_local_info
+  , default_section_info
 
 
   , fromLilyPond
@@ -86,9 +86,9 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 -- Use Monophonic syntax...
 
 fromLilyPond :: LyChordPhrase -> StdChordPhrase
-fromLilyPond = fromLilyPondWith default_local_info
+fromLilyPond = fromLilyPondWith default_section_info
 
-fromLilyPondWith :: LocalContextInfo 
+fromLilyPondWith :: SectionInfo 
                  -> LyChordPhrase 
                  -> StdChordPhrase
 fromLilyPondWith locals = 

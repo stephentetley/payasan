@@ -37,8 +37,8 @@ globals = default_score_info
 
 
 
-locals :: LocalContextInfo
-locals = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
+locals :: SectionInfo
+locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
 
 
 relA :: Pitch

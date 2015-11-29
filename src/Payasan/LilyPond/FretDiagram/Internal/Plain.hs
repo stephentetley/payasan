@@ -40,10 +40,10 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = NoteGroup FretDiagram Duration ()
 
-fromNoteList :: LocalContextInfo -> GuitarTuning -> [[NoteListAtom]] 
+fromNoteList :: SectionInfo -> GuitarTuning -> [[NoteListAtom]] 
              -> FretDiagramPhrase
 fromNoteList locals tuning xss = 
-    mapPitchAnno (changeNote (local_key locals) tuning) $ 
+    mapPitchAnno (changeNote (section_key locals) tuning) $ 
         Phrase locals $ map Bar xss
 
 

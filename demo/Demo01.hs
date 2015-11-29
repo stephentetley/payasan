@@ -12,8 +12,8 @@ import Payasan.Base.Notelist
 phrase01 :: StdPhrase
 phrase01 = fromABC $ [abc| [cg] G2 E2 C/2 | c |]
 
-locals :: LocalContextInfo
-locals = default_local_info { local_unit_note_len = UNIT_NOTE_4 }
+locals :: SectionInfo
+locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()

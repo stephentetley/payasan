@@ -83,7 +83,7 @@ makeLyParser def = fullParseLy phrase
     pAnno  = P.annoParser def
 
     phrase :: LyParser (LyMonoPhrase2 pch anno)
-    phrase = Phrase default_local_info <$> bars
+    phrase = Phrase default_section_info <$> bars
 
     bars :: LyParser [LyMonoBar2 pch anno]
     bars = sepBy bar P.barline

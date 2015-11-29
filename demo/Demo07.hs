@@ -21,8 +21,8 @@ globals :: ShellInfo
 globals = default_shell_info
 
 
-locals :: LocalContextInfo
-locals = default_local_info
+locals :: SectionInfo
+locals = default_section_info
 
 
 -- Annos not handled (yet)...

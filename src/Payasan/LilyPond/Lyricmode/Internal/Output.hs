@@ -84,7 +84,7 @@ lyricsVoice :: BEAM.Phrase Syllable LyNoteLength a -> Doc
 lyricsVoice ph = block (Just prefix) (overrides $+$ notes)
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
-    locals1     = maybe default_local_info id $ BEAM.firstContextInfo ph
+    locals1     = maybe default_section_info id $ BEAM.firstContextInfo ph
     overrides   = vcat [ override_ "LyricText #'font-size = #-1"
                        , override_ "Lyrics.LyricSpace.minimum-distance = #1.4"
                        , set_ "associatedVoice = #\"rhythm\""

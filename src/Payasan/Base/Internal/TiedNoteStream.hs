@@ -55,7 +55,7 @@ linearize (Phrase bs) = concatMap linearizeB bs
 
 linearizeB :: Bar pch Duration anno -> [Element pch Seconds anno]
 linearizeB (Bar info cs) = 
-    let bpm = info_bpm info in concatMap (linearizeNG bpm) cs
+    let bpm = section_bpm info in concatMap (linearizeNG bpm) cs
 
 
 linearizeNG :: BPM -> NoteGroup pch Duration anno -> [Element pch Seconds anno]

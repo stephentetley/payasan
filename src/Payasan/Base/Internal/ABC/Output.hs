@@ -58,20 +58,20 @@ setInfo info = puts (\s -> s { prev_info = info })
 
 
 deltaMetrical :: SectionInfo -> Mon (Maybe (Meter,UnitNoteLength))
-deltaMetrical (SectionInfo { info_meter = m1
-                           , info_unit_note_len = u1 }) = 
+deltaMetrical (SectionInfo { section_meter = m1
+                           , section_unit_note_len = u1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
-        | info_meter prev == m1 && info_unit_note_len prev == u1 = Nothing
+        | section_meter prev == m1 && section_unit_note_len prev == u1 = Nothing
         | otherwise        = Just (m1,u1)
 
 deltaKey :: SectionInfo -> Mon (Maybe Key)
-deltaKey (SectionInfo { info_key = k1 }) = 
+deltaKey (SectionInfo { section_key = k1 }) = 
     fn <$> gets prev_info
   where
     fn prev 
-        | info_key prev == k1 = Nothing
+        | section_key prev == k1 = Nothing
         | otherwise           = Just k1
 
 
@@ -92,11 +92,11 @@ oHeader :: ScoreInfo -> StaffInfo -> SectionInfo -> Doc
 oHeader infos staff locals = 
         field 'X' (int 1)
     $+$ field 'T' (text   $ score_title infos)
-    $+$ field 'M' (meter  $ info_meter locals)
-    $+$ field 'L' (unitNoteLength $ info_unit_note_len locals)
+    $+$ field 'M' (meter  $ section_meter locals)
+    $+$ field 'L' (unitNoteLength $ section_unit_note_len locals)
     $+$ field 'K' key_clef 
   where
-    key_clef = (key $ info_key locals) <+> (clef $ staff_clef staff)
+    key_clef = (key $ section_key locals) <+> (clef $ staff_clef staff)
 
 oABCPhrase :: ABCPhrase1 anno -> Mon Doc
 oABCPhrase (Phrase [])          = return empty

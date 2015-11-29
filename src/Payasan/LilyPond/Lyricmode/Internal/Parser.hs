@@ -63,7 +63,7 @@ makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricPhrase1 anno)
 makeLyricParser pAnno = fullParseLy phrase
   where
     phrase :: LyParser (LyLyricPhrase1 anno)
-    phrase = Phrase default_local_info <$> bars
+    phrase = Phrase default_section_info <$> bars
 
     bars :: LyParser [LyLyricBar1 anno]
     bars = sepBy bar P.barline

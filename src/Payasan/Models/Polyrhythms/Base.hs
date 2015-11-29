@@ -129,7 +129,7 @@ polyrhythmScore globals staff p1 p2 ph1 ph2 =
         header $+$ newStaff_ <+> (simultaneous1 (startphrase $+$ upper $+$ lower))
   where
     header      = scoreHeader globals
-    locals1     = maybe default_local_info id $ firstContextInfo ph1
+    locals1     = maybe default_section_info id $ firstContextInfo ph1
     startphrase = oPhraseHeader staff locals1
     upper       = newVoiceDefn "upper" $+$ anonBlock (command "voiceOne" <+> upper1)
     upper1      = polyVoice_Relative def p1 locals1 ph1
@@ -140,17 +140,17 @@ polyrhythmScore globals staff p1 p2 ph1 ph2 =
 
 -- TODO - avoid extra line for unmetered...
 --
-oPhraseHeader :: StaffInfo -> LocalContextInfo -> Doc
+oPhraseHeader :: StaffInfo -> SectionInfo -> Doc
 oPhraseHeader staff locals = 
         clef_ (staff_clef staff)
-    $+$ key_  (local_key locals)
-    $+$ case local_meter locals of Unmetered -> empty
-                                   TimeSig t -> time_ t
+    $+$ key_  (section_key locals)
+    $+$ case section_meter locals of Unmetered -> empty
+                                     TimeSig t -> time_ t
 
 
 polyVoice_Relative :: LyOutputDef pch anno 
                    -> Pitch
-                   -> LocalContextInfo
+                   -> SectionInfo
                    -> LyPhrase2 pch anno -> Doc
 polyVoice_Relative def pch locals ph = 
     block (Just $ relative_ pch) notes
@@ -172,7 +172,7 @@ timbalesStyle globals ph1 ph2 =
         header $+$ upper_def $+$ lower_def $+$ block (Just score_) score
   where
     header      = scoreHeader globals
-    locals1     = maybe default_local_info id $ firstContextInfo ph1
+    locals1     = maybe default_section_info id $ firstContextInfo ph1
     upper_def   = phraseDef "upper" locals1 ph1
     lower_def   = phraseDef "lower" locals1 ph2
 
@@ -189,13 +189,13 @@ timbalesStyle globals ph1 ph2 =
 
 
 phraseDef :: Anno anno
-          => String -> LocalContextInfo -> LyPhrase2 DrumPitch anno -> Doc
+          => String -> SectionInfo -> LyPhrase2 DrumPitch anno -> Doc
 phraseDef name locals ph = 
     definition name $ polyVoice_Drum locals ph
 
 
 polyVoice_Drum :: Anno anno
-               => LocalContextInfo -> LyPhrase2 DrumPitch anno -> Doc
+               => SectionInfo -> LyPhrase2 DrumPitch anno -> Doc
 polyVoice_Drum locals ph = 
     block (Just $ drummode_) notes
   where

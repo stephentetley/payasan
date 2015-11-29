@@ -115,8 +115,8 @@ rhythmicMarkupVoice def ph =
 
 -- TODO - this should be common...
 oPhraseHeader :: SectionInfo -> Doc
-oPhraseHeader locals = case info_meter locals of
+oPhraseHeader locals = case section_meter locals of
     Unmetered -> keyline
     TimeSig t -> keyline $+$ time_ t
   where
-    keyline = key_  (info_key locals)
+    keyline = key_  (section_key locals)
