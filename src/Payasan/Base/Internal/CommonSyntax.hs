@@ -69,7 +69,7 @@ import Data.Ratio
 -- in one mode only.
 
 -- Some data is usefully render info but should be specified by
--- library writer not by the end user, e.g. global_do_beaming
+-- library writer not by the end user, e.g. beaming
 --
 -- Potentially there is a relationship between a user exposed 
 -- config and a larger internal one like Parsec\'s LanguageDef 
@@ -117,7 +117,7 @@ default_staff_info = StaffInfo
 -- 
 -- This allows concatenating bars together (and tempo and key 
 -- changes). Generally outputting must be sensitive to changes 
--- to LocalRenderInfo as a new bar is printed.
+-- to SectionInfo as a new bar is printed.
 -- 
 -- Mono syntax is intended for transformation, hence we put 
 -- @SectionInfo@ at the start of the phrase
@@ -168,7 +168,7 @@ data Time = Time Int Int
 
 
 -- TODO - span bars with meter pattern (e.g. for 2-bar patterns
--- as in South American music).
+-- as in Latin music).
 --
 type MeterPattern = [RDuration]
 

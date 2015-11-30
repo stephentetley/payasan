@@ -19,6 +19,9 @@
 module Payasan.Base.Monophonic.Internal.Traversals
   (
     Mon 
+
+  , nth
+
   , MonoPitchAlgo(..)
   , transformP
   , collectP
@@ -63,6 +66,8 @@ import Data.Maybe
 type Mon st a = Rewrite st a
 
 
+
+
 -- | Do not expose this as it is too general / complex.
 --
 genCollect :: forall st pch drn anno ac.
@@ -73,7 +78,6 @@ genCollect :: forall st pch drn anno ac.
            -> ac
 genCollect mf a0 st ph = evalRewrite (phraseC a0 ph) st
   where
-
     phraseC :: ac -> Phrase pch drn anno -> Mon st ac
     phraseC ac (Phrase info bs) = local info (foldlM barC ac bs)
 
@@ -106,6 +110,41 @@ genTransform elemT st0 ph =
     noteGroupT (Atom e)         = Atom <$> elemT e
     noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
 
+--------------------------------------------------------------------------------
+--
+
+
+-- | nth might be counter-intuitive in the presence of 
+-- triplets...
+--
+nth :: forall pch drn anno.
+       Int -> Phrase pch drn anno -> Maybe (Element pch drn anno)
+nth _ (Phrase _ [])             = Nothing
+nth i (Phrase _ (Bar b1:bs))    = step1 0 b1 bs 
+  where
+    step1 :: Int -> [NoteGroup pch drn anno] -> [Bar pch drn anno] 
+          -> Maybe (Element pch drn anno)
+    step1 _ []      []          = Nothing
+    step1 n []      (Bar r1:rs) = step1 n r1 rs
+    step1 n (g1:gs) rs          = case step2 n g1 of
+        Left n1 -> step1 n1 gs rs
+        Right a -> Just a
+
+    step2 n (Atom e)  
+        | n == i                = Right e
+        | otherwise             = Left $ n+1
+                  
+    step2 n (Tuplet _ gs)       = step3 n gs
+
+    step3 n (Atom e:gs)              
+        | n == i                = Right e
+        | otherwise             = step3 (n+1) gs
+
+    step3 n (Tuplet _ xs:gs)    = step3 n (xs++gs)    
+    step3 n []                  = Left n
+
+
+-- nth suggests take and drop
 
 
 --
