@@ -38,7 +38,7 @@ chordmodeOutput globals ph =
     $+$ chordmodeBlock notes
   where
     header          = scoreHeader globals
-    local1          = maybe default_section_info id $ BEAM.firstContextInfo ph
+    local1          = maybe default_section_info id $ BEAM.firstSectionInfo ph
     notes           = lilypondNotes chord_def local1 ph
     chord_def       = LyOutputDef { printPitch = pitch
                                   , printAnno  = oChordSuffix }

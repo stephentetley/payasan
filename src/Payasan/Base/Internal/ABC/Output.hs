@@ -81,7 +81,7 @@ deltaKey (SectionInfo { section_key = k1 }) =
 abcOutput :: ScoreInfo -> StaffInfo -> ABCPhrase1 anno -> Doc
 abcOutput infos staff ph = header $+$ body
   where
-    first_info  = maybe default_section_info id $ firstContextInfo ph
+    first_info  = maybe default_section_info id $ firstSectionInfo ph
     header      = oHeader infos staff first_info
     body        = evalRewrite (oABCPhrase ph) (stateZero first_info)
 

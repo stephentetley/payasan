@@ -171,14 +171,15 @@ fromABC :: ABCPhrase -> StdPhrase
 fromABC = fromABCWith default_section_info
 
 fromABCWith :: SectionInfo -> ABCPhrase -> StdPhrase
-fromABCWith locals = translateToMain . ABC.translateFromInput . BEAM.pushContextInfo locals
+fromABCWith locals = 
+    translateToMain . ABC.translateFromInput . BEAM.pushSectionInfo locals
 
 
 fromABCWithIO :: SectionInfo -> ABCPhrase -> IO StdPhrase
 fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
-    body = do { ph1 <- debug (beamTabular std_abc_output) $ BEAM.pushContextInfo locals ph
+    body = do { ph1 <- debug (beamTabular std_abc_output) $ BEAM.pushSectionInfo locals ph
               ; ph2 <- debug (beamTabular pitch_duration_output) $ ABC.translateFromInput ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
@@ -192,7 +193,7 @@ fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPhrase1 () -> StdPhrase
 fromLilyPondWith_Relative pch locals = 
-    translateToMain . LY.translateFromInput_Relative pch . BEAM.pushContextInfo locals
+    translateToMain . LY.translateFromInput_Relative pch . BEAM.pushSectionInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
@@ -202,7 +203,7 @@ fromLilyPondWithIO_Relative :: Pitch
 fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
-    body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushContextInfo locals ph
+    body = do { ph1 <- debug (beamTabular std_ly_output) $ BEAM.pushSectionInfo locals ph
               ; ph2 <- debug (beamTabular pitch_duration_output) $ LY.translateFromInput_Relative pch ph1
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3

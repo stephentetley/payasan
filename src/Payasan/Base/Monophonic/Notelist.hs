@@ -104,7 +104,7 @@ fromABC :: ABCMonoPhrase -> StdMonoPhrase
 fromABC  = fromABCWith default_section_info
 
 fromABCWith :: SectionInfo -> ABCMonoPhrase -> StdMonoPhrase
-fromABCWith locals = abcTranslate . pushContextInfo locals
+fromABCWith locals = abcTranslate . pushSectionInfo locals
 
 
 fromLilyPond_Relative :: Pitch -> LyMonoPhrase1 () -> StdMonoPhrase
@@ -115,7 +115,7 @@ fromLilyPondWith_Relative :: Pitch
                           -> LyMonoPhrase1 ()
                           -> StdMonoPhrase
 fromLilyPondWith_Relative pch locals = 
-    lilyPondTranslate_Relative pch . pushContextInfo locals
+    lilyPondTranslate_Relative pch . pushSectionInfo locals
 
 
 outputAsABC :: ScoreInfo -> StaffInfo -> StdMonoPhrase -> String

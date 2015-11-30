@@ -55,8 +55,8 @@ module Payasan.Base.Monophonic.Internal.Syntax
   , NoteGroup(..)
   , Element(..)
 
-  , pushContextInfo
-  , contextInfo
+  , pushSectionInfo
+  , sectionInfo
   , sizeNoteGroup
 
   ) where
@@ -164,16 +164,16 @@ data Element pch drn anno =
 -- Push RenderInfo into bars.
 
 
-pushContextInfo :: SectionInfo 
+pushSectionInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
-pushContextInfo ri (Phrase { phrase_bars = bs }) = 
+pushSectionInfo ri (Phrase { phrase_bars = bs }) = 
     Phrase { phrase_header = ri
            , phrase_bars   = bs }
 
 
-contextInfo :: Phrase pch drn anno -> SectionInfo
-contextInfo = phrase_header
+sectionInfo :: Phrase pch drn anno -> SectionInfo
+sectionInfo = phrase_header
 
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration

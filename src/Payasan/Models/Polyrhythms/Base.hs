@@ -129,7 +129,7 @@ polyrhythmScore globals staff p1 p2 ph1 ph2 =
         header $+$ newStaff_ <+> (simultaneous1 (startphrase $+$ upper $+$ lower))
   where
     header      = scoreHeader globals
-    locals1     = maybe default_section_info id $ firstContextInfo ph1
+    locals1     = maybe default_section_info id $ firstSectionInfo ph1
     startphrase = oPhraseHeader staff locals1
     upper       = newVoiceDefn "upper" $+$ anonBlock (command "voiceOne" <+> upper1)
     upper1      = polyVoice_Relative def p1 locals1 ph1
@@ -172,7 +172,7 @@ timbalesStyle globals ph1 ph2 =
         header $+$ upper_def $+$ lower_def $+$ block (Just score_) score
   where
     header      = scoreHeader globals
-    locals1     = maybe default_section_info id $ firstContextInfo ph1
+    locals1     = maybe default_section_info id $ firstSectionInfo ph1
     upper_def   = phraseDef "upper" locals1 ph1
     lower_def   = phraseDef "lower" locals1 ph2
 

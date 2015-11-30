@@ -141,7 +141,7 @@ simpleVoice_Relative :: LyOutputDef pch anno
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
-    local1          = maybe default_section_info id $ firstContextInfo ph
+    local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = oPhraseHeader local1
     notes           = lilypondNotes def local1 ph
 
@@ -151,7 +151,7 @@ simpleVoice_Absolute :: LyOutputDef pch anno
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
-    local1          = maybe default_section_info id $ firstContextInfo ph
+    local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = oPhraseHeader local1
     notes           = lilypondNotes def local1 ph
 

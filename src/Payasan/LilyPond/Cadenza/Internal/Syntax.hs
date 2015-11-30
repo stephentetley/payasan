@@ -43,8 +43,8 @@ module Payasan.LilyPond.Cadenza.Internal.Syntax
   , Element(..)
 
 
-  , pushContextInfo
-  , contextInfo
+  , pushSectionInfo
+  , sectionInfo
   , sizeNoteGroup
 
   ) where
@@ -134,19 +134,19 @@ data Element pch drn anno =
 
 
 --------------------------------------------------------------------------------
--- Push RenderInfo into bars.
+-- Push SectionInfo into a phrase.
 
 
-pushContextInfo :: SectionInfo 
+pushSectionInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
-pushContextInfo ri (Phrase { phrase_groups = gs }) = 
+pushSectionInfo ri (Phrase { phrase_groups = gs }) = 
     Phrase { phrase_header = ri
            , phrase_groups = gs }
 
 
-contextInfo :: Phrase pch drn anno -> SectionInfo
-contextInfo = phrase_header
+sectionInfo :: Phrase pch drn anno -> SectionInfo
+sectionInfo = phrase_header
 
 
 

@@ -91,8 +91,7 @@ fromLilyPond = fromLilyPondWith default_section_info
 fromLilyPondWith :: SectionInfo 
                  -> LyChordPhrase 
                  -> StdChordPhrase
-fromLilyPondWith locals = 
-    translateInput . MONO.pushContextInfo locals
+fromLilyPondWith locals = translateInput . MONO.pushSectionInfo locals
 
 
 

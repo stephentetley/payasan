@@ -112,15 +112,15 @@ default_staff_info = StaffInfo
     }
 
 
--- | Note - @LocalContextInfo@ is stored as a header to a Bar in
+-- | Note - @SectionInfo@ is stored as a header to a Bar in
 -- Beam and Main syntax.
 -- 
 -- This allows concatenating bars together (and tempo and key 
 -- changes). Generally outputting must be sensitive to changes 
 -- to LocalRenderInfo as a new bar is printed.
 -- 
--- Mono syntax is more suitable to transformation, hence we put 
--- @LocalRenderInfo@ at the start of the phrase
+-- Mono syntax is intended for transformation, hence we put 
+-- @SectionInfo@ at the start of the phrase
 --
 
 data SectionInfo = SectionInfo

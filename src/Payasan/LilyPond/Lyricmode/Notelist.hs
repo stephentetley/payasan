@@ -63,7 +63,7 @@ fromLilyPondWith :: ScoreInfo
                  -> SectionInfo 
                  -> LyLyricPhrase1 anno
                  -> LyricPhrase1 anno
-fromLilyPondWith globals locals = inTrans globals . MONO.pushContextInfo locals
+fromLilyPondWith globals locals = inTrans globals . MONO.pushSectionInfo locals
 
 
 -- Lyrics should not beam.

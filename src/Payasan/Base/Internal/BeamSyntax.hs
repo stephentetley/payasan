@@ -43,9 +43,9 @@ module Payasan.Base.Internal.BeamSyntax
   , Note(..)
 
   -- * Operations
-  , pushContextInfo
+  , pushSectionInfo
   , sizeNoteGroup
-  , firstContextInfo 
+  , firstSectionInfo 
 
 
   ) where
@@ -130,10 +130,10 @@ data Note pch drn = Note pch drn
 --------------------------------------------------------------------------------
 -- Operations (maybe should be in another module)
 
-pushContextInfo :: SectionInfo 
+pushSectionInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
-pushContextInfo ri (Phrase bs) = Phrase $ map upd bs
+pushSectionInfo ri (Phrase bs) = Phrase $ map upd bs
   where
     upd bar = bar { bar_header = ri }
 
@@ -155,6 +155,6 @@ sizeElement (Chord _ d _ _)             = toRDuration d
 sizeElement (Graces {})                 = 0
 sizeElement (Punctuation {})            = 0
 
-firstContextInfo :: Phrase pch drn anno -> Maybe SectionInfo
-firstContextInfo (Phrase [])    = Nothing
-firstContextInfo (Phrase (b:_)) = Just $ bar_header b
+firstSectionInfo :: Phrase pch drn anno -> Maybe SectionInfo
+firstSectionInfo (Phrase [])    = Nothing
+firstSectionInfo (Phrase (b:_)) = Just $ bar_header b

@@ -107,7 +107,7 @@ rhythmicMarkupVoice :: LyOutputDef pch anno
 rhythmicMarkupVoice def ph = 
     block (Just newRhythmicStaff_) (absolute_ $+$ notes_header $+$ notes)
   where
-    local1          = maybe default_section_info id $ firstContextInfo ph
+    local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = oPhraseHeader local1
     notes           = lilypondNotes def local1 ph
 

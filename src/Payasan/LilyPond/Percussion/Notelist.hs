@@ -87,7 +87,7 @@ fromLilyPondWith :: SectionInfo
                  -> LyDrumPhrase
                  -> StdDrumPhrase
 fromLilyPondWith locals = 
-    translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushContextInfo locals
+    translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushSectionInfo locals
 
 
 
