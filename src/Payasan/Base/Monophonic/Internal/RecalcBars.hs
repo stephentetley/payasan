@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -18,44 +19,61 @@
 
 module Payasan.Base.Monophonic.Internal.RecalcBars
   (
-    recalcBars
+    NoteList(..) 
+  , recalcBars
+  , viaNoteList
+
   ) where
 
 
 import Payasan.Base.Monophonic.Internal.Syntax
+
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
+import Data.Data
+
 
 recalcBars :: Phrase pch Duration anno -> Phrase pch Duration anno
-recalcBars (Phrase { phrase_header = info, phrase_bars = bs }) = 
-    let s = segment info bs in Phrase { phrase_header = info
-                                      , phrase_bars   = remake s
-                                      }
+recalcBars = remake . flatten
 
 
 
-data Segment pch anno = Segment 
-    { segment_header   :: SectionInfo
-    , segment_notes    :: [NoteGroup pch Duration anno]
+data NoteList pch anno = NoteList
+    { notelist_header   :: SectionInfo
+    , notelist_notes    :: [NoteGroup pch Duration anno]
     }
+  deriving (Data,Eq,Show,Typeable)
 
 
 
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-segment :: SectionInfo -> [Bar pch Duration anno] -> Segment pch anno
-segment info bs = Segment { segment_header = info
-                          , segment_notes  = concatMap fn bs }
+flatten :: StdMonoPhrase2 pch anno -> NoteList pch anno
+flatten (Phrase info bs) = 
+    NoteList { notelist_header = info
+             , notelist_notes  = concatMap fn bs }
   where
     fn (Bar xs) = xs
 
 
-remake :: Segment pch anno -> [Bar pch Duration anno]
-remake (Segment info es) = case section_meter info of
-    Unmetered -> [Bar es]
-    TimeSig t -> map Bar $ split (barLength t) es
+viaNoteList :: (NoteList pch anno -> NoteList pch anno) 
+            -> StdMonoPhrase2 pch anno
+            -> StdMonoPhrase2 pch anno
+viaNoteList fn = remake . fn . flatten
+
+
+--------------------------------------------------------------------------------
+-- Remake - notelist to 
+
+remake :: NoteList pch anno -> StdMonoPhrase2 pch anno
+remake (NoteList info es) = 
+    Phrase { phrase_header = info 
+           , phrase_bars   = fn $ section_meter info }
+  where
+    fn (Unmetered)  = [Bar es]
+    fn (TimeSig t)  = map Bar $ split (barLength t) es
 
 split :: RDuration 
       -> [NoteGroup pch Duration anno]

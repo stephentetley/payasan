@@ -21,6 +21,8 @@ module Payasan.Base.Monophonic.Internal.Traversals
     Mon 
 
   , nth
+  , take
+  , drop
 
   , MonoPitchAlgo(..)
   , transformP
@@ -56,12 +58,16 @@ module Payasan.Base.Monophonic.Internal.Traversals
 
 
 
+import Payasan.Base.Monophonic.Internal.RecalcBars
 import Payasan.Base.Monophonic.Internal.Syntax
+
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Data.Foldable (foldlM)
 import Data.Maybe
+
+import Prelude hiding (take, drop)
 
 type Mon st a = Rewrite st a
 
@@ -113,6 +119,9 @@ genTransform elemT st0 ph =
 --------------------------------------------------------------------------------
 --
 
+-- Length changing traversals will be easier going through 
+--
+
 
 -- | nth might be counter-intuitive in the presence of 
 -- triplets...
@@ -145,6 +154,49 @@ nth i (Phrase _ (Bar b1:bs))    = step1 0 b1 bs
 
 
 -- nth suggests take and drop
+
+
+-- | Tuplet splitting is not properly implemented yet as it 
+-- should modify the spec
+--
+take :: forall pch anno.
+        Int -> StdMonoPhrase2 pch anno -> StdMonoPhrase2 pch anno
+take i = viaNoteList fn 
+  where
+    fn (NoteList info xs)       = NoteList info $ step1 0 xs
+
+    step1 :: Int -> [StdMonoNoteGroup2 pch anno]-> [StdMonoNoteGroup2 pch anno]
+    step1 n _                   | n >= i = []
+    step1 _ []                  = []
+    step1 n (Atom e:gs)         = (Atom e) : step1 (n+1) gs
+    step1 n (Tuplet spec es:gs) = 
+        let (n1,es1) = step2 n es
+        in if n1 >= i then [Tuplet spec es1]
+                      else (Tuplet spec es1) : step1 n1 gs
+
+    step2 n []                  = (n,[])
+    step2 n _                   | n >= i = (n,[])
+    step2 n (Atom e:gs)         = let (n1,ys) = step2 (n+1) gs in (n1,Atom e: ys)
+    step2 n (Tuplet spec es:gs) = let (n1,xs) = step2 n es 
+                                      (n2,ys) = step2 n1 gs
+                                  in (n2,Tuplet spec xs:ys)
+
+
+
+drop :: forall pch anno.
+        Int -> StdMonoPhrase2 pch anno -> StdMonoPhrase2 pch anno
+drop i = viaNoteList fn 
+  where
+    fn (NoteList info xs)       = NoteList info $ step1 i xs
+
+    step1 :: Int -> [StdMonoNoteGroup2 pch anno]-> [StdMonoNoteGroup2 pch anno]
+    step1 n xs                  | n <= 0 = xs
+    step1 _ []                  = []
+    step1 n (Atom {}:gs)        = step1 (n-1) gs
+    step1 _ (Tuplet {}:_)       = error "Tuplet"
+    -- TODO - it will be better to define a set of operations that 
+    -- work on tuplets rather than do ad hoc destructuring here
+  
 
 
 --
