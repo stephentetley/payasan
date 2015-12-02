@@ -102,10 +102,13 @@ makeParser def = fullParseLy phrase
     tuplet :: LyParser (LyCadenzaNoteGroup2 pch anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
-            <$> P.tupletSpec <*> braces (noteGroups)
+            <$> P.tupletSpec <*> braces elements
 
     atom :: LyParser (LyCadenzaNoteGroup2 pch anno)
     atom = Atom <$> element
+
+    elements :: LyParser [LyCadenzaElement2 pch anno]
+    elements = whiteSpace *> many element
 
     element :: LyParser (LyCadenzaElement2 pch anno)
     element = lexeme (rest <|> note)

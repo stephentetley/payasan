@@ -92,7 +92,7 @@ genCollect mf a0 st ph = evalRewrite (phraseC a0 ph) st
 
     noteGroupC :: ac -> NoteGroup pch drn anno -> Mon st ac
     noteGroupC ac (Atom e)      = mf ac e
-    noteGroupC ac (Tuplet _ cs) = foldlM noteGroupC ac cs
+    noteGroupC ac (Tuplet _ cs) = foldlM mf ac cs
 
 
 -- | Do not expose this as it is too general / complex.
@@ -114,13 +114,14 @@ genTransform elemT st0 ph =
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
-    noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
+    noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
 
 --------------------------------------------------------------------------------
 --
 
 -- Length changing traversals will be easier going through 
 --
+
 
 
 -- | nth might be counter-intuitive in the presence of 
@@ -143,13 +144,12 @@ nth i (Phrase _ (Bar b1:bs))    = step1 0 b1 bs
         | n == i                = Right e
         | otherwise             = Left $ n+1
                   
-    step2 n (Tuplet _ gs)       = step3 n gs
+    step2 n (Tuplet _ es)       = step3 n es
 
-    step3 n (Atom e:gs)              
+    step3 n (e:es)              
         | n == i                = Right e
-        | otherwise             = step3 (n+1) gs
+        | otherwise             = step3 (n+1) es
 
-    step3 n (Tuplet _ xs:gs)    = step3 n (xs++gs)    
     step3 n []                  = Left n
 
 
@@ -158,6 +158,10 @@ nth i (Phrase _ (Bar b1:bs))    = step1 0 b1 bs
 
 -- | Tuplet splitting is not properly implemented yet as it 
 -- should modify the spec
+--
+-- NOTE - the covoluted nature of the implementations of take 
+-- and drop suggest nested tuplets may be more trouble than they
+-- are worth...
 --
 take :: forall pch anno.
         Int -> StdMonoPhrase2 pch anno -> StdMonoPhrase2 pch anno
@@ -176,11 +180,7 @@ take i = viaNoteList fn
 
     step2 n []                  = (n,[])
     step2 n _                   | n >= i = (n,[])
-    step2 n (Atom e:gs)         = let (n1,ys) = step2 (n+1) gs in (n1,Atom e: ys)
-    step2 n (Tuplet spec es:gs) = let (n1,xs) = step2 n es 
-                                      (n2,ys) = step2 n1 gs
-                                  in (n2,Tuplet spec xs:ys)
-
+    step2 n (e:es)              = let (n1,ys) = step2 (n+1) es in (n1,e:ys)
 
 
 drop :: forall pch anno.
@@ -463,7 +463,7 @@ censorPunctuation (Phrase info bs) = Phrase info (map bar1 bs)
     bar1 (Bar cs)               = Bar $ catMaybes $ map noteGroup1 cs
 
     noteGroup1 (Atom e)         = censor e >>= (return . Atom)
-    noteGroup1 (Tuplet spec cs) = let xs = catMaybes $ map noteGroup1 cs
+    noteGroup1 (Tuplet spec es) = let xs = catMaybes $ map censor es
                                   in if null xs then Nothing 
                                                 else Just $ Tuplet spec xs
 
@@ -481,7 +481,7 @@ censorAnno (Phrase info bs) = Phrase info (map bar1 bs)
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
     noteGroup1 (Atom e)         = Atom $ changeNote e
-    noteGroup1 (Tuplet spec cs) = Tuplet spec $ map noteGroup1 cs
+    noteGroup1 (Tuplet spec es) = Tuplet spec $ map changeNote es
 
     changeNote (Note p d _ t)   = Note p d () t
     changeNote (Rest d)         = Rest d
@@ -499,7 +499,7 @@ skipToRest (Phrase info bs) = Phrase info (map bar1 bs)
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
     noteGroup1 (Atom e)         = Atom $ changeSkip e
-    noteGroup1 (Tuplet spec cs) = Tuplet spec $ map noteGroup1 cs
+    noteGroup1 (Tuplet spec es) = Tuplet spec $ map changeSkip es
 
     changeSkip (Skip d)         = Rest d
     changeSkip e                = e

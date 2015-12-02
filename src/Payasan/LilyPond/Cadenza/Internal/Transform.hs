@@ -84,8 +84,8 @@ retrograde :: Phrase pch Duration anno -> Phrase pch Duration anno
 retrograde (Phrase info gs) = Phrase info $ map revNG $ reverse gs
   where
     revNG (Atom e)          = Atom e
-    revNG (Beamed es)       = Beamed $ map revNG $ reverse es
-    revNG (Tuplet spec es)  = Tuplet spec $ map revNG $ reverse es
+    revNG (Beamed cs)       = Beamed $ map revNG $ reverse cs
+    revNG (Tuplet spec es)  = Tuplet spec $ reverse es
 
 
 -- | Note - seems to need /scale degrees/ - taking interal with 

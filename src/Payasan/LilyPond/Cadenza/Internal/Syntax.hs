@@ -111,12 +111,12 @@ data Phrase pch drn anno = Phrase
 
 -- | Beaming should be hand coded.
 --
--- Tuplets are essential (even though they greatly complicate things).
+-- Tuplets are simplified - no nesting.
 --
 data NoteGroup pch drn anno = 
       Atom    (Element pch drn anno)
     | Beamed  [NoteGroup pch drn anno]
-    | Tuplet  TupletSpec         [NoteGroup pch drn anno]
+    | Tuplet  TupletSpec         [Element pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
 
@@ -156,7 +156,7 @@ sizeNoteGroup (Atom e)          = sizeElement e
 sizeNoteGroup (Beamed gs)       = sum $ map sizeNoteGroup gs
 sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
   where
-    firstOf (x:_)   = sizeNoteGroup x
+    firstOf (x:_)   = sizeElement x
     firstOf []      = toRDuration d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration

@@ -54,7 +54,7 @@ oNoteGroupList ppl xs = vcat $ map (oNoteGroup ppl) xs
 
 oNoteGroup :: LeafOutput pch drn anno -> NoteGroup pch drn anno -> Doc
 oNoteGroup ppl (Atom e)         = oElement ppl e
-oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
+oNoteGroup ppl (Tuplet _ cs)    = vcat $ map (oElement ppl) cs
 
 oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of

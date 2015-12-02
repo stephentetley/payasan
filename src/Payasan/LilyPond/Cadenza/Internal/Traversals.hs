@@ -80,7 +80,7 @@ genCollect mf a0 st ph = evalRewrite (phraseC a0 ph) st
     noteGroupC :: ac -> NoteGroup pch drn anno -> Mon st ac
     noteGroupC ac (Atom e)      = mf ac e
     noteGroupC ac (Beamed cs)   = foldlM noteGroupC ac cs
-    noteGroupC ac (Tuplet _ cs) = foldlM noteGroupC ac cs
+    noteGroupC ac (Tuplet _ es) = foldlM mf ac es
 
 
 -- | Do not expose this as it is too general / complex.
@@ -100,7 +100,7 @@ genTransform elemT st0 ph =
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
     noteGroupT (Beamed cs)      = Beamed      <$> mapM noteGroupT cs
-    noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
+    noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
 
 
 
@@ -372,7 +372,7 @@ censorPunctuation (Phrase info bs) = Phrase info $ noteGroups bs
     noteGroup1 (Beamed cs)      = let xs = catMaybes $ map noteGroup1 cs
                                   in if null xs then Nothing 
                                                 else Just $ Beamed xs
-    noteGroup1 (Tuplet spec cs) = let xs = catMaybes $ map noteGroup1 cs
+    noteGroup1 (Tuplet spec es) = let xs = catMaybes $ map censor es
                                   in if null xs then Nothing 
                                                 else Just $ Tuplet spec xs
 
@@ -389,7 +389,7 @@ censorAnno (Phrase info gs) = Phrase info (map noteGroup1 gs)
   where
     noteGroup1 (Atom e)         = Atom $ changeNote e
     noteGroup1 (Beamed cs)      = Beamed $ map noteGroup1 cs
-    noteGroup1 (Tuplet spec cs) = Tuplet spec $ map noteGroup1 cs
+    noteGroup1 (Tuplet spec es) = Tuplet spec $ map changeNote es
 
     changeNote (Note p d _ t)   = Note p d () t
     changeNote (Rest d)         = Rest d
@@ -406,7 +406,7 @@ skipToRest (Phrase info gs) = Phrase info (map noteGroup1 gs)
   where
     noteGroup1 (Atom e)         = Atom $ changeSkip e
     noteGroup1 (Beamed xs)      = Beamed $ map noteGroup1 xs
-    noteGroup1 (Tuplet spec cs) = Tuplet spec $ map noteGroup1 cs
+    noteGroup1 (Tuplet spec es) = Tuplet spec $ map changeSkip es
 
     changeSkip (Skip d)         = Rest d
     changeSkip e                = e

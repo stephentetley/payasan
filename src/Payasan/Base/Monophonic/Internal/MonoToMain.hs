@@ -39,14 +39,13 @@ translateToMain = phraseT
 
 
     barT :: SectionInfo -> Bar pch drn anno -> T.Bar pch drn anno
-    barT info (Bar cs)              = T.Bar info $ concatMap noteGroupT cs
+    barT info (Bar cs)              = T.Bar info $ map noteGroupT cs
 
-
-    -- | Remember - a beamed NoteGroup may generate 1+ elements
+    -- | No beams in mono syntax so one-to-one
     --
-    noteGroupT :: NoteGroup pch drn anno -> [T.NoteGroup pch drn anno]
-    noteGroupT (Atom e)             = [T.Atom $ elementT e]
-    noteGroupT (Tuplet spec cs)     = [T.Tuplet spec $ concatMap noteGroupT cs]
+    noteGroupT :: NoteGroup pch drn anno -> T.NoteGroup pch drn anno
+    noteGroupT (Atom e)             = T.Atom $ elementT e
+    noteGroupT (Tuplet spec es)     = T.Tuplet spec $ map (T.Atom . elementT) es
 
 
     elementT :: Element pch drn anno -> T.Element pch drn anno
@@ -72,14 +71,12 @@ chordTranslateToMain = phraseT
 
 
     barT :: SectionInfo -> Bar [pch] drn anno -> T.Bar pch drn anno
-    barT info (Bar cs)              = T.Bar info $ concatMap noteGroupT cs
+    barT info (Bar cs)              = T.Bar info $ map noteGroupT cs
 
 
-    -- | Remember - a beamed NoteGroup may generate 1+ elements
-    --
-    noteGroupT :: NoteGroup [pch] drn anno -> [T.NoteGroup pch drn anno]
-    noteGroupT (Atom e)             = [T.Atom $ elementT e]
-    noteGroupT (Tuplet spec cs)     = [T.Tuplet spec $ concatMap noteGroupT cs]
+    noteGroupT :: NoteGroup [pch] drn anno -> T.NoteGroup pch drn anno
+    noteGroupT (Atom e)             = T.Atom $ elementT e
+    noteGroupT (Tuplet spec es)     = T.Tuplet spec $ map (T.Atom . elementT) es
 
 
     elementT :: Element [pch] drn anno -> T.Element pch drn anno

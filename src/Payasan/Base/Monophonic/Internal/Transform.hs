@@ -83,7 +83,7 @@ retrograde (Phrase info bs) = Phrase info $ map revBar $ reverse bs
     revBar (Bar es)         = Bar $ map revNG $ reverse es
     
     revNG (Atom e)          = Atom e
-    revNG (Tuplet spec es)  = Tuplet spec $ map revNG $ reverse es
+    revNG (Tuplet spec es)  = Tuplet spec $ reverse es
 
 -- | Note - seems to need /scale degrees/ - taking interal with 
 -- top note and adding same interval to lowest note does not work.

@@ -38,7 +38,7 @@ phraseT (Phrase info gs)        = T.Phrase [T.Bar info $ map noteGroupT gs]
 noteGroupT :: NoteGroup pch drn anno -> T.NoteGroup pch drn anno
 noteGroupT (Atom e)             = T.Atom $ elementT e
 noteGroupT (Beamed gs)          = T.Beamed $ map noteGroupT gs
-noteGroupT (Tuplet spec gs)     = T.Tuplet spec $ map noteGroupT gs
+noteGroupT (Tuplet spec es)     = T.Tuplet spec $ map (T.Atom . elementT) es
 
 elementT :: Element pch drn anno -> T.Element pch drn anno
 elementT (Note p d a t)         = T.NoteElem (T.Note p d) a t

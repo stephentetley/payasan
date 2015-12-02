@@ -113,13 +113,13 @@ note = (\p d t -> Note p d () t) <$> pitch <*> P.noteLength <*> P.tie
 tuplet :: ABCParser ABCMonoNoteGroup
 tuplet = do 
    spec   <- P.tupletSpec
-   notes  <- countedNoteGroups (tuplet_len spec)
+   notes  <- countedElements (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedNoteGroups :: Int -> ABCParser [ABCMonoNoteGroup]
-countedNoteGroups n 
-    | n > 0       = do { e  <- noteGroup
-                       ; es <- countedNoteGroups (n - elementSize e)
+countedElements :: Int -> ABCParser [ABCMonoElement]
+countedElements n 
+    | n > 0       = do { e  <- element
+                       ; es <- countedElements (n - 1)
                        ; return $ e:es
                        }
     | otherwise   = return []
@@ -128,10 +128,3 @@ countedNoteGroups n
 pitch :: ABCParser ABCPitch
 pitch = P.pitch
 
-
---------------------------------------------------------------------------------
--- Helpers
-
-elementSize :: NoteGroup pch drn anno -> Int
-elementSize (Tuplet spec _) = tuplet_len spec
-elementSize _               = 1

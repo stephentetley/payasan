@@ -42,7 +42,7 @@ phraseT (Phrase info gs)        = T.Phrase info [T.Bar $ concatMap noteGroupT gs
 noteGroupT :: NoteGroup pch drn anno -> [T.NoteGroup pch drn anno]
 noteGroupT (Atom e)             = [T.Atom $ elementT e]
 noteGroupT (Beamed gs)          = concatMap noteGroupT gs
-noteGroupT (Tuplet spec gs)     = [T.Tuplet spec $ concatMap noteGroupT gs]
+noteGroupT (Tuplet spec es)     = [T.Tuplet spec $ map elementT es]
 
 
 elementT :: Element pch drn anno -> T.Element pch drn anno

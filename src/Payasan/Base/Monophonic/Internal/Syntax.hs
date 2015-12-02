@@ -135,20 +135,19 @@ data Bar pch drn anno = Bar
 
 
 
--- | Note Beaming is added in rendering.
+-- | Note - Beaming is added in rendering.
 --
--- Tuplets seem essential 
+-- Tuplets seem essential - but perhaps they do not need 
+-- nesting...
 --
 data NoteGroup pch drn anno = 
       Atom    (Element pch drn anno)
-    | Tuplet  TupletSpec         [NoteGroup pch drn anno]
+    | Tuplet  TupletSpec         [Element pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
 
--- | TODO - should we implement ties?
---
--- Note - if we ignore anno Element can also represent 
--- Maybe+duration.
+-- | Note - unfortunately Spacers and Skips are interpreted
+-- differently by LilyPond hence we must distinguish them.
 --
 data Element pch drn anno = 
       Note          pch   drn   anno  Tie
@@ -180,7 +179,7 @@ sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
 sizeNoteGroup (Atom e)          = sizeElement e
 sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
   where
-    firstOf (x:_)   = sizeNoteGroup x
+    firstOf (e:_)   = sizeElement e
     firstOf []      = toRDuration d_eighth
 
 sizeElement :: Element pch Duration anno -> RDuration
