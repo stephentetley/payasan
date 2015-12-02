@@ -3,7 +3,7 @@
 
 module Demo04 where
 
-import Payasan.Base.Monophonic.Notelist
+import Payasan.Base.Elementary.Notelist
 
 -- import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -12,7 +12,7 @@ import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Monophonic.Internal.Metrics
+import Payasan.Base.Elementary.Internal.Metrics
 import Payasan.Base.ScaleDegree
 
 

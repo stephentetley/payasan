@@ -21,8 +21,8 @@ module Payasan.LilyPond.Lyricmode.Internal.Interpret
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Traversals
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

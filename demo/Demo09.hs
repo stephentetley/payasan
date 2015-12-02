@@ -9,7 +9,7 @@ import Payasan.Base.Names.Pitch
 
 
 import Payasan.LilyPond.Cadenza.Notelist
-import qualified Payasan.LilyPond.Cadenza.Internal.CadenzaToMono  as TEMP
+import qualified Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary  as TEMP
 import qualified Payasan.LilyPond.Cadenza.Internal.Transform      as TEMP
 
 

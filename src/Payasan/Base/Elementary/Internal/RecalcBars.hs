@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.RecalcBars
+-- Module      :  Payasan.Base.Elementary.Internal.RecalcBars
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.RecalcBars
+module Payasan.Base.Elementary.Internal.RecalcBars
   (
     NoteList(..) 
   , recalcBars
@@ -26,7 +26,7 @@ module Payasan.Base.Monophonic.Internal.RecalcBars
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration

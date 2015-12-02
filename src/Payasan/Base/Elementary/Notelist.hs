@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Notelist
+-- Module      :  Payasan.Base.Elementary.Notelist
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,11 +14,11 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Notelist
+module Payasan.Base.Elementary.Notelist
   ( 
 
     module Payasan.Base.Internal.Shell
-  , module Payasan.Base.Monophonic.Internal.Transform
+  , module Payasan.Base.Elementary.Internal.Transform
 
   , Phrase
   , StdMonoPhrase
@@ -76,16 +76,16 @@ module Payasan.Base.Monophonic.Notelist
 
   ) where
 
-import Payasan.Base.Monophonic.Internal.ABCInTrans
-import Payasan.Base.Monophonic.Internal.ABCParser (abc)
-import Payasan.Base.Monophonic.Internal.LilyPondInTrans
-import Payasan.Base.Monophonic.Internal.LilyPondParser (lilypond)
-import Payasan.Base.Monophonic.Internal.LinearOutput
-import Payasan.Base.Monophonic.Internal.MonoToMain
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.TabularOutput
-import Payasan.Base.Monophonic.Internal.Transform
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.ABCInTrans
+import Payasan.Base.Elementary.Internal.ABCParser (abc)
+import Payasan.Base.Elementary.Internal.ElementaryToMain
+import Payasan.Base.Elementary.Internal.LilyPondInTrans
+import Payasan.Base.Elementary.Internal.LilyPondParser (lilypond)
+import Payasan.Base.Elementary.Internal.LinearOutput
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.TabularOutput
+import Payasan.Base.Elementary.Internal.Transform
+import Payasan.Base.Elementary.Internal.Traversals
 
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 

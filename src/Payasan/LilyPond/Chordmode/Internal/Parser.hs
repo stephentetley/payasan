@@ -22,7 +22,7 @@ module Payasan.LilyPond.Chordmode.Internal.Parser
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 
-import Payasan.Base.Monophonic.Internal.LilyPondParser
+import Payasan.Base.Elementary.Internal.LilyPondParser
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import Payasan.Base.Internal.LilyPond.Syntax

@@ -43,9 +43,9 @@ import Payasan.LilyPond.Lyricmode.Internal.Interpret
 import Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Parser
 
-import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
-import qualified Payasan.Base.Monophonic.Internal.Traversals    as MONO
-import qualified Payasan.Base.Monophonic.Notelist               as MONO
+import qualified Payasan.Base.Elementary.Internal.Syntax        as MONO
+import qualified Payasan.Base.Elementary.Internal.Traversals    as MONO
+import qualified Payasan.Base.Elementary.Notelist               as MONO
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 

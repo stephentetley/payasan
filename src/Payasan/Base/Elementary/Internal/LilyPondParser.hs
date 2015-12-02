@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.LilyPondParser
+-- Module      :  Payasan.Base.Elementary.Internal.LilyPondParser
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,11 +11,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Monophonic notelist using LilyPond notation. 
+-- Elementary notelist using LilyPond notation. 
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.LilyPondParser
+module Payasan.Base.Elementary.Internal.LilyPondParser
   (
 
     lilypond
@@ -27,7 +27,7 @@ module Payasan.Base.Monophonic.Internal.LilyPondParser
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P

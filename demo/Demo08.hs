@@ -7,8 +7,8 @@ import Payasan.LilyPond.FretDiagram.Notelist
 
 import Payasan.LilyPond.FretDiagram.Internal.Interpret  -- TEMP
 
-import qualified Payasan.Base.Monophonic.Notelist as MONO
-import qualified Payasan.Base.Monophonic.Internal.Plain as MONO
+import qualified Payasan.Base.Elementary.Notelist as MONO
+import qualified Payasan.Base.Elementary.Internal.Plain as MONO
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

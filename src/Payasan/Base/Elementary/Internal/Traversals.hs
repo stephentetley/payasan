@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.Traversals
+-- Module      :  Payasan.Base.Elementary.Internal.Traversals
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.Traversals
+module Payasan.Base.Elementary.Internal.Traversals
   (
     Mon 
 
@@ -58,8 +58,8 @@ module Payasan.Base.Monophonic.Internal.Traversals
 
 
 
-import Payasan.Base.Monophonic.Internal.RecalcBars
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.RecalcBars
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad

@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.MonoToMain
+-- Module      :  Payasan.Base.Elementary.Internal.ElementaryToMain
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,22 +11,22 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Monophonic syntax to Main syntax (pipline output 
+-- Convert Elementary syntax to Main syntax (pipline output 
 -- from Main syntax).
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.MonoToMain
+module Payasan.Base.Elementary.Internal.ElementaryToMain
   (
     translateToMain
   , chordTranslateToMain
   ) where
 
 
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.MainSyntax as T
-import Payasan.Base.Monophonic.Internal.Syntax
 
 
 

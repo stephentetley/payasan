@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monomorphic.Internal.Syntax
+-- Module      :  Payasan.Base.Elementary.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.Syntax
+module Payasan.Base.Elementary.Internal.Syntax
   ( 
 
     StdMonoPhrase

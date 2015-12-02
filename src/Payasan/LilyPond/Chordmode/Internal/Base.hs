@@ -34,7 +34,7 @@ module Payasan.LilyPond.Chordmode.Internal.Base
 
   ) where
 
-import qualified Payasan.Base.Monophonic.Internal.Syntax    as MONO
+import qualified Payasan.Base.Elementary.Internal.Syntax    as MONO
 
 import Payasan.Base.Internal.LilyPond.Syntax
 import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
@@ -48,7 +48,7 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
--- LilyPond is input as a Monophonic note list, but output as
+-- LilyPond is input as a Elementary note list, but output as
 -- beam syntax (with bars).
 
 type LyChordPhrase       = MONO.Phrase LyChordRoot LyNoteLength ChordSuffix

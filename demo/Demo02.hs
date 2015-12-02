@@ -7,7 +7,7 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-import Payasan.Base.Monophonic.Notelist
+import Payasan.Base.Elementary.Notelist
 
 
 -- MONOPHONIC

@@ -46,7 +46,7 @@ import Payasan.LilyPond.FretDiagram.Internal.Plain
 
 import Payasan.Base.Internal.AddBeams
 import qualified Payasan.Base.Internal.LilyPond.OutTrans      as LY
-import qualified Payasan.Base.Monophonic.Internal.MonoToMain  as MONO
+import qualified Payasan.Base.Elementary.Internal.ElementaryToMain  as MONO
 
 
 import Payasan.Base.Internal.CommonSyntax

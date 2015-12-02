@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.TabularOutput
+-- Module      :  Payasan.Base.Elementary.Internal.TabularOutput
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -18,14 +18,14 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.TabularOutput
+module Payasan.Base.Elementary.Internal.TabularOutput
   ( 
 
     monoTabular
     
   ) where
 
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Tabular.Utils

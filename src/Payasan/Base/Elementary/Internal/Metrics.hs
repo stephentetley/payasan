@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.Metrics
+-- Module      :  Payasan.Base.Elementary.Internal.Metrics
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.Metrics
+module Payasan.Base.Elementary.Internal.Metrics
   (
     barCount
   , lowestPitch
@@ -36,8 +36,8 @@ module Payasan.Base.Monophonic.Internal.Metrics
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.Contour

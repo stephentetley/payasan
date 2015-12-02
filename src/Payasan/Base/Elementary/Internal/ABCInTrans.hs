@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.ABCInTrans
+-- Module      :  Payasan.Base.Elementary.Internal.ABCInTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,19 +10,19 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert ABC to Monophonic syntax.
+-- Convert ABC to Elementary syntax.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.ABCInTrans
+module Payasan.Base.Elementary.Internal.ABCInTrans
   (
     abcTranslate
   ) where
 
 
 
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.ABC.Syntax ( ABCPitch, ABCNoteLength
                                         , toPitch, toDuration )

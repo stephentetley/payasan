@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.ABCParser
+-- Module      :  Payasan.Base.Elementary.Internal.ABCParser
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,16 +11,16 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Monophonic notelist using ABC notation. 
+-- Elementary notelist using ABC notation. 
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.ABCParser
+module Payasan.Base.Elementary.Internal.ABCParser
   (
     abc
   ) where
 
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Lexer
 import qualified Payasan.Base.Internal.ABC.Parser as P

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.CadenzaToMono
+-- Module      :  Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.CadenzaToMono
+module Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary
   (
     translateToMono
   ) where
@@ -23,8 +23,8 @@ module Payasan.LilyPond.Cadenza.Internal.CadenzaToMono
 
 import Payasan.LilyPond.Cadenza.Internal.Syntax
 
-import qualified Payasan.Base.Monophonic.Internal.RecalcBars    as T
-import qualified Payasan.Base.Monophonic.Internal.Syntax        as T
+import qualified Payasan.Base.Elementary.Internal.RecalcBars    as T
+import qualified Payasan.Base.Elementary.Internal.Syntax        as T
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 

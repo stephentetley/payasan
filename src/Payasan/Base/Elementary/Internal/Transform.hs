@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.Transform
+-- Module      :  Payasan.Base.Elementary.Internal.Transform
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.Transform
+module Payasan.Base.Elementary.Internal.Transform
   (
     augment
   , diminute
@@ -31,10 +31,10 @@ module Payasan.Base.Monophonic.Internal.Transform
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.Metrics
-import Payasan.Base.Monophonic.Internal.RecalcBars
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.Metrics
+import Payasan.Base.Elementary.Internal.RecalcBars
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad

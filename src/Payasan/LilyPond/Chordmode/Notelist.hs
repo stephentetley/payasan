@@ -60,12 +60,12 @@ import Payasan.LilyPond.Chordmode.Internal.OutTrans
 import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 
 
-import qualified Payasan.Base.Monophonic.Internal.MonoToMain    as MONO
-import qualified Payasan.Base.Monophonic.Internal.Syntax        as MONO
-import qualified Payasan.Base.Monophonic.Internal.Traversals    as MONO
-import Payasan.Base.Monophonic.Internal.LinearOutput
-import Payasan.Base.Monophonic.Internal.TabularOutput
-import qualified Payasan.Base.Monophonic.Notelist               as MONO
+import qualified Payasan.Base.Elementary.Internal.ElementaryToMain    as MONO
+import qualified Payasan.Base.Elementary.Internal.Syntax              as MONO
+import qualified Payasan.Base.Elementary.Internal.Traversals          as MONO
+import Payasan.Base.Elementary.Internal.LinearOutput
+import Payasan.Base.Elementary.Internal.TabularOutput
+import qualified Payasan.Base.Elementary.Notelist                     as MONO
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
@@ -83,7 +83,7 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
--- Use Monophonic syntax...
+-- Use Elementary syntax...
 
 fromLilyPond :: LyChordPhrase -> StdChordPhrase
 fromLilyPond = fromLilyPondWith default_section_info

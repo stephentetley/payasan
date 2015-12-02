@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.LilyPondInTrans
+-- Module      :  Payasan.Base.Elementary.Internal.LilyPondInTrans
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -11,11 +11,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert ABC to Monophonic syntax.
+-- Convert ABC to Elementary syntax.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.LilyPondInTrans
+module Payasan.Base.Elementary.Internal.LilyPondInTrans
   (
 
     lilyPondTranslate_Relative
@@ -29,8 +29,8 @@ module Payasan.Base.Monophonic.Internal.LilyPondInTrans
 
 
 
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.LilyPond.Syntax
 

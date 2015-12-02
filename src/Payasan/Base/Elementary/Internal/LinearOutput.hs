@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monophonic.Internal.LinearOutput
+-- Module      :  Payasan.Base.Elementary.Internal.LinearOutput
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,14 +16,14 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.LinearOutput
+module Payasan.Base.Elementary.Internal.LinearOutput
   ( 
 
     monoLinear
     
   ) where
 
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Linear.Utils

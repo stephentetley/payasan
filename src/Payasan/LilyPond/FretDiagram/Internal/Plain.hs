@@ -27,14 +27,14 @@ module Payasan.LilyPond.FretDiagram.Internal.Plain
 import Payasan.LilyPond.FretDiagram.Internal.Base
 import Payasan.LilyPond.FretDiagram.Internal.Interpret
 
-import Payasan.Base.Monophonic.Internal.Syntax
-import Payasan.Base.Monophonic.Internal.Traversals
+import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Traversals
 import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
--- Use Monophonic syntax or not? - Initially do, see what happens...
+-- Use Elementary syntax or not? - Initially do, see what happens...
 
 
 

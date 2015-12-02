@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Monomorphic.Internal.Plain
+-- Module      :  Payasan.Base.Elementary.Internal.Plain
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Monophonic.Internal.Plain
+module Payasan.Base.Elementary.Internal.Plain
   ( 
     NoteListAtom
   , fromNoteList
@@ -24,8 +24,8 @@ module Payasan.Base.Monophonic.Internal.Plain
   ) where
 
 
-import Payasan.Base.Monophonic.Internal.RecalcBars
-import Payasan.Base.Monophonic.Internal.Syntax
+import Payasan.Base.Elementary.Internal.RecalcBars
+import Payasan.Base.Elementary.Internal.Syntax
 import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Duration

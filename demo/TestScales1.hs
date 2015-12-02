@@ -3,7 +3,7 @@
 
 module TestScales1 where
 
-import Payasan.Base.Monophonic.Notelist
+import Payasan.Base.Elementary.Notelist
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -12,7 +12,7 @@ import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
 import Payasan.Base.ScaleDegree                 -- TEMP
-import Payasan.Base.Monophonic.Internal.Plain   -- TEMP
+import Payasan.Base.Elementary.Internal.Plain   -- TEMP
 
 -- a_major_temp :: Phrase LyPitch LyNoteLength
 a_major_temp = [lilypond| a4 b cis d | e fis gis a |]
