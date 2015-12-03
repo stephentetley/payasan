@@ -119,8 +119,8 @@ default_staff_info = StaffInfo
 -- changes). Generally outputting must be sensitive to changes 
 -- to SectionInfo as a new bar is printed.
 -- 
--- Mono syntax is intended for transformation, hence we put 
--- @SectionInfo@ at the start of the phrase
+-- Elementary syntax is intended for transformation, hence we 
+-- put @SectionInfo@ at the start of the phrase
 --
 
 data SectionInfo = SectionInfo

@@ -35,7 +35,7 @@ locals = default_section_info { section_unit_note_len = UNIT_NOTE_4
                               , section_key = d_minor  }
 
 
-phrase01 :: StdMonoPhrase
+phrase01 :: StdElemPhrase
 phrase01 = fromLilyPondWith_Relative middle_c locals $ 
     [lilypond| d2 a' | f d |]
 

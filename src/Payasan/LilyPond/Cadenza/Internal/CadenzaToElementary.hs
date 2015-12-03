@@ -10,14 +10,14 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Cadenza syntax to Mono syntax - synthesizing bars 
+-- Convert Cadenza syntax to Elementary syntax - synthesizing bars 
 -- losing beam groups.
 --
 --------------------------------------------------------------------------------
 
 module Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary
   (
-    translateToMono
+    translateToElem
   ) where
 
 
@@ -28,8 +28,8 @@ import qualified Payasan.Base.Elementary.Internal.Syntax        as T
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
-translateToMono :: Time -> Phrase pch Duration anno -> T.Phrase pch Duration anno
-translateToMono ts (Phrase info gs) = 
+translateToElem :: Time -> Phrase pch Duration anno -> T.Phrase pch Duration anno
+translateToElem ts (Phrase info gs) = 
     let info1 = info { section_meter = TimeSig ts } 
     in T.recalcBars $ phraseT (Phrase info1 gs) 
 

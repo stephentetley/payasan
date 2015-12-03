@@ -92,8 +92,8 @@ highestStep = fmap diatonic_base . foldPitch fn Nothing
 
 
 contourAlgo :: (Pitch -> Pitch -> ctour) 
-            -> MonoPitchAlgo (Maybe Pitch) Pitch ctour
-contourAlgo comp = MonoPitchAlgo { initial_stateP = Nothing
+            -> ElemPitchAlgo (Maybe Pitch) Pitch ctour
+contourAlgo comp = ElemPitchAlgo { initial_stateP = Nothing
                                  , element_trafoP = fn }
   where   
     fn (Note p d a t)   = do { opt <- get 

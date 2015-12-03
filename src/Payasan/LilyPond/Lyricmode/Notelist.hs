@@ -43,9 +43,9 @@ import Payasan.LilyPond.Lyricmode.Internal.Interpret
 import Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Parser
 
-import qualified Payasan.Base.Elementary.Internal.Syntax        as MONO
-import qualified Payasan.Base.Elementary.Internal.Traversals    as MONO
-import qualified Payasan.Base.Elementary.Notelist               as MONO
+import qualified Payasan.Base.Elementary.Internal.Syntax        as ELEM
+import qualified Payasan.Base.Elementary.Internal.Traversals    as ELEM
+import qualified Payasan.Base.Elementary.Notelist               as ELEM
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 
@@ -63,7 +63,7 @@ fromLilyPondWith :: ScoreInfo
                  -> SectionInfo 
                  -> LyLyricPhrase1 anno
                  -> LyricPhrase1 anno
-fromLilyPondWith globals locals = inTrans globals . MONO.pushSectionInfo locals
+fromLilyPondWith globals locals = inTrans globals . ELEM.pushSectionInfo locals
 
 
 -- Lyrics should not beam.
@@ -71,9 +71,9 @@ fromLilyPondWith globals locals = inTrans globals . MONO.pushSectionInfo locals
 --
 outputAsLilyPond :: Anno anno => ScoreInfo -> LyricPhrase1 anno -> String
 outputAsLilyPond globals lyrics = 
-    MAIN.ppRender $ MONO.genOutputAsLilyPond2 config2 beats lyrics
+    MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
   where
-    beats           = MONO.censorPunctuation $ MONO.skipToRest $ extractRhythm lyrics
+    beats           = ELEM.censorPunctuation $ ELEM.skipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
                         , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Absolute
@@ -85,9 +85,9 @@ outputAsLilyPond globals lyrics =
 
 outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> LyricPhrase1 anno -> String
 outputAsLilyPondDU annos globals lyrics = 
-    MAIN.ppRender $ MONO.genOutputAsLilyPond2 config2 beats lyrics
+    MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
   where
-    beats           = MONO.censorPunctuation $ MONO.skipToRest $ extractRhythm lyrics
+    beats           = ELEM.censorPunctuation $ ELEM.skipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
                         , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Absolute

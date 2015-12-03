@@ -12,7 +12,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Generic traversals of Mono syntax.
+-- Generic traversals of Elementary syntax.
 --
 --------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ module Payasan.Base.Elementary.Internal.Traversals
   , take
   , drop
 
-  , MonoPitchAlgo(..)
+  , ElemPitchAlgo(..)
   , transformP
   , collectP
   , mapPitch
@@ -32,19 +32,19 @@ module Payasan.Base.Elementary.Internal.Traversals
   , foldPitch 
 
 
-  , MonoDurationAlgo(..)
+  , ElemDurationAlgo(..)
   , transformD
   , collectD
   , mapDuration
   , foldDuration
 
-  , MonoAnnoAlgo(..)
+  , ElemAnnoAlgo(..)
   , transformA
   , collectA
   , mapAnno
   , foldAnno
 
-  , MonoPitchAnnoAlgo(..)
+  , ElemPitchAnnoAlgo(..)
   , transformPA
   , collectPA
   , mapPitchAnno
@@ -164,12 +164,12 @@ nth i (Phrase _ (Bar b1:bs))    = step1 0 b1 bs
 -- are worth...
 --
 take :: forall pch anno.
-        Int -> StdMonoPhrase2 pch anno -> StdMonoPhrase2 pch anno
+        Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
 take i = viaNoteList fn 
   where
     fn (NoteList info xs)       = NoteList info $ step1 0 xs
 
-    step1 :: Int -> [StdMonoNoteGroup2 pch anno]-> [StdMonoNoteGroup2 pch anno]
+    step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
     step1 n _                   | n >= i = []
     step1 _ []                  = []
     step1 n (Atom e:gs)         = (Atom e) : step1 (n+1) gs
@@ -184,12 +184,12 @@ take i = viaNoteList fn
 
 
 drop :: forall pch anno.
-        Int -> StdMonoPhrase2 pch anno -> StdMonoPhrase2 pch anno
+        Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
 drop i = viaNoteList fn 
   where
     fn (NoteList info xs)       = NoteList info $ step1 i xs
 
-    step1 :: Int -> [StdMonoNoteGroup2 pch anno]-> [StdMonoNoteGroup2 pch anno]
+    step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
     step1 n xs                  | n <= 0 = xs
     step1 _ []                  = []
     step1 n (Atom {}:gs)        = step1 (n-1) gs
@@ -212,7 +212,7 @@ drop i = viaNoteList fn
 --
 
 
-data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo 
+data ElemPitchAlgo st pch1 pch2 = ElemPitchAlgo 
     { initial_stateP  :: st
     , element_trafoP  :: forall drn anno. 
                          Element pch1 drn anno -> Mon st (Element pch2 drn anno)
@@ -220,10 +220,10 @@ data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo
 
 
 transformP :: forall st p1 p2 drn anno. 
-              MonoPitchAlgo st p1 p2 
+              ElemPitchAlgo st p1 p2 
            -> Phrase p1 drn anno 
            -> Phrase p2 drn anno
-transformP (MonoPitchAlgo { initial_stateP = st0 
+transformP (ElemPitchAlgo { initial_stateP = st0 
                           , element_trafoP = elemT }) = genTransform elemT st0
 
 
@@ -259,9 +259,8 @@ ctxMapPitch :: (Key -> pch1 -> pch2)
             -> Phrase pch2 drn anno
 ctxMapPitch fn = transformP algo 
   where
-    algo  = MonoPitchAlgo { initial_stateP    = ()
-                          , element_trafoP    = stepE 
-                          }
+    algo  = ElemPitchAlgo { initial_stateP    = ()
+                          , element_trafoP    = stepE }
 
     stepE (Note p d a t)    = (\ks -> Note (fn ks p) d a t) <$> asks section_key
     stepE (Rest d)          = pure $ Rest d
@@ -278,7 +277,7 @@ foldPitch fn a0 ph = collectP step a0 () ph
 --------------------------------------------------------------------------------
 -- Duration
 
-data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo 
+data ElemDurationAlgo st drn1 drn2 = ElemDurationAlgo 
     { initial_stateD :: st
     , element_trafoD :: forall pch anno. 
                         Element pch drn1 anno -> Mon st (Element pch drn2 anno)
@@ -286,10 +285,10 @@ data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo
 
 
 transformD :: forall st pch d1 d2 anno.
-              MonoDurationAlgo st d1 d2 
+              ElemDurationAlgo st d1 d2 
            -> Phrase pch d1 anno 
            -> Phrase pch d2 anno
-transformD (MonoDurationAlgo { initial_stateD = st0 
+transformD (ElemDurationAlgo { initial_stateD = st0 
                              , element_trafoD = elemT }) = genTransform elemT st0
 
 
@@ -320,9 +319,8 @@ collectD mf = genCollect elementC
 mapDuration :: (drn1 -> drn2) -> Phrase pch drn1 anno -> Phrase pch drn2 anno
 mapDuration fn = transformD algo 
   where
-    algo  = MonoDurationAlgo { initial_stateD   = ()
-                             , element_trafoD   = stepE 
-                             }
+    algo  = ElemDurationAlgo { initial_stateD   = ()
+                             , element_trafoD   = stepE }
 
     stepE (Note p d a t)        = pure $ Note p (fn d) a t
     stepE (Rest d)              = pure $ Rest (fn d)
@@ -340,7 +338,7 @@ foldDuration fn a0 ph = collectD step a0 () ph
 -- Annotation
 
 
-data MonoAnnoAlgo st anno1 anno2 = MonoAnnoAlgo 
+data ElemAnnoAlgo st anno1 anno2 = ElemAnnoAlgo 
     { initial_stateA  :: st
     , element_trafoA  :: forall pch drn. 
                          Element pch drn anno1 -> Mon st (Element pch drn anno2)
@@ -348,10 +346,10 @@ data MonoAnnoAlgo st anno1 anno2 = MonoAnnoAlgo
 
 
 transformA :: forall st pch drn a1 a2.
-              MonoAnnoAlgo st a1 a2
+              ElemAnnoAlgo st a1 a2
            -> Phrase pch drn a1 
            -> Phrase pch drn a2
-transformA (MonoAnnoAlgo { initial_stateA = st0 
+transformA (ElemAnnoAlgo { initial_stateA = st0 
                          , element_trafoA = elemT }) = genTransform elemT st0
 
 
@@ -378,9 +376,8 @@ collectA mf = genCollect elementC
 mapAnno :: (anno1 -> anno2) -> Phrase pch drn anno1 -> Phrase pch drn anno2
 mapAnno fn = transformA algo 
   where
-    algo  = MonoAnnoAlgo { initial_stateA   = ()
-                         , element_trafoA   = stepE 
-                         }
+    algo  = ElemAnnoAlgo { initial_stateA   = ()
+                         , element_trafoA   = stepE }
 
     stepE (Note p d a t)        = pure $ Note p d (fn a) t
     stepE (Rest d)              = pure $ Rest d
@@ -397,7 +394,7 @@ foldAnno fn a0 ph = collectA step a0 () ph
 --------------------------------------------------------------------------------
 -- Pitch and Annotation
 
-data MonoPitchAnnoAlgo st pch1 anno1 pch2 anno2 = MonoPitchAnnoAlgo 
+data ElemPitchAnnoAlgo st pch1 anno1 pch2 anno2 = ElemPitchAnnoAlgo 
     { initial_statePA :: st
     , element_trafoPA :: 
              forall drn. 
@@ -406,10 +403,10 @@ data MonoPitchAnnoAlgo st pch1 anno1 pch2 anno2 = MonoPitchAnnoAlgo
 
 
 transformPA :: forall st p1 p2 drn a1 a2.
-               MonoPitchAnnoAlgo st p1 a1 p2 a2
+               ElemPitchAnnoAlgo st p1 a1 p2 a2
             -> Phrase p1 drn a1 
             -> Phrase p2 drn a2
-transformPA (MonoPitchAnnoAlgo { initial_statePA = st0 
+transformPA (ElemPitchAnnoAlgo { initial_statePA = st0 
                                , element_trafoPA = elemT }) = 
     genTransform elemT st0
 
@@ -438,9 +435,8 @@ collectPA mf = genCollect elementC
 mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Phrase p1 drn a1 -> Phrase p2 drn a2
 mapPitchAnno fn = transformPA algo 
   where
-    algo  = MonoPitchAnnoAlgo { initial_statePA   = ()
-                              , element_trafoPA   = stepE 
-                              }
+    algo  = ElemPitchAnnoAlgo { initial_statePA   = ()
+                              , element_trafoPA   = stepE }
 
     stepE (Note p d a t)    = let (p1,a1) = fn p a in pure $ Note p1 d a1 t
     stepE (Rest d)          = pure $ Rest d

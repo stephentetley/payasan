@@ -60,12 +60,12 @@ import Payasan.LilyPond.Chordmode.Internal.OutTrans
 import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 
 
-import qualified Payasan.Base.Elementary.Internal.ElementaryToMain    as MONO
-import qualified Payasan.Base.Elementary.Internal.Syntax              as MONO
-import qualified Payasan.Base.Elementary.Internal.Traversals          as MONO
+import qualified Payasan.Base.Elementary.Internal.ElementaryToMain    as ELEM
+import qualified Payasan.Base.Elementary.Internal.Syntax              as ELEM
+import qualified Payasan.Base.Elementary.Internal.Traversals          as ELEM
 import Payasan.Base.Elementary.Internal.LinearOutput
 import Payasan.Base.Elementary.Internal.TabularOutput
-import qualified Payasan.Base.Elementary.Notelist                     as MONO
+import qualified Payasan.Base.Elementary.Notelist                     as ELEM
 
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.CommonSyntax
@@ -91,14 +91,14 @@ fromLilyPond = fromLilyPondWith default_section_info
 fromLilyPondWith :: SectionInfo 
                  -> LyChordPhrase 
                  -> StdChordPhrase
-fromLilyPondWith locals = translateInput . MONO.pushSectionInfo locals
+fromLilyPondWith locals = translateInput . ELEM.pushSectionInfo locals
 
 
 
 outputAsLilyPond :: ScoreInfo -> StdChordPhrase -> String
 outputAsLilyPond globals = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config
-                  . MONO.translateToMain 
+                  . ELEM.translateToMain 
                   . translateOutput
   where
     config  = MAIN.LilyPondPipeline 
@@ -114,7 +114,7 @@ printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> String
 outputAsRhythmicMarkup globals = 
-    MAIN.ppRender . MONO.genOutputAsRhythmicMarkup def globals
+    MAIN.ppRender . ELEM.genOutputAsRhythmicMarkup def globals
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny_ (braces $ pPrint p) }
 
@@ -132,20 +132,20 @@ writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes
 
 
 -- midiTrans :: StdChordPhrase -> MAIN.
--- The MONO to MAIN translation is actually shape changing 
+-- The ELEM to MAIN translation is actually shape changing 
 -- for MIDI - notes become chords...
 
 midiTrans :: StdChordPhrase -> MAIN.Phrase Pitch Duration ()
-midiTrans = MONO.chordTranslateToMain . chordTrans
+midiTrans = ELEM.chordTranslateToMain . chordTrans
 
 
 
-chordTrans :: StdChordPhrase -> MONO.Phrase [Pitch] Duration ()
-chordTrans = MONO.mapPitch buildNotes
+chordTrans :: StdChordPhrase -> ELEM.Phrase [Pitch] Duration ()
+chordTrans = ELEM.mapPitch buildNotes
 
 
 outputAsTabular :: ScoreInfo -> StdChordPhrase -> String
-outputAsTabular _gi ph = ppRender $ monoTabular lo ph
+outputAsTabular _gi ph = ppRender $ elemTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
                     , pp_duration  = pPrint
@@ -159,7 +159,7 @@ printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 outputAsLinear :: ScoreInfo -> StdChordPhrase -> String
-outputAsLinear _gi ph = ppRender $ monoLinear lo ph
+outputAsLinear _gi ph = ppRender $ elemLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
                     , pp_duration  = pPrint

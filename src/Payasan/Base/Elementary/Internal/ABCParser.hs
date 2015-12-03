@@ -59,13 +59,13 @@ abc = QuasiQuoter
 
 
 
-parseABCPhrase :: String -> Either ParseError ABCMonoPhrase
+parseABCPhrase :: String -> Either ParseError ABCElemPhrase
 parseABCPhrase = runParser fullABCPhrase () ""
 
 
 
 
-fullABCPhrase :: ABCParser ABCMonoPhrase
+fullABCPhrase :: ABCParser ABCElemPhrase
 fullABCPhrase = whiteSpace *> abcPhraseK >>= step
   where 
     isTrail             = all (isSpace)
@@ -74,49 +74,49 @@ fullABCPhrase = whiteSpace *> abcPhraseK >>= step
         | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-abcPhraseK :: ABCParser (ABCMonoPhrase,SourcePos,String)
+abcPhraseK :: ABCParser (ABCElemPhrase,SourcePos,String)
 abcPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
 
-phrase :: ABCParser ABCMonoPhrase 
+phrase :: ABCParser ABCElemPhrase 
 phrase = Phrase default_section_info <$> bars
 
-bars :: ABCParser [ABCMonoBar]
+bars :: ABCParser [ABCElemBar]
 bars = sepBy bar barline
 
 barline :: ABCParser ()
 barline = reservedOp "|"
 
-bar :: ABCParser ABCMonoBar
+bar :: ABCParser ABCElemBar
 bar = Bar <$> noteGroups 
 
 
-noteGroups :: ABCParser [ABCMonoNoteGroup]
+noteGroups :: ABCParser [ABCElemNoteGroup]
 noteGroups = whiteSpace *> many noteGroup
 
 
-noteGroup :: ABCParser ABCMonoNoteGroup
+noteGroup :: ABCParser ABCElemNoteGroup
 noteGroup = tuplet <|> (Atom <$> element)
 
-element :: ABCParser ABCMonoElement
+element :: ABCParser ABCElemElement
 element = lexeme (rest <|> note)
 
-rest :: ABCParser ABCMonoElement
+rest :: ABCParser ABCElemElement
 rest = Rest <$> (char 'z' *> P.noteLength)
 
-note :: ABCParser ABCMonoElement
+note :: ABCParser ABCElemElement
 note = (\p d t -> Note p d () t) <$> pitch <*> P.noteLength <*> P.tie
     <?> "note"
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser ABCMonoNoteGroup
+tuplet :: ABCParser ABCElemNoteGroup
 tuplet = do 
    spec   <- P.tupletSpec
    notes  <- countedElements (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedElements :: Int -> ABCParser [ABCMonoElement]
+countedElements :: Int -> ABCParser [ABCElemElement]
 countedElements n 
     | n > 0       = do { e  <- element
                        ; es <- countedElements (n - 1)

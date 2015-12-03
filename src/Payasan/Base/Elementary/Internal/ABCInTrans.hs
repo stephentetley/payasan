@@ -35,7 +35,7 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-abcTranslate :: ABCMonoPhrase -> Phrase Pitch Duration ()
+abcTranslate :: ABCElemPhrase -> Phrase Pitch Duration ()
 abcTranslate = transformP pch_algo . transformD drn_algo
 
 
@@ -44,8 +44,8 @@ abcTranslate = transformP pch_algo . transformD drn_algo
 
 type PMon a = Mon () a
 
-pch_algo :: MonoPitchAlgo () ABCPitch Pitch
-pch_algo = MonoPitchAlgo
+pch_algo :: ElemPitchAlgo () ABCPitch Pitch
+pch_algo = ElemPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
     }
@@ -68,8 +68,8 @@ transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
 
 type DMon a = Mon UnitNoteLength a
 
-drn_algo :: MonoDurationAlgo UnitNoteLength ABCNoteLength Duration
-drn_algo = MonoDurationAlgo
+drn_algo :: ElemDurationAlgo UnitNoteLength ABCNoteLength Duration
+drn_algo = ElemDurationAlgo
     { initial_stateD    = UNIT_NOTE_8
     , element_trafoD    = elementD
     }

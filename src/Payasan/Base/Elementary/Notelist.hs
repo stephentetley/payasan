@@ -21,10 +21,10 @@ module Payasan.Base.Elementary.Notelist
   , module Payasan.Base.Elementary.Internal.Transform
 
   , Phrase
-  , StdMonoPhrase
-  , ABCMonoPhrase
+  , StdElemPhrase
+  , ABCElemPhrase
   , abc
-  , LyMonoPhrase1
+  , LyElemPhrase1
   , lilypond
 
   , ScoreInfo(..)        -- Re-export
@@ -100,29 +100,29 @@ import Payasan.Base.Pitch
 import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
-fromABC :: ABCMonoPhrase -> StdMonoPhrase
+fromABC :: ABCElemPhrase -> StdElemPhrase
 fromABC  = fromABCWith default_section_info
 
-fromABCWith :: SectionInfo -> ABCMonoPhrase -> StdMonoPhrase
+fromABCWith :: SectionInfo -> ABCElemPhrase -> StdElemPhrase
 fromABCWith locals = abcTranslate . pushSectionInfo locals
 
 
-fromLilyPond_Relative :: Pitch -> LyMonoPhrase1 () -> StdMonoPhrase
+fromLilyPond_Relative :: Pitch -> LyElemPhrase1 () -> StdElemPhrase
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch 
                           -> SectionInfo 
-                          -> LyMonoPhrase1 ()
-                          -> StdMonoPhrase
+                          -> LyElemPhrase1 ()
+                          -> StdElemPhrase
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushSectionInfo locals
 
 
-outputAsABC :: ScoreInfo -> StaffInfo -> StdMonoPhrase -> String
+outputAsABC :: ScoreInfo -> StaffInfo -> StdElemPhrase -> String
 outputAsABC infos staff = 
     MAIN.outputAsABC infos staff . translateToMain
 
-printAsABC :: ScoreInfo -> StaffInfo -> StdMonoPhrase -> IO ()
+printAsABC :: ScoreInfo -> StaffInfo -> StdElemPhrase -> IO ()
 printAsABC infos staff = 
     MAIN.printAsABC infos staff . translateToMain
 
@@ -143,12 +143,12 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 
-outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdMonoPhrase -> String
+outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPhrase -> String
 outputAsLilyPond_Relative infos pch = 
     MAIN.outputAsLilyPond_Relative infos pch . translateToMain
 
 
-printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdMonoPhrase -> IO ()
+printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPhrase -> IO ()
 printAsLilyPond_Relative infos pch = 
     MAIN.printAsLilyPond_Relative infos pch . translateToMain
 
@@ -162,11 +162,11 @@ genOutputAsRhythmicMarkup :: LY.MarkupOutput pch
 genOutputAsRhythmicMarkup def infos = 
     MAIN.genOutputAsRhythmicMarkup def infos . translateToMain
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdElemPhrase -> String
 outputAsRhythmicMarkup infos = 
     MAIN.outputAsRhythmicMarkup infos . translateToMain
 
-printAsRhythmicMarkup :: ScoreInfo -> StdMonoPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdElemPhrase -> IO ()
 printAsRhythmicMarkup infos = 
     MAIN.printAsRhythmicMarkup infos . translateToMain
 
@@ -177,14 +177,14 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdMonoPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdElemPhrase -> IO ()
 writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
 
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 
                 => ScoreInfo -> Phrase pch drn anno -> String
-outputAsTabular _gi ph = ppRender $ monoTabular lo ph
+outputAsTabular _gi ph = ppRender $ elemTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
                     , pp_duration  = pPrint
@@ -200,7 +200,7 @@ printAsTabular gi = putStrLn . outputAsTabular gi
 
 outputAsLinear :: (Pretty pch, Pretty drn) 
                 => ScoreInfo -> Phrase pch drn anno -> String
-outputAsLinear _gi ph = ppRender $ monoLinear lo ph
+outputAsLinear _gi ph = ppRender $ elemLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
                     , pp_duration  = pPrint

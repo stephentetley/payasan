@@ -22,12 +22,12 @@ module Payasan.LilyPond.Chordmode.Internal.OutTrans
 import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.Base.Elementary.Internal.Traversals
-import Payasan.Base.Elementary.Internal.Syntax as MONO
+import Payasan.Base.Elementary.Internal.Syntax as ELEM
 
 import Payasan.Base.Internal.LilyPond.Syntax
 
-translateOutput :: MONO.Phrase Chord drn anno -> MONO.Phrase LyPitch drn ChordSuffix
+translateOutput :: ELEM.Phrase Chord drn anno -> ELEM.Phrase LyPitch drn ChordSuffix
 translateOutput = trafoAnnos 
 
-trafoAnnos :: MONO.Phrase Chord drn anno -> MONO.Phrase LyPitch drn ChordSuffix
+trafoAnnos :: ELEM.Phrase Chord drn anno -> ELEM.Phrase LyPitch drn ChordSuffix
 trafoAnnos = mapPitchAnno $ \ch _ -> (fromPitchAbs $ chord_root ch, chord_suffix ch)

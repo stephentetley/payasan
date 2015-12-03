@@ -31,9 +31,9 @@ import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-type NoteListAtom = StdMonoNoteGroup
+type NoteListAtom = StdElemNoteGroup
 
-fromNoteList :: SectionInfo -> [NoteListAtom] -> StdMonoPhrase
+fromNoteList :: SectionInfo -> [NoteListAtom] -> StdElemPhrase
 fromNoteList ri xs = recalcBars $ Phrase ri [Bar xs]
 
 note :: Pitch -> Duration -> NoteListAtom

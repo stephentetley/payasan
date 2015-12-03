@@ -17,18 +17,18 @@ import Payasan.Base.Elementary.Internal.Plain   -- TEMP
 -- a_major_temp :: Phrase LyPitch LyNoteLength
 a_major_temp = [lilypond| a4 b cis d | e fis gis a |]
 
-a_major_ly :: StdMonoPhrase
+a_major_ly :: StdElemPhrase
 a_major_ly = fromLilyPondWith_Relative middle_c locals $ 
     [lilypond| a4 b cis d | e fis gis a |]
 
 
-a_major_abc :: StdMonoPhrase
+a_major_abc :: StdElemPhrase
 a_major_abc = fromABCWith locals $ 
     [abc| A, B, C D | E F G A |]
 
 
 
-a_major_plain :: StdMonoPhrase
+a_major_plain :: StdElemPhrase
 a_major_plain = fromNoteList locals $
     map (\p -> note p d_quarter) $ [ a_3, b_3, cs_4, d_4, e_4, fs_4, gs_4, a_4  ]
 

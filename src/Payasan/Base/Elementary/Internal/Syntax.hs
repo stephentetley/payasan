@@ -19,35 +19,35 @@
 module Payasan.Base.Elementary.Internal.Syntax
   ( 
 
-    StdMonoPhrase
-  , StdMonoBar
-  , StdMonoNoteGroup
-  , StdMonoElement
+    StdElemPhrase
+  , StdElemBar
+  , StdElemNoteGroup
+  , StdElemElement
 
-  , StdMonoPhrase1
-  , StdMonoBar1
-  , StdMonoNoteGroup1
-  , StdMonoElement1
+  , StdElemPhrase1
+  , StdElemBar1
+  , StdElemNoteGroup1
+  , StdElemElement1
 
-  , StdMonoPhrase2
-  , StdMonoBar2
-  , StdMonoNoteGroup2
-  , StdMonoElement2
+  , StdElemPhrase2
+  , StdElemBar2
+  , StdElemNoteGroup2
+  , StdElemElement2
 
-  , LyMonoPhrase1
-  , LyMonoBar1
-  , LyMonoNoteGroup1
-  , LyMonoElement1
+  , LyElemPhrase1
+  , LyElemBar1
+  , LyElemNoteGroup1
+  , LyElemElement1
 
-  , LyMonoPhrase2
-  , LyMonoBar2
-  , LyMonoNoteGroup2
-  , LyMonoElement2
+  , LyElemPhrase2
+  , LyElemBar2
+  , LyElemNoteGroup2
+  , LyElemElement2
 
-  , ABCMonoPhrase
-  , ABCMonoBar
-  , ABCMonoNoteGroup
-  , ABCMonoElement
+  , ABCElemPhrase
+  , ABCElemBar
+  , ABCElemNoteGroup
+  , ABCElemElement
   
 
   , Phrase(..)
@@ -73,37 +73,37 @@ import Data.Data
 -- Syntax
 
 
-type StdMonoPhrase                  = StdMonoPhrase1    ()
-type StdMonoBar                     = StdMonoBar1       ()
-type StdMonoNoteGroup               = StdMonoNoteGroup1 ()
-type StdMonoElement                 = StdMonoElement1   ()
+type StdElemPhrase                  = StdElemPhrase1    ()
+type StdElemBar                     = StdElemBar1       ()
+type StdElemNoteGroup               = StdElemNoteGroup1 ()
+type StdElemElement                 = StdElemElement1   ()
 
 
-type StdMonoPhrase1     anno        = Phrase    Pitch Duration anno
-type StdMonoBar1        anno        = Bar       Pitch Duration anno
-type StdMonoNoteGroup1  anno        = NoteGroup Pitch Duration anno
-type StdMonoElement1    anno        = Element   Pitch Duration anno
+type StdElemPhrase1     anno        = Phrase    Pitch Duration anno
+type StdElemBar1        anno        = Bar       Pitch Duration anno
+type StdElemNoteGroup1  anno        = NoteGroup Pitch Duration anno
+type StdElemElement1    anno        = Element   Pitch Duration anno
 
-type StdMonoPhrase2     pch anno    = Phrase    pch Duration anno
-type StdMonoBar2        pch anno    = Bar       pch Duration anno
-type StdMonoNoteGroup2  pch anno    = NoteGroup pch Duration anno
-type StdMonoElement2    pch anno    = Element   pch Duration anno
+type StdElemPhrase2     pch anno    = Phrase    pch Duration anno
+type StdElemBar2        pch anno    = Bar       pch Duration anno
+type StdElemNoteGroup2  pch anno    = NoteGroup pch Duration anno
+type StdElemElement2    pch anno    = Element   pch Duration anno
 
-type LyMonoPhrase1      anno        = LyMonoPhrase2     LyPitch anno
-type LyMonoBar1         anno        = LyMonoBar2        LyPitch anno
-type LyMonoNoteGroup1   anno        = LyMonoNoteGroup2  LyPitch anno
-type LyMonoElement1     anno        = LyMonoElement2    LyPitch anno
+type LyElemPhrase1      anno        = LyElemPhrase2     LyPitch anno
+type LyElemBar1         anno        = LyElemBar2        LyPitch anno
+type LyElemNoteGroup1   anno        = LyElemNoteGroup2  LyPitch anno
+type LyElemElement1     anno        = LyElemElement2    LyPitch anno
 
-type LyMonoPhrase2      pch anno    = Phrase    pch LyNoteLength anno
-type LyMonoBar2         pch anno    = Bar       pch LyNoteLength anno
-type LyMonoNoteGroup2   pch anno    = NoteGroup pch LyNoteLength anno
-type LyMonoElement2     pch anno    = Element   pch LyNoteLength anno
+type LyElemPhrase2      pch anno    = Phrase    pch LyNoteLength anno
+type LyElemBar2         pch anno    = Bar       pch LyNoteLength anno
+type LyElemNoteGroup2   pch anno    = NoteGroup pch LyNoteLength anno
+type LyElemElement2     pch anno    = Element   pch LyNoteLength anno
 
 
-type ABCMonoPhrase                  = Phrase    ABCPitch ABCNoteLength ()
-type ABCMonoBar                     = Bar       ABCPitch ABCNoteLength ()
-type ABCMonoNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
-type ABCMonoElement                 = Element   ABCPitch ABCNoteLength ()
+type ABCElemPhrase                  = Phrase    ABCPitch ABCNoteLength ()
+type ABCElemBar                     = Bar       ABCPitch ABCNoteLength ()
+type ABCElemNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
+type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 
 
 

@@ -37,7 +37,7 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
   ) where
 
 import Payasan.Base.Elementary.Internal.LilyPondInTrans
-import qualified Payasan.Base.Elementary.Internal.Syntax    as MONO
+import qualified Payasan.Base.Elementary.Internal.Syntax    as ELEM
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
@@ -48,17 +48,17 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
-type LyricPhrase1 anno  = MONO.StdMonoPhrase2 Syllable anno
+type LyricPhrase1 anno  = ELEM.StdElemPhrase2 Syllable anno
 
-type LyLyricPhrase      = MONO.Phrase     Syllable LyNoteLength ()
-type LyLyricBar         = MONO.Bar        Syllable LyNoteLength ()
-type LyLyricNoteGroup   = MONO.NoteGroup  Syllable LyNoteLength ()
-type LyLyricElement     = MONO.Element    Syllable LyNoteLength ()
+type LyLyricPhrase      = ELEM.Phrase     Syllable LyNoteLength ()
+type LyLyricBar         = ELEM.Bar        Syllable LyNoteLength ()
+type LyLyricNoteGroup   = ELEM.NoteGroup  Syllable LyNoteLength ()
+type LyLyricElement     = ELEM.Element    Syllable LyNoteLength ()
 
-type LyLyricPhrase1 anno        = MONO.Phrase     Syllable LyNoteLength anno
-type LyLyricBar1 anno           = MONO.Bar        Syllable LyNoteLength anno
-type LyLyricNoteGroup1 anno     = MONO.NoteGroup  Syllable LyNoteLength anno
-type LyLyricElement1 anno       = MONO.Element    Syllable LyNoteLength anno
+type LyLyricPhrase1 anno        = ELEM.Phrase     Syllable LyNoteLength anno
+type LyLyricBar1 anno           = ELEM.Bar        Syllable LyNoteLength anno
+type LyLyricNoteGroup1 anno     = ELEM.NoteGroup  Syllable LyNoteLength anno
+type LyLyricElement1 anno       = ELEM.Element    Syllable LyNoteLength anno
 
 
 data Syllable = Syllable String

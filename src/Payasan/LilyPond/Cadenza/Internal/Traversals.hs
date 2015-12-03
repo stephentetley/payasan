@@ -19,7 +19,7 @@
 module Payasan.LilyPond.Cadenza.Internal.Traversals
   (
     Mon 
-  , MonoPitchAlgo(..)
+  , CadenzaPitchAlgo(..)
   , transformP
   , collectP
   , mapPitch
@@ -27,19 +27,19 @@ module Payasan.LilyPond.Cadenza.Internal.Traversals
   , foldPitch 
 
 
-  , MonoDurationAlgo(..)
+  , CadenzaDurationAlgo(..)
   , transformD
   , collectD
   , mapDuration
   , foldDuration
 
-  , MonoAnnoAlgo(..)
+  , CadenzaAnnoAlgo(..)
   , transformA
   , collectA
   , mapAnno
   , foldAnno
 
-  , MonoPitchAnnoAlgo(..)
+  , CadenzaPitchAnnoAlgo(..)
   , transformPA
   , collectPA
   , mapPitchAnno
@@ -117,7 +117,7 @@ genTransform elemT st0 ph =
 --
 
 
-data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo 
+data CadenzaPitchAlgo st pch1 pch2 = CadenzaPitchAlgo 
     { initial_stateP  :: st
     , element_trafoP  :: forall drn anno. 
                          Element pch1 drn anno -> Mon st (Element pch2 drn anno)
@@ -125,11 +125,11 @@ data MonoPitchAlgo st pch1 pch2 = MonoPitchAlgo
 
 
 transformP :: forall st p1 p2 drn anno. 
-              MonoPitchAlgo st p1 p2 
+              CadenzaPitchAlgo st p1 p2 
            -> Phrase p1 drn anno 
            -> Phrase p2 drn anno
-transformP (MonoPitchAlgo { initial_stateP = st0 
-                          , element_trafoP = elemT }) = genTransform elemT st0
+transformP (CadenzaPitchAlgo { initial_stateP = st0 
+                             , element_trafoP = elemT }) = genTransform elemT st0
 
 
 -- | This is a seems less generally useful than @transformP@ 
@@ -164,7 +164,7 @@ ctxMapPitch :: (Key -> pch1 -> pch2)
             -> Phrase pch2 drn anno
 ctxMapPitch fn = transformP algo 
   where
-    algo  = MonoPitchAlgo { initial_stateP    = ()
+    algo  = CadenzaPitchAlgo { initial_stateP    = ()
                           , element_trafoP    = stepE 
                           }
 
@@ -183,7 +183,7 @@ foldPitch fn a0 ph = collectP step a0 () ph
 --------------------------------------------------------------------------------
 -- Duration
 
-data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo 
+data CadenzaDurationAlgo st drn1 drn2 = CadenzaDurationAlgo 
     { initial_stateD :: st
     , element_trafoD :: forall pch anno. 
                         Element pch drn1 anno -> Mon st (Element pch drn2 anno)
@@ -191,11 +191,11 @@ data MonoDurationAlgo st drn1 drn2 = MonoDurationAlgo
 
 
 transformD :: forall st pch d1 d2 anno.
-              MonoDurationAlgo st d1 d2 
+              CadenzaDurationAlgo st d1 d2 
            -> Phrase pch d1 anno 
            -> Phrase pch d2 anno
-transformD (MonoDurationAlgo { initial_stateD = st0 
-                             , element_trafoD = elemT }) = genTransform elemT st0
+transformD (CadenzaDurationAlgo { initial_stateD = st0 
+                                , element_trafoD = elemT }) = genTransform elemT st0
 
 
 -- | This is a seems less generally useful than @transformD@ 
@@ -225,9 +225,8 @@ collectD mf = genCollect elementC
 mapDuration :: (drn1 -> drn2) -> Phrase pch drn1 anno -> Phrase pch drn2 anno
 mapDuration fn = transformD algo 
   where
-    algo  = MonoDurationAlgo { initial_stateD   = ()
-                             , element_trafoD   = stepE 
-                             }
+    algo  = CadenzaDurationAlgo { initial_stateD   = ()
+                                , element_trafoD   = stepE }
 
     stepE (Note p d a t)        = pure $ Note p (fn d) a t
     stepE (Rest d)              = pure $ Rest (fn d)
@@ -245,7 +244,7 @@ foldDuration fn a0 ph = collectD step a0 () ph
 -- Annotation
 
 
-data MonoAnnoAlgo st anno1 anno2 = MonoAnnoAlgo 
+data CadenzaAnnoAlgo st anno1 anno2 = CadenzaAnnoAlgo 
     { initial_stateA  :: st
     , element_trafoA  :: forall pch drn. 
                          Element pch drn anno1 -> Mon st (Element pch drn anno2)
@@ -253,11 +252,11 @@ data MonoAnnoAlgo st anno1 anno2 = MonoAnnoAlgo
 
 
 transformA :: forall st pch drn a1 a2.
-              MonoAnnoAlgo st a1 a2
+              CadenzaAnnoAlgo st a1 a2
            -> Phrase pch drn a1 
            -> Phrase pch drn a2
-transformA (MonoAnnoAlgo { initial_stateA = st0 
-                         , element_trafoA = elemT }) = genTransform elemT st0
+transformA (CadenzaAnnoAlgo { initial_stateA = st0 
+                            , element_trafoA = elemT }) = genTransform elemT st0
 
 
 collectA :: forall st pch drn anno ac.
@@ -283,9 +282,8 @@ collectA mf = genCollect elementC
 mapAnno :: (anno1 -> anno2) -> Phrase pch drn anno1 -> Phrase pch drn anno2
 mapAnno fn = transformA algo 
   where
-    algo  = MonoAnnoAlgo { initial_stateA   = ()
-                         , element_trafoA   = stepE 
-                         }
+    algo  = CadenzaAnnoAlgo { initial_stateA   = ()
+                            , element_trafoA   = stepE }
 
     stepE (Note p d a t)        = pure $ Note p d (fn a) t
     stepE (Rest d)              = pure $ Rest d
@@ -302,7 +300,7 @@ foldAnno fn a0 ph = collectA step a0 () ph
 --------------------------------------------------------------------------------
 -- Pitch and Annotation
 
-data MonoPitchAnnoAlgo st pch1 anno1 pch2 anno2 = MonoPitchAnnoAlgo 
+data CadenzaPitchAnnoAlgo st pch1 anno1 pch2 anno2 = CadenzaPitchAnnoAlgo 
     { initial_statePA :: st
     , element_trafoPA :: 
              forall drn. 
@@ -311,11 +309,11 @@ data MonoPitchAnnoAlgo st pch1 anno1 pch2 anno2 = MonoPitchAnnoAlgo
 
 
 transformPA :: forall st p1 p2 drn a1 a2.
-               MonoPitchAnnoAlgo st p1 a1 p2 a2
+               CadenzaPitchAnnoAlgo st p1 a1 p2 a2
             -> Phrase p1 drn a1 
             -> Phrase p2 drn a2
-transformPA (MonoPitchAnnoAlgo { initial_statePA = st0 
-                               , element_trafoPA = elemT }) = 
+transformPA (CadenzaPitchAnnoAlgo { initial_statePA = st0 
+                                  , element_trafoPA = elemT }) = 
     genTransform elemT st0
 
 
@@ -343,9 +341,8 @@ collectPA mf = genCollect elementC
 mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Phrase p1 drn a1 -> Phrase p2 drn a2
 mapPitchAnno fn = transformPA algo 
   where
-    algo  = MonoPitchAnnoAlgo { initial_statePA   = ()
-                              , element_trafoPA   = stepE 
-                              }
+    algo  = CadenzaPitchAnnoAlgo { initial_statePA   = ()
+                                 , element_trafoPA   = stepE }
 
     stepE (Note p d a t)    = let (p1,a1) = fn p a in pure $ Note p1 d a1 t
     stepE (Rest d)          = pure $ Rest d

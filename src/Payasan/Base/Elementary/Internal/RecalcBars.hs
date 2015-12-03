@@ -50,7 +50,7 @@ data NoteList pch anno = NoteList
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-flatten :: StdMonoPhrase2 pch anno -> NoteList pch anno
+flatten :: StdElemPhrase2 pch anno -> NoteList pch anno
 flatten (Phrase info bs) = 
     NoteList { notelist_header = info
              , notelist_notes  = concatMap fn bs }
@@ -59,15 +59,15 @@ flatten (Phrase info bs) =
 
 
 viaNoteList :: (NoteList pch anno -> NoteList pch anno) 
-            -> StdMonoPhrase2 pch anno
-            -> StdMonoPhrase2 pch anno
+            -> StdElemPhrase2 pch anno
+            -> StdElemPhrase2 pch anno
 viaNoteList fn = remake . fn . flatten
 
 
 --------------------------------------------------------------------------------
 -- Remake - notelist to 
 
-remake :: NoteList pch anno -> StdMonoPhrase2 pch anno
+remake :: NoteList pch anno -> StdElemPhrase2 pch anno
 remake (NoteList info es) = 
     Phrase { phrase_header = info 
            , phrase_bars   = fn $ section_meter info }

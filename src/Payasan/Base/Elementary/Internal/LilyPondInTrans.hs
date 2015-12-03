@@ -42,13 +42,13 @@ import Payasan.Base.Pitch
 
 
 lilyPondTranslate_Relative :: Pitch
-                           -> LyMonoPhrase2 LyPitch anno 
-                           -> StdMonoPhrase1 anno
+                           -> LyElemPhrase2 LyPitch anno 
+                           -> StdElemPhrase1 anno
 lilyPondTranslate_Relative pch = trafoRelPitch pch . trafoDuration
 
 
-lilyPondTranslate_Absolute :: LyMonoPhrase2 LyPitch anno 
-                           -> StdMonoPhrase1 anno
+lilyPondTranslate_Absolute :: LyElemPhrase2 LyPitch anno 
+                           -> StdElemPhrase1 anno
 lilyPondTranslate_Absolute = trafoAbsPitch . trafoDuration
 
 
@@ -64,8 +64,8 @@ type AbsPMon a = Mon () a
 trafoRelPitch :: Pitch -> Phrase LyPitch drn anno -> Phrase Pitch drn anno
 trafoRelPitch p0 = transformP (rel_pch_algo p0)
 
-rel_pch_algo :: Pitch -> MonoPitchAlgo Pitch LyPitch Pitch
-rel_pch_algo start = MonoPitchAlgo
+rel_pch_algo :: Pitch -> ElemPitchAlgo Pitch LyPitch Pitch
+rel_pch_algo start = ElemPitchAlgo
     { initial_stateP    = start
     , element_trafoP    = relElementP
     }
@@ -105,8 +105,8 @@ trafoAbsPitch :: Phrase LyPitch drn anno -> Phrase Pitch drn anno
 trafoAbsPitch = transformP abs_pch_algo
 
 
-abs_pch_algo :: MonoPitchAlgo () LyPitch Pitch
-abs_pch_algo = MonoPitchAlgo
+abs_pch_algo :: ElemPitchAlgo () LyPitch Pitch
+abs_pch_algo = ElemPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = absElementP
     }
@@ -133,8 +133,8 @@ trafoDuration :: Phrase pch LyNoteLength anno -> Phrase pch Duration anno
 trafoDuration = transformD drn_algo
 
 
-drn_algo :: MonoDurationAlgo Duration LyNoteLength Duration 
-drn_algo = MonoDurationAlgo
+drn_algo :: ElemDurationAlgo Duration LyNoteLength Duration 
+drn_algo = ElemDurationAlgo
     { initial_stateD    = d_quarter
     , element_trafoD    = elementD
     }

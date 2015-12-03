@@ -120,7 +120,7 @@ data NoteGroup pch drn anno =
   deriving (Data,Eq,Show,Typeable)
 
 
--- Element currently follows Monophonic syntax (omitting chords 
+-- Element currently follows Elementary syntax (omitting chords 
 -- and graces).
 --
 data Element pch drn anno = 

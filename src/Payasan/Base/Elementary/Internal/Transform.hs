@@ -126,9 +126,8 @@ interScaleStep fn = fromScaleStepRepr . fn . toScaleStepRepr
 toScaleStepRepr :: Phrase Pitch drn anno -> Phrase ChromaticPitch drn anno
 toScaleStepRepr = transformP step_algo
   where
-    step_algo = MonoPitchAlgo { initial_stateP = ()
-                              , element_trafoP = change
-                              }
+    step_algo = ElemPitchAlgo { initial_stateP = ()
+                              , element_trafoP = change }
 
     change (Note p d a t)       = (\p1 -> Note p1 d a t) <$> mf p
     change (Rest d)             = pure $ Rest d
@@ -142,9 +141,8 @@ toScaleStepRepr = transformP step_algo
 fromScaleStepRepr :: Phrase ChromaticPitch drn anno -> Phrase Pitch drn anno
 fromScaleStepRepr = transformP step_algo
   where
-    step_algo = MonoPitchAlgo { initial_stateP = ()
-                              , element_trafoP = change
-                              }
+    step_algo = ElemPitchAlgo { initial_stateP = ()
+                              , element_trafoP = change }
 
     change (Note p d a t)       = (\p1 -> Note p1 d a t) <$> mf p
     change (Rest d)             = pure $ Rest d

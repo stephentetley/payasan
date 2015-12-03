@@ -60,7 +60,7 @@ lilypond = QuasiQuoter
 -- Parser
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyMonoPhrase1 ())
+parseLilyPondNoAnno :: String -> Either ParseError (LyElemPhrase1 ())
 parseLilyPondNoAnno = parseLyPhrase parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
@@ -68,12 +68,12 @@ parseLilyPondNoAnno = parseLyPhrase parsedef
 
 parseLyPhrase :: P.LyParserDef pch anno
               -> String 
-              -> Either ParseError (LyMonoPhrase2 pch anno)
+              -> Either ParseError (LyElemPhrase2 pch anno)
 parseLyPhrase def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. 
-                P.LyParserDef pch anno -> LyParser (LyMonoPhrase2 pch anno)
+                P.LyParserDef pch anno -> LyParser (LyElemPhrase2 pch anno)
 makeLyParser def = fullParseLy phrase
   where
     pPitch :: LyParser pch
@@ -82,38 +82,38 @@ makeLyParser def = fullParseLy phrase
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    phrase :: LyParser (LyMonoPhrase2 pch anno)
+    phrase :: LyParser (LyElemPhrase2 pch anno)
     phrase = Phrase default_section_info <$> bars
 
-    bars :: LyParser [LyMonoBar2 pch anno]
+    bars :: LyParser [LyElemBar2 pch anno]
     bars = sepBy bar P.barline
 
-    bar :: LyParser (LyMonoBar2 pch anno)
+    bar :: LyParser (LyElemBar2 pch anno)
     bar = Bar <$> noteGroups 
 
-    noteGroups :: LyParser [LyMonoNoteGroup2 pch anno]
+    noteGroups :: LyParser [LyElemNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many (ignoreSquares noteGroup)
 
-    noteGroup :: LyParser (LyMonoNoteGroup2 pch anno)
+    noteGroup :: LyParser (LyElemNoteGroup2 pch anno)
     noteGroup = tuplet <|> (Atom <$> element)
 
-    tuplet :: LyParser (LyMonoNoteGroup2 pch anno)
+    tuplet :: LyParser (LyElemNoteGroup2 pch anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
             <$> P.tupletSpec <*> braces elements
 
-    elements :: LyParser [LyMonoElement2 pch anno]
+    elements :: LyParser [LyElemElement2 pch anno]
     elements = whiteSpace *> many (ignoreSquares element)
 
-    element :: LyParser (LyMonoElement2 pch anno)
+    element :: LyParser (LyElemElement2 pch anno)
     element = lexeme (rest <|> note)
 
-    note :: LyParser (LyMonoElement2 pch anno)
+    note :: LyParser (LyElemElement2 pch anno)
     note = (\p d a t -> Note p d a t) 
              <$> pPitch <*> P.noteLength <*> pAnno <*> P.tie
         <?> "note"
 
-    rest :: LyParser (LyMonoElement2 pch anno)
+    rest :: LyParser (LyElemElement2 pch anno)
     rest = Rest <$> (char 'r' *> P.noteLength)
 
 

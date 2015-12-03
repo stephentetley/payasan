@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Output Mono syntax to a Humdrum-like form.
+-- Output Elementary syntax to a Humdrum-like form.
 --
 -- This is intended debugging and checking purposes, so it is
 -- specialized to represent Payasan and is not directly 
@@ -21,7 +21,7 @@
 module Payasan.Base.Elementary.Internal.TabularOutput
   ( 
 
-    monoTabular
+    elemTabular
     
   ) where
 
@@ -34,8 +34,8 @@ import Payasan.Base.Internal.Output.Tabular.Utils
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-monoTabular :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-monoTabular ppl ph = concatBars 2 $ oPhrase ppl ph
+elemTabular :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
+elemTabular ppl ph = concatBars 2 $ oPhrase ppl ph
 
 
 

@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Output Mono syntax to a linear form.
+-- Output Elementary syntax to a linear form.
 --
 -- This is intended debugging and checking purposes.
 --
@@ -19,7 +19,7 @@
 module Payasan.Base.Elementary.Internal.LinearOutput
   ( 
 
-    monoLinear
+    elemLinear
     
   ) where
 
@@ -35,8 +35,8 @@ import Text.PrettyPrint.HughesPJClass                -- package: pretty
 -- NOTE - if we use Note-Rest as Maybe+duration we need
 -- a larger customiztion than LeafOuput.
 
-monoLinear :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-monoLinear ppl ph = concatBars $ oPhrase ppl ph
+elemLinear :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
+elemLinear ppl ph = concatBars $ oPhrase ppl ph
 
 
 

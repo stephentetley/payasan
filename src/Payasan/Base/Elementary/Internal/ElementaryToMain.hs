@@ -41,7 +41,7 @@ translateToMain = phraseT
     barT :: SectionInfo -> Bar pch drn anno -> T.Bar pch drn anno
     barT info (Bar cs)              = T.Bar info $ map noteGroupT cs
 
-    -- | No beams in mono syntax so one-to-one
+    -- | No beams in Elementary syntax so one-to-one
     --
     noteGroupT :: NoteGroup pch drn anno -> T.NoteGroup pch drn anno
     noteGroupT (Atom e)             = T.Atom $ elementT e
@@ -58,7 +58,7 @@ translateToMain = phraseT
 
 
 -- | Note - Prevents type change on duration (ideally duration 
--- would be opaque, it cannot be with the main and mono 
+-- would be opaque, it cannot be with the Main and Elementary
 -- representations).
 --
 chordTranslateToMain :: forall pch drn anno. 
