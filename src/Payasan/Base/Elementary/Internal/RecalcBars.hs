@@ -20,8 +20,10 @@
 module Payasan.Base.Elementary.Internal.RecalcBars
   (
     NoteList(..) 
+  , Notes
   , recalcBars
   , viaNoteList
+  , onNoteList
 
   ) where
 
@@ -37,6 +39,7 @@ import Data.Data
 recalcBars :: Phrase pch Duration anno -> Phrase pch Duration anno
 recalcBars = remake . flatten
 
+type Notes pch anno = [NoteGroup pch Duration anno]
 
 
 data NoteList pch anno = NoteList
@@ -58,10 +61,19 @@ flatten (Phrase info bs) =
     fn (Bar xs) = xs
 
 
-viaNoteList :: (NoteList pch anno -> NoteList pch anno) 
+viaNoteList :: (SectionInfo -> Notes pch anno -> Notes pch anno) 
             -> StdElemPhrase2 pch anno
             -> StdElemPhrase2 pch anno
-viaNoteList fn = remake . fn . flatten
+viaNoteList fn = remake . f2 . flatten
+  where
+    f2 (NoteList info es) = NoteList info $ fn info es
+
+onNoteList :: (SectionInfo -> Notes pch anno -> ans) 
+            -> StdElemPhrase2 pch anno
+            -> ans
+onNoteList fn = f2 . flatten
+  where
+    f2 (NoteList info es) = fn info es
 
 
 --------------------------------------------------------------------------------

@@ -119,81 +119,73 @@ genTransform elemT st0 ph =
 --------------------------------------------------------------------------------
 --
 
--- Length changing traversals will be easier going through 
+-- Length changing traversals will be easier going through flat NoteList
+-- 
 --
 
+nth :: Int -> StdElemPhrase2 pch anno -> Maybe (StdElemElement2 pch anno)
+nth i = onNoteList (\_ xs -> step1 0 xs)
+  where 
+    step1 _ []                      = Nothing
+    step1 n (Atom e:es) | n < i     = step1 (n+1) es
+                        | otherwise = Just e
 
-
--- | nth might be counter-intuitive in the presence of 
--- triplets...
---
-nth :: forall pch drn anno.
-       Int -> Phrase pch drn anno -> Maybe (Element pch drn anno)
-nth _ (Phrase _ [])             = Nothing
-nth i (Phrase _ (Bar b1:bs))    = step1 0 b1 bs 
-  where
-    step1 :: Int -> [NoteGroup pch drn anno] -> [Bar pch drn anno] 
-          -> Maybe (Element pch drn anno)
-    step1 _ []      []          = Nothing
-    step1 n []      (Bar r1:rs) = step1 n r1 rs
-    step1 n (g1:gs) rs          = case step2 n g1 of
-        Left n1 -> step1 n1 gs rs
+    step1 n (Tuplet _ xs:es)        = case step2 n xs of
+        Left n1 -> step1 n1 es
         Right a -> Just a
-
-    step2 n (Atom e)  
-        | n == i                = Right e
-        | otherwise             = Left $ n+1
-                  
-    step2 n (Tuplet _ es)       = step3 n es
-
-    step3 n (e:es)              
-        | n == i                = Right e
-        | otherwise             = step3 (n+1) es
-
-    step3 n []                  = Left n
+    
+    step2 n []                      = Left n
+    step2 n (e:es) | n < i          = step2 (n+1) es
+                   | otherwise      = Right e
 
 
 -- nth suggests take and drop
 
 
+
 -- | Tuplet splitting is not properly implemented yet as it 
 -- should modify the spec
 --
--- NOTE - the covoluted nature of the implementations of take 
--- and drop suggest nested tuplets may be more trouble than they
--- are worth...
---
 take :: forall pch anno.
         Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-take i = viaNoteList fn 
+take i = viaNoteList (\_ xs -> step1 i xs)
   where
-    fn (NoteList info xs)       = NoteList info $ step1 0 xs
-
     step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 n _                   | n >= i = []
-    step1 _ []                  = []
-    step1 n (Atom e:gs)         = (Atom e) : step1 (n+1) gs
-    step1 n (Tuplet spec es:gs) = 
-        let (n1,es1) = step2 n es
-        in if n1 >= i then [Tuplet spec es1]
-                      else (Tuplet spec es1) : step1 n1 gs
+    step1 n _   | n <= 0            = []
+    step1 _ []                      = []
+    step1 n (Atom e:es)             = (Atom e) : step1 (n-1) es
+    step1 n (Tuplet spec xs:es)     = 
+        let (n1,ys) = step2 n xs 
+            spec2 = spec         
+        in Tuplet spec2 ys : step1 n1 es  -- TODO remake spec
 
-    step2 n []                  = (n,[])
-    step2 n _                   | n >= i = (n,[])
-    step2 n (e:es)              = let (n1,ys) = step2 (n+1) es in (n1,e:ys)
+    step2 n []                      = (n,[])
+    step2 n (e:es) | n <= 0         = (n,[])
+                   | otherwise      = let (n1,ys) = step2 (n-1) es
+                                      in (n1,e:ys)
 
 
 drop :: forall pch anno.
         Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-drop i = viaNoteList fn 
+drop i = viaNoteList (\_ xs -> step1 i xs)
   where
-    fn (NoteList info xs)       = NoteList info $ step1 i xs
-
     step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 n xs                  | n <= 0 = xs
-    step1 _ []                  = []
-    step1 n (Atom {}:gs)        = step1 (n-1) gs
-    step1 _ (Tuplet {}:_)       = error "Tuplet"
+    step1 n xs | n <= 0             = xs
+    step1 _ []                      = []
+    step1 n (Atom _:es)             = step1 (n-1) es
+    step1 n (Tuplet spec xs:es)     = case step2 n xs of
+        Left n1 -> step1 n1 es
+        Right ys -> let spec2 = spec 
+                    in Tuplet spec2 ys : es  -- TODO remake spec
+
+    step2 n []                      = Left n
+    step2 n (_:es) | n <= 0         = Right es
+                   | otherwise      = step2 (n-1) es
+   
+   
+
+
+
     -- TODO - it will be better to define a set of operations that 
     -- work on tuplets rather than do ad hoc destructuring here
   
