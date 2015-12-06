@@ -73,7 +73,7 @@ outputAsLilyPond :: Anno anno => ScoreInfo -> LyricPhrase1 anno -> String
 outputAsLilyPond globals lyrics = 
     MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
   where
-    beats           = ELEM.censorPunctuation $ ELEM.skipToRest $ extractRhythm lyrics
+    beats           = ELEM.censorPunctuation $ ELEM.changeSkipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
                         , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Absolute
@@ -87,7 +87,7 @@ outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> LyricPhrase1 anno -> String
 outputAsLilyPondDU annos globals lyrics = 
     MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
   where
-    beats           = ELEM.censorPunctuation $ ELEM.skipToRest $ extractRhythm lyrics
+    beats           = ELEM.censorPunctuation $ ELEM.changeSkipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
                         , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Absolute

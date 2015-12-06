@@ -58,6 +58,7 @@ module Payasan.Base.Elementary.Internal.Syntax
   , pushSectionInfo
   , sectionInfo
   , sizeNoteGroup
+  , sizeElement
 
   ) where
 
