@@ -169,7 +169,7 @@ timbalesStyle :: Anno a1
               -> Phrase DrumPitch LyNoteLength a1
               -> Doc
 timbalesStyle globals ph1 ph2 = 
-        header $+$ upper_def $+$ lower_def $+$ block (Just score_) score
+        header $+$ upper_def $+$ lower_def $+$ score_ score
   where
     header      = scoreHeader globals
     locals1     = maybe default_section_info id $ firstSectionInfo ph1

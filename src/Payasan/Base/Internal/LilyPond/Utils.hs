@@ -50,11 +50,13 @@ module Payasan.Base.Internal.LilyPond.Utils
   , new_
   , newStaff_
   , newStaffDefn
+  , voice_
   , newVoice_
   , newVoiceDefn
   , newVoiceWith_
   , newDrumVoice_
-
+  , layout_
+  , context_
 
   , newRhythmicStaff_
   , newDrumStaff_
@@ -77,11 +79,15 @@ module Payasan.Base.Internal.LilyPond.Utils
   , with_
   , withBlock_ 
 
+  , consists_
   , override_
   , set_
   , hide_
 
   , drummode_
+
+  , startGroup_
+  , stopGroup_
 
 
   , tie
@@ -185,8 +191,8 @@ definition :: String -> Doc -> Doc
 definition ss d = text ss <+> char '=' <+> d
 
 
-score_          :: Doc
-score_          = command "score"
+score_          :: Doc -> Doc
+score_          = block (Just $ command "score")
        
 new_            :: Doc -> Doc
 new_ d          = command "new" <+> d
@@ -208,6 +214,10 @@ newStaff_       = new_ $ text "Staff"
 
 newStaffDefn :: String -> Doc
 newStaffDefn name = newStaff_ <+> char '=' <+> doubleQuotes (text name)
+
+
+voice_          :: Doc
+voice_          = command "Voice"
 
 newVoice_       :: Doc
 newVoice_       = new_ $ text "Voice"
@@ -232,6 +242,12 @@ newDrumStaff_ = command "new" <+> text "DrumStaff"
 
 newDrumStaffWith_ :: Doc -> Doc
 newDrumStaffWith_ d = newDrumStaff_ <+> withBlock_ d
+
+layout_         :: Doc -> Doc
+layout_         = block (Just $ command "layout")
+
+context_        :: Doc -> Doc
+context_        = block (Just $ command "context")
 
 
 version_ :: String -> Doc
@@ -297,6 +313,9 @@ stemDown_       :: Doc
 stemDown_       = command "stemDown"
 
 
+consists_       :: String -> Doc
+consists_ ss    = command "consists" <+> doubleQuotes (text ss)
+
 -- | Overrides are expected to be copy-paste fragments from 
 -- LilyPond. 
 --
@@ -330,6 +349,16 @@ withBlock_ d    = with_ <+> anonBlock d
 
 drummode_       :: Doc
 drummode_       = command "drummode"
+
+startGroup_     :: Doc
+startGroup_     = command "startGroup"
+
+stopGroup_      :: Doc
+stopGroup_      = command "stopGroup"
+
+
+
+
 
 tie :: Tie -> Doc
 tie NO_TIE = empty

@@ -39,6 +39,7 @@ library
     Payasan.Base.Elementary.Notelist,
     Payasan.Base.Elementary.Internal.ABCInTrans,
     Payasan.Base.Elementary.Internal.ABCParser,
+    Payasan.Base.Elementary.Internal.AnalysisOutput,
     Payasan.Base.Elementary.Internal.LilyPondInTrans,
     Payasan.Base.Elementary.Internal.LilyPondParser,
     Payasan.Base.Elementary.Internal.LinearOutput,

@@ -26,6 +26,7 @@ module Payasan.Base.Internal.LilyPond.SimpleOutput
   , simpleVoice_Absolute
 
   , scoreHeader
+  , phraseHeader
 
   , lilypondNotes
 
@@ -124,6 +125,12 @@ scoreHeader globals =
 
 
 
+phraseHeader :: SectionInfo -> Doc
+phraseHeader locals = case section_meter locals of
+    Unmetered -> cadenzaOn_ $+$ keyline
+    TimeSig t -> keyline $+$ time_ t
+  where
+    keyline = key_ (section_key locals)
 
 
 
@@ -142,7 +149,7 @@ simpleVoice_Relative def pch ph =
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
-    notes_header    = oPhraseHeader local1
+    notes_header    = phraseHeader local1
     notes           = lilypondNotes def local1 ph
 
 
@@ -152,16 +159,10 @@ simpleVoice_Absolute def ph =
     absolute_ $+$ notes_header $+$ notes
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
-    notes_header    = oPhraseHeader local1
+    notes_header    = phraseHeader local1
     notes           = lilypondNotes def local1 ph
 
 
-oPhraseHeader :: SectionInfo -> Doc
-oPhraseHeader locals = case section_meter locals of
-    Unmetered -> cadenzaOn_ $+$ keyline
-    TimeSig t -> keyline $+$ time_ t
-  where
-    keyline = key_ (section_key locals)
 
 
 -- | Pitch should be \"context free\" at this point.
