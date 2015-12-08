@@ -40,13 +40,11 @@ import Payasan.LilyPond.Cadenza.Internal.Syntax
 import Payasan.LilyPond.Cadenza.Internal.Traversals
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Contour
+import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Pitch
 import Payasan.Base.ScaleDegree
-
-
 
 
 -- Simple metrics

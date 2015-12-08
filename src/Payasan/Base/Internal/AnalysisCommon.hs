@@ -1,0 +1,91 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
+{-# OPTIONS -Wall #-}
+
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Payasan.Base.Internal.AnalysisCommon
+-- Copyright   :  (c) Stephen Tetley 2015
+-- License     :  BSD3
+--
+-- Maintainer  :  stephen.tetley@gmail.com
+-- Stability   :  unstable
+-- Portability :  GHC
+--
+-- Datatypes and common code for analyses and introspection.
+-- 
+-- Contours, anchors, etc.
+--
+--------------------------------------------------------------------------------
+
+module Payasan.Base.Internal.AnalysisCommon
+  (
+
+    Anchor
+  , anchor
+  , noAnchor
+  , fromAnchor
+  
+  , Position(..)
+
+  , GrossContour(..)
+  , RefinedContour(..)
+  , MelodicOutline(..)
+
+  ) where
+
+
+
+import Data.Data
+
+
+--------------------------------------------------------------------------------
+-- Anchors
+
+
+
+-- Note - Anchor encapsulates failure (Nothing :: Maybe)
+-- (It is expected that...) This allows allows a better
+-- API for querying anchors.
+
+
+newtype Anchor = Anchor { getAnchor :: Maybe Position }
+
+data Position = Position 
+    { position_bar           :: !Int
+    , position_element       :: !Int
+    }
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+
+anchor :: Int -> Int -> Anchor
+anchor b ix = Anchor $ Just $ Position { position_bar = b
+                                       , position_element = ix }
+
+noAnchor :: Anchor
+noAnchor = Anchor $ Nothing
+
+fromAnchor :: a -> (Int -> Int -> a) -> Anchor -> a
+fromAnchor a f = maybe a fPosn . getAnchor
+  where
+    fPosn (Position b ix) = f b ix
+
+--------------------------------------------------------------------------------
+-- Contours
+
+
+data GrossContour = DOWN | GROSS_SAME | UP
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+
+-- | Leap is a interval distance > 2 ( a second)
+--
+data RefinedContour = LEAP_DOWN | STEP_DOWN | REFINED_SAME | STEP_UP | LEAP_UP
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+
+-- TODO - what about arch?
+--
+data MelodicOutline = ASCENDING | DESCENDING | STATIONARY
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+
