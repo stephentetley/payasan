@@ -19,7 +19,9 @@
 
 module Payasan.Base.Elementary.Internal.Metrics
   (
-    barCount
+    firstNote
+
+  , barCount
   , lowestPitch
   , highestPitch
 
@@ -49,33 +51,16 @@ import Payasan.Base.ScaleDegree
 
 
 -- Implement Anchors here for the time being...
-
-{- 
-
--- TODO - writing this with recursion and deconstruction
--- is horrible need a traversal that supplies Position...
-
-first_note :: Phrase Pitch drn anno -> Anchor
-first_note (Phrase { phrase_bars = bars }) = 
-    case bars of { (x:xs) -> step1 1 1 x xs; [] -> noAnchor }
-  where 
-    step1 _ _ []          []            = noAnchor
-    step1 n i []          (b:bs)        = step1 (n+1) 1 b bs
-    step1 n i (Atom e:es) bs            = case e of
-        Note {} -> anchor n i 
-        _      -> step1 n (i+1) es bs
+-- firstNote is easy with Linear view
 
 
-    step1 n (Tuplet _ xs:es)        = case step2 n xs of
-        Left n1 -> step1 n1 es
-        Right a -> Just a
-    
-    step2 n []                      = Left n
-    step2 n (e:es) | n < i          = step2 (n+1) es
-                   | otherwise      = Right e
+firstNote :: Phrase Pitch drn anno -> Anchor
+firstNote = step . viewl . makeLinear
+  where
+    step Empty                  = noAnchor
+    step ((pos, Note {}) :< _)  = anchor pos
+    step ((_,_) :< rest)        = step $ viewl rest
 
-
-  -}
 
 -- Simple metrics
 

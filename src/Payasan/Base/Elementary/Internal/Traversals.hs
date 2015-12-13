@@ -123,8 +123,11 @@ genTransform elemT st0 ph =
     noteGroupT (Atom e)         = Atom <$> elemT e
     noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
 
+
 --------------------------------------------------------------------------------
 --
+
+-- NOTE - would the new Linear view be better?
 
 -- Length changing traversals are easier going through flat NoteList
 -- 
@@ -144,6 +147,8 @@ nth i = onNoteList (\_ xs -> step1 0 xs)
     step2 n []                      = Left n
     step2 n (e:es) | n < i          = step2 (n+1) es
                    | otherwise      = Right e
+
+
 
 
 -- nth suggests take and drop
@@ -257,8 +262,6 @@ dropSize rd = viaNoteList (\_ xs -> step1 rd xs)
         let d1 = d - sizeElement e
         in if d1 <= 0 then Right es else step2 d1 es
    
-
-
 
 
 --------------------------------------------------------------------------------

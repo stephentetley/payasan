@@ -59,10 +59,19 @@ module Payasan.Base.Elementary.Internal.Syntax
   , sectionInfo
   , sizeNoteGroup
   , sizeElement
+  , updatePosNoteGroup
+  , updatePosElement
+
+  -- These may be moved...
+  , Linear
+  , View(..)
+  , makeLinear
+  , viewl
 
   ) where
 
 import Payasan.Base.Internal.ABC.Syntax
+import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Duration
@@ -191,3 +200,49 @@ sizeElement (Skip d)            = toRDuration d
 sizeElement (Punctuation {})    = 0
 
 
+updatePosElement :: Element pch drn anno -> Position -> Position
+updatePosElement (Note {})          = incPositionIndex 1
+updatePosElement (Rest {})          = incPositionIndex 1
+updatePosElement (Spacer {})        = incPositionIndex 1
+updatePosElement (Skip {})          = incPositionIndex 1
+updatePosElement (Punctuation {})   = id
+
+updatePosNoteGroup :: NoteGroup pch drn anno -> Position -> Position
+updatePosNoteGroup (Atom e)         = updatePosElement e
+updatePosNoteGroup (Tuplet _ es)    = \pos -> foldr updatePosElement pos es
+
+
+--------------------------------------------------------------------------------
+-- Views
+
+
+-- Dont expose the constructor...
+--
+data Linear pch drn anno = Linear !SectionInfo !Position [NoteGroup pch drn anno] [Bar pch drn anno]
+
+data View pch drn anno = Empty | (Position,Element pch drn anno) :< Linear pch drn anno
+
+
+makeLinear :: Phrase pch drn anno -> Linear pch drn anno
+makeLinear (Phrase info bs) = 
+   let (xs,ys) = case bs of { [] -> ([],[])
+                            ; (z:zs) -> (bar_groups z,zs) }
+   in Linear info (Position 1 1) xs ys
+
+viewl :: Linear pch drn anno -> View pch drn anno
+viewl (Linear info pos xs ys) = elements xs
+  where
+    elements (Atom e:es)            = (pos,e) :< Linear info (incPositionIndex 1 pos) es ys
+    elements (Tuplet spec ts:es)    = case listL ts of
+      Nothing -> elements es
+      Just (a,as) -> (pos,a) :< Linear info (incPositionIndex 1 pos) (Tuplet spec as:es) ys
+
+    elements []                     = nextbar ys
+
+    nextbar (b:bs)                  = viewl $ Linear info (incPositionBar 1 pos) (bar_groups b) bs
+    nextbar []                      = Empty
+
+
+listL :: [a] -> Maybe (a, [a])
+listL []     = Nothing
+listL (x:xs) = Just (x,xs)

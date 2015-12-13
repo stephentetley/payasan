@@ -26,6 +26,8 @@ module Payasan.Base.Internal.AnalysisCommon
   , fromAnchor
   
   , Position(..)
+  , incPositionBar
+  , incPositionIndex
 
   , GrossContour(..)
   , RefinedContour(..)
@@ -52,14 +54,13 @@ newtype Anchor = Anchor { getAnchor :: Maybe Position }
 
 data Position = Position 
     { position_bar           :: !Int
-    , position_element       :: !Int
+    , position_index         :: !Int
     }
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-anchor :: Int -> Int -> Anchor
-anchor b ix = Anchor $ Just $ Position { position_bar = b
-                                       , position_element = ix }
+anchor :: Position -> Anchor
+anchor pos = Anchor $ Just $ pos 
 
 noAnchor :: Anchor
 noAnchor = Anchor $ Nothing
@@ -69,6 +70,13 @@ fromAnchor a f = maybe a fPosn . getAnchor
   where
     fPosn (Position b ix) = f b ix
 
+
+incPositionBar :: Int -> Position -> Position
+incPositionBar n = (\s i -> s { position_bar = i + n}) <*> position_bar
+
+incPositionIndex :: Int -> Position -> Position
+incPositionIndex n = (\s i -> s { position_index = i + n}) <*> position_index
+                   
 --------------------------------------------------------------------------------
 -- Contours
 
