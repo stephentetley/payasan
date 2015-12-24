@@ -20,14 +20,6 @@ module Payasan.Base.Elementary.Internal.Traversals
   (
     Mon 
 
-  , nth
-  , take
-  , drop
-  , takeBars
-  , dropBars
-  , takeSize
-  , dropSize
-
   , ElemPitchAlgo(..)
   , transformP
   , collectP
@@ -62,19 +54,15 @@ module Payasan.Base.Elementary.Internal.Traversals
 
 
 
-import Payasan.Base.Elementary.Internal.RecalcBars
 import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
-import Payasan.Base.Duration
 
 import Data.Foldable (foldlM)
 import Data.Maybe
 
-import Prelude hiding (take, drop)
-import qualified Prelude as PRE
 
 type Mon st a = Rewrite st a
 
@@ -122,146 +110,6 @@ genTransform elemT st0 ph =
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
     noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
-
-
---------------------------------------------------------------------------------
---
-
--- NOTE - would the new Linear view be better?
-
--- Length changing traversals are easier going through flat NoteList
--- 
---
-
-nth :: Int -> StdElemPhrase2 pch anno -> Maybe (StdElemElement2 pch anno)
-nth i = onNoteList (\_ xs -> step1 0 xs)
-  where 
-    step1 _ []                      = Nothing
-    step1 n (Atom e:es) | n < i     = step1 (n+1) es
-                        | otherwise = Just e
-
-    step1 n (Tuplet _ xs:es)        = case step2 n xs of
-        Left n1 -> step1 n1 es
-        Right a -> Just a
-    
-    step2 n []                      = Left n
-    step2 n (e:es) | n < i          = step2 (n+1) es
-                   | otherwise      = Right e
-
-
-
-
--- nth suggests take and drop
-
-
-
--- | Tuplet splitting is not properly implemented yet as it 
--- should modify the spec
---
--- TODO - it will be better to define a set of operations that 
--- work on tuplets rather than do ad hoc destructuring here
---  
-take :: forall pch anno.
-        Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-take i = viaNoteList (\_ xs -> step1 i xs)
-  where
-    step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 n _   | n <= 0            = []
-    step1 _ []                      = []
-    step1 n (Atom e:es)             = (Atom e) : step1 (n-1) es
-    step1 n (Tuplet spec xs:es)     = 
-        let (n1,ys) = step2 n xs 
-            spec2 = spec         
-        in Tuplet spec2 ys : step1 n1 es  -- TODO remake spec
-
-    step2 n []                      = (n,[])
-    step2 n (e:es) | n <= 0         = (n,[])
-                   | otherwise      = let (n1,ys) = step2 (n-1) es
-                                      in (n1,e:ys)
-
-
-drop :: forall pch anno.
-        Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-drop i = viaNoteList (\_ xs -> step1 i xs)
-  where
-    step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 n xs | n <= 0             = xs
-    step1 _ []                      = []
-    step1 n (Atom _:es)             = step1 (n-1) es
-    step1 n (Tuplet spec xs:es)     = case step2 n xs of
-        Left n1 -> step1 n1 es
-        Right ys -> let spec2 = spec 
-                    in Tuplet spec2 ys : es  -- TODO remake spec
-
-    step2 n []                      = Left n
-    step2 n (_:es) | n <= 0         = Right es
-                   | otherwise      = step2 (n-1) es
-   
-
-
--- | TODO - should last element be untied?
---
-takeBars :: Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-takeBars i (Phrase info bs) = Phrase info $ PRE.take i bs
-
-dropBars :: Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-dropBars i (Phrase info bs) = Phrase info $ PRE.drop i bs
-
-
--- This has to be an RDuration as Duration is symbolic 
--- and doesn\'t multiply to arbitrary sizes.
---
-takeSize :: forall pch anno.
-            RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-takeSize rd = viaNoteList (\_ xs -> step1 rd xs)
-  where
-    step1 :: RDuration -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 d _   | d <= 0            = []
-    step1 _ []                      = []
-    step1 d (Atom e:es)             = 
-        let d1 = d - sizeElement e 
-        in if d1 < 0 then [] else (Atom e) : step1 d1 es
-       
-
-    step1 d (Tuplet spec xs:es)     = 
-        let (d1,ys) = step2 d xs 
-            spec2   = spec         
-        in if null ys then [] else Tuplet spec2 ys : step1 d1 es  -- TODO remake spec
-
-
-    step2 d []                      = (d,[])
-    step2 d (e:es) | d <= 0         = (d,[])
-                   | otherwise      = 
-        let d1 = d - sizeElement e 
-        in if d1 < 0 then (d1,[]) else let (d2,ys) = step2 d1 es in (d2,e:ys)
-
-
--- Note - dropSize is really drop-at-least-size as it doesn\'t
--- split too long pivot notes and drops them whole.
---
-dropSize :: forall pch anno.
-            RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-dropSize rd = viaNoteList (\_ xs -> step1 rd xs)
-  where
-    step1 :: RDuration -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 d xs | d <= 0             = xs
-    step1 _ []                      = []
-    step1 d (Atom e:es)             = 
-        let d1 = d - sizeElement e 
-        in if d1 <= 0 then es else step1 d1 es
-
-
-    step1 d (Tuplet spec xs:es)     = case step2 d xs of
-        Left d1 -> step1 d1 es
-        Right [] -> []
-        Right ys -> let spec2 = spec 
-                    in Tuplet spec2 ys : es  -- TODO remake spec
-
-    step2 d []                      = Left d
-    step2 d (e:es)                  = 
-        let d1 = d - sizeElement e
-        in if d1 <= 0 then Right es else step2 d1 es
-   
 
 
 --------------------------------------------------------------------------------

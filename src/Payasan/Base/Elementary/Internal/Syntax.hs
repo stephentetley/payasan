@@ -55,6 +55,7 @@ module Payasan.Base.Elementary.Internal.Syntax
   , NoteGroup(..)
   , Element(..)
 
+  , emptyOf
   , pushSectionInfo
   , sectionInfo
   , sizeNoteGroup
@@ -65,7 +66,9 @@ module Payasan.Base.Elementary.Internal.Syntax
   -- These may be moved...
   , Linear
   , View(..)
-  , makeLinear
+  , toLinear
+  , fromLinear
+  , cons
   , viewl
 
   ) where
@@ -173,11 +176,17 @@ data Element pch drn anno =
 -- Push RenderInfo into bars.
 
 
+emptyOf :: Phrase pch drn anno -> Phrase pch drn anno
+emptyOf (Phrase { phrase_header = info }) = 
+    Phrase { phrase_header = info
+           , phrase_bars   = [] }
+
+
 pushSectionInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
-pushSectionInfo ri (Phrase { phrase_bars = bs }) = 
-    Phrase { phrase_header = ri
+pushSectionInfo info (Phrase { phrase_bars = bs }) = 
+    Phrase { phrase_header = info
            , phrase_bars   = bs }
 
 
@@ -220,14 +229,22 @@ updatePosNoteGroup (Tuplet _ es)    = \pos -> foldr updatePosElement pos es
 --
 data Linear pch drn anno = Linear !SectionInfo !Position [NoteGroup pch drn anno] [Bar pch drn anno]
 
+
+-- Possibly extend the (Position,Element) pair with Maybe TupletSpec
 data View pch drn anno = Empty | (Position,Element pch drn anno) :< Linear pch drn anno
 
 
-makeLinear :: Phrase pch drn anno -> Linear pch drn anno
-makeLinear (Phrase info bs) = 
+toLinear :: Phrase pch drn anno -> Linear pch drn anno
+toLinear (Phrase info bs) = 
    let (xs,ys) = case bs of { [] -> ([],[])
                             ; (z:zs) -> (bar_groups z,zs) }
    in Linear info (Position 1 1) xs ys
+
+
+fromLinear :: Linear pch drn anno -> Phrase pch drn anno
+fromLinear (Linear info _ es bs) = Phrase { phrase_header = info
+                                          , phrase_bars   = Bar es : bs }
+
 
 viewl :: Linear pch drn anno -> View pch drn anno
 viewl (Linear info pos xs ys) = elements xs
@@ -242,6 +259,9 @@ viewl (Linear info pos xs ys) = elements xs
     nextbar (b:bs)                  = viewl $ Linear info (incPositionBar 1 pos) (bar_groups b) bs
     nextbar []                      = Empty
 
+-- | Note - cons breaks pos...
+cons :: Element pch drn anno -> Linear pch drn anno -> Linear pch drn anno
+cons e (Linear info pos es bs) = Linear info pos (Atom e:es) bs
 
 listL :: [a] -> Maybe (a, [a])
 listL []     = Nothing

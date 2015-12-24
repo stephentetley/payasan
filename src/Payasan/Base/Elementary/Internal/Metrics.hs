@@ -20,6 +20,7 @@
 module Payasan.Base.Elementary.Internal.Metrics
   (
     firstNote
+  , lastNote
 
   , barCount
   , lowestPitch
@@ -55,11 +56,21 @@ import Payasan.Base.ScaleDegree
 
 
 firstNote :: Phrase Pitch drn anno -> Anchor
-firstNote = step . viewl . makeLinear
+firstNote = step . viewl . toLinear
   where
     step Empty                  = noAnchor
     step ((pos, Note {}) :< _)  = anchor pos
     step ((_,_) :< rest)        = step $ viewl rest
+
+
+lastNote :: Phrase Pitch drn anno -> Anchor
+lastNote = step noAnchor . viewl . toLinear
+  where
+    step ac Empty                       = ac
+    step _  ((pos, Note {}) :< rest)    = step (anchor pos) $ viewl rest
+    step ac ((_,_) :< rest)             = step ac $ viewl rest
+
+
 
 
 -- Simple metrics
