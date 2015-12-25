@@ -27,26 +27,22 @@ module Payasan.Base.Elementary.Internal.TakeDrop
   , takeSize
   , dropSize
 
-
   ) where
 
 
 
 import Payasan.Base.Elementary.Internal.RecalcBars
 import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Base.Elementary.Internal.Zipper
 
-import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
 
-import Data.Foldable (foldlM)
 import Data.Maybe
 
 import Prelude hiding (take, drop)
 import qualified Prelude as PRE
 
-type Mon st a = Rewrite st a
 
 
 
@@ -90,82 +86,18 @@ nth i = step 0 . viewl . toLinear
 
 
 
--- | Tuplet splitting is not properly implemented yet as it 
--- should modify the spec
---
--- TODO - it will be better to define a set of operations that 
--- work on tuplets rather than do ad hoc destructuring here
---  
-take :: forall pch anno.
-        Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-take i = viaNoteList (\_ xs -> step1 i xs)
+take :: Int -> Phrase pch drn anno -> Phrase pch drn anno
+take i = step i . makeLoc
   where
-    step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 n _   | n <= 0            = []
-    step1 _ []                      = []
-    step1 n (Atom e:es)             = (Atom e) : step1 (n-1) es
-    step1 n (Tuplet spec xs:es)     = 
-        let (n1,ys) = step2 n xs 
-            spec2 = spec         
-        in Tuplet spec2 ys : step1 n1 es  -- TODO remake spec
+    step n loc | n <= 0    = contentL loc
+               | otherwise = step (n-1) $ right loc
 
-    step2 n []                      = (n,[])
-    step2 n (e:es) | n <= 0         = (n,[])
-                   | otherwise      = let (n1,ys) = step2 (n-1) es
-                                      in (n1,e:ys)
-
-{-
-
-take2 :: Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-take2 i ph | i <= 0    = emptyOf ph
-           | otherwise = step i $ viewl $ toLinear ph
+drop :: Int -> Phrase pch drn anno -> Phrase pch drn anno
+drop i = step i . makeLoc
   where
-    -- note - counting down to 1 not zero
-    step n (_ :< rest) 
-         | n <= 1               = recalcBars $ fromLinear rest
-         | otherwise            = step (n-1) $ viewl rest
-    step _ Empty                = Phrase (phrase_header ph) []
+    step n loc | n <= 0    = contentR loc
+               | otherwise = step (n-1) $ right loc
 
--}
-
--- OLD - compare with Linear view version...
-
-drop :: forall pch anno.
-        Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-drop i = viaNoteList (\_ xs -> step1 i xs)
-  where
-    step1 :: Int -> [StdElemNoteGroup2 pch anno]-> [StdElemNoteGroup2 pch anno]
-    step1 n xs | n <= 0             = xs
-    step1 _ []                      = []
-    step1 n (Atom _:es)             = step1 (n-1) es
-    step1 n (Tuplet spec xs:es)     = case step2 n xs of
-        Left n1 -> step1 n1 es
-        Right ys -> let spec2 = spec 
-                    in Tuplet spec2 ys : es  -- TODO remake spec
-
-    step2 n []                      = Left n
-    step2 n (_:es) | n <= 0         = Right es
-                   | otherwise      = step2 (n-1) es
-   
-
-{-
-
--- Not yet accpetable...
--- This version is much clearer but it messes up if splitting Tuplets
---
--- Note - recalcs bars
---
-drop2 :: Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
-drop2 i ph | i <= 0    = ph
-           | otherwise = step i $ viewl $ toLinear ph
-  where
-    -- note - counting down to 1 not zero
-    step n (_ :< rest) 
-         | n <= 1               = recalcBars $ fromLinear rest
-         | otherwise            = step (n-1) $ viewl rest
-    step _ Empty                = Phrase (phrase_header ph) []
-
--}
 
 
 -- | TODO - should last element be untied?

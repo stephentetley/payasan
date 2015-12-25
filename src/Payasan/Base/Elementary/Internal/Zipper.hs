@@ -20,11 +20,15 @@ module Payasan.Base.Elementary.Internal.Zipper
     Loc
   , right
   , left
+  , forward
+  , backward
   , atStart
   , atEnd
   , makeLoc
   , unwindLoc
   , change
+  , contentL
+  , contentR
   )
 
   where
@@ -51,7 +55,7 @@ data Ctx pch drn anno = EmptyPhrase
                       | Ctx (LocBar pch drn anno) [Bar pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
-
+-- TODO - right at end of bar not working...
 right :: Loc pch drn anno -> Loc pch drn anno
 right (Loc info xs      EmptyPhrase)    = Loc info xs EmptyPhrase
 right (Loc info xs ctx@(Ctx yl ys)) 
@@ -68,6 +72,20 @@ left (Loc info xs ctx@(Ctx yl ys))
                                ; (a:as) -> Loc info (unwindY yl:xs) (Ctx (makeY a) as)
                                }
     | otherwise   = Loc info xs (Ctx (leftY yl) ys)
+
+
+forward :: Int -> Loc pch drn anno -> Loc pch drn anno
+forward = step
+  where
+    step n loc | n <= 0 = loc
+               | otherwise = step (n-1) $ right loc
+
+
+backward :: Int -> Loc pch drn anno -> Loc pch drn anno
+backward = step 
+  where
+    step n loc | n <= 0 = loc
+               | otherwise = step (n-1) $ left loc
 
 
 atEnd :: Loc pch drn anno -> Bool
@@ -90,10 +108,10 @@ makeLoc (Phrase info (x:xs))    =
         }
 
 unwindLoc :: Loc pch drn anno -> Phrase pch drn anno
-unwindLoc (Loc info _ EmptyPhrase)         = 
+unwindLoc (Loc info _ EmptyPhrase)  = 
     Phrase { phrase_header = info, phrase_bars =  [] }
 
-unwindLoc (Loc info xs (Ctx yl ys))  = 
+unwindLoc (Loc info xs (Ctx yl ys)) = 
     Phrase { phrase_header = info, phrase_bars = fn ys $ unwindY yl : xs }
   where
     fn (a:as) bs = fn as (a:bs)
@@ -102,6 +120,24 @@ unwindLoc (Loc info xs (Ctx yl ys))  =
 change :: Element pch drn anno -> Loc pch drn anno -> Loc pch drn anno
 change _ (Loc info xs EmptyPhrase)  = Loc info xs EmptyPhrase
 change a (Loc info xs (Ctx yl ys))  = Loc info xs $ Ctx (changeY a yl) ys
+
+
+contentL :: Loc pch drn anno -> Phrase pch drn anno
+contentL (Loc info _ EmptyPhrase)       = 
+    Phrase { phrase_header = info, phrase_bars =  [] }
+
+contentL (Loc info _ (Ctx yl ys))       = 
+    Phrase { phrase_header = info, phrase_bars = fn ys $ [contentLY yl] }
+  where
+    fn (a:as) bs = fn as (a:bs)
+    fn []     bs = bs
+
+contentR :: Loc pch drn anno -> Phrase pch drn anno
+contentR (Loc info _ EmptyPhrase)       = 
+    Phrase { phrase_header = info, phrase_bars =  [] }
+
+contentR (Loc info xs (Ctx yl _))       = 
+    Phrase { phrase_header = info, phrase_bars = contentRY yl : xs }
 
 
 --------------------------------------------------------------------------------
@@ -120,7 +156,7 @@ data CtxBar pch drn anno = EmptyBar
 
 rightY :: LocBar pch drn anno -> LocBar pch drn anno
 rightY (LocBar xs      EmptyBar)        = LocBar xs EmptyBar
-rightY (LocBar xs ctx@(CtxBar zl zs)) 
+rightY (LocBar xs ctx@(CtxBar zl zs))
     | atEndZ zl = case xs of { [] -> LocBar [] ctx
                              ; (a:as) -> LocBar as (CtxBar (makeZ a) (unwindZ zl : zs))
                              }
@@ -135,10 +171,10 @@ leftY (LocBar xs ctx@(CtxBar zl zs))
                                }
     | otherwise   = LocBar xs (CtxBar (leftZ zl) zs)
 
-
 atEndY :: LocBar pch drn anno -> Bool
 atEndY (LocBar xs EmptyBar)         = null xs
 atEndY (LocBar xs (CtxBar zl _))    = atEndZ zl && null xs
+
 
 atStartY :: LocBar pch drn anno -> Bool
 atStartY (LocBar _ EmptyBar)        = True
@@ -155,7 +191,7 @@ makeY a = case bar_groups a of
                    }
 
 unwindY :: LocBar pch drn anno -> Bar pch drn anno
-unwindY (LocBar _ EmptyBar)         = Bar { bar_groups = [] }
+unwindY (LocBar _  EmptyBar)        = Bar { bar_groups = [] }
 unwindY (LocBar xs (CtxBar zl zs))  = 
     Bar { bar_groups = fn zs $ unwindZ zl : xs }
   where
@@ -168,46 +204,71 @@ changeY :: Element pch drn anno -> LocBar pch drn anno -> LocBar pch drn anno
 changeY _ (LocBar xs EmptyBar)          = LocBar xs EmptyBar
 changeY a (LocBar xs (CtxBar z1 zs))    = LocBar xs $ CtxBar (changeZ a z1) zs
 
+
+contentLY :: LocBar pch drn anno -> Bar pch drn anno
+contentLY (LocBar _  EmptyBar)        = Bar { bar_groups = [] }
+contentLY (LocBar _  (CtxBar zl zs))  = 
+    Bar { bar_groups = fn zs $ contentLZ zl }
+  where
+    fn (a:as) bs = fn as (a:bs)
+    fn []     bs = bs
+
+contentRY :: LocBar pch drn anno -> Bar pch drn anno
+contentRY (LocBar _  EmptyBar)      = Bar { bar_groups = [] }
+contentRY (LocBar xs (CtxBar zl _)) = Bar { bar_groups = contentRZ zl ++ xs}
+
+
 --------------------------------------------------------------------------------
 -- Note Group = Z
 
-data LocNG pch drn anno = LocNG
-    { ng_at             :: NoteGroup pch drn anno
-    , ng_ctx            :: CtxNG pch drn anno
-    }
+-- TODO - this does not tell us if we have /consumed/ an atom
+
+-- case distinction on Loc for Atom or Tuplet...
+
+
+data LocNG pch drn anno = LocAtom (Element pch drn anno) CtxAtom
+                        | LocTupl TupletSpec [Element pch drn anno] (CtxTupl pch drn anno)
   deriving (Data,Eq,Show,Typeable)
 
--- No recursion in NoteGroup
-type CtxNG pch drn anno = [Element pch drn anno]
+
+-- We need to know if we have consumed an atom
+-- 
+data CtxAtom = LEFT_OF | RIGHT_OF
+  deriving (Data,Eq,Show,Typeable)
+
+type CtxTupl pch drn anno = [Element pch drn anno]
 
 
 
 rightZ :: LocNG pch drn anno -> LocNG pch drn anno
-rightZ (LocNG (Atom a)             ctx) = LocNG (Atom a) ctx
-rightZ (LocNG (Tuplet spec (a:as)) ctx) = LocNG (Tuplet spec as) (a:ctx)
-rightZ (LocNG (Tuplet spec [])     ctx) = LocNG (Tuplet spec []) ctx
+rightZ (LocAtom a _)                = LocAtom a RIGHT_OF
+rightZ (LocTupl spec (a:as) ctx)    = LocTupl spec as (a:ctx)
+rightZ (LocTupl spec []     ctx)    = LocTupl spec [] ctx
 
 leftZ :: LocNG pch drn anno -> LocNG pch drn anno
-leftZ (LocNG (Atom a)         ctx)  = LocNG (Atom a) ctx
-leftZ (LocNG (Tuplet spec xs) ctx)  = case ctx of
-    (y:ys) -> LocNG (Tuplet spec (y:xs)) ys
-    []     -> LocNG (Tuplet spec  xs) ctx
+leftZ (LocAtom a _)                 = LocAtom a LEFT_OF
+leftZ (LocTupl spec xs (y:ys))      = LocTupl spec (y:xs) ys
+leftZ (LocTupl spec xs [])          = LocTupl spec xs     []
 
 
 atEndZ :: LocNG pch drn anno -> Bool
-atEndZ (LocNG (Atom _)      _)  = True
-atEndZ (LocNG (Tuplet _ xs) _)  = null xs
+atEndZ (LocAtom _ RIGHT_OF)         = True
+atEndZ (LocAtom _ LEFT_OF)          = False
+atEndZ (LocTupl _ xs _)             = null xs
 
 atStartZ :: LocNG pch drn anno -> Bool
-atStartZ (LocNG _ xs)           = null xs
+atStartZ (LocAtom _ RIGHT_OF)         = False
+atStartZ (LocAtom _ LEFT_OF)          = True
+atStartZ (LocTupl _ _ ctx)            = null ctx
 
 
 makeZ :: NoteGroup pch drn anno -> LocNG pch drn anno
-makeZ a = LocNG { ng_at = a, ng_ctx = [] }
+makeZ (Atom a)                        = LocAtom a LEFT_OF
+makeZ (Tuplet spec xs)                = LocTupl spec xs []
 
 unwindZ :: LocNG pch drn anno -> NoteGroup pch drn anno
-unwindZ (LocNG (Atom a)         _)  = Atom a
-unwindZ (LocNG (Tuplet spec xs) ys) = Tuplet spec (fn ys xs)
+unwindZ (LocAtom a _)                 = Atom a
+unwindZ (LocTupl spec xs ys)          = Tuplet spec (fn ys xs)
   where
     fn (a:as) bs = fn as (a:bs)
     fn []     bs = bs
@@ -216,9 +277,22 @@ unwindZ (LocNG (Tuplet spec xs) ys) = Tuplet spec (fn ys xs)
 
 
 changeZ :: Element pch drn anno -> LocNG pch drn anno -> LocNG pch drn anno
-changeZ a (LocNG (Atom _)             ctx)  = LocNG (Atom a) ctx
-changeZ a (LocNG (Tuplet spec (_:xs)) ctx)  = LocNG (Tuplet spec (a:xs)) ctx
-changeZ _ (LocNG (Tuplet spec [])     ctx)  = LocNG (Tuplet spec []) ctx
+changeZ a (LocAtom _ LEFT_OF)       = LocAtom a LEFT_OF
+changeZ _ (LocAtom a RIGHT_OF)      = LocAtom a RIGHT_OF
+changeZ a (LocTupl spec (_:xs) ctx) = LocTupl spec (a:xs) ctx
+changeZ _ (LocTupl spec []     ctx) = LocTupl spec [] ctx
     
 
 
+contentLZ :: LocNG pch drn anno -> [NoteGroup pch drn anno]
+contentLZ (LocAtom a RIGHT_OF)      = [Atom a]
+contentLZ (LocAtom _ LEFT_OF)       = []
+contentLZ (LocTupl spec _ ys)       = [Tuplet spec (fn ys [])]
+  where
+    fn (a:as) bs = fn as (a:bs)
+    fn []     bs = bs
+
+contentRZ :: LocNG pch drn anno -> [NoteGroup pch drn anno]
+contentRZ (LocAtom _ RIGHT_OF)      = []
+contentRZ (LocAtom a LEFT_OF)       = [Atom a]
+contentRZ (LocTupl spec xs _)       = [Tuplet spec xs] -- needs remaking
