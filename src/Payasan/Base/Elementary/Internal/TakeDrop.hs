@@ -89,14 +89,15 @@ nth i = step 0 . viewl . toLinear
 take :: Int -> Phrase pch drn anno -> Phrase pch drn anno
 take i = step i . makeLoc
   where
-    step n loc | n <= 0    = contentL loc
-               | otherwise = step (n-1) $ right loc
+    step n loc | n <= 0    = consumed loc
+               | otherwise = step (n-1) $ forward loc
+
 
 drop :: Int -> Phrase pch drn anno -> Phrase pch drn anno
 drop i = step i . makeLoc
   where
-    step n loc | n <= 0    = contentR loc
-               | otherwise = step (n-1) $ right loc
+    step n loc | n <= 0    = remaining loc
+               | otherwise = step (n-1) $ forward loc
 
 
 

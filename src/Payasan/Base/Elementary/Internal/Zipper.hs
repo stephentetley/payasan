@@ -18,20 +18,14 @@
 module Payasan.Base.Elementary.Internal.Zipper
   (
     Loc
-  , right
-  , left
   , forward
   , backward
-  , atStart
-  , atEnd
   , makeLoc
   , unwindLoc
   , change
-  , contentL
-  , contentR
-  )
-
-  where
+  , remaining
+  , consumed
+  )  where
 
 
 import Payasan.Base.Elementary.Internal.Syntax
@@ -39,183 +33,240 @@ import Payasan.Base.Internal.CommonSyntax
 
 import Data.Data
 
+
 --------------------------------------------------------------------------------
 -- Zipper
 
 
+-- Parsed input is put on a stack
+
+type Stk a = [a]
+
+stk_empty :: [a]
+stk_empty = []
+
+unstack :: Stk a -> [a] -> [a]
+unstack []     ys = ys
+unstack (x:xs) ys = unstack xs (x:ys)
+
+
+-- Need an end sentinel cf. parsing.
+-- Note this is getting more like parsing than zipping...
+
+-- put ctx before inp - ctx is the left, inp is the right
+
+
+-- A modular implementation (zip bars, descend and zip 
+-- note-groups, descend and zip tuplets) is problematic due 
+-- to counting errors.
+--
+-- At the end of a bar and at the start of a new bar become 
+-- separate states so counting (iterating) with one operation 
+-- e.g. @forward@ needs non-intuitive counting handling.
+--
 
 data Loc pch drn anno = Loc 
     { loc_info       :: !SectionInfo 
-    , loc_at         :: [Bar pch drn anno]
-    , loc_ctx        :: Ctx pch drn anno
+    , loc_stk        :: Stk (Bar pch drn anno)
+    , loc_input      :: Inp pch drn anno
     }
   deriving (Data,Eq,Show,Typeable)
 
-data Ctx pch drn anno = EmptyPhrase 
-                      | Ctx (LocBar pch drn anno) [Bar pch drn anno]
+
+data Inp pch drn anno = Nil
+                      | Inp (LocBar pch drn anno) [Bar pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
--- TODO - right at end of bar not working...
-right :: Loc pch drn anno -> Loc pch drn anno
-right (Loc info xs      EmptyPhrase)    = Loc info xs EmptyPhrase
-right (Loc info xs ctx@(Ctx yl ys)) 
-    | atEndY yl = case xs of { [] -> Loc info [] ctx
-                             ; (a:as) -> Loc info as (Ctx (makeY a) (unwindY yl : ys))
-                             }
-
-    | otherwise = Loc info xs (Ctx (rightY yl) ys)
-
-left :: Loc pch drn anno -> Loc pch drn anno
-left (Loc info xs      EmptyPhrase)     = Loc info xs EmptyPhrase
-left (Loc info xs ctx@(Ctx yl ys)) 
-    | atStartY yl = case ys of { [] -> Loc info xs ctx
-                               ; (a:as) -> Loc info (unwindY yl:xs) (Ctx (makeY a) as)
-                               }
-    | otherwise   = Loc info xs (Ctx (leftY yl) ys)
 
 
-forward :: Int -> Loc pch drn anno -> Loc pch drn anno
-forward = step
-  where
-    step n loc | n <= 0 = loc
-               | otherwise = step (n-1) $ right loc
+forward :: Loc pch drn anno -> Loc pch drn anno
+forward loc = maybe loc id $ fwrdLoc loc
+
+backward :: Loc pch drn anno -> Loc pch drn anno
+backward loc = maybe loc id $ bwrdLoc loc
+
+-- Need a special test for end-of-bar (after initial forward)
+fwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
+fwrdLoc (Loc _    _   Nil)          = Nothing
+fwrdLoc (Loc info stk (Inp bl as))  = 
+    let bl2 = fwrdBar bl in
+    if atEndBar bl2 then Just $ Loc info (unwindLocBar bl : stk) (makeInp as)
+                    else Just $ Loc info stk (Inp bl2 as)
 
 
-backward :: Int -> Loc pch drn anno -> Loc pch drn anno
-backward = step 
-  where
-    step n loc | n <= 0 = loc
-               | otherwise = step (n-1) $ left loc
+-- TODO - this is currently untested...
+--
+bwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
+bwrdLoc (Loc _    [] Nil)           = Nothing
+bwrdLoc (Loc info [] (Inp bl as))   = case bwrdBar bl of
+    Nothing -> Nothing
+    Just bl2 -> Just $ Loc info [] (Inp bl2 as)
 
-
-atEnd :: Loc pch drn anno -> Bool
-atEnd (Loc _ xs EmptyPhrase)        = null xs
-atEnd (Loc _ xs (Ctx yl _))         = atEndY yl && null xs
-
-atStart :: Loc pch drn anno -> Bool
-atStart (Loc _ _ EmptyPhrase)       = True
-atStart (Loc _ _ (Ctx yl ys))       = atStartY yl && null ys
+bwrdLoc (Loc info stk@(s:ss) inp)   = case inp of
+    Inp bl as -> case bwrdBar bl of
+        Nothing -> let inps = s : unwindLocBar bl : as
+                   in Just $ Loc info ss (makeInp inps)
+        Just bl2 -> Just $ Loc info stk (Inp bl2 as)
+    Nil -> Just $ Loc info ss (makeInp [s])
 
 
 makeLoc :: Phrase pch drn anno -> Loc pch drn anno
-makeLoc (Phrase info [])        = 
-    Loc {loc_info = info, loc_at = [], loc_ctx = EmptyPhrase }
+makeLoc (Phrase info bs)        = 
+    Loc { loc_info = info, loc_stk = stk_empty, loc_input = makeInp bs }
 
-makeLoc (Phrase info (x:xs))    = 
-    Loc { loc_info  = info
-        , loc_at    = xs 
-        , loc_ctx   = Ctx (makeY x) []
-        }
+makeInp :: [Bar pch drn anno] -> Inp pch drn anno
+makeInp []                   = Nil
+makeInp (b:bs)               = Inp (makeLocBar b) bs
+
 
 unwindLoc :: Loc pch drn anno -> Phrase pch drn anno
-unwindLoc (Loc info _ EmptyPhrase)  = 
-    Phrase { phrase_header = info, phrase_bars =  [] }
+unwindLoc (Loc info stk Nil)            = 
+    Phrase { phrase_header = info, phrase_bars = unstack stk [] }
 
-unwindLoc (Loc info xs (Ctx yl ys)) = 
-    Phrase { phrase_header = info, phrase_bars = fn ys $ unwindY yl : xs }
-  where
-    fn (a:as) bs = fn as (a:bs)
-    fn []     bs = bs
+unwindLoc (Loc info stk (Inp bl as))    = 
+    let inps = unwindLocBar bl : as
+    in Phrase { phrase_header = info, phrase_bars = unstack stk inps }
+
 
 change :: Element pch drn anno -> Loc pch drn anno -> Loc pch drn anno
-change _ (Loc info xs EmptyPhrase)  = Loc info xs EmptyPhrase
-change a (Loc info xs (Ctx yl ys))  = Loc info xs $ Ctx (changeY a yl) ys
+change _ (Loc info stk Nil)             = Loc info stk Nil
+change a (Loc info stk (Inp bl as))     = Loc info stk $ Inp (changeBar a bl) as
 
 
-contentL :: Loc pch drn anno -> Phrase pch drn anno
-contentL (Loc info _ EmptyPhrase)       = 
-    Phrase { phrase_header = info, phrase_bars =  [] }
 
-contentL (Loc info _ (Ctx yl ys))       = 
-    Phrase { phrase_header = info, phrase_bars = fn ys $ [contentLY yl] }
-  where
-    fn (a:as) bs = fn as (a:bs)
-    fn []     bs = bs
+remaining :: Loc pch drn anno -> Phrase pch drn anno
+remaining (Loc info _ Nil)          = 
+    Phrase { phrase_header = info, phrase_bars = [] }
 
-contentR :: Loc pch drn anno -> Phrase pch drn anno
-contentR (Loc info _ EmptyPhrase)       = 
-    Phrase { phrase_header = info, phrase_bars =  [] }
+remaining (Loc info _ (Inp bl as))  = 
+    let inps = case remainingBar bl of { Nothing -> as; Just b -> b:as }
+    in Phrase { phrase_header = info, phrase_bars = inps }
 
-contentR (Loc info xs (Ctx yl _))       = 
-    Phrase { phrase_header = info, phrase_bars = contentRY yl : xs }
+
+consumed :: Loc pch drn anno -> Phrase pch drn anno
+consumed (Loc info stk Nil)          = 
+    Phrase { phrase_header = info, phrase_bars = unstack stk []  }
+
+consumed (Loc info stk (Inp bl _))   = 
+    let inps = case consumedBar bl of { Nothing -> []; Just b -> [b] }
+    in Phrase { phrase_header = info, phrase_bars = unstack stk inps }
+
 
 
 --------------------------------------------------------------------------------
 -- Bar = Y
+
+-- TODO - the idea of being RIGHT_OF an atom is wrong, should only be 
+-- RIGHT_OF at the very end when all input is consumed.
+--
+
  
 
 data LocBar pch drn anno = LocBar 
-    { bar_at            :: [NoteGroup pch drn anno]
-    , bar_ctx           :: CtxBar pch drn anno
+    { bar_stk           :: Stk (NoteGroup pch drn anno)
+    , bar_input         :: BarInp pch drn anno
     }
   deriving (Data,Eq,Show,Typeable)
 
-data CtxBar pch drn anno = EmptyBar
-                         | CtxBar (LocNG pch drn anno) [NoteGroup pch drn anno]
+
+-- | Tuplet and Atom are different operationally (next and prev 
+-- descend into tuplet), so we represent this in the stream head
+--
+data BarInp pch drn anno = BNil
+                         | InpAtom (Element pch drn anno) [NoteGroup pch drn anno]
+                         | InpTupl (LocTupl pch drn anno) [NoteGroup pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
-rightY :: LocBar pch drn anno -> LocBar pch drn anno
-rightY (LocBar xs      EmptyBar)        = LocBar xs EmptyBar
-rightY (LocBar xs ctx@(CtxBar zl zs))
-    | atEndZ zl = case xs of { [] -> LocBar [] ctx
-                             ; (a:as) -> LocBar as (CtxBar (makeZ a) (unwindZ zl : zs))
-                             }
-    | otherwise = LocBar xs (CtxBar (rightZ zl) zs)
+
+atEndBar :: LocBar pch drn anno -> Bool
+atEndBar (LocBar _  BNil)               = True
+atEndBar _                              = False
+
+{-
+-- | This is probably needed for @backward@ as current 
+-- implementation probably faulty.
+--
+atStartBar :: LocBar pch drn anno -> Bool
+atStartBar (LocBar stk _)               = null stk
+-}
+
+fwrdBar :: LocBar pch drn anno -> LocBar pch drn anno
+fwrdBar (LocBar stk BNil)               = LocBar stk BNil
+
+fwrdBar (LocBar stk (InpAtom a  as))    = LocBar (Atom a : stk) (makeBarInp as)
+
+fwrdBar (LocBar stk (InpTupl tl as))    = 
+    case fwrdTupl tl of
+        Nothing -> LocBar (unwindTupl tl : stk) (makeBarInp as)
+        Just tl2 -> LocBar stk (InpTupl tl2 as)
 
 
-leftY :: LocBar pch drn anno -> LocBar pch drn anno
-leftY (LocBar xs      EmptyBar)         = LocBar xs EmptyBar
-leftY (LocBar xs ctx@(CtxBar zl zs)) 
-    | atStartZ zl = case zs of { [] -> LocBar xs ctx
-                               ; (a:as) -> LocBar (unwindZ zl:xs) (CtxBar (makeZ a) as)
-                               }
-    | otherwise   = LocBar xs (CtxBar (leftZ zl) zs)
+bwrdBar :: LocBar pch drn anno -> Maybe (LocBar pch drn anno)
+bwrdBar (LocBar [] inp)        = case inp of
+    InpTupl tl as -> case bwrdTupl tl of
+        Nothing -> Nothing
+        Just tl2 -> Just $ LocBar [] (InpTupl tl2 as)
+    _ -> Nothing
 
-atEndY :: LocBar pch drn anno -> Bool
-atEndY (LocBar xs EmptyBar)         = null xs
-atEndY (LocBar xs (CtxBar zl _))    = atEndZ zl && null xs
-
-
-atStartY :: LocBar pch drn anno -> Bool
-atStartY (LocBar _ EmptyBar)        = True
-atStartY (LocBar _ (CtxBar zl zs))  = atStartZ zl && null zs
-
-
-makeY :: Bar pch drn anno -> LocBar pch drn anno
-makeY a = case bar_groups a of
-  (z:zs) -> LocBar { bar_at = zs
-                   , bar_ctx = CtxBar (makeZ z) []
-                   }
-  []     -> LocBar { bar_at = []
-                   , bar_ctx = EmptyBar
-                   }
-
-unwindY :: LocBar pch drn anno -> Bar pch drn anno
-unwindY (LocBar _  EmptyBar)        = Bar { bar_groups = [] }
-unwindY (LocBar xs (CtxBar zl zs))  = 
-    Bar { bar_groups = fn zs $ unwindZ zl : xs }
-  where
-    fn (a:as) bs = fn as (a:bs)
-    fn []     bs = bs
+bwrdBar (LocBar stk@(s:ss) inp) = case inp of
+    InpTupl tl as -> case bwrdTupl tl of
+        Nothing -> let inps = s : unwindTupl tl : as
+                   in Just $ LocBar ss (makeBarInp inps)
+        Just tl2 -> Just $ LocBar stk (InpTupl tl2 as)
+    InpAtom a as -> 
+        let inps = (s : Atom a : as) in Just $ LocBar ss (makeBarInp inps)
+    BNil -> Just $ LocBar ss (makeBarInp [s]) 
 
 
+makeLocBar :: Bar pch drn anno -> LocBar pch drn anno
+makeLocBar (Bar {bar_groups = xs}) = 
+    LocBar { bar_stk = stk_empty, bar_input = makeBarInp xs }
 
-changeY :: Element pch drn anno -> LocBar pch drn anno -> LocBar pch drn anno
-changeY _ (LocBar xs EmptyBar)          = LocBar xs EmptyBar
-changeY a (LocBar xs (CtxBar z1 zs))    = LocBar xs $ CtxBar (changeZ a z1) zs
+makeBarInp :: [NoteGroup pch drn anno] -> BarInp pch drn anno
+makeBarInp []                   = BNil
+makeBarInp (Atom e:xs)          = InpAtom e xs
+makeBarInp (Tuplet spec es:xs)  = InpTupl (makeLocTupl spec es) xs
+                   
+
+unwindLocBar :: LocBar pch drn anno -> Bar pch drn anno
+unwindLocBar (LocBar stk BNil)            = 
+    Bar { bar_groups = unstack stk [] }
+
+unwindLocBar (LocBar stk (InpAtom a as))  = 
+    Bar { bar_groups = unstack stk (Atom a:as) }
+
+unwindLocBar (LocBar stk (InpTupl tl as)) = 
+    Bar { bar_groups = unstack stk (unwindTupl tl : as) }
 
 
-contentLY :: LocBar pch drn anno -> Bar pch drn anno
-contentLY (LocBar _  EmptyBar)        = Bar { bar_groups = [] }
-contentLY (LocBar _  (CtxBar zl zs))  = 
-    Bar { bar_groups = fn zs $ contentLZ zl }
-  where
-    fn (a:as) bs = fn as (a:bs)
-    fn []     bs = bs
+changeBar :: Element pch drn anno -> LocBar pch drn anno -> LocBar pch drn anno
+changeBar _ (LocBar stk BNil)             = LocBar stk BNil
+changeBar a (LocBar stk (InpAtom _ as))   = LocBar stk $ InpAtom a as
+changeBar a (LocBar stk (InpTupl tl as))  = 
+    LocBar stk $ InpTupl (changeTupl1 a tl) as
 
-contentRY :: LocBar pch drn anno -> Bar pch drn anno
-contentRY (LocBar _  EmptyBar)      = Bar { bar_groups = [] }
-contentRY (LocBar xs (CtxBar zl _)) = Bar { bar_groups = contentRZ zl ++ xs}
+
+remainingBar :: LocBar pch drn anno -> Maybe (Bar pch drn anno)
+remainingBar (LocBar _ BNil)            = Nothing 
+
+remainingBar (LocBar _ (InpAtom a as))  = 
+    Just $ Bar { bar_groups = Atom a : as }
+
+remainingBar (LocBar _ (InpTupl tl as)) = 
+    let inps = case remainingTupl tl of { Nothing -> as; Just t -> t:as }
+    in Just $ Bar { bar_groups = inps }
+
+
+consumedBar :: LocBar pch drn anno -> Maybe (Bar pch drn anno)
+consumedBar (LocBar stk (InpTupl tl _)) = 
+    let tcons = case consumedTupl tl of { Nothing -> []; Just t -> [t] }
+        elems = unstack stk tcons 
+    in if null elems then Nothing else Just $ Bar { bar_groups = elems }
+
+consumedBar (LocBar stk _)              = 
+    if null stk then Nothing else Just $ Bar { bar_groups = unstack stk [] }
+
+
 
 
 --------------------------------------------------------------------------------
@@ -225,74 +276,54 @@ contentRY (LocBar xs (CtxBar zl _)) = Bar { bar_groups = contentRZ zl ++ xs}
 
 -- case distinction on Loc for Atom or Tuplet...
 
-
-data LocNG pch drn anno = LocAtom (Element pch drn anno) CtxAtom
-                        | LocTupl TupletSpec [Element pch drn anno] (CtxTupl pch drn anno)
+data LocTupl pch drn anno = LocTupl
+    { tupl_spec          :: !TupletSpec
+    , tupl_stk           :: Stk (Element pch drn anno)
+    , tupl_input         :: [Element pch drn anno]
+    }
   deriving (Data,Eq,Show,Typeable)
 
 
--- We need to know if we have consumed an atom
--- 
-data CtxAtom = LEFT_OF | RIGHT_OF
-  deriving (Data,Eq,Show,Typeable)
-
-type CtxTupl pch drn anno = [Element pch drn anno]
 
 
 
-rightZ :: LocNG pch drn anno -> LocNG pch drn anno
-rightZ (LocAtom a _)                = LocAtom a RIGHT_OF
-rightZ (LocTupl spec (a:as) ctx)    = LocTupl spec as (a:ctx)
-rightZ (LocTupl spec []     ctx)    = LocTupl spec [] ctx
-
-leftZ :: LocNG pch drn anno -> LocNG pch drn anno
-leftZ (LocAtom a _)                 = LocAtom a LEFT_OF
-leftZ (LocTupl spec xs (y:ys))      = LocTupl spec (y:xs) ys
-leftZ (LocTupl spec xs [])          = LocTupl spec xs     []
-
-
-atEndZ :: LocNG pch drn anno -> Bool
-atEndZ (LocAtom _ RIGHT_OF)         = True
-atEndZ (LocAtom _ LEFT_OF)          = False
-atEndZ (LocTupl _ xs _)             = null xs
-
-atStartZ :: LocNG pch drn anno -> Bool
-atStartZ (LocAtom _ RIGHT_OF)         = False
-atStartZ (LocAtom _ LEFT_OF)          = True
-atStartZ (LocTupl _ _ ctx)            = null ctx
-
-
-makeZ :: NoteGroup pch drn anno -> LocNG pch drn anno
-makeZ (Atom a)                        = LocAtom a LEFT_OF
-makeZ (Tuplet spec xs)                = LocTupl spec xs []
-
-unwindZ :: LocNG pch drn anno -> NoteGroup pch drn anno
-unwindZ (LocAtom a _)                 = Atom a
-unwindZ (LocTupl spec xs ys)          = Tuplet spec (fn ys xs)
-  where
-    fn (a:as) bs = fn as (a:bs)
-    fn []     bs = bs
+fwrdTupl :: LocTupl pch drn anno -> Maybe (LocTupl pch drn anno)
+fwrdTupl (LocTupl spec stk (a:as))      = Just $ LocTupl spec (a:stk) as
+fwrdTupl (LocTupl _    _   [])          = Nothing
 
 
 
+bwrdTupl :: LocTupl pch drn anno -> Maybe (LocTupl pch drn anno)
+bwrdTupl (LocTupl spec (s:stk) as)      = Just $ LocTupl spec stk (s:as)
+bwrdTupl (LocTupl _    []      _)       = Nothing
 
-changeZ :: Element pch drn anno -> LocNG pch drn anno -> LocNG pch drn anno
-changeZ a (LocAtom _ LEFT_OF)       = LocAtom a LEFT_OF
-changeZ _ (LocAtom a RIGHT_OF)      = LocAtom a RIGHT_OF
-changeZ a (LocTupl spec (_:xs) ctx) = LocTupl spec (a:xs) ctx
-changeZ _ (LocTupl spec []     ctx) = LocTupl spec [] ctx
+
+makeLocTupl :: TupletSpec -> [Element pch drn anno] -> LocTupl pch drn anno
+makeLocTupl spec xs                     = 
+    LocTupl { tupl_spec = spec, tupl_stk = stk_empty, tupl_input = xs }
+
+
+unwindTupl :: LocTupl pch drn anno -> NoteGroup pch drn anno
+unwindTupl (LocTupl spec stk inp)       = Tuplet spec (unstack stk inp)
+
+
+changeTupl1 :: Element pch drn anno 
+            -> LocTupl pch drn anno -> LocTupl pch drn anno
+changeTupl1 _ (LocTupl spec stk [])     = LocTupl spec stk []
+changeTupl1 a (LocTupl spec stk (_:as)) = LocTupl spec stk (a:as)
     
 
+-- TODO - recalc spec
+remainingTupl :: LocTupl pch drn anno -> Maybe (NoteGroup pch drn anno)
+remainingTupl (LocTupl spec _ inp)      
+    | null inp      = Nothing 
+    | otherwise     = let spec1 = spec in Just $ Tuplet spec1 inp
 
-contentLZ :: LocNG pch drn anno -> [NoteGroup pch drn anno]
-contentLZ (LocAtom a RIGHT_OF)      = [Atom a]
-contentLZ (LocAtom _ LEFT_OF)       = []
-contentLZ (LocTupl spec _ ys)       = [Tuplet spec (fn ys [])]
-  where
-    fn (a:as) bs = fn as (a:bs)
-    fn []     bs = bs
 
-contentRZ :: LocNG pch drn anno -> [NoteGroup pch drn anno]
-contentRZ (LocAtom _ RIGHT_OF)      = []
-contentRZ (LocAtom a LEFT_OF)       = [Atom a]
-contentRZ (LocTupl spec xs _)       = [Tuplet spec xs] -- needs remaking
+-- TODO - recalc spec
+consumedTupl :: LocTupl pch drn anno -> Maybe (NoteGroup pch drn anno)
+consumedTupl (LocTupl spec stk _) 
+    | null stk      = Nothing
+    | otherwise     = let spec1 = spec in Just $ Tuplet spec1 (unstack stk [])
+
+
