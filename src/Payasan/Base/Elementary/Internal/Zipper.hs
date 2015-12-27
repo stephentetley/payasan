@@ -25,6 +25,7 @@ module Payasan.Base.Elementary.Internal.Zipper
   , change
   , remaining
   , consumed
+
   )  where
 
 
@@ -94,20 +95,28 @@ fwrdLoc (Loc info stk (Inp bl as))  =
                     else Just $ Loc info stk (Inp bl2 as)
 
 
--- TODO - this is currently untested...
+-- If at-the-start of bar before doing any back-tracking we 
+-- want to pop the stack.
+-- Plus when popping stack we want to go to the right end...
 --
 bwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
 bwrdLoc (Loc _    [] Nil)           = Nothing
-bwrdLoc (Loc info [] (Inp bl as))   = case bwrdBar bl of
-    Nothing -> Nothing
-    Just bl2 -> Just $ Loc info [] (Inp bl2 as)
+bwrdLoc (Loc info [] (Inp bl as))   = 
+    if atStartBar bl then Nothing
+                     else let bl2 = bwrdBar bl 
+                          in Just $ Loc info [] (Inp bl2 as)
 
 bwrdLoc (Loc info stk@(s:ss) inp)   = case inp of
-    Inp bl as -> case bwrdBar bl of
-        Nothing -> let inps = s : unwindLocBar bl : as
-                   in Just $ Loc info ss (makeInp inps)
-        Just bl2 -> Just $ Loc info stk (Inp bl2 as)
+    Inp bl as -> 
+        if atStartBar bl then let inps = s : unwindLocBar bl : as
+                              in Just $ Loc info ss (rightmost1CurrentBar $ makeInp inps)
+                         else let bl2 = bwrdBar bl
+                              in Just $ Loc info stk (Inp bl2 as)
     Nil -> Just $ Loc info ss (makeInp [s])
+
+rightmost1CurrentBar :: Inp pch drn anno -> Inp pch drn anno
+rightmost1CurrentBar Nil            = Nil
+rightmost1CurrentBar (Inp bl xs)    = Inp (rightmost1Bar bl) xs
 
 
 makeLoc :: Phrase pch drn anno -> Loc pch drn anno
@@ -182,13 +191,11 @@ atEndBar :: LocBar pch drn anno -> Bool
 atEndBar (LocBar _  BNil)               = True
 atEndBar _                              = False
 
-{-
--- | This is probably needed for @backward@ as current 
--- implementation probably faulty.
---
+
 atStartBar :: LocBar pch drn anno -> Bool
+atStartBar (LocBar stk (InpTupl tl _))  = null stk && atStartTupl tl
 atStartBar (LocBar stk _)               = null stk
--}
+
 
 fwrdBar :: LocBar pch drn anno -> LocBar pch drn anno
 fwrdBar (LocBar stk BNil)               = LocBar stk BNil
@@ -201,21 +208,32 @@ fwrdBar (LocBar stk (InpTupl tl as))    =
         Just tl2 -> LocBar stk (InpTupl tl2 as)
 
 
-bwrdBar :: LocBar pch drn anno -> Maybe (LocBar pch drn anno)
+bwrdBar :: LocBar pch drn anno -> LocBar pch drn anno
 bwrdBar (LocBar [] inp)        = case inp of
     InpTupl tl as -> case bwrdTupl tl of
-        Nothing -> Nothing
-        Just tl2 -> Just $ LocBar [] (InpTupl tl2 as)
-    _ -> Nothing
+        Nothing -> LocBar [] inp
+        Just tl2 -> LocBar [] (InpTupl tl2 as)
+    _ -> LocBar [] inp
 
 bwrdBar (LocBar stk@(s:ss) inp) = case inp of
     InpTupl tl as -> case bwrdTupl tl of
         Nothing -> let inps = s : unwindTupl tl : as
-                   in Just $ LocBar ss (makeBarInp inps)
-        Just tl2 -> Just $ LocBar stk (InpTupl tl2 as)
-    InpAtom a as -> 
-        let inps = (s : Atom a : as) in Just $ LocBar ss (makeBarInp inps)
-    BNil -> Just $ LocBar ss (makeBarInp [s]) 
+                   in LocBar ss (makeBarInp inps)
+        Just tl2 -> LocBar stk (InpTupl tl2 as)
+    InpAtom a as ->  
+        let inps = (s : Atom a : as) in LocBar ss (makeBarInp inps)
+    BNil -> LocBar ss (makeBarInp [s]) 
+
+
+rightmost1Bar :: LocBar pch drn anno -> LocBar pch drn anno
+rightmost1Bar (LocBar []     BNil) = LocBar [] BNil
+rightmost1Bar (LocBar (s:ss) BNil) = 
+    let inp   = makeBarInp [s]
+        right = case inp of { (InpTupl tl _) -> InpTupl (rightmost1Tupl tl) []
+                            ; _ -> inp } 
+    in LocBar ss right
+
+rightmost1Bar loc                  = rightmost1Bar $ fwrdBar loc
 
 
 makeLocBar :: Bar pch drn anno -> LocBar pch drn anno
@@ -284,6 +302,8 @@ data LocTupl pch drn anno = LocTupl
   deriving (Data,Eq,Show,Typeable)
 
 
+atStartTupl :: LocTupl pch drn anno -> Bool
+atStartTupl (LocTupl _ stk _)           = null stk
 
 
 
@@ -296,6 +316,16 @@ fwrdTupl (LocTupl _    _   [])          = Nothing
 bwrdTupl :: LocTupl pch drn anno -> Maybe (LocTupl pch drn anno)
 bwrdTupl (LocTupl spec (s:stk) as)      = Just $ LocTupl spec stk (s:as)
 bwrdTupl (LocTupl _    []      _)       = Nothing
+
+
+
+rightmost1Tupl :: LocTupl pch drn anno -> LocTupl pch drn anno
+rightmost1Tupl (LocTupl spec []     [])     = LocTupl spec [] [] 
+rightmost1Tupl (LocTupl spec (s:ss) [])     = LocTupl spec ss [s] 
+rightmost1Tupl (LocTupl spec stk    (x:xs)) = step stk x xs
+  where
+    step ac e []        = LocTupl spec ac [e]
+    step ac e (z:zs)    = step (e:ac) z zs
 
 
 makeLocTupl :: TupletSpec -> [Element pch drn anno] -> LocTupl pch drn anno
