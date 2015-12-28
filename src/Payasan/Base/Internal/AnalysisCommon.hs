@@ -33,12 +33,17 @@ module Payasan.Base.Internal.AnalysisCommon
   , RefinedContour(..)
   , MelodicOutline(..)
 
+  -- * Histogram
+  , Histogram
+  , empty
+  , incr
+
   ) where
 
 
 
 import Data.Data
-
+import qualified Data.Map as MAP
 
 --------------------------------------------------------------------------------
 -- Anchors
@@ -97,3 +102,23 @@ data MelodicOutline = ASCENDING | DESCENDING | STATIONARY
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
+
+
+--------------------------------------------------------------------------------
+-- 
+
+-- Histograms?
+
+newtype Histogram a = Histogram { getHistogram :: MAP.Map a Int }
+  deriving (Eq,Show)
+
+
+empty :: Histogram a 
+empty = Histogram MAP.empty
+
+incr :: Ord a => a -> Histogram a -> Histogram a
+incr k = Histogram . MAP.insertWith fn k 1 . getHistogram
+  where
+    fn _ i = i+1
+
+-- ideally need a nice printer for Histograms

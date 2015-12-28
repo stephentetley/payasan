@@ -23,6 +23,11 @@ module Payasan.Base.Elementary.Internal.Metrics
   , lastNote
 
   , barCount
+  , pitchHisto
+  , pitchNameHisto
+  , octaveHisto
+
+
   , lowestPitch
   , highestPitch
 
@@ -78,6 +83,26 @@ lastNote = step noAnchor . viewl . toLinear
 barCount :: Phrase pch drn anno -> Int
 barCount (Phrase { phrase_bars = bs }) = length bs
              
+
+-- TODO - Histograms...
+
+pitchHisto :: Phrase Pitch drn anno -> Histogram Pitch
+pitchHisto = foldPitch fn empty
+  where
+    fn histo p = incr p histo
+
+
+pitchNameHisto :: Phrase Pitch drn anno -> Histogram PitchName
+pitchNameHisto = foldPitch fn empty
+  where
+    fn histo p = incr (pitch_name p) histo
+
+
+octaveHisto :: Phrase Pitch drn anno -> Histogram Int
+octaveHisto = foldPitch fn empty
+  where
+    fn histo p = incr (pitch_octave p) histo
+
 
 
 lowestPitch :: Phrase Pitch drn anno -> Maybe Pitch

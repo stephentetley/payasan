@@ -76,7 +76,8 @@ transposeDiatonic :: DiatonicInterval
 transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicIntervalC` ivl)) ph
 
 
-
+-- | Reverse
+--
 retrograde :: Phrase pch Duration anno -> Phrase pch Duration anno
 retrograde (Phrase info bs) = Phrase info $ map revBar $ reverse bs
   where
@@ -84,6 +85,7 @@ retrograde (Phrase info bs) = Phrase info $ map revBar $ reverse bs
     
     revNG (Atom e)          = Atom e
     revNG (Tuplet spec es)  = Tuplet spec $ reverse es
+
 
 -- | Note - seems to need /scale degrees/ - taking interal with 
 -- top note and adding same interval to lowest note does not work.

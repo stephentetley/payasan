@@ -4,6 +4,7 @@
 module Demo04 where
 
 import Payasan.Base.Elementary.Notelist
+import Payasan.Base.Elementary.Internal.TakeDrop
 
 -- import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -81,6 +82,12 @@ demo08 = shellOutLilyPond default_shell_info $
 demo09 :: IO ()
 demo09 = shellOutLilyPond default_shell_info $ 
     outputAsLilyPond_Relative globals middle_c $ invertDiatonic phrase01
+
+demo10 :: IO ()
+demo10 = do 
+    print $ pitchHisto $ phrase01
+    print $ pitchNameHisto $ phrase01
+    print $ octaveHisto $ phrase01
 
 {-
 
