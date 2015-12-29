@@ -23,6 +23,7 @@ module Payasan.Base.Elementary.Internal.Zipper
   , makeLoc
   , unwindLoc
   , change
+  , atLoc
   , remaining
   , consumed
 
@@ -141,6 +142,10 @@ change :: Element pch drn anno -> Loc pch drn anno -> Loc pch drn anno
 change _ (Loc info stk Nil)             = Loc info stk Nil
 change a (Loc info stk (Inp bl as))     = Loc info stk $ Inp (changeBar a bl) as
 
+
+atLoc :: Loc pch drn anno -> Maybe (Element pch drn anno)
+atLoc (Loc _ _ Nil)                     = Nothing
+atLoc (Loc _ _ (Inp bl _))              = atLocBar bl
 
 
 remaining :: Loc pch drn anno -> Phrase pch drn anno
@@ -264,6 +269,13 @@ changeBar a (LocBar stk (InpTupl tl as))  =
     LocBar stk $ InpTupl (changeTupl1 a tl) as
 
 
+atLocBar :: LocBar pch drn anno -> Maybe (Element pch drn anno)
+atLocBar (LocBar _ BNil)                  = Nothing
+atLocBar (LocBar _ (InpAtom e _))         = Just e
+atLocBar (LocBar _ (InpTupl tl _))        = atLocTupl tl
+
+
+
 remainingBar :: LocBar pch drn anno -> Maybe (Bar pch drn anno)
 remainingBar (LocBar _ BNil)            = Nothing 
 
@@ -342,6 +354,11 @@ changeTupl1 :: Element pch drn anno
 changeTupl1 _ (LocTupl spec stk [])     = LocTupl spec stk []
 changeTupl1 a (LocTupl spec stk (_:as)) = LocTupl spec stk (a:as)
     
+
+atLocTupl :: LocTupl pch drn anno -> Maybe (Element pch drn anno)
+atLocTupl (LocTupl _ _ [])              = Nothing
+atLocTupl (LocTupl _ _ (a:_))           = Just a 
+
 
 -- TODO - recalc spec
 remainingTupl :: LocTupl pch drn anno -> Maybe (NoteGroup pch drn anno)
