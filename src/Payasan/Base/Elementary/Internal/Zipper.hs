@@ -18,11 +18,14 @@
 module Payasan.Base.Elementary.Internal.Zipper
   (
     Loc
-  , forward
-  , backward
   , makeLoc
   , unwindLoc
+  , forward
+  , backward
+  , gotoFront
+  , gotoPosition
   , change
+  , adjust
   , atLoc
   , remaining
   , consumed
@@ -31,6 +34,8 @@ module Payasan.Base.Elementary.Internal.Zipper
 
 
 import Payasan.Base.Elementary.Internal.Syntax
+
+import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.CommonSyntax
 
 import Data.Data
@@ -81,44 +86,6 @@ data Inp pch drn anno = Nil
 
 
 
-forward :: Loc pch drn anno -> Loc pch drn anno
-forward loc = maybe loc id $ fwrdLoc loc
-
-backward :: Loc pch drn anno -> Loc pch drn anno
-backward loc = maybe loc id $ bwrdLoc loc
-
--- Need a special test for end-of-bar (after initial forward)
-fwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
-fwrdLoc (Loc _    _   Nil)          = Nothing
-fwrdLoc (Loc info stk (Inp bl as))  = 
-    let bl2 = fwrdBar bl in
-    if atEndBar bl2 then Just $ Loc info (unwindLocBar bl : stk) (makeInp as)
-                    else Just $ Loc info stk (Inp bl2 as)
-
-
--- If at-the-start of bar before doing any back-tracking we 
--- want to pop the stack.
--- Plus when popping stack we want to go to the right end...
---
-bwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
-bwrdLoc (Loc _    [] Nil)           = Nothing
-bwrdLoc (Loc info [] (Inp bl as))   = 
-    if atStartBar bl then Nothing
-                     else let bl2 = bwrdBar bl 
-                          in Just $ Loc info [] (Inp bl2 as)
-
-bwrdLoc (Loc info stk@(s:ss) inp)   = case inp of
-    Inp bl as -> 
-        if atStartBar bl then let inps = s : unwindLocBar bl : as
-                              in Just $ Loc info ss (rightmost1CurrentBar $ makeInp inps)
-                         else let bl2 = bwrdBar bl
-                              in Just $ Loc info stk (Inp bl2 as)
-    Nil -> Just $ Loc info ss (makeInp [s])
-
-rightmost1CurrentBar :: Inp pch drn anno -> Inp pch drn anno
-rightmost1CurrentBar Nil            = Nil
-rightmost1CurrentBar (Inp bl xs)    = Inp (rightmost1Bar bl) xs
-
 
 makeLoc :: Phrase pch drn anno -> Loc pch drn anno
 makeLoc (Phrase info bs)        = 
@@ -138,9 +105,94 @@ unwindLoc (Loc info stk (Inp bl as))    =
     in Phrase { phrase_header = info, phrase_bars = unstack stk inps }
 
 
+
+forward :: Loc pch drn anno -> Loc pch drn anno
+forward loc = maybe loc id $ fwrdLoc loc
+
+backward :: Loc pch drn anno -> Loc pch drn anno
+backward loc = maybe loc id $ bwrdLoc loc
+
+
+-- Need a special test for end-of-bar (after initial forward)
+fwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
+fwrdLoc (Loc _    _   Nil)          = Nothing
+fwrdLoc (Loc info stk (Inp bl as))  = 
+    let bl2 = fwrdLocBar bl in
+    if atEndBar bl2 then Just $ Loc info (unwindLocBar bl : stk) (makeInp as)
+                    else Just $ Loc info stk (Inp bl2 as)
+
+
+gotoFront :: Loc pch drn anno -> Loc pch drn anno
+gotoFront = makeLoc . unwindLoc
+
+-- Useful to set location by Position
+
+gotoPosition :: Position -> Loc pch drn anno -> Loc pch drn anno
+gotoPosition (Position { position_bar = b, position_index = ix }) = step1 b . gotoFront
+  where
+    step1 n loc | n > 1     = step1 (n-1) $ forwardBar loc
+                | otherwise = step2 ix loc
+
+    step2 n loc | n > 1     = step1 (n-1) $ forward loc
+                | otherwise = loc
+
+
+-- DESIGN NOTE - Do not expose forwardBar - only use for 
+-- gotoPosition. i.e should the goto 
+--
+-- fowardBar (and backwardBar) would have confusing semantics 
+-- if exposed. Should they go forward just to start or also 
+-- advance forward relative to current position within bar.
+-- 
+-- For gotoPosition forward bar should just go forward to start 
+-- of next bar
+--
+forwardBar :: Loc pch drn anno -> Loc pch drn anno
+forwardBar loc = maybe loc id $ nextBar loc
+
+nextBar :: Loc pch drn anno -> Maybe (Loc pch drn anno)
+nextBar (Loc _    _   Nil)          = Nothing
+nextBar (Loc info stk (Inp bl as))  = 
+    Just $ Loc info (unwindLocBar bl : stk) (makeInp as)
+
+
+
+-- If at-the-start of bar before doing any back-tracking we 
+-- want to pop the stack.
+-- Plus when popping stack we want to go to the right end...
+--
+bwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
+bwrdLoc (Loc _    [] Nil)           = Nothing
+bwrdLoc (Loc info [] (Inp bl as))   = 
+    if atStartBar bl then Nothing
+                     else let bl2 = bwrdLocBar bl 
+                          in Just $ Loc info [] (Inp bl2 as)
+
+bwrdLoc (Loc info stk@(s:ss) inp)   = case inp of
+    Inp bl as -> 
+        if atStartBar bl then let inps = s : unwindLocBar bl : as
+                              in Just $ Loc info ss (rightmost1CurrentBar $ makeInp inps)
+                         else let bl2 = bwrdLocBar bl
+                              in Just $ Loc info stk (Inp bl2 as)
+    Nil -> Just $ Loc info ss (makeInp [s])
+
+
+
+rightmost1CurrentBar :: Inp pch drn anno -> Inp pch drn anno
+rightmost1CurrentBar Nil            = Nil
+rightmost1CurrentBar (Inp bl xs)    = Inp (rightmost1Bar bl) xs
+
+
+
+
 change :: Element pch drn anno -> Loc pch drn anno -> Loc pch drn anno
 change _ (Loc info stk Nil)             = Loc info stk Nil
 change a (Loc info stk (Inp bl as))     = Loc info stk $ Inp (changeBar a bl) as
+
+adjust :: (Element pch drn anno -> Element pch drn anno) 
+       -> Loc pch drn anno -> Loc pch drn anno
+adjust _  (Loc info stk Nil)             = Loc info stk Nil
+adjust fn (Loc info stk (Inp bl as))     = Loc info stk $ Inp (adjustBar fn bl) as
 
 
 atLoc :: Loc pch drn anno -> Maybe (Element pch drn anno)
@@ -168,12 +220,7 @@ consumed (Loc info stk (Inp bl _))   =
 
 
 --------------------------------------------------------------------------------
--- Bar = Y
-
--- TODO - the idea of being RIGHT_OF an atom is wrong, should only be 
--- RIGHT_OF at the very end when all input is consumed.
---
-
+-- Bar
  
 
 data LocBar pch drn anno = LocBar 
@@ -202,25 +249,25 @@ atStartBar (LocBar stk (InpTupl tl _))  = null stk && atStartTupl tl
 atStartBar (LocBar stk _)               = null stk
 
 
-fwrdBar :: LocBar pch drn anno -> LocBar pch drn anno
-fwrdBar (LocBar stk BNil)               = LocBar stk BNil
+fwrdLocBar :: LocBar pch drn anno -> LocBar pch drn anno
+fwrdLocBar (LocBar stk BNil)            = LocBar stk BNil
 
-fwrdBar (LocBar stk (InpAtom a  as))    = LocBar (Atom a : stk) (makeBarInp as)
+fwrdLocBar (LocBar stk (InpAtom a  as)) = LocBar (Atom a : stk) (makeBarInp as)
 
-fwrdBar (LocBar stk (InpTupl tl as))    = 
+fwrdLocBar (LocBar stk (InpTupl tl as)) = 
     case fwrdTupl tl of
         Nothing -> LocBar (unwindTupl tl : stk) (makeBarInp as)
         Just tl2 -> LocBar stk (InpTupl tl2 as)
 
 
-bwrdBar :: LocBar pch drn anno -> LocBar pch drn anno
-bwrdBar (LocBar [] inp)        = case inp of
+bwrdLocBar :: LocBar pch drn anno -> LocBar pch drn anno
+bwrdLocBar (LocBar [] inp)          = case inp of
     InpTupl tl as -> case bwrdTupl tl of
         Nothing -> LocBar [] inp
         Just tl2 -> LocBar [] (InpTupl tl2 as)
     _ -> LocBar [] inp
 
-bwrdBar (LocBar stk@(s:ss) inp) = case inp of
+bwrdLocBar (LocBar stk@(s:ss) inp)  = case inp of
     InpTupl tl as -> case bwrdTupl tl of
         Nothing -> let inps = s : unwindTupl tl : as
                    in LocBar ss (makeBarInp inps)
@@ -238,7 +285,7 @@ rightmost1Bar (LocBar (s:ss) BNil) =
                             ; _ -> inp } 
     in LocBar ss right
 
-rightmost1Bar loc                  = rightmost1Bar $ fwrdBar loc
+rightmost1Bar loc                  = rightmost1Bar $ fwrdLocBar loc
 
 
 makeLocBar :: Bar pch drn anno -> LocBar pch drn anno
@@ -267,6 +314,15 @@ changeBar _ (LocBar stk BNil)             = LocBar stk BNil
 changeBar a (LocBar stk (InpAtom _ as))   = LocBar stk $ InpAtom a as
 changeBar a (LocBar stk (InpTupl tl as))  = 
     LocBar stk $ InpTupl (changeTupl1 a tl) as
+
+
+adjustBar :: (Element pch drn anno -> Element pch drn anno) 
+          -> LocBar pch drn anno -> LocBar pch drn anno
+adjustBar _  (LocBar stk BNil)             = LocBar stk BNil
+adjustBar fn (LocBar stk (InpAtom e as))   = LocBar stk $ InpAtom (fn e) as
+adjustBar fn (LocBar stk (InpTupl tl as))  = 
+    LocBar stk $ InpTupl (adjustTupl1 fn tl) as
+
 
 
 atLocBar :: LocBar pch drn anno -> Maybe (Element pch drn anno)
@@ -300,11 +356,9 @@ consumedBar (LocBar stk _)              =
 
 
 --------------------------------------------------------------------------------
--- Note Group = Z
+-- Tuplet
 
--- TODO - this does not tell us if we have /consumed/ an atom
 
--- case distinction on Loc for Atom or Tuplet...
 
 data LocTupl pch drn anno = LocTupl
     { tupl_spec          :: !TupletSpec
@@ -353,6 +407,12 @@ changeTupl1 :: Element pch drn anno
             -> LocTupl pch drn anno -> LocTupl pch drn anno
 changeTupl1 _ (LocTupl spec stk [])     = LocTupl spec stk []
 changeTupl1 a (LocTupl spec stk (_:as)) = LocTupl spec stk (a:as)
+
+
+adjustTupl1 :: (Element pch drn anno -> Element pch drn anno )
+            -> LocTupl pch drn anno -> LocTupl pch drn anno
+adjustTupl1 _  (LocTupl spec stk [])     = LocTupl spec stk []
+adjustTupl1 fn (LocTupl spec stk (a:as)) = LocTupl spec stk (fn a:as)
     
 
 atLocTupl :: LocTupl pch drn anno -> Maybe (Element pch drn anno)

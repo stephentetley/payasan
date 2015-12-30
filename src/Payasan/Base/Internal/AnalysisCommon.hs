@@ -57,6 +57,9 @@ import qualified Data.Map as MAP
 
 newtype Anchor = Anchor { getAnchor :: Maybe Position }
 
+
+-- | Note - musically it makes sense to count from 1...
+--
 data Position = Position 
     { position_bar           :: !Int
     , position_index         :: !Int

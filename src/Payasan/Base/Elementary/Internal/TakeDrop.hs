@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE RankNTypes                 #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -48,22 +46,18 @@ import qualified Prelude as PRE
 --------------------------------------------------------------------------------
 --
 
--- NOTE - would the new Linear view be better?
+-- NOTE - Zipper seems to beat Linear for clarity.
 
 
-nth :: Int -> StdElemPhrase2 pch anno -> Maybe (StdElemElement2 pch anno)
-nth i = step 0 . viewl . toLinear
+
+
+nth :: Int -> Phrase pch drn anno -> Maybe (Element pch drn anno)
+nth i _  | i < 0   = Nothing
+nth i ph           = step i $ makeLoc ph
   where
-    step n ((_,e) :< rest) | n == i    = Just e
-                           | otherwise = step (n+1) $ viewl rest
-    step _ Empty                       = Nothing
+    step n loc | n <= 0    = atLoc loc 
+               | otherwise = step (n-1) $ forward loc
 
-
-
--- nth suggests take and drop
--- drop works easily on Linear, take doesn\'t because 
--- we would have to rebuild from a list (although we can always use 
--- recalcBars). 
 
 
 -- Design Note - 23.12.2015 
@@ -102,15 +96,14 @@ drop i = step i . makeLoc
 
 -- | TODO - should last element be untied?
 --
-takeBars :: Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
+takeBars :: Int -> Phrase pch drn anno -> Phrase pch drn anno
 takeBars i (Phrase info bs) = Phrase info $ PRE.take i bs
 
-dropBars :: Int -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
+dropBars :: Int -> Phrase pch drn anno -> Phrase pch drn anno
 dropBars i (Phrase info bs) = Phrase info $ PRE.drop i bs
 
 
-takeSize :: forall pch anno.
-            RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
+takeSize :: RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
 takeSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -121,8 +114,7 @@ takeSize rd = step 0 . makeLoc
 
 
 
-dropSize :: forall pch anno.
-            RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
+dropSize :: RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
 dropSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 

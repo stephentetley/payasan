@@ -84,7 +84,7 @@ barCount :: Phrase pch drn anno -> Int
 barCount (Phrase { phrase_bars = bs }) = length bs
              
 
--- TODO - Histograms...
+-- histograms 
 
 pitchHisto :: Phrase Pitch drn anno -> Histogram Pitch
 pitchHisto = foldPitch fn empty
@@ -168,7 +168,8 @@ semitoneInterval = transformP (contourAlgo comp)
                      in if pnew `isLower` pold then negate sc else sc
 
 
-
+-- TODO - Phrase is an awkward representation for 
+-- contours - duration and anno seem extraneous information
 
 grossContour :: forall drn anno. 
                 Phrase Pitch drn anno -> Phrase GrossContour drn anno
