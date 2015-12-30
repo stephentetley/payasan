@@ -19,7 +19,7 @@ module Payasan.Base.Elementary.Internal.Zipper
   (
     Loc
   , makeLoc
-  , unwindLoc
+  , fromLoc
   , forward
   , backward
   , gotoFront
@@ -96,12 +96,12 @@ makeInp []                   = Nil
 makeInp (b:bs)               = Inp (makeLocBar b) bs
 
 
-unwindLoc :: Loc pch drn anno -> Phrase pch drn anno
-unwindLoc (Loc info stk Nil)            = 
+fromLoc :: Loc pch drn anno -> Phrase pch drn anno
+fromLoc (Loc info stk Nil)          = 
     Phrase { phrase_header = info, phrase_bars = unstack stk [] }
 
-unwindLoc (Loc info stk (Inp bl as))    = 
-    let inps = unwindLocBar bl : as
+fromLoc (Loc info stk (Inp bl as))  = 
+    let inps = fromLocBar bl : as
     in Phrase { phrase_header = info, phrase_bars = unstack stk inps }
 
 
@@ -118,12 +118,12 @@ fwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
 fwrdLoc (Loc _    _   Nil)          = Nothing
 fwrdLoc (Loc info stk (Inp bl as))  = 
     let bl2 = fwrdLocBar bl in
-    if atEndBar bl2 then Just $ Loc info (unwindLocBar bl : stk) (makeInp as)
+    if atEndBar bl2 then Just $ Loc info (fromLocBar bl : stk) (makeInp as)
                     else Just $ Loc info stk (Inp bl2 as)
 
 
 gotoFront :: Loc pch drn anno -> Loc pch drn anno
-gotoFront = makeLoc . unwindLoc
+gotoFront = makeLoc . fromLoc
 
 -- Useful to set location by Position
 
@@ -145,7 +145,7 @@ gotoPosition (Position { position_bar = b, position_index = ix }) = step1 b . go
 -- advance forward relative to current position within bar.
 -- 
 -- For gotoPosition forward bar should just go forward to start 
--- of next bar
+-- of next bar.
 --
 forwardBar :: Loc pch drn anno -> Loc pch drn anno
 forwardBar loc = maybe loc id $ nextBar loc
@@ -153,7 +153,7 @@ forwardBar loc = maybe loc id $ nextBar loc
 nextBar :: Loc pch drn anno -> Maybe (Loc pch drn anno)
 nextBar (Loc _    _   Nil)          = Nothing
 nextBar (Loc info stk (Inp bl as))  = 
-    Just $ Loc info (unwindLocBar bl : stk) (makeInp as)
+    Just $ Loc info (fromLocBar bl : stk) (makeInp as)
 
 
 
@@ -170,7 +170,7 @@ bwrdLoc (Loc info [] (Inp bl as))   =
 
 bwrdLoc (Loc info stk@(s:ss) inp)   = case inp of
     Inp bl as -> 
-        if atStartBar bl then let inps = s : unwindLocBar bl : as
+        if atStartBar bl then let inps = s : fromLocBar bl : as
                               in Just $ Loc info ss (rightmost1CurrentBar $ makeInp inps)
                          else let bl2 = bwrdLocBar bl
                               in Just $ Loc info stk (Inp bl2 as)
@@ -256,7 +256,7 @@ fwrdLocBar (LocBar stk (InpAtom a  as)) = LocBar (Atom a : stk) (makeBarInp as)
 
 fwrdLocBar (LocBar stk (InpTupl tl as)) = 
     case fwrdTupl tl of
-        Nothing -> LocBar (unwindTupl tl : stk) (makeBarInp as)
+        Nothing -> LocBar (fromTupl tl : stk) (makeBarInp as)
         Just tl2 -> LocBar stk (InpTupl tl2 as)
 
 
@@ -269,7 +269,7 @@ bwrdLocBar (LocBar [] inp)          = case inp of
 
 bwrdLocBar (LocBar stk@(s:ss) inp)  = case inp of
     InpTupl tl as -> case bwrdTupl tl of
-        Nothing -> let inps = s : unwindTupl tl : as
+        Nothing -> let inps = s : fromTupl tl : as
                    in LocBar ss (makeBarInp inps)
         Just tl2 -> LocBar stk (InpTupl tl2 as)
     InpAtom a as ->  
@@ -298,15 +298,15 @@ makeBarInp (Atom e:xs)          = InpAtom e xs
 makeBarInp (Tuplet spec es:xs)  = InpTupl (makeLocTupl spec es) xs
                    
 
-unwindLocBar :: LocBar pch drn anno -> Bar pch drn anno
-unwindLocBar (LocBar stk BNil)            = 
+fromLocBar :: LocBar pch drn anno -> Bar pch drn anno
+fromLocBar (LocBar stk BNil)            = 
     Bar { bar_groups = unstack stk [] }
 
-unwindLocBar (LocBar stk (InpAtom a as))  = 
+fromLocBar (LocBar stk (InpAtom a as))  = 
     Bar { bar_groups = unstack stk (Atom a:as) }
 
-unwindLocBar (LocBar stk (InpTupl tl as)) = 
-    Bar { bar_groups = unstack stk (unwindTupl tl : as) }
+fromLocBar (LocBar stk (InpTupl tl as)) = 
+    Bar { bar_groups = unstack stk (fromTupl tl : as) }
 
 
 changeBar :: Element pch drn anno -> LocBar pch drn anno -> LocBar pch drn anno
@@ -399,8 +399,8 @@ makeLocTupl spec xs                     =
     LocTupl { tupl_spec = spec, tupl_stk = stk_empty, tupl_input = xs }
 
 
-unwindTupl :: LocTupl pch drn anno -> NoteGroup pch drn anno
-unwindTupl (LocTupl spec stk inp)       = Tuplet spec (unstack stk inp)
+fromTupl :: LocTupl pch drn anno -> NoteGroup pch drn anno
+fromTupl (LocTupl spec stk inp)         = Tuplet spec (unstack stk inp)
 
 
 changeTupl1 :: Element pch drn anno 

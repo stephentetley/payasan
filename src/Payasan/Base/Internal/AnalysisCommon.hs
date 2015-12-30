@@ -29,6 +29,8 @@ module Payasan.Base.Internal.AnalysisCommon
   , incPositionBar
   , incPositionIndex
 
+  , Range(..)
+
   , GrossContour(..)
   , RefinedContour(..)
   , MelodicOutline(..)
@@ -84,6 +86,13 @@ incPositionBar n = (\s i -> s { position_bar = i + n}) <*> position_bar
 
 incPositionIndex :: Int -> Position -> Position
 incPositionIndex n = (\s i -> s { position_index = i + n}) <*> position_index
+
+
+data Range = Range 
+    { range_start       :: !Position 
+    , range_end         :: !Position 
+    }
+  deriving (Data,Eq,Ord,Show,Typeable)
                    
 --------------------------------------------------------------------------------
 -- Contours

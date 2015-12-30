@@ -25,6 +25,8 @@ module Payasan.Base.Elementary.Internal.TakeDrop
   , takeSize
   , dropSize
 
+  , takeRange
+
   ) where
 
 
@@ -33,6 +35,7 @@ import Payasan.Base.Elementary.Internal.Syntax
 import Payasan.Base.Elementary.Internal.Zipper
 
 
+import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Duration
 
 import Data.Maybe
@@ -122,3 +125,11 @@ dropSize rd = step 0 . makeLoc
                               if sz1 >= rd then remaining loc
                                            else step sz1 $ forward loc
                     Nothing -> remaining loc
+
+
+
+takeRange :: Range -> Phrase pch drn anno -> Phrase pch drn anno
+takeRange (Range {range_start = p1, range_end = p2}) ph = 
+    let ph1 = consumed $ gotoPosition p2 $ makeLoc ph
+        ph2 = remaining $ gotoPosition p1 $ makeLoc ph1
+    in ph2
