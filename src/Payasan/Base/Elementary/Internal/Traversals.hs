@@ -50,12 +50,18 @@ module Payasan.Base.Elementary.Internal.Traversals
   , censorAnno
   , changeSkipToRest
 
+
+
+  , TraceAlgo(..)
+  , trace
+
   ) where
 
 
 
 import Payasan.Base.Elementary.Internal.Syntax
 
+import Payasan.Base.Internal.AnalysisTrace
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
@@ -415,3 +421,33 @@ changeSkipToRest (Phrase info bs) = Phrase info (map bar1 bs)
 
     changeSkip (Skip d)         = Rest d
     changeSkip e                = e
+
+
+
+--------------------------------------------------------------------------------
+-- Traces
+
+data TraceAlgo st pch drn anno e = TraceAlgo 
+    { initial_trace_state :: st
+    , element_trace_trafo :: Element pch drn anno -> Mon st (TraceElement e)
+    }
+
+
+trace :: forall st pch drn anno e. 
+                TraceAlgo st pch drn anno e
+             -> Phrase pch drn anno
+             -> TracePhrase e
+trace (TraceAlgo st0 elemT) ph = evalRewrite (phraseT ph) st0
+  where
+    phraseT :: Phrase pch drn anno -> Mon st (TracePhrase e) 
+    phraseT (Phrase _ bs)       = TracePhrase <$> mapM barT bs
+
+    barT :: Bar pch drn anno -> Mon st (TraceBar e)
+    barT (Bar cs)               = (TraceBar . concat) <$> mapM noteGroupT cs
+
+    noteGroupT :: NoteGroup pch drn anno -> Mon st [TraceElement e]
+    noteGroupT (Atom e)         = (\a -> [a]) <$> elemT e
+    noteGroupT (Tuplet _ es)    = mapM elemT es
+
+
+

@@ -88,6 +88,7 @@ demo10 = do
     print $ pitchHisto $ phrase01
     print $ pitchNameHisto $ phrase01
     print $ octaveHisto $ phrase01
+    print $ grossContour $ phrase01
 
 {-
 

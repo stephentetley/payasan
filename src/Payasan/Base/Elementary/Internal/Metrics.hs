@@ -47,8 +47,9 @@ module Payasan.Base.Elementary.Internal.Metrics
 import Payasan.Base.Elementary.Internal.Syntax
 import Payasan.Base.Elementary.Internal.Traversals
 
-import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.AnalysisCommon
+import Payasan.Base.Internal.AnalysisTrace
+import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Pitch
@@ -142,38 +143,36 @@ highestStep = fmap diatonic_base . foldPitch fn Nothing
 
 
 contourAlgo :: (Pitch -> Pitch -> ctour) 
-            -> ElemPitchAlgo (Maybe Pitch) Pitch ctour
-contourAlgo comp = ElemPitchAlgo { initial_stateP = Nothing
-                                 , element_trafoP = fn }
+             -> TraceAlgo (Maybe Pitch) Pitch drn anno ctour
+contourAlgo comp = TraceAlgo { initial_trace_state = Nothing
+                             , element_trace_trafo = fn }
   where   
-    fn (Note p d a t)   = do { opt <- get 
+    fn (Note p _ _ _)   = do { opt <- get 
                              ; case opt of 
-                                  Nothing -> put (Just p) >> return (Rest d)
+                                  Nothing -> put (Just p) >> return Blank
                                   Just p0 -> 
                                      let ct = comp p0 p
-                                     in put (Just p) >> return (Note ct d a t)
+                                     in put (Just p) >> return (Element ct)
                              }
 
-    fn (Rest d)         = pure $ Rest d
-    fn (Spacer d)       = pure $ Spacer d
-    fn (Skip d)         = pure $ Skip d
-    fn (Punctuation s)  = pure $ Punctuation s
+    fn (Rest {})        = pure $ Blank
+    fn (Spacer {})      = pure $ Blank
+    fn (Skip {})        = pure $ Blank
+    fn (Punctuation {}) = pure $ Blank
+
 
 
 semitoneInterval :: forall drn anno. 
-                    Phrase Pitch drn anno -> Phrase Int drn anno
-semitoneInterval = transformP (contourAlgo comp)
+                    Phrase Pitch drn anno -> TracePhrase Int
+semitoneInterval = trace (contourAlgo comp)
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
                      in if pnew `isLower` pold then negate sc else sc
 
 
--- TODO - Phrase is an awkward representation for 
--- contours - duration and anno seem extraneous information
-
 grossContour :: forall drn anno. 
-                Phrase Pitch drn anno -> Phrase GrossContour drn anno
-grossContour = transformP (contourAlgo comp)
+                Phrase Pitch drn anno -> TracePhrase GrossContour
+grossContour = trace (contourAlgo comp)
   where
     comp pold pnew | pnew `isHigher` pold = UP
                    | pnew `isLower`  pold = DOWN
@@ -183,8 +182,8 @@ grossContour = transformP (contourAlgo comp)
 
 
 refinedContour :: forall drn anno. 
-                  Phrase Pitch drn anno -> Phrase RefinedContour drn anno
-refinedContour = transformP (contourAlgo comp)
+                  Phrase Pitch drn anno -> TracePhrase RefinedContour
+refinedContour = trace (contourAlgo comp)
   where
     comp pold pnew 
         | pnew `isHigher` pold = let ival = intervalBetween pold pnew
@@ -196,3 +195,5 @@ refinedContour = transformP (contourAlgo comp)
                                     then LEAP_DOWN else STEP_DOWN
 
         | otherwise            = REFINED_SAME
+
+
