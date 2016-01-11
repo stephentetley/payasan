@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.Output.Linear.OutputBeam
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -33,12 +33,12 @@ import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
 
-beamLinear :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-beamLinear ppl ph = concatBars $ oPhrase ppl ph
+beamLinear :: LeafOutput pch drn anno -> Part pch drn anno -> Doc
+beamLinear ppl ph = concatBars $ oPart ppl ph
 
 
-oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> [Doc]
-oPhrase ppl (Phrase xs)         = map (oBar ppl) xs
+oPart :: LeafOutput pch drn anno -> Part pch drn anno -> [Doc]
+oPart ppl (Part xs)             = map (oBar ppl) xs
 
 
 oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> Doc

@@ -17,7 +17,7 @@ locals :: SectionInfo
 locals = default_section_info
 
 
-phrase01 :: StdChordPhrase
+phrase01 :: StdChordPart
 phrase01 = fromLilyPondWith locals $ 
     [chordmode| c2 f4:1.3+.5 g:dim7 |]
 

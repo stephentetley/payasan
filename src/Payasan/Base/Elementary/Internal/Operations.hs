@@ -10,13 +10,20 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Phrase operations - often cf Data.List
+-- Operations on Parts - often cf Data.List
 --
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Elementary.Internal.Operations
   (
-    nth
+
+    isNote
+  , isPause
+  , isPunctuation
+
+
+  , null
+  , nth
 
   , take
   , drop
@@ -46,16 +53,39 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-import Prelude hiding (take, drop, takeWhile, dropWhile)
+import Prelude hiding (null, take, drop, takeWhile, dropWhile)
 import qualified Prelude as PRE
 
 
--- Implement Anchors here for the time being...
--- firstNote is easy with Linear view
+
+-- cf. Data.Char character classes...
+
+isNote :: Element pdh drn anno -> Bool
+isNote (Note {})                = True
+isNote _                        = False
+
+isPause :: Element pdh drn anno -> Bool
+isPause (Note {})               = False
+isPause (Rest {})               = True
+isPause (Spacer {})             = True
+isPause (Skip {})               = True
+isPause (Punctuation {})        = False
+
+isPunctuation :: Element pdh drn anno -> Bool
+isPunctuation (Punctuation {})  = True
+isPunctuation _                 = False
 
 
 
-nth :: Int -> Phrase pch drn anno -> Maybe (Element pch drn anno)
+--------------------------------------------------------------------------------
+-- ops on phrases
+
+
+null :: Part pch drn anno -> Bool
+null (Part { part_bars = xs }) = PRE.null xs
+
+
+nth :: Int -> Part pch drn anno -> Maybe (Element pch drn anno)
 nth i _  | i < 0   = Nothing
 nth i ph           = step i $ makeLoc ph
   where
@@ -64,7 +94,7 @@ nth i ph           = step i $ makeLoc ph
 
 
 
-firstNote :: Phrase Pitch drn anno -> Anchor
+firstNote :: Part Pitch drn anno -> Anchor
 firstNote = step . viewl . toLinear
   where
     step Empty                  = noAnchor
@@ -72,7 +102,7 @@ firstNote = step . viewl . toLinear
     step ((_,_) :< rest)        = step $ viewl rest
 
 
-lastNote :: Phrase Pitch drn anno -> Anchor
+lastNote :: Part Pitch drn anno -> Anchor
 lastNote = step noAnchor . viewl . toLinear
   where
     step ac Empty                       = ac
@@ -104,14 +134,14 @@ lastNote = step noAnchor . viewl . toLinear
 
 
 
-take :: Int -> Phrase pch drn anno -> Phrase pch drn anno
+take :: Int -> Part pch drn anno -> Part pch drn anno
 take i = step i . makeLoc
   where
     step n loc | n <= 0    = consumed loc
                | otherwise = step (n-1) $ forward loc
 
 
-drop :: Int -> Phrase pch drn anno -> Phrase pch drn anno
+drop :: Int -> Part pch drn anno -> Part pch drn anno
 drop i = step i . makeLoc
   where
     step n loc | n <= 0    = remaining loc
@@ -121,14 +151,14 @@ drop i = step i . makeLoc
 
 -- | TODO - should last element be untied?
 --
-takeBars :: Int -> Phrase pch drn anno -> Phrase pch drn anno
-takeBars i (Phrase info bs) = Phrase info $ PRE.take i bs
+takeBars :: Int -> Part pch drn anno -> Part pch drn anno
+takeBars i (Part info bs) = Part info $ PRE.take i bs
 
-dropBars :: Int -> Phrase pch drn anno -> Phrase pch drn anno
-dropBars i (Phrase info bs) = Phrase info $ PRE.drop i bs
+dropBars :: Int -> Part pch drn anno -> Part pch drn anno
+dropBars i (Part info bs) = Part info $ PRE.drop i bs
 
 
-takeSize :: RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
+takeSize :: RDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
 takeSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -139,7 +169,7 @@ takeSize rd = step 0 . makeLoc
 
 
 
-dropSize :: RDuration -> StdElemPhrase2 pch anno -> StdElemPhrase2 pch anno
+dropSize :: RDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
 dropSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -150,14 +180,14 @@ dropSize rd = step 0 . makeLoc
 
 
 
-takeRange :: Range -> Phrase pch drn anno -> Phrase pch drn anno
+takeRange :: Range -> Part pch drn anno -> Part pch drn anno
 takeRange (Range {range_start = p1, range_end = p2}) ph = 
     let ph1 = consumed $ gotoPosition p2 $ makeLoc ph
         ph2 = remaining $ gotoPosition p1 $ makeLoc ph1
     in ph2
 
 
-takeWhile :: (Element pch drn anno -> Bool) -> Phrase pch drn anno -> Phrase pch drn anno
+takeWhile :: (Element pch drn anno -> Bool) -> Part pch drn anno -> Part pch drn anno
 takeWhile test = step . makeLoc
   where
     step loc = case atLoc loc of 
@@ -165,7 +195,7 @@ takeWhile test = step . makeLoc
                                         else consumed loc
                     Nothing -> consumed loc
 
-dropWhile :: (Element pch drn anno -> Bool) -> Phrase pch drn anno -> Phrase pch drn anno
+dropWhile :: (Element pch drn anno -> Bool) -> Part pch drn anno -> Part pch drn anno
 dropWhile test = step . makeLoc
   where
     step loc = case atLoc loc of 
@@ -177,8 +207,8 @@ dropWhile test = step . makeLoc
 {-
 -- cf Data.List.words
 -- TODO - move from here...
-phrases :: Phrase pch drn anno -> [Phrase pch drn anno]
-phrases ph@(Phrase {phrase_header = hdr}) = []
+phrases :: Part pch drn anno -> [Part pch drn anno]
+phrases ph@(Part { part_header = hdr }) = []
 
 
 -}

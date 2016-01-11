@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.TabularOutput
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -34,18 +34,18 @@ import Payasan.Base.Internal.Output.Tabular.Utils
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-elemTabular :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-elemTabular ppl ph = concatBars 2 $ oPhrase ppl ph
+elemTabular :: LeafOutput pch drn anno -> Part pch drn anno -> Doc
+elemTabular ppl ph = concatBars 2 $ oPart ppl ph
 
 
 
 
-oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> [Doc]
-oPhrase ppl  (Phrase _  xs)     = map (oBar ppl) xs
+oPart :: LeafOutput pch drn anno -> Part pch drn anno -> [Doc]
+oPart ppl (Part _  xs)          = map (oBar ppl) xs
 
 
 oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> Doc
-oBar ppl (Bar cs) = oNoteGroupList ppl cs
+oBar ppl (Bar cs)               = oNoteGroupList ppl cs
 
 
 oNoteGroupList :: LeafOutput pch drn anno -> [NoteGroup pch drn anno] -> Doc

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.ABC.Syntax
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -21,13 +21,13 @@
 module Payasan.Base.Internal.ABC.Syntax
   ( 
 
-    ABCPhrase
+    ABCPart
   , ABCBar
   , ABCNoteGroup
   , ABCElement
   , ABCNote
 
-  , ABCPhrase1
+  , ABCPart1
   , ABCBar1
   , ABCNoteGroup1
   , ABCElement1
@@ -67,7 +67,7 @@ import Data.Ratio
 -- | ABC is not annotated, though polymorphic anno is used
 -- so that /more/ syntax can be printed.
 
-type ABCPhrase                  = ABCPhrase1    ()
+type ABCPart                    = ABCPart1      ()
 type ABCBar                     = ABCBar1       ()      
 type ABCNoteGroup               = ABCNoteGroup1 ()
 type ABCElement                 = ABCElement1   ()
@@ -76,10 +76,10 @@ type ABCNote                    = BEAM.Note     ABCPitch ABCNoteLength
 
 -- Gen- prefix indicates the must general syntax allowed.
 
-type ABCPhrase1 anno             = BEAM.Phrase      ABCPitch ABCNoteLength anno
-type ABCBar1 anno                = BEAM.Bar         ABCPitch ABCNoteLength anno
-type ABCNoteGroup1 anno          = BEAM.NoteGroup   ABCPitch ABCNoteLength anno
-type ABCElement1 anno            = BEAM.Element     ABCPitch ABCNoteLength anno
+type ABCPart1 anno              = BEAM.Part        ABCPitch ABCNoteLength anno
+type ABCBar1 anno               = BEAM.Bar         ABCPitch ABCNoteLength anno
+type ABCNoteGroup1 anno         = BEAM.NoteGroup   ABCPitch ABCNoteLength anno
+type ABCElement1 anno           = BEAM.Element     ABCPitch ABCNoteLength anno
 
 
 -- Just give Picth and NoteLength ABC- prefix as they are 

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.PitchTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -28,7 +28,7 @@ import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Duration
 
 
-translate :: Phrase DrumPitch Duration anno -> Phrase MidiPitch Duration anno
+translate :: Part DrumPitch Duration anno -> Part MidiPitch Duration anno
 translate = transformP pch_algo
 
 

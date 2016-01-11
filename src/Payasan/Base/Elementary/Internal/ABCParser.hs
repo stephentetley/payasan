@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.ABCParser
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -45,7 +45,7 @@ import Data.Char (isSpace)
 
 abc :: QuasiQuoter
 abc = QuasiQuoter
-    { quoteExp = \s -> case parseABCPhrase s of
+    { quoteExp = \s -> case parseABCPart s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -59,14 +59,14 @@ abc = QuasiQuoter
 
 
 
-parseABCPhrase :: String -> Either ParseError ABCElemPhrase
-parseABCPhrase = runParser fullABCPhrase () ""
+parseABCPart :: String -> Either ParseError ABCElemPart
+parseABCPart = runParser fullABCPart () ""
 
 
 
 
-fullABCPhrase :: ABCParser ABCElemPhrase
-fullABCPhrase = whiteSpace *> abcPhraseK >>= step
+fullABCPart :: ABCParser ABCElemPart
+fullABCPart = whiteSpace *> abcPartK >>= step
   where 
     isTrail             = all (isSpace)
     step (ans,_,ss) 
@@ -74,11 +74,11 @@ fullABCPhrase = whiteSpace *> abcPhraseK >>= step
         | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-abcPhraseK :: ABCParser (ABCElemPhrase,SourcePos,String)
-abcPhraseK = (,,) <$> phrase <*> getPosition <*> getInput
+abcPartK :: ABCParser (ABCElemPart,SourcePos,String)
+abcPartK = (,,) <$> part <*> getPosition <*> getInput
 
-phrase :: ABCParser ABCElemPhrase 
-phrase = Phrase default_section_info <$> bars
+part :: ABCParser ABCElemPart 
+part = Part default_section_info <$> bars
 
 bars :: ABCParser [ABCElemBar]
 bars = sepBy bar barline

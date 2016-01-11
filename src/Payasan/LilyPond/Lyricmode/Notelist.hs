@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Notelist
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -19,7 +19,7 @@ module Payasan.LilyPond.Lyricmode.Notelist
 
     module Payasan.Base.Internal.Shell
    
-  , LyricPhrase1
+  , LyricPart1
   , lyricmode
 
   , ScoreInfo(..)        -- Re-export
@@ -56,20 +56,20 @@ import Payasan.Base.Internal.Shell
 
 
 
-fromLilyPond :: ScoreInfo -> LyLyricPhrase -> LyricPhrase1 ()
+fromLilyPond :: ScoreInfo -> LyLyricPart -> LyricPart1 ()
 fromLilyPond globals = fromLilyPondWith globals default_section_info
 
 fromLilyPondWith :: ScoreInfo 
                  -> SectionInfo 
-                 -> LyLyricPhrase1 anno
-                 -> LyricPhrase1 anno
+                 -> LyLyricPart1 anno
+                 -> LyricPart1 anno
 fromLilyPondWith globals locals = inTrans globals . ELEM.pushSectionInfo locals
 
 
 -- Lyrics should not beam.
 -- Print two simultaneous interpretations.
 --
-outputAsLilyPond :: Anno anno => ScoreInfo -> LyricPhrase1 anno -> String
+outputAsLilyPond :: Anno anno => ScoreInfo -> LyricPart1 anno -> String
 outputAsLilyPond globals lyrics = 
     MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
   where
@@ -83,7 +83,7 @@ outputAsLilyPond globals lyrics =
                         }
 
 
-outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> LyricPhrase1 anno -> String
+outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> LyricPart1 anno -> String
 outputAsLilyPondDU annos globals lyrics = 
     MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
   where
@@ -98,6 +98,6 @@ outputAsLilyPondDU annos globals lyrics =
 
 
 
-printAsLilyPond :: Anno anno => ScoreInfo -> LyricPhrase1 anno -> IO ()
+printAsLilyPond :: Anno anno => ScoreInfo -> LyricPart1 anno -> IO ()
 printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 

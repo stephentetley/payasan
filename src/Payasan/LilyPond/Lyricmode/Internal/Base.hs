@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Internal.Base
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,14 +18,14 @@
 module Payasan.LilyPond.Lyricmode.Internal.Base
   ( 
    
-    LyricPhrase1
+    LyricPart1
 
-  , LyLyricPhrase
+  , LyLyricPart
   , LyLyricBar
   , LyLyricNoteGroup
   , LyLyricElement
 
-  , LyLyricPhrase1
+  , LyLyricPart1
   , LyLyricBar1
   , LyLyricNoteGroup1
   , LyLyricElement1
@@ -48,14 +48,14 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
-type LyricPhrase1 anno  = ELEM.StdElemPhrase2 Syllable anno
+type LyricPart1 anno    = ELEM.StdElemPart2 Syllable anno
 
-type LyLyricPhrase      = ELEM.Phrase     Syllable LyNoteLength ()
+type LyLyricPart        = ELEM.Part       Syllable LyNoteLength ()
 type LyLyricBar         = ELEM.Bar        Syllable LyNoteLength ()
 type LyLyricNoteGroup   = ELEM.NoteGroup  Syllable LyNoteLength ()
 type LyLyricElement     = ELEM.Element    Syllable LyNoteLength ()
 
-type LyLyricPhrase1 anno        = ELEM.Phrase     Syllable LyNoteLength anno
+type LyLyricPart1 anno          = ELEM.Part       Syllable LyNoteLength anno
 type LyLyricBar1 anno           = ELEM.Bar        Syllable LyNoteLength anno
 type LyLyricNoteGroup1 anno     = ELEM.NoteGroup  Syllable LyNoteLength anno
 type LyLyricElement1 anno       = ELEM.Element    Syllable LyNoteLength anno
@@ -87,7 +87,7 @@ instance Pretty Syllable where
   pPrint (Syllable s)   = text s
 
 
-inTrans :: ScoreInfo -> LyLyricPhrase1 anno -> LyricPhrase1 anno
+inTrans :: ScoreInfo -> LyLyricPart1 anno -> LyricPart1 anno
 inTrans _info = trafoDuration
 
 

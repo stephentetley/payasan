@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.Traversals
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -81,12 +81,12 @@ genCollect :: forall st pch drn anno ac.
               (ac -> Element pch drn anno -> Mon st ac) 
            -> ac 
            -> st
-           -> Phrase pch drn anno 
+           -> Part pch drn anno 
            -> ac
-genCollect mf a0 st ph = evalRewrite (phraseC a0 ph) st
+genCollect mf a0 st ph = evalRewrite (partC a0 ph) st
   where
-    phraseC :: ac -> Phrase pch drn anno -> Mon st ac
-    phraseC ac (Phrase info bs) = local info (foldlM barC ac bs)
+    partC :: ac -> Part pch drn anno -> Mon st ac
+    partC ac (Part info bs)     = local info (foldlM barC ac bs)
 
     barC :: ac -> Bar pch drn anno -> Mon st ac
     barC ac (Bar  cs)           = foldlM noteGroupC ac cs
@@ -101,14 +101,14 @@ genCollect mf a0 st ph = evalRewrite (phraseC a0 ph) st
 genTransform :: forall st p1 p2 d1 d2 a1 a2. 
                 (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
-             -> Phrase p1 d1 a1
-             -> Phrase p2 d2 a2
+             -> Part p1 d1 a1
+             -> Part p2 d2 a2
 genTransform elemT st0 ph = 
-    evalRewrite (phraseT ph) st0
+    evalRewrite (partT ph) st0
   where
 
-    phraseT :: Phrase p1 d1 a1 -> Mon st (Phrase p2 d2 a2) 
-    phraseT (Phrase info bs)    = local info (Phrase info <$> mapM barT bs)
+    partT :: Part p1 d1 a1 -> Mon st (Part p2 d2 a2) 
+    partT (Part info bs)        = local info (Part info <$> mapM barT bs)
 
     barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
     barT (Bar cs)               = Bar <$> mapM noteGroupT cs
@@ -143,8 +143,8 @@ data ElemPitchAlgo st pch1 pch2 = ElemPitchAlgo
 
 transformP :: forall st p1 p2 drn anno. 
               ElemPitchAlgo st p1 p2 
-           -> Phrase p1 drn anno 
-           -> Phrase p2 drn anno
+           -> Part p1 drn anno 
+           -> Part p2 drn anno
 transformP (ElemPitchAlgo { initial_stateP = st0 
                           , element_trafoP = elemT }) = genTransform elemT st0
 
@@ -156,7 +156,7 @@ collectP :: forall st pch drn anno ac.
             (ac -> pch -> Mon st ac) 
          -> ac 
          -> st
-         -> Phrase pch drn anno 
+         -> Part pch drn anno 
          -> ac
 collectP mf = genCollect elementC
   where
@@ -172,13 +172,13 @@ collectP mf = genCollect elementC
 --------------------------------------------------------------------------------
 -- Transformation
 
-mapPitch :: (pch1 -> pch2) -> Phrase pch1 drn anno -> Phrase pch2 drn anno
+mapPitch :: (pch1 -> pch2) -> Part pch1 drn anno -> Part pch2 drn anno
 mapPitch fn = ctxMapPitch (\_ p -> fn p)
 
 
 ctxMapPitch :: (Key -> pch1 -> pch2) 
-            -> Phrase pch1 drn anno 
-            -> Phrase pch2 drn anno
+            -> Part pch1 drn anno 
+            -> Part pch2 drn anno
 ctxMapPitch fn = transformP algo 
   where
     algo  = ElemPitchAlgo { initial_stateP    = ()
@@ -191,7 +191,7 @@ ctxMapPitch fn = transformP algo
     stepE (Punctuation s)   = pure $ Punctuation s
 
 
-foldPitch :: (ac -> pch -> ac) -> ac -> Phrase pch drn anno -> ac
+foldPitch :: (ac -> pch -> ac) -> ac -> Part pch drn anno -> ac
 foldPitch fn a0 ph = collectP step a0 () ph
   where
     step ac p   = pure $ fn ac p
@@ -208,8 +208,8 @@ data ElemDurationAlgo st drn1 drn2 = ElemDurationAlgo
 
 transformD :: forall st pch d1 d2 anno.
               ElemDurationAlgo st d1 d2 
-           -> Phrase pch d1 anno 
-           -> Phrase pch d2 anno
+           -> Part pch d1 anno 
+           -> Part pch d2 anno
 transformD (ElemDurationAlgo { initial_stateD = st0 
                              , element_trafoD = elemT }) = genTransform elemT st0
 
@@ -221,7 +221,7 @@ collectD :: forall st pch drn anno ac.
             (ac -> drn -> Mon st ac) 
          -> ac 
          -> st
-         -> Phrase pch drn anno 
+         -> Part pch drn anno 
          -> ac
 collectD mf = genCollect elementC
   where
@@ -238,7 +238,7 @@ collectD mf = genCollect elementC
 -- Note - increasing or decreasing duration would imply 
 -- recalculating bar lines.
 
-mapDuration :: (drn1 -> drn2) -> Phrase pch drn1 anno -> Phrase pch drn2 anno
+mapDuration :: (drn1 -> drn2) -> Part pch drn1 anno -> Part pch drn2 anno
 mapDuration fn = transformD algo 
   where
     algo  = ElemDurationAlgo { initial_stateD   = ()
@@ -251,7 +251,7 @@ mapDuration fn = transformD algo
     stepE (Punctuation s)       = pure $ Punctuation s
 
 
-foldDuration :: (ac -> drn -> ac) -> ac -> Phrase pch drn anno -> ac
+foldDuration :: (ac -> drn -> ac) -> ac -> Part pch drn anno -> ac
 foldDuration fn a0 ph = collectD step a0 () ph
   where
     step ac d   = pure $ fn ac d
@@ -269,8 +269,8 @@ data ElemAnnoAlgo st anno1 anno2 = ElemAnnoAlgo
 
 transformA :: forall st pch drn a1 a2.
               ElemAnnoAlgo st a1 a2
-           -> Phrase pch drn a1 
-           -> Phrase pch drn a2
+           -> Part pch drn a1 
+           -> Part pch drn a2
 transformA (ElemAnnoAlgo { initial_stateA = st0 
                          , element_trafoA = elemT }) = genTransform elemT st0
 
@@ -279,7 +279,7 @@ collectA :: forall st pch drn anno ac.
             (ac -> anno -> Mon st ac) 
          -> ac 
          -> st
-         -> Phrase pch drn anno 
+         -> Part pch drn anno 
          -> ac
 collectA mf = genCollect elementC
   where
@@ -295,7 +295,7 @@ collectA mf = genCollect elementC
 -- Transformation
 
 
-mapAnno :: (anno1 -> anno2) -> Phrase pch drn anno1 -> Phrase pch drn anno2
+mapAnno :: (anno1 -> anno2) -> Part pch drn anno1 -> Part pch drn anno2
 mapAnno fn = transformA algo 
   where
     algo  = ElemAnnoAlgo { initial_stateA   = ()
@@ -308,7 +308,7 @@ mapAnno fn = transformA algo
     stepE (Punctuation s)       = pure $ Punctuation s
 
 
-foldAnno :: (ac -> anno -> ac) -> ac -> Phrase pch drn anno -> ac
+foldAnno :: (ac -> anno -> ac) -> ac -> Part pch drn anno -> ac
 foldAnno fn a0 ph = collectA step a0 () ph
   where
     step ac a   = pure $ fn ac a
@@ -326,8 +326,8 @@ data ElemPitchAnnoAlgo st pch1 anno1 pch2 anno2 = ElemPitchAnnoAlgo
 
 transformPA :: forall st p1 p2 drn a1 a2.
                ElemPitchAnnoAlgo st p1 a1 p2 a2
-            -> Phrase p1 drn a1 
-            -> Phrase p2 drn a2
+            -> Part p1 drn a1 
+            -> Part p2 drn a2
 transformPA (ElemPitchAnnoAlgo { initial_statePA = st0 
                                , element_trafoPA = elemT }) = 
     genTransform elemT st0
@@ -337,7 +337,7 @@ collectPA :: forall st pch drn anno ac.
              (ac -> pch -> anno -> Mon st ac) 
           -> ac 
           -> st
-          -> Phrase pch drn anno 
+          -> Part pch drn anno 
           -> ac
 collectPA mf = genCollect elementC
   where
@@ -354,7 +354,7 @@ collectPA mf = genCollect elementC
 -- Pitch Anno Transformation
 
 
-mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Phrase p1 drn a1 -> Phrase p2 drn a2
+mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Part p1 drn a1 -> Part p2 drn a2
 mapPitchAnno fn = transformPA algo 
   where
     algo  = ElemPitchAnnoAlgo { initial_statePA   = ()
@@ -366,7 +366,7 @@ mapPitchAnno fn = transformPA algo
     stepE (Skip d)          = pure $ Skip d
     stepE (Punctuation s)   = pure $ Punctuation s
 
-foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Phrase pch drn anno -> ac
+foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Part pch drn anno -> ac
 foldPitchAnno fn a0 ph = collectPA step a0 () ph
   where
     step ac p a   = pure $ fn ac p a
@@ -375,8 +375,8 @@ foldPitchAnno fn a0 ph = collectPA step a0 () ph
 --------------------------------------------------------------------------------
 -- Punctuation
 
-censorPunctuation :: Phrase pch drn anno -> Phrase pch drn anno
-censorPunctuation (Phrase info bs) = Phrase info (map bar1 bs)
+censorPunctuation :: Part pch drn anno -> Part pch drn anno
+censorPunctuation (Part info bs) = Part info (map bar1 bs)
   where
     bar1 (Bar cs)               = Bar $ catMaybes $ map noteGroup1 cs
 
@@ -393,8 +393,8 @@ censorPunctuation (Phrase info bs) = Phrase info (map bar1 bs)
 --------------------------------------------------------------------------------
 -- Markup
 
-censorAnno :: Phrase pch drn anno -> Phrase pch drn ()
-censorAnno (Phrase info bs) = Phrase info (map bar1 bs)
+censorAnno :: Part pch drn anno -> Part pch drn ()
+censorAnno (Part info bs) = Part info (map bar1 bs)
   where
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
@@ -411,8 +411,8 @@ censorAnno (Phrase info bs) = Phrase info (map bar1 bs)
 --------------------------------------------------------------------------------
 -- Skip to rest
 
-changeSkipToRest :: Phrase pch drn anno -> Phrase pch drn anno
-changeSkipToRest (Phrase info bs) = Phrase info (map bar1 bs)
+changeSkipToRest :: Part pch drn anno -> Part pch drn anno
+changeSkipToRest (Part info bs) = Part info (map bar1 bs)
   where
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
@@ -434,13 +434,13 @@ data TraceAlgo st pch drn anno e = TraceAlgo
 
 
 trace :: forall st pch drn anno e. 
-                TraceAlgo st pch drn anno e
-             -> Phrase pch drn anno
-             -> TracePhrase e
-trace (TraceAlgo st0 elemT) ph = evalRewrite (phraseT ph) st0
+         TraceAlgo st pch drn anno e
+      -> Part pch drn anno
+      -> TracePart e
+trace (TraceAlgo st0 elemT) ph = evalRewrite (partT ph) st0
   where
-    phraseT :: Phrase pch drn anno -> Mon st (TracePhrase e) 
-    phraseT (Phrase _ bs)       = TracePhrase <$> mapM barT bs
+    partT :: Part pch drn anno -> Mon st (TracePart e) 
+    partT (Part _ bs)           = TracePart <$> mapM barT bs
 
     barT :: Bar pch drn anno -> Mon st (TraceBar e)
     barT (Bar cs)               = (TraceBar . concat) <$> mapM noteGroupT cs

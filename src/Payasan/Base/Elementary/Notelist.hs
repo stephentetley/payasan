@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Notelist
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -20,11 +20,11 @@ module Payasan.Base.Elementary.Notelist
     module Payasan.Base.Internal.Shell
   , module Payasan.Base.Elementary.Internal.Transform
 
-  , Phrase
-  , StdElemPhrase
-  , ABCElemPhrase
+  , Part
+  , StdElemPart
+  , ABCElemPart
   , abc
-  , LyElemPhrase1
+  , LyElemPart1
   , lilypond
 
   , ScoreInfo(..)        -- Re-export
@@ -100,42 +100,42 @@ import Payasan.Base.Pitch
 import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
 
-fromABC :: ABCElemPhrase -> StdElemPhrase
+fromABC :: ABCElemPart -> StdElemPart
 fromABC  = fromABCWith default_section_info
 
-fromABCWith :: SectionInfo -> ABCElemPhrase -> StdElemPhrase
+fromABCWith :: SectionInfo -> ABCElemPart -> StdElemPart
 fromABCWith locals = abcTranslate . pushSectionInfo locals
 
 
-fromLilyPond_Relative :: Pitch -> LyElemPhrase1 () -> StdElemPhrase
+fromLilyPond_Relative :: Pitch -> LyElemPart1 () -> StdElemPart
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch 
                           -> SectionInfo 
-                          -> LyElemPhrase1 ()
-                          -> StdElemPhrase
+                          -> LyElemPart1 ()
+                          -> StdElemPart
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushSectionInfo locals
 
 
-outputAsABC :: ScoreInfo -> StaffInfo -> StdElemPhrase -> String
+outputAsABC :: ScoreInfo -> StaffInfo -> StdElemPart -> String
 outputAsABC infos staff = 
     MAIN.outputAsABC infos staff . translateToMain
 
-printAsABC :: ScoreInfo -> StaffInfo -> StdElemPhrase -> IO ()
+printAsABC :: ScoreInfo -> StaffInfo -> StdElemPart -> IO ()
 printAsABC infos staff = 
     MAIN.printAsABC infos staff . translateToMain
 
 
 
 genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2
-                    -> Phrase p1 Duration a1
+                    -> Part p1 Duration a1
                     -> Doc
 genOutputAsLilyPond config = MAIN.genOutputAsLilyPond config . translateToMain
 
 genOutputAsLilyPond2 :: MAIN.LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o
-                     -> Phrase p1i Duration a1i
-                     -> Phrase p2i Duration a2i
+                     -> Part p1i Duration a1i
+                     -> Part p2i Duration a2i
                      -> Doc
 genOutputAsLilyPond2 config ph1 ph2 = 
     MAIN.genOutputAsLilyPond2 config (translateToMain ph1) (translateToMain ph2)
@@ -143,12 +143,12 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 
-outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPhrase -> String
+outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPart -> String
 outputAsLilyPond_Relative infos pch = 
     MAIN.outputAsLilyPond_Relative infos pch . translateToMain
 
 
-printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPhrase -> IO ()
+printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPart -> IO ()
 printAsLilyPond_Relative infos pch = 
     MAIN.printAsLilyPond_Relative infos pch . translateToMain
 
@@ -157,16 +157,16 @@ printAsLilyPond_Relative infos pch =
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo 
-                          -> Phrase pch Duration anno
+                          -> Part pch Duration anno
                           -> Doc
 genOutputAsRhythmicMarkup def infos = 
     MAIN.genOutputAsRhythmicMarkup def infos . translateToMain
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdElemPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdElemPart -> String
 outputAsRhythmicMarkup infos = 
     MAIN.outputAsRhythmicMarkup infos . translateToMain
 
-printAsRhythmicMarkup :: ScoreInfo -> StdElemPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdElemPart -> IO ()
 printAsRhythmicMarkup infos = 
     MAIN.printAsRhythmicMarkup infos . translateToMain
 
@@ -177,13 +177,13 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdElemPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdElemPart -> IO ()
 writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
 
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 
-                => ScoreInfo -> Phrase pch drn anno -> String
+                => ScoreInfo -> Part pch drn anno -> String
 outputAsTabular _gi ph = ppRender $ elemTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -192,14 +192,14 @@ outputAsTabular _gi ph = ppRender $ elemTabular lo ph
                     }
 
 printAsTabular :: (Pretty pch, Pretty drn) 
-               => ScoreInfo -> Phrase pch drn anno ->  IO ()
+               => ScoreInfo -> Part pch drn anno ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 
 
 outputAsLinear :: (Pretty pch, Pretty drn) 
-                => ScoreInfo -> Phrase pch drn anno -> String
+                => ScoreInfo -> Part pch drn anno -> String
 outputAsLinear _gi ph = ppRender $ elemLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -208,5 +208,5 @@ outputAsLinear _gi ph = ppRender $ elemLinear lo ph
                     }
 
 printAsLinear :: (Pretty pch, Pretty drn) 
-               => ScoreInfo -> Phrase pch drn anno ->  IO ()
+               => ScoreInfo -> Part pch drn anno ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

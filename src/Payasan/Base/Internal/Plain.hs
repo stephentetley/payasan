@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.Plain
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -32,8 +32,8 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = NoteGroup Pitch Duration ()
 
-fromNoteList :: SectionInfo -> [[NoteListAtom]] -> Phrase Pitch Duration ()
-fromNoteList ri xss = Phrase $ map (Bar ri) xss
+fromNoteList :: SectionInfo -> [[NoteListAtom]] -> Part Pitch Duration ()
+fromNoteList ri xss = Part $ map (Bar ri) xss
 
 note :: Pitch -> Duration -> NoteListAtom
 note p d = Atom $ NoteElem (Note p d) () NO_TIE

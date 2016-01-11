@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.MIDI.BeamToMIDI
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -33,11 +33,11 @@ import Payasan.Base.Duration
 
 -- | Translate should operate on: 
 --
--- > Phrase T.MidiPitch Duration
+-- > Part T.MidiPitch Duration
 -- 
 -- Rather than:
 --
--- > Phrase T.Pitch Duration
+-- > Part T.Pitch Duration
 -- 
 -- So we can handle MIDI drums
 --
@@ -46,8 +46,8 @@ import Payasan.Base.Duration
 type Mon a = Rewrite Seconds a
 
 
-translateToMIDI :: T.TrackData -> Phrase T.MidiPitch Duration anno -> T.Track
-translateToMIDI td ph = T.Track $ evalRewrite (phraseT td ph) 0
+translateToMIDI :: T.TrackData -> Part T.MidiPitch Duration anno -> T.Track
+translateToMIDI td ph = T.Track $ evalRewrite (partT td ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.
@@ -62,8 +62,8 @@ advanceOnset d = puts (\s -> s+d)
 onset :: Mon Seconds
 onset = get
 
-phraseT :: T.TrackData -> Phrase T.MidiPitch Duration anno -> Mon T.InterimTrack
-phraseT td ph = 
+partT :: T.TrackData -> Part T.MidiPitch Duration anno -> Mon T.InterimTrack
+partT td ph = 
     (\ns -> T.InterimTrack { T.track_config = td
                            , T.track_notes  = concat ns
                            })

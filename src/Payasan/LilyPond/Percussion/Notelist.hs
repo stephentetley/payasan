@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Notelist
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -19,7 +19,7 @@ module Payasan.LilyPond.Percussion.Notelist
 
     module Payasan.Base.Internal.Shell
 
-  , StdDrumPhrase
+  , StdDrumPart
   , drums
 
   , ScoreInfo(..)
@@ -80,18 +80,18 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fromLilyPond :: LyDrumPhrase -> StdDrumPhrase
+fromLilyPond :: LyDrumPart -> StdDrumPart
 fromLilyPond = fromLilyPondWith default_section_info
 
 fromLilyPondWith :: SectionInfo 
-                 -> LyDrumPhrase
-                 -> StdDrumPhrase
+                 -> LyDrumPart
+                 -> StdDrumPart
 fromLilyPondWith locals = 
     translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushSectionInfo locals
 
 
 
-outputAsLilyPond :: ScoreInfo -> StdDrumPhrase -> String
+outputAsLilyPond :: ScoreInfo -> StdDrumPart -> String
 outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
   where
     config  = MAIN.LilyPondPipeline 
@@ -101,7 +101,7 @@ outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
                 }
 
 
-printAsLilyPond :: ScoreInfo -> StdDrumPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdDrumPart -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 
@@ -109,7 +109,7 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdDrumPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdDrumPart -> IO ()
 writeAsMIDI path ph = 
    let notes = PERC.translate $ translateToBeam ph
        trk   = MIDI.translateToMIDI (MIDI.simpleTrackData 9) notes
@@ -119,7 +119,7 @@ writeAsMIDI path ph =
 
 
 
-outputAsTabular :: ScoreInfo -> StdDrumPhrase -> String
+outputAsTabular :: ScoreInfo -> StdDrumPart -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -127,13 +127,13 @@ outputAsTabular _gi ph = ppRender $ mainTabular lo ph
                     , pp_anno      = const empty
                     }
 
-printAsTabular :: ScoreInfo -> StdDrumPhrase ->  IO ()
+printAsTabular :: ScoreInfo -> StdDrumPart ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 
 
-outputAsLinear ::  ScoreInfo -> StdDrumPhrase -> String
+outputAsLinear ::  ScoreInfo -> StdDrumPart -> String
 outputAsLinear _gi ph = ppRender $ mainLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -141,5 +141,5 @@ outputAsLinear _gi ph = ppRender $ mainLinear lo ph
                     , pp_anno      = const empty
                     }
 
-printAsLinear :: ScoreInfo -> StdDrumPhrase ->  IO ()
+printAsLinear :: ScoreInfo -> StdDrumPart ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

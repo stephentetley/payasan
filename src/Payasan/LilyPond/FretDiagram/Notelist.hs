@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.FretDiagram.Notelist
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -60,7 +60,7 @@ import qualified Payasan.Base.Notelist as MAIN
 -- Maybe we should have a qq syntax anyway...
 
 
-outputAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPhrase -> String
+outputAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPart -> String
 outputAsLilyPond globals diags = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config . ELEM.chordTranslateToMain 
   where
@@ -72,6 +72,6 @@ outputAsLilyPond globals diags =
 
 
 
-printAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPart -> IO ()
 printAsLilyPond info diags = putStrLn . outputAsLilyPond info diags
 

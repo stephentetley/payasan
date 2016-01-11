@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Cadenza.Internal.Parser
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -60,7 +60,7 @@ cadenza = QuasiQuoter
 -- Parser
 
 
-parseCadenzaNoAnno :: String -> Either ParseError (LyCadenzaPhrase1 ())
+parseCadenzaNoAnno :: String -> Either ParseError (LyCadenzaPart1 ())
 parseCadenzaNoAnno = parseCadenza parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
@@ -68,7 +68,7 @@ parseCadenzaNoAnno = parseCadenza parsedef
 
 parseCadenza :: P.LyParserDef pch anno
               -> String 
-              -> Either ParseError (LyCadenzaPhrase2 pch anno)
+              -> Either ParseError (LyCadenzaPart2 pch anno)
 parseCadenza def = runParser (makeParser def) () ""
 
 
@@ -76,8 +76,8 @@ parseCadenza def = runParser (makeParser def) () ""
 -- TODO - handle beaming... 
 
 makeParser :: forall pch anno. 
-              P.LyParserDef pch anno -> LyParser (LyCadenzaPhrase2 pch anno)
-makeParser def = fullParseLy phrase
+              P.LyParserDef pch anno -> LyParser (LyCadenzaPart2 pch anno)
+makeParser def = fullParseLy part
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
@@ -85,8 +85,8 @@ makeParser def = fullParseLy phrase
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    phrase :: LyParser (LyCadenzaPhrase2 pch anno)
-    phrase = (Phrase default_section_info . reconcileBeamHeads) <$> noteGroups
+    part :: LyParser (LyCadenzaPart2 pch anno)
+    part = (Part default_section_info . reconcileBeamHeads) <$> noteGroups
 
     noteGroups :: LyParser [LyCadenzaNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup

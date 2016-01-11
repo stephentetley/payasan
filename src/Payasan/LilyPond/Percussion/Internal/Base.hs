@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.Base
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,8 +18,8 @@
 module Payasan.LilyPond.Percussion.Internal.Base
   ( 
    
-    StdDrumPhrase
-  , LyDrumPhrase
+    StdDrumPart
+  , LyDrumPart
 
   , Accent(..)
   , DrumPitch(..)
@@ -41,8 +41,8 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
-type StdDrumPhrase      = MAIN.Phrase DrumPitch Duration     Accent
-type LyDrumPhrase       = BEAM.Phrase DrumPitch LyNoteLength Accent
+type StdDrumPart        = MAIN.Part DrumPitch Duration     Accent
+type LyDrumPart         = BEAM.Part DrumPitch LyNoteLength Accent
 
 data Accent = ACCENT | NO_ACCENT
   deriving (Data,Eq,Ord,Show,Typeable)

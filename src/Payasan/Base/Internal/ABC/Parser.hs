@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.ABC.Parser
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -45,7 +45,7 @@ import Language.Haskell.TH.Quote
 
 abc :: QuasiQuoter
 abc = QuasiQuoter
-    { quoteExp = \s -> case parseABCPhrase s of
+    { quoteExp = \s -> case parseABCPart s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -58,12 +58,12 @@ abc = QuasiQuoter
 -- Parser
 
 
-parseABCPhrase :: String -> Either ParseError ABCPhrase
-parseABCPhrase = runParser (fullParseABC phrase) () ""
+parseABCPart :: String -> Either ParseError ABCPart
+parseABCPart = runParser (fullParseABC part) () ""
 
 
-phrase :: ABCParser ABCPhrase
-phrase = Phrase <$> bars
+part :: ABCParser ABCPart
+part = Part <$> bars
 
 bars :: ABCParser [ABCBar]
 bars = sepBy bar barline

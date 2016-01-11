@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.FretDiagram.Internal.Output
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -22,7 +22,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Output
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
 import Payasan.Base.Internal.CommonSyntax
-import Payasan.Base.Internal.BeamSyntax (Phrase, firstSectionInfo)
+import Payasan.Base.Internal.BeamSyntax (Part, firstSectionInfo)
 
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
@@ -34,7 +34,7 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Phrase LyPitch LyNoteLength FretDiagram -> Doc
+fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Part LyPitch LyNoteLength FretDiagram -> Doc
 fretDiagramOutput globals diags ph = 
         header
     $+$ defs defuse

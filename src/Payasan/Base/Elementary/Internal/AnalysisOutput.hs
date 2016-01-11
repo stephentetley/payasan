@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.AnalysisOutput
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -40,8 +40,8 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 -- TODO - anno actually fixed to Doc
 --
 analysisScore :: LyOutputDef pch anno 
-                    -> ScoreInfo 
-                    -> LyPhrase2 pch anno -> Doc
+              -> ScoreInfo 
+              -> LyPart2 pch anno -> Doc
 analysisScore def infos ph =
         header $+$ score_ (analysis_layout $+$ lilypondNotes def local1 ph)
   where

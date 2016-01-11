@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.BeamTraversals
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -44,13 +44,13 @@ type Mon st a = Rewrite st a
 genTransform :: forall st p1 p2 d1 d2 a1 a2. 
                 (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
-             -> Phrase p1 d1 a1
-             -> Phrase p2 d2 a2
+             -> Part p1 d1 a1
+             -> Part p2 d2 a2
 genTransform elemT st0 ph = 
-    evalRewrite (phraseT ph) st0
+    evalRewrite (partT ph) st0
   where
-    phraseT :: Phrase p1 d1 a1 -> Mon st (Phrase p2 d2 a2)
-    phraseT (Phrase bs)         = Phrase <$> mapM barT bs
+    partT :: Part p1 d1 a1 -> Mon st (Part p2 d2 a2)
+    partT (Part bs)             = Part <$> mapM barT bs
 
     barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
     barT (Bar info cs)          = local info $ Bar info <$> mapM noteGroupT cs
@@ -81,8 +81,8 @@ data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo
 
 transformP :: forall st p1 p2 drn anno.
               BeamPitchAlgo st p1 p2 
-           -> Phrase p1 drn anno 
-           -> Phrase p2 drn anno
+           -> Part p1 drn anno 
+           -> Part p2 drn anno
 transformP (BeamPitchAlgo { initial_stateP = st0 
                           , element_trafoP = elemT }) = 
     genTransform elemT st0
@@ -100,8 +100,8 @@ data BeamDurationAlgo st drn1 drn2 = BeamDurationAlgo
 
 transformD :: forall st pch d1 d2 anno.
               BeamDurationAlgo st d1 d2 
-           -> Phrase pch d1 anno 
-           -> Phrase pch d2 anno
+           -> Part pch d1 anno 
+           -> Part pch d2 anno
 transformD (BeamDurationAlgo { initial_stateD = st0 
                              , element_trafoD = elemT }) = 
     genTransform elemT st0
@@ -120,8 +120,8 @@ data BeamPitchAnnoAlgo st pch1 anno1 pch2 anno2 = BeamPitchAnnoAlgo
 
 transformPA :: forall st p1 p2 drn a1 a2.
                BeamPitchAnnoAlgo st p1 a1 p2 a2
-            -> Phrase p1 drn a1 
-            -> Phrase p2 drn a2
+            -> Part p1 drn a1 
+            -> Part p2 drn a2
 transformPA (BeamPitchAnnoAlgo { initial_statePA = st0 
                                , element_trafoPA = elemT }) = 
     genTransform elemT st0

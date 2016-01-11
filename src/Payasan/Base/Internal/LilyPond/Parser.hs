@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.LilyPond.Parser
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -21,7 +21,7 @@ module Payasan.Base.Internal.LilyPond.Parser
 
     lilypond
   , LyParserDef (..)
-  , parseLyPhrase
+  , parseLyPart
   , makeLyParser
 
   -- * Primitives
@@ -78,16 +78,16 @@ data LyParserDef pch anno = LyParserDef
     }
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyPhrase1 ())
-parseLilyPondNoAnno = parseLyPhrase parsedef
+parseLilyPondNoAnno :: String -> Either ParseError (LyPart1 ())
+parseLilyPondNoAnno = parseLyPart parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 
 
-parseLyPhrase :: LyParserDef pch anno
-              -> String 
-              -> Either ParseError (LyPhrase2 pch anno)
-parseLyPhrase def = runParser (makeLyParser def) () ""
+parseLyPart :: LyParserDef pch anno
+            -> String 
+            -> Either ParseError (LyPart2 pch anno)
+parseLyPart def = runParser (makeLyParser def) () ""
 
 
 
@@ -97,8 +97,8 @@ parseLyPhrase def = runParser (makeLyParser def) () ""
 --
 -- [Beaming is re-synthesized for final output].
 --
-makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (LyPhrase2 pch anno)
-makeLyParser def = fullParseLy phrase
+makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (LyPart2 pch anno)
+makeLyParser def = fullParseLy part
   where
     pPitch :: LyParser pch
     pPitch = pitchParser def
@@ -106,8 +106,8 @@ makeLyParser def = fullParseLy phrase
     pAnno  :: LyParser anno
     pAnno  = annoParser def
     
-    phrase :: LyParser (LyPhrase2 pch anno)
-    phrase = Phrase <$> bars
+    part :: LyParser (LyPart2 pch anno)
+    part = Part <$> bars
 
     bars :: LyParser [LyBar2 pch anno]
     bars = sepBy bar barline

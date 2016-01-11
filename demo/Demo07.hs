@@ -30,7 +30,7 @@ locals = default_section_info
 -- Visually, quasiquote is definitely the most pleasing
 -- representation...
 --
-phrase01 :: LyricPhrase1 ()
+phrase01 :: LyricPart1 ()
 phrase01 = fromLilyPondWith default_score_info locals $ 
     [lyricmode| Shake4 ba8 -- by8 shake4 __ \skip4
               | Shake4 ba8 -- by8 shake.2
@@ -41,7 +41,7 @@ demo01 = shellOutLilyPond globals $ outputAsLilyPond default_score_info $ phrase
 
 
 
-phrase01a :: LyricPhrase1 NEW.Stress
+phrase01a :: LyricPart1 NEW.Stress
 phrase01a = fromLilyPondWith default_score_info locals $ 
     [NEW.lyrics| Shake4\uns ba8\sec -- by8\uns shake2\primary
                | Shake4\uns ba8\sec -- by8\uns shake.2\pri               
@@ -60,7 +60,7 @@ demo01a = shellOutLilyPond globals $ NEW.outputAsLilyPond default_score_info $ p
 -- demo02 = printAsLilyPond default_score_info phrase01
 
 
-phrase01b :: NEW.LyricsPhrase
+phrase01b :: NEW.LyricsPart
 phrase01b = fromLyrics $
     [ [ unstressed "Shake"      drn_4
       , secondary  "ba"         drn_8

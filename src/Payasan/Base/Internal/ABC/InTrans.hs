@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.ABC.InTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -36,8 +36,8 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-translateFromInput :: Phrase ABCPitch ABCNoteLength anno 
-                   -> Phrase Pitch Duration anno
+translateFromInput :: Part ABCPitch ABCNoteLength anno 
+                   -> Part Pitch Duration anno
 translateFromInput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a

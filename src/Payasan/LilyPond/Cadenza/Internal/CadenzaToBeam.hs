@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Cadenza.Internal.CadenzaToBeam
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -26,12 +26,12 @@ import Payasan.LilyPond.Cadenza.Internal.Syntax
 import qualified Payasan.Base.Internal.BeamSyntax as T
 
 
-translateToBeam :: Phrase pch drn anno -> T.Phrase pch drn anno
-translateToBeam                 = phraseT
+translateToBeam :: Part pch drn anno -> T.Part pch drn anno
+translateToBeam                 = partT
 
 
-phraseT ::Phrase pch drn anno -> T.Phrase pch drn anno
-phraseT (Phrase info gs)        = T.Phrase [T.Bar info $ map noteGroupT gs]
+partT ::Part pch drn anno -> T.Part pch drn anno
+partT (Part info gs)            = T.Part [T.Bar info $ map noteGroupT gs]
 
 
 

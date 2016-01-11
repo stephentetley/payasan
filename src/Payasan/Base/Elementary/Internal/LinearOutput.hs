@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.LinearOutput
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -35,14 +35,14 @@ import Text.PrettyPrint.HughesPJClass                -- package: pretty
 -- NOTE - if we use Note-Rest as Maybe+duration we need
 -- a larger customiztion than LeafOuput.
 
-elemLinear :: LeafOutput pch drn anno -> Phrase pch drn anno -> Doc
-elemLinear ppl ph = concatBars $ oPhrase ppl ph
+elemLinear :: LeafOutput pch drn anno -> Part pch drn anno -> Doc
+elemLinear ppl ph = concatBars $ oPart ppl ph
 
 
 
 
-oPhrase :: LeafOutput pch drn anno -> Phrase pch drn anno -> [Doc]
-oPhrase ppl (Phrase _ xs)       = map (oBar ppl) xs
+oPart :: LeafOutput pch drn anno -> Part pch drn anno -> [Doc]
+oPart ppl (Part _ xs)           = map (oBar ppl) xs
 
 
 oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> Doc

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.InTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -27,8 +27,8 @@ import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Syntax
 
-translateInput :: LyChordPhrase -> StdChordPhrase
+translateInput :: LyChordPart -> StdChordPart
 translateInput = trafoAnnos . trafoDuration
 
-trafoAnnos :: Phrase LyPitch drn ChordSuffix -> Phrase Chord drn ()
+trafoAnnos :: Part LyPitch drn ChordSuffix -> Part Chord drn ()
 trafoAnnos = mapPitchAnno $ \p a -> (Chord (toPitchAbs p) a, ())

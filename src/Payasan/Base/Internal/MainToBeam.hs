@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.MainToBeam
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -27,12 +27,12 @@ import Payasan.Base.Internal.MainSyntax
 
 
 
-translateToBeam :: Phrase pch drn anno -> T.Phrase pch drn anno
-translateToBeam                 = phraseT
+translateToBeam :: Part pch drn anno -> T.Part pch drn anno
+translateToBeam                 = partT
 
 
-phraseT :: Phrase pch drn anno -> T.Phrase pch drn anno
-phraseT (Phrase bs)             = T.Phrase $ map barT bs
+partT :: Part pch drn anno -> T.Part pch drn anno
+partT (Part bs)                 = T.Part $ map barT bs
 
 
 barT :: Bar pch drn anno -> T.Bar pch drn anno

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.ABC.Output
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -78,12 +78,12 @@ deltaKey (SectionInfo { section_key = k1 }) =
 --------------------------------------------------------------------------------
 
 
-abcOutput :: ScoreInfo -> StaffInfo -> ABCPhrase1 anno -> Doc
+abcOutput :: ScoreInfo -> StaffInfo -> ABCPart1 anno -> Doc
 abcOutput infos staff ph = header $+$ body
   where
     first_info  = maybe default_section_info id $ firstSectionInfo ph
     header      = oHeader infos staff first_info
-    body        = evalRewrite (oABCPhrase ph) (stateZero first_info)
+    body        = evalRewrite (oABCPart ph) (stateZero first_info)
 
 -- | Note X field must be first K field should be last -
 -- see abcplus manual page 11.
@@ -98,9 +98,9 @@ oHeader infos staff locals =
   where
     key_clef = (key $ section_key locals) <+> (clef $ staff_clef staff)
 
-oABCPhrase :: ABCPhrase1 anno -> Mon Doc
-oABCPhrase (Phrase [])          = return empty
-oABCPhrase (Phrase (x:xs))      = do { d <- oBar x; step d xs }
+oABCPart :: ABCPart1 anno -> Mon Doc
+oABCPart (Part [])              = return empty
+oABCPart (Part (x:xs))          = do { d <- oBar x; step d xs }
   where
     step d []     = return $ d <+> text "|]"
     step d (b:bs) = do { i <- lineLen

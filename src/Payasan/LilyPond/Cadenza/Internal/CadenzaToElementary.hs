@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -28,14 +28,14 @@ import qualified Payasan.Base.Elementary.Internal.Syntax        as T
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Duration
 
-translateToElem :: Time -> Phrase pch Duration anno -> T.Phrase pch Duration anno
-translateToElem ts (Phrase info gs) = 
+translateToElem :: Time -> Part pch Duration anno -> T.Part pch Duration anno
+translateToElem ts (Part info gs) = 
     let info1 = info { section_meter = TimeSig ts } 
-    in T.recalcBars $ phraseT (Phrase info1 gs) 
+    in T.recalcBars $ partT (Part info1 gs) 
 
 
-phraseT ::Phrase pch drn anno -> T.Phrase pch drn anno
-phraseT (Phrase info gs)        = T.Phrase info [T.Bar $ concatMap noteGroupT gs]
+partT ::Part pch drn anno -> T.Part pch drn anno
+partT (Part info gs)    = T.Part info [T.Bar $ concatMap noteGroupT gs]
 
 
 

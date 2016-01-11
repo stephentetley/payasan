@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.LilyPond.RhythmicMarkup
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -48,8 +48,8 @@ data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Doc }
 
 
 translateToRhythmicMarkup :: MarkupOutput pch
-                          -> Phrase pch Duration anno 
-                          -> Phrase LyPitch LyNoteLength Doc
+                          -> Part pch Duration anno 
+                          -> Part LyPitch LyNoteLength Doc
 translateToRhythmicMarkup mo = 
     transformPA (markup_algo mo) . translateToOutput_DurationOnly
 
@@ -95,7 +95,7 @@ elementP mo elt = case elt of
 
 rhythmicMarkupScore :: LyOutputDef pch anno 
                     -> ScoreInfo 
-                    -> LyPhrase2 pch anno -> Doc
+                    -> LyPart2 pch anno -> Doc
 rhythmicMarkupScore def infos ph =
         header $+$ simultaneous1 (rhythmicMarkupVoice def ph)
   where
@@ -103,19 +103,19 @@ rhythmicMarkupScore def infos ph =
 
 
 rhythmicMarkupVoice :: LyOutputDef pch anno 
-                    -> LyPhrase2 pch anno -> Doc
+                    -> LyPart2 pch anno -> Doc
 rhythmicMarkupVoice def ph = 
     block (Just newRhythmicStaff_) (absolute_ $+$ notes_header $+$ notes)
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
-    notes_header    = oPhraseHeader local1
+    notes_header    = oPartHeader local1
     notes           = lilypondNotes def local1 ph
 
 
 
 -- TODO - this should be common...
-oPhraseHeader :: SectionInfo -> Doc
-oPhraseHeader locals = case section_meter locals of
+oPartHeader :: SectionInfo -> Doc
+oPartHeader locals = case section_meter locals of
     Unmetered -> keyline
     TimeSig t -> keyline $+$ time_ t
   where

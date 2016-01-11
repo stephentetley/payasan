@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.Parser
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -45,8 +45,8 @@ chordmode = QuasiQuoter
 
 
 
-parseChordMode :: String -> Either ParseError LyChordPhrase
-parseChordMode = parseLyPhrase parsedef
+parseChordMode :: String -> Either ParseError LyChordPart
+parseChordMode = parseLyPart parsedef
   where
     parsedef = LyParserDef { pitchParser = chordRoot
                            , annoParser  = chordSuffix }

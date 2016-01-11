@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.Zipper
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -87,8 +87,8 @@ data Inp pch drn anno = Nil
 
 
 
-makeLoc :: Phrase pch drn anno -> Loc pch drn anno
-makeLoc (Phrase info bs)        = 
+makeLoc :: Part pch drn anno -> Loc pch drn anno
+makeLoc (Part info bs)        = 
     Loc { loc_info = info, loc_stk = stk_empty, loc_input = makeInp bs }
 
 makeInp :: [Bar pch drn anno] -> Inp pch drn anno
@@ -96,13 +96,13 @@ makeInp []                   = Nil
 makeInp (b:bs)               = Inp (makeLocBar b) bs
 
 
-fromLoc :: Loc pch drn anno -> Phrase pch drn anno
+fromLoc :: Loc pch drn anno -> Part pch drn anno
 fromLoc (Loc info stk Nil)          = 
-    Phrase { phrase_header = info, phrase_bars = unstack stk [] }
+    Part { part_header = info, part_bars = unstack stk [] }
 
 fromLoc (Loc info stk (Inp bl as))  = 
     let inps = fromLocBar bl : as
-    in Phrase { phrase_header = info, phrase_bars = unstack stk inps }
+    in Part { part_header = info, part_bars = unstack stk inps }
 
 
 
@@ -203,22 +203,22 @@ atLoc (Loc _ _ Nil)                     = Nothing
 atLoc (Loc _ _ (Inp bl _))              = atLocBar bl
 
 
-remaining :: Loc pch drn anno -> Phrase pch drn anno
+remaining :: Loc pch drn anno -> Part pch drn anno
 remaining (Loc info _ Nil)          = 
-    Phrase { phrase_header = info, phrase_bars = [] }
+    Part { part_header = info, part_bars = [] }
 
 remaining (Loc info _ (Inp bl as))  = 
     let inps = case remainingBar bl of { Nothing -> as; Just b -> b:as }
-    in Phrase { phrase_header = info, phrase_bars = inps }
+    in Part { part_header = info, part_bars = inps }
 
 
-consumed :: Loc pch drn anno -> Phrase pch drn anno
+consumed :: Loc pch drn anno -> Part pch drn anno
 consumed (Loc info stk Nil)          = 
-    Phrase { phrase_header = info, phrase_bars = unstack stk []  }
+    Part { part_header = info, part_bars = unstack stk []  }
 
 consumed (Loc info stk (Inp bl _))   = 
     let inps = case consumedBar bl of { Nothing -> []; Just b -> [b] }
-    in Phrase { phrase_header = info, phrase_bars = unstack stk inps }
+    in Part { part_header = info, part_bars = unstack stk inps }
 
 
 

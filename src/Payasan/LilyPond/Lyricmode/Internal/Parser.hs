@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Internal.Parser
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -50,7 +50,7 @@ lyricmode = QuasiQuoter
 
 
 
-parseLyricMode :: String -> Either ParseError LyLyricPhrase
+parseLyricMode :: String -> Either ParseError LyLyricPart
 parseLyricMode = runParser (makeLyricParser P.noAnno) () ""
 
 
@@ -59,11 +59,11 @@ parseLyricMode = runParser (makeLyricParser P.noAnno) () ""
 -- to code it from scratch.
 
 
-makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricPhrase1 anno)
-makeLyricParser pAnno = fullParseLy phrase
+makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricPart1 anno)
+makeLyricParser pAnno = fullParseLy part
   where
-    phrase :: LyParser (LyLyricPhrase1 anno)
-    phrase = Phrase default_section_info <$> bars
+    part :: LyParser (LyLyricPart1 anno)
+    part = Part default_section_info <$> bars
 
     bars :: LyParser [LyLyricBar1 anno]
     bars = sepBy bar P.barline

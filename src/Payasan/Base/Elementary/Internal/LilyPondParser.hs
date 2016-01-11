@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.LilyPondParser
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -20,7 +20,7 @@ module Payasan.Base.Elementary.Internal.LilyPondParser
 
     lilypond
   , LyParserDef (..)    -- re-export
-  , parseLyPhrase
+  , parseLyPart
   , pitch               -- re-export
   , noAnno              -- re-export
 
@@ -60,21 +60,21 @@ lilypond = QuasiQuoter
 -- Parser
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyElemPhrase1 ())
-parseLilyPondNoAnno = parseLyPhrase parsedef
+parseLilyPondNoAnno :: String -> Either ParseError (LyElemPart1 ())
+parseLilyPondNoAnno = parseLyPart parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 
 
-parseLyPhrase :: P.LyParserDef pch anno
-              -> String 
-              -> Either ParseError (LyElemPhrase2 pch anno)
-parseLyPhrase def = runParser (makeLyParser def) () ""
+parseLyPart :: P.LyParserDef pch anno
+            -> String 
+            -> Either ParseError (LyElemPart2 pch anno)
+parseLyPart def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. 
-                P.LyParserDef pch anno -> LyParser (LyElemPhrase2 pch anno)
-makeLyParser def = fullParseLy phrase
+                P.LyParserDef pch anno -> LyParser (LyElemPart2 pch anno)
+makeLyParser def = fullParseLy part
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
@@ -82,8 +82,8 @@ makeLyParser def = fullParseLy phrase
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    phrase :: LyParser (LyElemPhrase2 pch anno)
-    phrase = Phrase default_section_info <$> bars
+    part :: LyParser (LyElemPart2 pch anno)
+    part = Part default_section_info <$> bars
 
     bars :: LyParser [LyElemBar2 pch anno]
     bars = sepBy bar P.barline

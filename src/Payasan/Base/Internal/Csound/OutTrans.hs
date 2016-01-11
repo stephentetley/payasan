@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.Csound.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -28,7 +28,7 @@ import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Pitch
 
 
-translateToCsoundP :: Phrase Pitch drn anno -> Phrase CpsPitch drn anno
+translateToCsoundP :: Part Pitch drn anno -> Part CpsPitch drn anno
 translateToCsoundP = transformP pch_algo
 
 

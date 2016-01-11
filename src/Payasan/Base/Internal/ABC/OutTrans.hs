@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.ABC.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -38,7 +38,7 @@ import Payasan.Base.Pitch
 
 
 
-translateToOutput :: StdBeamPhrase1 anno -> ABCPhrase1 anno
+translateToOutput :: StdBeamPart1 anno -> ABCPart1 anno
 translateToOutput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a

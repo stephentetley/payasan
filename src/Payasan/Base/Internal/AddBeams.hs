@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.AddBeams
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -32,8 +32,8 @@ import Data.Ratio
 
 
 
-addBeams :: Phrase pch Duration anno -> Phrase pch Duration anno
-addBeams (Phrase { phrase_bars = bs }) = Phrase $ map beamBar bs
+addBeams :: Part pch Duration anno -> Part pch Duration anno
+addBeams (Part { part_bars = bs }) = Part $ map beamBar bs
 
 beamBar :: Bar pch Duration anno -> Bar pch Duration anno
 beamBar (Bar info cs) = 
@@ -42,7 +42,7 @@ beamBar (Bar info cs) =
     in Bar info $ beamSegments segs1
 
 
-noBeams :: Phrase pch Duration anno -> Phrase pch Duration anno
+noBeams :: Part pch Duration anno -> Part pch Duration anno
 noBeams = id
 
 

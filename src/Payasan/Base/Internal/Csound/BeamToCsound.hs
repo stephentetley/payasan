@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.Csound.BeamToCsound
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -45,8 +45,8 @@ makeGenIStmt = GenIStmt
 type Mon a = Rewrite Seconds a
 
 
-translateToCsound :: GenIStmt anno -> Phrase CpsPitch Duration anno -> [IStmt]
-translateToCsound gf ph = evalRewrite (phraseT gf ph) 0
+translateToCsound :: GenIStmt anno -> Part CpsPitch Duration anno -> [IStmt]
+translateToCsound gf ph = evalRewrite (partT gf ph) 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.
@@ -61,8 +61,8 @@ advanceOnset d = puts (\s -> s+d)
 onset :: Mon Seconds
 onset = get
 
-phraseT :: GenIStmt anno -> Phrase CpsPitch Duration anno -> Mon [IStmt]
-phraseT gf ph = concat <$> mapM (elementT gf) (makeTiedNoteStream ph)
+partT :: GenIStmt anno -> Part CpsPitch Duration anno -> Mon [IStmt]
+partT gf ph = concat <$> mapM (elementT gf) (makeTiedNoteStream ph)
  
 
 

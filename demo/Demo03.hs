@@ -44,7 +44,7 @@ locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
 relA :: Pitch
 relA = c_5
 
-phraseA :: StdPhrase 
+phraseA :: StdPart 
 phraseA = fromLilyPondWith_Relative relA locals $ 
     [lilypond| e4 e \tuplet 3/2 { e e e } |]
 
@@ -52,7 +52,7 @@ phraseA = fromLilyPondWith_Relative relA locals $
 relB :: Pitch
 relB = middle_c
 
-phraseB :: StdPhrase 
+phraseB :: StdPart 
 phraseB = fromLilyPondWith_Relative relB locals $ 
     [lilypond| f4 f f f |]
 
@@ -91,13 +91,13 @@ gf = makeGenIStmt makeNote
 -- OLD --
 
 
-debug01 :: IO StdPhrase
+debug01 :: IO StdPart
 debug01 = fromLilyPondWithIO_Relative middle_c  locals $ 
     [lilypond| c4 d e fis | c' |]
 
 
 
-phrase01 :: StdPhrase 
+phrase01 :: StdPart 
 phrase01 = fromLilyPondWith_Relative c_5 locals $ 
     [lilypond| c4 d e fis | c' |]
 

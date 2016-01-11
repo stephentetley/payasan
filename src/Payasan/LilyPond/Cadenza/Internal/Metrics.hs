@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Cadenza.Internal.Metrics
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -50,14 +50,14 @@ import Payasan.Base.ScaleDegree
 -- Simple metrics
 
 
-lowestPitch :: Phrase Pitch drn anno -> Maybe Pitch
+lowestPitch :: Part Pitch drn anno -> Maybe Pitch
 lowestPitch = foldPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isLower` p0     = Just p
                    | otherwise          = Just p0
 
-highestPitch :: Phrase Pitch drn anno -> Maybe Pitch
+highestPitch :: Part Pitch drn anno -> Maybe Pitch
 highestPitch = foldPitch fn Nothing
   where
     fn Nothing   p                      = Just p
@@ -65,7 +65,7 @@ highestPitch = foldPitch fn Nothing
                    | otherwise          = Just p0
 
 
-lowestStep :: Phrase ChromaticPitch drn anno -> Maybe DiatonicPitch
+lowestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
 lowestStep = fmap diatonic_base . foldPitch fn Nothing
   where
     fn Nothing   s                      = Just s
@@ -73,7 +73,7 @@ lowestStep = fmap diatonic_base . foldPitch fn Nothing
                    | otherwise          = Just s0
 
 
-highestStep :: Phrase ChromaticPitch drn anno -> Maybe DiatonicPitch
+highestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
 highestStep = fmap diatonic_base . foldPitch fn Nothing
   where
     fn Nothing   s                      = Just s
@@ -106,7 +106,7 @@ contourAlgo comp = CadenzaPitchAlgo { initial_stateP = Nothing
 
 
 semitoneInterval :: forall drn anno. 
-                    Phrase Pitch drn anno -> Phrase Int drn anno
+                    Part Pitch drn anno -> Part Int drn anno
 semitoneInterval = transformP (contourAlgo comp)
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
@@ -117,7 +117,7 @@ semitoneInterval = transformP (contourAlgo comp)
 
 
 grossContour :: forall drn anno. 
-                Phrase Pitch drn anno -> Phrase GrossContour drn anno
+                Part Pitch drn anno -> Part GrossContour drn anno
 grossContour = transformP (contourAlgo comp)
   where
     comp pold pnew | pnew `isHigher` pold = UP
@@ -129,7 +129,7 @@ grossContour = transformP (contourAlgo comp)
 
 
 refinedContour :: forall drn anno. 
-                  Phrase Pitch drn anno -> Phrase RefinedContour drn anno
+                  Part Pitch drn anno -> Part RefinedContour drn anno
 refinedContour = transformP (contourAlgo comp)
   where
     comp pold pnew 

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.FretDiagram.Internal.Plain
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.LilyPond.FretDiagram.Internal.Plain
   ( 
 
-    FretDiagramPhrase
+    FretDiagramPart
   , NoteListAtom
   , fromNoteList
   , chord
@@ -41,10 +41,10 @@ import Payasan.Base.Pitch
 type NoteListAtom = NoteGroup FretDiagram Duration ()
 
 fromNoteList :: SectionInfo -> GuitarTuning -> [[NoteListAtom]] 
-             -> FretDiagramPhrase
+             -> FretDiagramPart
 fromNoteList locals tuning xss = 
     mapPitchAnno (changeNote (section_key locals) tuning) $ 
-        Phrase locals $ map Bar xss
+        Part locals $ map Bar xss
 
 
 

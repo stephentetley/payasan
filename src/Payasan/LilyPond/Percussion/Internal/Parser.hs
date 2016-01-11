@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.Parser
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -56,11 +56,11 @@ drums = QuasiQuoter
 -- Parser
 
 
-parseLyDrums :: String -> Either ParseError (LyPhrase2 DrumPitch Accent)
-parseLyDrums = parseLyPhrase (makeDrumsDef accent)
+parseLyDrums :: String -> Either ParseError (LyPart2 DrumPitch Accent)
+parseLyDrums = parseLyPart (makeDrumsDef accent)
 
 
-makeDrumsParser :: LyParser anno -> LyParser (LyPhrase2 DrumPitch anno)
+makeDrumsParser :: LyParser anno -> LyParser (LyPart2 DrumPitch anno)
 makeDrumsParser pAnno = makeLyParser (makeDrumsDef pAnno)
 
 

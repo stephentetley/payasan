@@ -19,45 +19,42 @@
 module Payasan.Base.Elementary.Internal.Syntax
   ( 
 
-    StdElemPhrase
+    StdElemPart
   , StdElemBar
   , StdElemNoteGroup
   , StdElemElement
 
-  , StdElemPhrase1
+  , StdElemPart1
   , StdElemBar1
   , StdElemNoteGroup1
   , StdElemElement1
 
-  , StdElemPhrase2
+  , StdElemPart2
   , StdElemBar2
   , StdElemNoteGroup2
   , StdElemElement2
 
-  , LyElemPhrase1
+  , LyElemPart1
   , LyElemBar1
   , LyElemNoteGroup1
   , LyElemElement1
 
-  , LyElemPhrase2
+  , LyElemPart2
   , LyElemBar2
   , LyElemNoteGroup2
   , LyElemElement2
 
-  , ABCElemPhrase
+  , ABCElemPart
   , ABCElemBar
   , ABCElemNoteGroup
   , ABCElemElement
   
 
-  , Phrase(..)
+  , Part(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
 
-  , isNote
-  , isPause
-  , isPunctuation
 
   , emptyOf
   , pushSectionInfo
@@ -89,34 +86,34 @@ import Data.Data
 -- Syntax
 
 
-type StdElemPhrase                  = StdElemPhrase1    ()
+type StdElemPart                    = StdElemPart1    ()
 type StdElemBar                     = StdElemBar1       ()
 type StdElemNoteGroup               = StdElemNoteGroup1 ()
 type StdElemElement                 = StdElemElement1   ()
 
 
-type StdElemPhrase1     anno        = Phrase    Pitch Duration anno
+type StdElemPart1       anno        = Part      Pitch Duration anno
 type StdElemBar1        anno        = Bar       Pitch Duration anno
 type StdElemNoteGroup1  anno        = NoteGroup Pitch Duration anno
 type StdElemElement1    anno        = Element   Pitch Duration anno
 
-type StdElemPhrase2     pch anno    = Phrase    pch Duration anno
+type StdElemPart2       pch anno    = Part      pch Duration anno
 type StdElemBar2        pch anno    = Bar       pch Duration anno
 type StdElemNoteGroup2  pch anno    = NoteGroup pch Duration anno
 type StdElemElement2    pch anno    = Element   pch Duration anno
 
-type LyElemPhrase1      anno        = LyElemPhrase2     LyPitch anno
+type LyElemPart1        anno        = LyElemPart2       LyPitch anno
 type LyElemBar1         anno        = LyElemBar2        LyPitch anno
 type LyElemNoteGroup1   anno        = LyElemNoteGroup2  LyPitch anno
 type LyElemElement1     anno        = LyElemElement2    LyPitch anno
 
-type LyElemPhrase2      pch anno    = Phrase    pch LyNoteLength anno
+type LyElemPart2        pch anno    = Part      pch LyNoteLength anno
 type LyElemBar2         pch anno    = Bar       pch LyNoteLength anno
 type LyElemNoteGroup2   pch anno    = NoteGroup pch LyNoteLength anno
 type LyElemElement2     pch anno    = Element   pch LyNoteLength anno
 
 
-type ABCElemPhrase                  = Phrase    ABCPitch ABCNoteLength ()
+type ABCElemPart                    = Part      ABCPitch ABCNoteLength ()
 type ABCElemBar                     = Bar       ABCPitch ABCNoteLength ()
 type ABCElemNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
 type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
@@ -130,12 +127,12 @@ type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 -- Parametric on duration so we can read ABC and decode duration
 -- multipliers in a post-parsing phase.
 --
--- LocalRenderInfo is annotated at the Phrase level - while this
+-- LocalRenderInfo is annotated at the Part level - while this
 -- prevents concatenation it simplifies transformation.
 -- 
-data Phrase pch drn anno = Phrase 
-    { phrase_header     :: !SectionInfo
-    , phrase_bars       :: [Bar pch drn anno] 
+data Part pch drn anno = Part 
+    { part_header     :: !SectionInfo
+    , part_bars       :: [Bar pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -179,42 +176,25 @@ data Element pch drn anno =
 -- Operations etc.
 
 
--- Character class...
 
-isNote :: Element pdh drn anno -> Bool
-isNote (Note {})                = True
-isNote _                        = False
-
-isPause :: Element pdh drn anno -> Bool
-isPause (Note {})               = False
-isPause (Rest {})               = True
-isPause (Spacer {})             = True
-isPause (Skip {})               = True
-isPause (Punctuation {})        = False
-
-isPunctuation :: Element pdh drn anno -> Bool
-isPunctuation (Punctuation {})  = True
-isPunctuation _                 = False
-
-
-emptyOf :: Phrase pch drn anno -> Phrase pch drn anno
-emptyOf (Phrase { phrase_header = info }) = 
-    Phrase { phrase_header = info
-           , phrase_bars   = [] }
+emptyOf :: Part pch drn anno -> Part pch drn anno
+emptyOf (Part { part_header = info }) = 
+    Part { part_header = info
+         , part_bars   = [] }
 
 
 -- Push RenderInfo into bars.
 --
 pushSectionInfo :: SectionInfo 
-                -> Phrase pch drn anno 
-                -> Phrase pch drn anno
-pushSectionInfo info (Phrase { phrase_bars = bs }) = 
-    Phrase { phrase_header = info
-           , phrase_bars   = bs }
+                -> Part pch drn anno 
+                -> Part pch drn anno
+pushSectionInfo info (Part { part_bars = bs }) = 
+    Part { part_header = info
+         , part_bars   = bs }
 
 
-sectionInfo :: Phrase pch drn anno -> SectionInfo
-sectionInfo = phrase_header
+sectionInfo :: Part pch drn anno -> SectionInfo
+sectionInfo = part_header
 
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
@@ -257,16 +237,16 @@ data Linear pch drn anno = Linear !SectionInfo !Position [NoteGroup pch drn anno
 data View pch drn anno = Empty | (Position,Element pch drn anno) :< Linear pch drn anno
 
 
-toLinear :: Phrase pch drn anno -> Linear pch drn anno
-toLinear (Phrase info bs) = 
+toLinear :: Part pch drn anno -> Linear pch drn anno
+toLinear (Part info bs) = 
    let (xs,ys) = case bs of { [] -> ([],[])
                             ; (z:zs) -> (bar_groups z,zs) }
    in Linear info (Position 1 1) xs ys
 
 
-fromLinear :: Linear pch drn anno -> Phrase pch drn anno
-fromLinear (Linear info _ es bs) = Phrase { phrase_header = info
-                                          , phrase_bars   = Bar es : bs }
+fromLinear :: Linear pch drn anno -> Part pch drn anno
+fromLinear (Linear info _ es bs) = Part { part_header = info
+                                        , part_bars   = Bar es : bs }
 
 
 viewl :: Linear pch drn anno -> View pch drn anno

@@ -24,10 +24,10 @@ globals = default_score_info
 
 
 
--- Note - MonoPhrase reads (and ignores) beam group brackets.
+-- Note - MonoPart reads (and ignores) beam group brackets.
 -- Beams are re-synthesized in the output.
 --
-phrase01 :: StdCadenzaPhrase
+phrase01 :: StdCadenzaPart
 phrase01 = fromLilyPondWith_Relative c_5 locals $ 
     [cadenza| c4 c d8[d d] f4 g4. |]
 

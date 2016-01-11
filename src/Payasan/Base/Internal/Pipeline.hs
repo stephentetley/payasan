@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.Pipeline
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,12 +17,12 @@
 module Payasan.Base.Internal.Pipeline
   ( 
 
-    StdPhrase           -- * re-export
+    StdPart             -- * re-export
   
-  , ABCPhrase           -- * re-export
+  , ABCPart             -- * re-export
   , abc                 -- * re-export
 
-  , LyPhrase1           -- * re-export
+  , LyPart1             -- * re-export
   , lilypond
 
   , ScoreInfo(..)
@@ -84,7 +84,7 @@ import qualified Payasan.Base.Internal.ABC.InTrans              as ABC
 import qualified Payasan.Base.Internal.ABC.OutTrans             as ABC
 import Payasan.Base.Internal.ABC.Output (abcOutput)
 import Payasan.Base.Internal.ABC.Parser (abc)
-import Payasan.Base.Internal.ABC.Syntax (ABCPhrase)
+import Payasan.Base.Internal.ABC.Syntax (ABCPart)
 
 import Payasan.Base.Internal.Csound.BeamToCsound
 import Payasan.Base.Internal.Csound.Output
@@ -96,7 +96,7 @@ import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 import Payasan.Base.Internal.LilyPond.Parser (lilypond)
 import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
 import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
-import Payasan.Base.Internal.LilyPond.Syntax (LyPhrase1)
+import Payasan.Base.Internal.LilyPond.Syntax (LyPart1)
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Internal.MIDI.BeamToMIDI          as MIDI
@@ -167,15 +167,15 @@ debug f a = tell (f a) >> return a
 --------------------------------------------------------------------------------
 -- 
 
-fromABC :: ABCPhrase -> StdPhrase
+fromABC :: ABCPart -> StdPart
 fromABC = fromABCWith default_section_info
 
-fromABCWith :: SectionInfo -> ABCPhrase -> StdPhrase
+fromABCWith :: SectionInfo -> ABCPart -> StdPart
 fromABCWith locals = 
     translateToMain . ABC.translateFromInput . BEAM.pushSectionInfo locals
 
 
-fromABCWithIO :: SectionInfo -> ABCPhrase -> IO StdPhrase
+fromABCWithIO :: SectionInfo -> ABCPart -> IO StdPart
 fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -187,19 +187,19 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond_Relative :: Pitch -> LY.LyPhrase1 () -> StdPhrase 
+fromLilyPond_Relative :: Pitch -> LY.LyPart1 () -> StdPart 
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 
-fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPhrase1 () -> StdPhrase
+fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPart1 () -> StdPart
 fromLilyPondWith_Relative pch locals = 
     translateToMain . LY.translateFromInput_Relative pch . BEAM.pushSectionInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
                             -> SectionInfo 
-                            -> LY.LyPhrase1 () 
-                            -> IO StdPhrase
+                            -> LY.LyPart1 () 
+                            -> IO StdPart
 fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -211,14 +211,14 @@ fromLilyPondWithIO_Relative pch locals ph =
 
 
 
-outputAsABC :: ScoreInfo -> StaffInfo -> StdPhrase1 anno -> String
+outputAsABC :: ScoreInfo -> StaffInfo -> StdPart1 anno -> String
 outputAsABC infos staff = 
     ppRender . abcOutput infos staff
              . ABC.translateToOutput
              . addBeams 
              . translateToBeam
 
-printAsABC :: ScoreInfo -> StaffInfo -> StdPhrase1 anno -> IO ()
+printAsABC :: ScoreInfo -> StaffInfo -> StdPart1 anno -> IO ()
 printAsABC infos staff = putStrLn . outputAsABC infos staff
 
 
@@ -229,54 +229,54 @@ printAsABC infos staff = putStrLn . outputAsABC infos staff
 -- one for full score and one for just notelist.
 --
 data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
-    { beam_trafo    :: BEAM.Phrase p1i Duration a1i -> BEAM.Phrase p1i Duration a1i
-    , out_trafo     :: BEAM.Phrase p1i Duration a1i -> LY.LyPhrase2 p1o a1o
-    , output_func   :: LY.LyPhrase2 p1o a1o -> Doc
+    { beam_trafo    :: BEAM.Part p1i Duration a1i -> BEAM.Part p1i Duration a1i
+    , out_trafo     :: BEAM.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
+    , output_func   :: LY.LyPart2 p1o a1o -> Doc
     }
 
 
 
 
 genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
-                    -> Phrase p1i Duration a1i
+                    -> Part p1i Duration a1i
                     -> Doc
 genOutputAsLilyPond config = 
-    outputStep . toGenLyPhrase . beamingRewrite . translateToBeam
+    outputStep . toGenLyPart . beamingRewrite . translateToBeam
   where
     beamingRewrite      = beam_trafo config
-    toGenLyPhrase       = out_trafo config
+    toGenLyPart       = out_trafo config
     outputStep          = output_func config
 
 
 data LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o  = LilyPondPipeline2
-    { pipe2_beam_trafo1   :: BEAM.Phrase p1i Duration a1i -> BEAM.Phrase p1i Duration a1i
-    , pipe2_out_trafo1    :: BEAM.Phrase p1i Duration a1i -> LY.LyPhrase2 p1o a1o
-    , pipe2_beam_trafo2   :: BEAM.Phrase p2i Duration a2i -> BEAM.Phrase p2i Duration a2i
-    , pipe2_out_trafo2    :: BEAM.Phrase p2i Duration a2i -> LY.LyPhrase2 p2o a2o
-    , pipe2_output_func   :: LY.LyPhrase2 p1o a1o -> LY.LyPhrase2 p2o a2o -> Doc
+    { pipe2_beam_trafo1   :: BEAM.Part p1i Duration a1i -> BEAM.Part p1i Duration a1i
+    , pipe2_out_trafo1    :: BEAM.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
+    , pipe2_beam_trafo2   :: BEAM.Part p2i Duration a2i -> BEAM.Part p2i Duration a2i
+    , pipe2_out_trafo2    :: BEAM.Part p2i Duration a2i -> LY.LyPart2 p2o a2o
+    , pipe2_output_func   :: LY.LyPart2 p1o a1o -> LY.LyPart2 p2o a2o -> Doc
     }
 
 
 
 genOutputAsLilyPond2 :: LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o 
-                     -> Phrase p1i Duration a1i
-                     -> Phrase p2i Duration a2i
+                     -> Part p1i Duration a1i
+                     -> Part p2i Duration a2i
                      -> Doc
 genOutputAsLilyPond2 config ph1 ph2 = 
-    let a = toGenLyPhrase1 $ beamingRewrite1 $ translateToBeam ph1
-        b = toGenLyPhrase2 $ beamingRewrite2 $ translateToBeam ph2
+    let a = toGenLyPart1 $ beamingRewrite1 $ translateToBeam ph1
+        b = toGenLyPart2 $ beamingRewrite2 $ translateToBeam ph2
     in outputStep a b
   where
     beamingRewrite1     = pipe2_beam_trafo1 config
-    toGenLyPhrase1      = pipe2_out_trafo1 config
+    toGenLyPart1      = pipe2_out_trafo1 config
     beamingRewrite2     = pipe2_beam_trafo2 config
-    toGenLyPhrase2      = pipe2_out_trafo2 config
+    toGenLyPart2      = pipe2_out_trafo2 config
     outputStep          = pipe2_output_func config
 
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> Pitch -> StdPhrase1 anno -> String
+                          => ScoreInfo -> Pitch -> StdPart1 anno -> String
 outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
@@ -287,7 +287,7 @@ outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
 
 
 printAsLilyPond_Relative :: Anno anno 
-                         => ScoreInfo -> Pitch -> StdPhrase1 anno -> IO ()
+                         => ScoreInfo -> Pitch -> StdPart1 anno -> IO ()
 printAsLilyPond_Relative infos pch = putStrLn . outputAsLilyPond_Relative infos pch
 
 
@@ -296,7 +296,7 @@ printAsLilyPond_Relative infos pch = putStrLn . outputAsLilyPond_Relative infos 
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo                          
-                          -> Phrase pch Duration anno 
+                          -> Part pch Duration anno 
                           -> Doc
 genOutputAsRhythmicMarkup def infos = 
     LY.rhythmicMarkupScore ppDef infos . LY.translateToRhythmicMarkup def
@@ -306,14 +306,14 @@ genOutputAsRhythmicMarkup def infos =
     ppDef = LY.LyOutputDef { LY.printPitch = pitch, LY.printAnno = const empty }
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdPhrase1 anno -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdPart1 anno -> String
 outputAsRhythmicMarkup infos = 
     ppRender . genOutputAsRhythmicMarkup def infos 
   where
     def = LY.MarkupOutput { LY.asMarkup = \p -> teeny_ (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: ScoreInfo -> StdPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdPart -> IO ()
 printAsRhythmicMarkup infos = putStrLn . outputAsRhythmicMarkup infos
 
 
@@ -328,7 +328,7 @@ ppRender = renderStyle (style {lineLength=500})
 -- Should we have a @genOutputAsMIDI@ function?
 
 
-writeAsMIDI :: FilePath -> StdPhrase1 anno -> IO ()
+writeAsMIDI :: FilePath -> StdPart1 anno -> IO ()
 writeAsMIDI path ph = 
     let notes   = MIDI.translateToMidiP $ translateToBeam ph
         trk     = MIDI.translateToMIDI (MIDI.simpleTrackData 1) notes
@@ -339,13 +339,13 @@ writeAsMIDI path ph =
 -- MIDI
 
 
-outputAsCsound :: ColumnSpecs -> GenIStmt anno -> StdPhrase1 anno -> String
+outputAsCsound :: ColumnSpecs -> GenIStmt anno -> StdPart1 anno -> String
 outputAsCsound cols gf ph =
     let notes   = CS.translateToCsoundP $ translateToBeam ph
         stmts   = translateToCsound gf notes
     in ppRender $ csoundOutput cols stmts
 
-printAsCsound :: ColumnSpecs -> GenIStmt anno -> StdPhrase1 anno -> IO ()
+printAsCsound :: ColumnSpecs -> GenIStmt anno -> StdPart1 anno -> IO ()
 printAsCsound cols gf = putStrLn . outputAsCsound cols gf
 
 
@@ -353,7 +353,7 @@ printAsCsound cols gf = putStrLn . outputAsCsound cols gf
 -- Debug...
 
 outputAsTabular :: (Pretty pch, Pretty drn) 
-                => ScoreInfo -> Phrase pch drn anno -> String
+                => ScoreInfo -> Part pch drn anno -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -362,12 +362,12 @@ outputAsTabular _gi ph = ppRender $ mainTabular lo ph
                     }
 
 printAsTabular :: (Pretty pch, Pretty drn) 
-               => ScoreInfo -> Phrase pch drn anno ->  IO ()
+               => ScoreInfo -> Part pch drn anno ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 outputAsLinear :: (Pretty pch, Pretty drn) 
-               => ScoreInfo -> Phrase pch drn anno -> String
+               => ScoreInfo -> Part pch drn anno -> String
 outputAsLinear _gi ph = ppRender $ mainLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -376,13 +376,13 @@ outputAsLinear _gi ph = ppRender $ mainLinear lo ph
                     }
 
 printAsLinear :: (Pretty pch, Pretty drn) 
-              => ScoreInfo -> Phrase pch drn anno ->  IO ()
+              => ScoreInfo -> Part pch drn anno ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi
 
 
 
 beamAsLinear :: (Pretty pch, Pretty drn) 
-             => ScoreInfo -> BEAM.Phrase pch drn anno -> String
+             => ScoreInfo -> BEAM.Part pch drn anno -> String
 beamAsLinear _gi ph = ppRender $ beamLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -391,7 +391,7 @@ beamAsLinear _gi ph = ppRender $ beamLinear lo ph
                     }
 
 beamAsTabular :: (Pretty pch, Pretty drn) 
-              => ScoreInfo -> BEAM.Phrase pch drn anno -> String
+              => ScoreInfo -> BEAM.Part pch drn anno -> String
 beamAsTabular _gi ph = ppRender $ beamTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint

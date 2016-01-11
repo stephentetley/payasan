@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.TiedNoteStream
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -46,12 +46,12 @@ import Data.Ratio
 
 
 makeTiedNoteStream :: Eq pch 
-                   => Phrase pch Duration anno -> [Element pch Seconds anno]
+                   => Part pch Duration anno -> [Element pch Seconds anno]
 makeTiedNoteStream = coalesce . linearize
 
 
-linearize :: Phrase pch Duration anno -> [Element pch Seconds anno]
-linearize (Phrase bs) = concatMap linearizeB bs
+linearize :: Part pch Duration anno -> [Element pch Seconds anno]
+linearize (Part bs) = concatMap linearizeB bs
 
 linearizeB :: Bar pch Duration anno -> [Element pch Seconds anno]
 linearizeB (Bar info cs) = 

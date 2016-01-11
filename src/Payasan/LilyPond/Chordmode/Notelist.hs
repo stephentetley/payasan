@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Notelist
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -19,7 +19,7 @@ module Payasan.LilyPond.Chordmode.Notelist
 
     module Payasan.Base.Internal.Shell
 
-  , StdChordPhrase
+  , StdChordPart
   , chordmode
 
   , ScoreInfo(..)
@@ -85,17 +85,17 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 -- Use Elementary syntax...
 
-fromLilyPond :: LyChordPhrase -> StdChordPhrase
+fromLilyPond :: LyChordPart -> StdChordPart
 fromLilyPond = fromLilyPondWith default_section_info
 
 fromLilyPondWith :: SectionInfo 
-                 -> LyChordPhrase 
-                 -> StdChordPhrase
+                 -> LyChordPart 
+                 -> StdChordPart
 fromLilyPondWith locals = translateInput . ELEM.pushSectionInfo locals
 
 
 
-outputAsLilyPond :: ScoreInfo -> StdChordPhrase -> String
+outputAsLilyPond :: ScoreInfo -> StdChordPart -> String
 outputAsLilyPond globals = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config
                   . ELEM.translateToMain 
@@ -108,18 +108,18 @@ outputAsLilyPond globals =
                 }
 
 
-printAsLilyPond :: ScoreInfo -> StdChordPhrase -> IO ()
+printAsLilyPond :: ScoreInfo -> StdChordPart -> IO ()
 printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> String
+outputAsRhythmicMarkup :: ScoreInfo -> StdChordPart -> String
 outputAsRhythmicMarkup globals = 
     MAIN.ppRender . ELEM.genOutputAsRhythmicMarkup def globals
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny_ (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: ScoreInfo -> StdChordPhrase -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> StdChordPart -> IO ()
 printAsRhythmicMarkup globals = putStrLn . outputAsRhythmicMarkup globals
 
 
@@ -127,24 +127,24 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
-writeAsMIDI :: FilePath -> StdChordPhrase -> IO ()
+writeAsMIDI :: FilePath -> StdChordPart -> IO ()
 writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes 
 
 
--- midiTrans :: StdChordPhrase -> MAIN.
+-- midiTrans :: StdChordPart -> MAIN.
 -- The ELEM to MAIN translation is actually shape changing 
 -- for MIDI - notes become chords...
 
-midiTrans :: StdChordPhrase -> MAIN.Phrase Pitch Duration ()
+midiTrans :: StdChordPart -> MAIN.Part Pitch Duration ()
 midiTrans = ELEM.chordTranslateToMain . chordTrans
 
 
 
-chordTrans :: StdChordPhrase -> ELEM.Phrase [Pitch] Duration ()
+chordTrans :: StdChordPart -> ELEM.Part [Pitch] Duration ()
 chordTrans = ELEM.mapPitch buildNotes
 
 
-outputAsTabular :: ScoreInfo -> StdChordPhrase -> String
+outputAsTabular :: ScoreInfo -> StdChordPart -> String
 outputAsTabular _gi ph = ppRender $ elemTabular lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -152,13 +152,13 @@ outputAsTabular _gi ph = ppRender $ elemTabular lo ph
                     , pp_anno      = const empty
                     }
 
-printAsTabular :: ScoreInfo -> StdChordPhrase ->  IO ()
+printAsTabular :: ScoreInfo -> StdChordPart ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
 
 
 
 
-outputAsLinear :: ScoreInfo -> StdChordPhrase -> String
+outputAsLinear :: ScoreInfo -> StdChordPart -> String
 outputAsLinear _gi ph = ppRender $ elemLinear lo ph
   where
     lo = LeafOutput { pp_pitch     = pPrint
@@ -166,5 +166,5 @@ outputAsLinear _gi ph = ppRender $ elemLinear lo ph
                     , pp_anno      = const empty
                     }
 
-printAsLinear :: ScoreInfo -> StdChordPhrase ->  IO ()
+printAsLinear :: ScoreInfo -> StdChordPart ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

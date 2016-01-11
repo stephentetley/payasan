@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.ElementaryToMain
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -31,11 +31,11 @@ import qualified Payasan.Base.Internal.MainSyntax as T
 
 
 translateToMain :: forall pch drn anno.
-                   Phrase pch drn anno -> T.Phrase pch drn anno
-translateToMain = phraseT
+                   Part pch drn anno -> T.Part pch drn anno
+translateToMain = partT
   where
-    phraseT :: Phrase pch drn anno -> T.Phrase pch drn anno
-    phraseT (Phrase info bs)        = T.Phrase $ map (barT info) bs
+    partT :: Part pch drn anno -> T.Part pch drn anno
+    partT (Part info bs)            = T.Part $ map (barT info) bs
 
 
     barT :: SectionInfo -> Bar pch drn anno -> T.Bar pch drn anno
@@ -62,12 +62,12 @@ translateToMain = phraseT
 -- representations).
 --
 chordTranslateToMain :: forall pch drn anno. 
-                      Phrase [pch] drn anno
-                   -> T.Phrase pch drn anno
-chordTranslateToMain = phraseT
+                        Part [pch] drn anno
+                     -> T.Part pch drn anno
+chordTranslateToMain = partT
   where
-    phraseT :: Phrase [pch] drn anno -> T.Phrase pch drn anno
-    phraseT (Phrase info bs)        = T.Phrase $ map (barT info) bs
+    partT :: Part [pch] drn anno -> T.Part pch drn anno
+    partT (Part info bs)            = T.Part $ map (barT info) bs
 
 
     barT :: SectionInfo -> Bar [pch] drn anno -> T.Bar pch drn anno

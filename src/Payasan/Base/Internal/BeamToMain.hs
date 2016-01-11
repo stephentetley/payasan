@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.BeamToMain
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -25,12 +25,12 @@ import qualified Payasan.Base.Internal.MainSyntax as T
 
 
 
-translateToMain :: Phrase pch drn anno -> T.Phrase pch drn anno
-translateToMain                 = phraseT
+translateToMain :: Part pch drn anno -> T.Part pch drn anno
+translateToMain                 = partT
 
 
-phraseT :: Phrase pch drn anno -> T.Phrase pch drn anno
-phraseT (Phrase bs)          = T.Phrase $ map barT bs
+partT :: Part pch drn anno -> T.Part pch drn anno
+partT (Part bs)                 = T.Part $ map barT bs
 
 
 

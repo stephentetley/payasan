@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Internal.Interpret
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -31,6 +31,6 @@ import Payasan.Base.Names.Pitch
 
 -- TODO - need to remove punctuation as well.
 --
-extractRhythm :: LyricPhrase1 anno -> Phrase Pitch Duration anno
+extractRhythm :: LyricPart1 anno -> Part Pitch Duration anno
 extractRhythm = mapPitch (const b_4)
 

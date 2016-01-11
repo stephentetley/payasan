@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.MIDI.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -27,7 +27,7 @@ import Payasan.Base.Internal.BeamTraversals
 import Payasan.Base.Pitch
 
 
-translateToMidiP :: Phrase Pitch drn anno -> Phrase MidiPitch drn anno
+translateToMidiP :: Part Pitch drn anno -> Part MidiPitch drn anno
 translateToMidiP = transformP pch_algo
 
 

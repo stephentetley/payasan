@@ -15,18 +15,18 @@ import Payasan.Base.ScaleDegree                 -- TEMP
 import Payasan.Base.Internal.Plain              -- TEMP
 
 
-a_major_ly :: StdPhrase
+a_major_ly :: StdPart
 a_major_ly = fromLilyPondWith_Relative middle_c locals $ 
     [lilypond| a4 b cis d | e fis gis a |]
 
 
-a_major_abc :: StdPhrase
+a_major_abc :: StdPart
 a_major_abc = fromABCWith locals $ 
     [abc| A, B, C D | E F G A |]
 
 
 
-a_major_plain :: StdPhrase
+a_major_plain :: StdPart
 a_major_plain = fromNoteList locals $
     map (map (\p -> note p d_quarter)) $ [ [a_3, b_3, cs_4, d_4]
                                          , [e_4, fs_4, gs_4, a_4]

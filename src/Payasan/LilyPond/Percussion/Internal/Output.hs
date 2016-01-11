@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.Output
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -30,7 +30,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-drumsOutput :: ScoreInfo -> LyDrumPhrase -> Doc
+drumsOutput :: ScoreInfo -> LyDrumPart -> Doc
 drumsOutput globals ph = 
         header
     $+$ drumsBlock notes

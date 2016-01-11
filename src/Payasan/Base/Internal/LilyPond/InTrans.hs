@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.LilyPond.InTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -34,20 +34,20 @@ import Payasan.Base.Pitch
 
 
 translateFromInput_Relative :: Pitch
-                            -> Phrase LyPitch LyNoteLength anno 
-                            -> Phrase Pitch Duration anno
+                            -> Part LyPitch LyNoteLength anno 
+                            -> Part Pitch Duration anno
 translateFromInput_Relative pch  = 
     transformP (rel_pch_algo pch) . transformD drn_algo
 
 
-translateFromInput_Absolute :: Phrase LyPitch LyNoteLength anno 
-                            -> Phrase Pitch Duration anno
+translateFromInput_Absolute :: Part LyPitch LyNoteLength anno 
+                            -> Part Pitch Duration anno
 translateFromInput_Absolute = 
     transformP abs_pch_algo . transformD drn_algo
 
 
-translateFromInput_DurationOnly :: Phrase pch LyNoteLength anno 
-                                -> Phrase pch Duration anno
+translateFromInput_DurationOnly :: Part pch LyNoteLength anno 
+                                -> Part pch Duration anno
 translateFromInput_DurationOnly = transformD drn_algo
 
 type DMon    a      = Mon Duration a

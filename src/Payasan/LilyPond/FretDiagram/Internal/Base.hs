@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.FretDiagram.Internal.Base
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,7 +18,7 @@
 module Payasan.LilyPond.FretDiagram.Internal.Base
   ( 
 
-    FretDiagramPhrase
+    FretDiagramPart
   , FretDiagram(..)
   , Fingering(..)
   , BarreIndicator(..)
@@ -34,7 +34,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
   ) where
 
 import Payasan.Base.Internal.LilyPond.Utils
-import Payasan.Base.Elementary.Internal.Syntax (Phrase)
+import Payasan.Base.Elementary.Internal.Syntax (Part)
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -46,7 +46,7 @@ import Data.Data
 import Data.List (sortBy)
 
 
-type FretDiagramPhrase = Phrase [Pitch] Duration FretDiagram
+type FretDiagramPart = Part [Pitch] Duration FretDiagram
 
 
 data FretDiagram = FretDiagram

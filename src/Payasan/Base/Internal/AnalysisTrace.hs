@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.AnalysisTrace
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,7 +18,7 @@
 module Payasan.Base.Internal.AnalysisTrace
   (
 
-    TracePhrase(..)
+    TracePart(..)
   , TraceBar(..)
   , TraceElement(..)
 
@@ -29,7 +29,7 @@ module Payasan.Base.Internal.AnalysisTrace
 import Data.Data
 
 
-data TracePhrase a = TracePhrase { trace_bars :: [TraceBar a] }
+data TracePart a = TracePart { trace_bars :: [TraceBar a] }
   deriving (Data,Eq,Show,Typeable)
 
 

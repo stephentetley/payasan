@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Cadenza.Internal.Transform
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -47,12 +47,12 @@ import Payasan.Base.ScaleDegree
 
 -- | Double note lengths.
 --
-augment :: Phrase pch Duration anno -> Phrase pch Duration anno
+augment :: Part pch Duration anno -> Part pch Duration anno
 augment = mapDuration doubleDuration
 
 -- | Halve note lengths.
 --
-diminute :: Phrase pch Duration anno -> Phrase pch Duration anno
+diminute :: Part pch Duration anno -> Part pch Duration anno
 diminute = mapDuration halveDuration
 
 
@@ -60,8 +60,8 @@ diminute = mapDuration halveDuration
 -- non-scale tones.
 --
 transposeChromatic :: Interval 
-                   -> Phrase Pitch drn anno 
-                   -> Phrase Pitch drn anno
+                   -> Part Pitch drn anno 
+                   -> Part Pitch drn anno
 transposeChromatic ivl = mapPitch (.+^ ivl)
 
 
@@ -74,14 +74,14 @@ addDiatonicIntervalC (ChromaticPitch dp a) ivl =
 
 
 transposeDiatonic :: DiatonicInterval 
-                  -> Phrase Pitch drn anno 
-                  -> Phrase Pitch drn anno
+                  -> Part Pitch drn anno 
+                  -> Part Pitch drn anno
 transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicIntervalC` ivl)) ph
 
 
 
-retrograde :: Phrase pch Duration anno -> Phrase pch Duration anno
-retrograde (Phrase info gs) = Phrase info $ map revNG $ reverse gs
+retrograde :: Part pch Duration anno -> Part pch Duration anno
+retrograde (Part info gs) = Part info $ map revNG $ reverse gs
   where
     revNG (Atom e)          = Atom e
     revNG (Beamed cs)       = Beamed $ map revNG $ reverse cs
@@ -91,13 +91,13 @@ retrograde (Phrase info gs) = Phrase info $ map revNG $ reverse gs
 -- | Note - seems to need /scale degrees/ - taking interal with 
 -- top note and adding same interval to lowest note does not work.
 --
-invertChromatic :: Phrase Pitch drn anno -> Phrase Pitch drn anno
+invertChromatic :: Part Pitch drn anno -> Part Pitch drn anno
 invertChromatic ph = case lowestPitch ph of 
     Nothing -> ph
     Just p0 -> mapPitch (\ival -> p0 .+^ ival) $ intervalsFromTop ph
 
 
-intervalsFromTop :: Phrase Pitch drn anno -> Phrase Interval drn anno
+intervalsFromTop :: Part Pitch drn anno -> Part Interval drn anno
 intervalsFromTop ph = case highestPitch ph of
     Nothing -> mapPitch (const perfect_unison) ph         -- notelist is empty or just rests
     Just top -> mapPitch (\p -> p `intervalBetween` top) ph 
@@ -105,28 +105,28 @@ intervalsFromTop ph = case highestPitch ph of
 
 -- | 08 Oct - this is now wrong due to changes to ScaleDegree!
 --
-invertDiatonic :: Phrase Pitch drn anno -> Phrase Pitch drn anno
+invertDiatonic :: Part Pitch drn anno -> Part Pitch drn anno
 invertDiatonic = interScaleStep invertDiatonic1
 
-invertDiatonic1 :: Phrase ChromaticPitch drn anno -> Phrase ChromaticPitch drn anno
+invertDiatonic1 :: Part ChromaticPitch drn anno -> Part ChromaticPitch drn anno
 invertDiatonic1 ph = case lowestStep ph of 
     Nothing -> ph
     Just p0 -> mapPitch (\ival -> ChromaticPitch (p0 `addDiatonicInterval` ival) 0) $ diatonicsFromTop ph
 
 
-diatonicsFromTop :: Phrase ChromaticPitch drn anno -> Phrase DiatonicInterval drn anno
+diatonicsFromTop :: Part ChromaticPitch drn anno -> Part DiatonicInterval drn anno
 diatonicsFromTop ph = case highestStep ph of
     Nothing -> mapPitch (const simple_unison) ph         -- notelist is empty or just rests
     Just top -> mapPitch (\p -> diatonic_base p `diatonicIntervalBetween` top) ph 
 
 
 
-interScaleStep :: (Phrase ChromaticPitch drn anno -> Phrase ChromaticPitch drn anno)
-               -> Phrase Pitch drn anno
-               -> Phrase Pitch drn anno
+interScaleStep :: (Part ChromaticPitch drn anno -> Part ChromaticPitch drn anno)
+               -> Part Pitch drn anno
+               -> Part Pitch drn anno
 interScaleStep fn = fromScaleStepRepr . fn . toScaleStepRepr
 
-toScaleStepRepr :: Phrase Pitch drn anno -> Phrase ChromaticPitch drn anno
+toScaleStepRepr :: Part Pitch drn anno -> Part ChromaticPitch drn anno
 toScaleStepRepr = transformP step_algo
   where
     step_algo = CadenzaPitchAlgo { initial_stateP = ()
@@ -141,7 +141,7 @@ toScaleStepRepr = transformP step_algo
     mf pch = (\key -> toChromaticPitch key pch) <$> asks section_key
 
 
-fromScaleStepRepr :: Phrase ChromaticPitch drn anno -> Phrase Pitch drn anno
+fromScaleStepRepr :: Part ChromaticPitch drn anno -> Part Pitch drn anno
 fromScaleStepRepr = transformP step_algo
   where
     step_algo = CadenzaPitchAlgo { initial_stateP = ()

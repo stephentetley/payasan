@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.MainSyntax
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -21,18 +21,18 @@
 module Payasan.Base.Internal.MainSyntax
   ( 
    
-    StdPhrase
+    StdPart
   , StdBar
   , StdNoteGroup
   , StdElement
   , StdNote
 
-  , StdPhrase1
+  , StdPart1
   , StdBar1
   , StdNoteGroup1
   , StdElement1
 
-  , Phrase(..)
+  , Part(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -54,13 +54,13 @@ import Data.Data
 -- Syntax
 
 
-type StdPhrase          = Phrase    Pitch Duration () 
+type StdPart            = Part      Pitch Duration () 
 type StdBar             = Bar       Pitch Duration () 
 type StdNoteGroup       = NoteGroup Pitch Duration () 
 type StdElement         = Element   Pitch Duration ()
 type StdNote            = Note      Pitch Duration
 
-type StdPhrase1 anno    = Phrase    Pitch Duration anno
+type StdPart1 anno      = Part      Pitch Duration anno
 type StdBar1 anno       = Bar       Pitch Duration anno
 type StdNoteGroup1 anno = NoteGroup Pitch Duration anno
 type StdElement1 anno   = Element   Pitch Duration anno
@@ -68,12 +68,12 @@ type StdElement1 anno   = Element   Pitch Duration anno
 
 
 
-data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
+data Part pch drn anno = Part { part_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
-instance Monoid (Phrase pch drn anno) where
-  mempty = Phrase []
-  Phrase xs `mappend` Phrase ys = Phrase $ xs ++ ys
+instance Monoid (Part pch drn anno) where
+  mempty = Part []
+  Part xs `mappend` Part ys = Part $ xs ++ ys
 
 
 -- | Note Beaming is not captured in parsing.

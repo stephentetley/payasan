@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.BeamSyntax
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -24,19 +24,19 @@ module Payasan.Base.Internal.BeamSyntax
   ( 
 
   -- * Common Aliases
-    StdBeamPhrase
+    StdBeamPart
   , StdBeamBar
   , StdBeamNoteGroup
   , StdBeamElement
   , StdNote
 
-  , StdBeamPhrase1
+  , StdBeamPart1
   , StdBeamBar1
   , StdBeamNoteGroup1
   , StdBeamElement1
   
   -- * Syntax
-  , Phrase(..)
+  , Part(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -59,13 +59,13 @@ import Payasan.Base.Pitch
 
 import Data.Data
 
-type StdBeamPhrase              = StdBeamPhrase1    ()
+type StdBeamPart                = StdBeamPart1    ()
 type StdBeamBar                 = StdBeamBar1       ()
 type StdBeamNoteGroup           = StdBeamNoteGroup1 ()
 type StdBeamElement             = StdBeamElement1   ()
 type StdNote                    = Note Pitch Duration
 
-type StdBeamPhrase1 anno        = Phrase    Pitch Duration anno
+type StdBeamPart1 anno          = Part      Pitch Duration anno
 type StdBeamBar1 anno           = Bar       Pitch Duration anno
 type StdBeamNoteGroup1 anno     = NoteGroup Pitch Duration anno
 type StdBeamElement1 anno       = Element   Pitch Duration anno
@@ -73,16 +73,19 @@ type StdBeamElement1 anno       = Element   Pitch Duration anno
 --------------------------------------------------------------------------------
 -- Syntax
 
--- | Bracket syntax must be parametric on pitch so it can
+-- | Beam syntax must be parametric on pitch so it can
 -- handle nice LilyPond things like drums.
 --
-data Phrase pch drn anno = Phrase { phrase_bars :: [Bar pch drn anno] }
+-- Also needs to be parametric on duration to handle 
+-- Lilypond and ABC duration representations. 
+--
+data Part pch drn anno = Part { part_bars :: [Bar pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
 
-instance Monoid (Phrase pch drn anno) where
-  mempty = Phrase []
-  Phrase xs `mappend` Phrase ys = Phrase $ xs ++ ys
+instance Monoid (Part pch drn anno) where
+  mempty = Part []
+  Part xs `mappend` Part ys = Part $ xs ++ ys
 
 
 
@@ -131,9 +134,9 @@ data Note pch drn = Note pch drn
 -- Operations (maybe should be in another module)
 
 pushSectionInfo :: SectionInfo 
-                -> Phrase pch drn anno 
-                -> Phrase pch drn anno
-pushSectionInfo ri (Phrase bs) = Phrase $ map upd bs
+                -> Part pch drn anno 
+                -> Part pch drn anno
+pushSectionInfo ri (Part bs) = Part $ map upd bs
   where
     upd bar = bar { bar_header = ri }
 
@@ -155,6 +158,6 @@ sizeElement (Chord _ d _ _)             = toRDuration d
 sizeElement (Graces {})                 = 0
 sizeElement (Punctuation {})            = 0
 
-firstSectionInfo :: Phrase pch drn anno -> Maybe SectionInfo
-firstSectionInfo (Phrase [])    = Nothing
-firstSectionInfo (Phrase (b:_)) = Just $ bar_header b
+firstSectionInfo :: Part pch drn anno -> Maybe SectionInfo
+firstSectionInfo (Part [])    = Nothing
+firstSectionInfo (Part (b:_)) = Just $ bar_header b

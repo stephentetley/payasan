@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Cadenza.Notelist
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -19,7 +19,7 @@ module Payasan.LilyPond.Cadenza.Notelist
 
     module Payasan.Base.Internal.Shell
    
-  , StdCadenzaPhrase
+  , StdCadenzaPart
   , cadenza
 
   , ScoreInfo(..)        -- Re-export
@@ -63,33 +63,33 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 fromLilyPond_Relative :: Pitch 
-                      -> LyCadenzaPhrase1 anno 
-                      -> StdCadenzaPhrase1 anno
+                      -> LyCadenzaPart1 anno 
+                      -> StdCadenzaPart1 anno
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch  
                           -> SectionInfo
-                          -> LyCadenzaPhrase1 anno
-                          -> StdCadenzaPhrase1 anno
+                          -> LyCadenzaPart1 anno
+                          -> StdCadenzaPart1 anno
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushSectionInfo (locals { section_meter = Unmetered })
 
 
 
 genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
-                    -> StdCadenzaPhrase2 p1i a1i
+                    -> StdCadenzaPart2 p1i a1i
                     -> Doc
 genOutputAsLilyPond config = 
-    outputStep . toGenLyPhrase . beamingRewrite . translateToBeam
+    outputStep . toGenLyPart . beamingRewrite . translateToBeam
   where
     beamingRewrite      = beam_trafo config
-    toGenLyPhrase       = out_trafo config
+    toGenLyPart         = out_trafo config
     outputStep          = output_func config
 
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> Pitch -> StdCadenzaPhrase1 anno -> String
+                          => ScoreInfo -> Pitch -> StdCadenzaPart1 anno -> String
 outputAsLilyPond_Relative infos pch = MAIN.ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = noBeams
@@ -99,7 +99,7 @@ outputAsLilyPond_Relative infos pch = MAIN.ppRender . genOutputAsLilyPond config
     std_def = LY.LyOutputDef { LY.printPitch = PP.pitch, LY.printAnno = anno }
 
 printAsLilyPond_Relative :: Anno anno 
-                => ScoreInfo -> Pitch -> StdCadenzaPhrase1 anno -> IO ()
+                => ScoreInfo -> Pitch -> StdCadenzaPart1 anno -> IO ()
 printAsLilyPond_Relative globals pch = 
     putStrLn . outputAsLilyPond_Relative globals pch
 

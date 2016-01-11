@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.Base
--- Copyright   :  (c Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,11 +18,11 @@
 module Payasan.LilyPond.Chordmode.Internal.Base
   ( 
    
-    LyChordPhrase
-  , OutChordPhrase
+    LyChordPart
+  , OutChordPart
   , LyChordRoot
 
-  , StdChordPhrase
+  , StdChordPart
 
   , Chord(..)
   , LyChord(..)
@@ -51,12 +51,12 @@ import Data.Data
 -- LilyPond is input as a Elementary note list, but output as
 -- beam syntax (with bars).
 
-type LyChordPhrase       = ELEM.Phrase LyChordRoot LyNoteLength ChordSuffix
-type OutChordPhrase      = BEAM.Phrase LyChordRoot LyNoteLength ChordSuffix
+type LyChordPart        = ELEM.Part LyChordRoot LyNoteLength ChordSuffix
+type OutChordPart       = BEAM.Part LyChordRoot LyNoteLength ChordSuffix
 
-type LyChordRoot         = LyPitch
+type LyChordRoot        = LyPitch
 
-type StdChordPhrase      = ELEM.Phrase Chord   Duration      ()
+type StdChordPart       = ELEM.Part Chord   Duration      ()
 
 
 -- Design note - Chord seems too fundamental and LyChord

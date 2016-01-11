@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.LilyPondInTrans
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -42,13 +42,13 @@ import Payasan.Base.Pitch
 
 
 lilyPondTranslate_Relative :: Pitch
-                           -> LyElemPhrase2 LyPitch anno 
-                           -> StdElemPhrase1 anno
+                           -> LyElemPart2 LyPitch anno 
+                           -> StdElemPart1 anno
 lilyPondTranslate_Relative pch = trafoRelPitch pch . trafoDuration
 
 
-lilyPondTranslate_Absolute :: LyElemPhrase2 LyPitch anno 
-                           -> StdElemPhrase1 anno
+lilyPondTranslate_Absolute :: LyElemPart2 LyPitch anno 
+                           -> StdElemPart1 anno
 lilyPondTranslate_Absolute = trafoAbsPitch . trafoDuration
 
 
@@ -61,7 +61,7 @@ type AbsPMon a = Mon () a
 --------------------------------------------------------------------------------
 -- Relative Pitch translation
 
-trafoRelPitch :: Pitch -> Phrase LyPitch drn anno -> Phrase Pitch drn anno
+trafoRelPitch :: Pitch -> Part LyPitch drn anno -> Part Pitch drn anno
 trafoRelPitch p0 = transformP (rel_pch_algo p0)
 
 rel_pch_algo :: Pitch -> ElemPitchAlgo Pitch LyPitch Pitch
@@ -101,7 +101,7 @@ changePitchRel p1 =
 --------------------------------------------------------------------------------
 -- Abs Pitch translation
 
-trafoAbsPitch :: Phrase LyPitch drn anno -> Phrase Pitch drn anno
+trafoAbsPitch :: Part LyPitch drn anno -> Part Pitch drn anno
 trafoAbsPitch = transformP abs_pch_algo
 
 
@@ -129,7 +129,7 @@ changePitchAbs p1 = return $ toPitchAbs p1
 --------------------------------------------------------------------------------
 -- Duration translation
 
-trafoDuration :: Phrase pch LyNoteLength anno -> Phrase pch Duration anno
+trafoDuration :: Part pch LyNoteLength anno -> Part pch Duration anno
 trafoDuration = transformD drn_algo
 
 

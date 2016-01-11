@@ -79,28 +79,6 @@ test02 = MONO.shellOutLilyPond default_shell_info $
                  , fn simple_fourth b_4
                  , fn simple_third  e_5 
                  ]
-{-
-
-test04a, test04b, test04c :: Pitch
-test04a = transposeWithDiatonicInterval c_major simple_unison e_5
-test04b = transposeWithDiatonicInterval c_major simple_unison a_4
-test04c = transposeWithDiatonicInterval c_major simple_unison g_4
-    
-
-test05a = fromPitch c_major e_5
-test05b = fromPitch c_major a_4 
-test05c = fromPitch c_major g_4 
--}
-
-
-{-
-
-phrase01 :: StdLyricPhrase
-phrase01 = fromLilyPondWith globals locals $ 
-    [lyricmode| Shake4 ba8 -- by8 shake2 | Shake4 ba8 -- by8 shake.2 |  |]
-
--}
-
 
 
 

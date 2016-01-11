@@ -60,41 +60,41 @@ import Payasan.Base.ScaleDegree
 
 -- Simple metrics
 
-barCount :: Phrase pch drn anno -> Int
-barCount (Phrase { phrase_bars = bs }) = length bs
+barCount :: Part pch drn anno -> Int
+barCount (Part { part_bars = bs }) = length bs
 
 
 
 
 -- histograms 
 
-pitchHisto :: Phrase Pitch drn anno -> Histogram Pitch
+pitchHisto :: Part Pitch drn anno -> Histogram Pitch
 pitchHisto = foldPitch fn empty
   where
     fn histo p = incr p histo
 
 
-pitchNameHisto :: Phrase Pitch drn anno -> Histogram PitchName
+pitchNameHisto :: Part Pitch drn anno -> Histogram PitchName
 pitchNameHisto = foldPitch fn empty
   where
     fn histo p = incr (pitch_name p) histo
 
 
-octaveHisto :: Phrase Pitch drn anno -> Histogram Int
+octaveHisto :: Part Pitch drn anno -> Histogram Int
 octaveHisto = foldPitch fn empty
   where
     fn histo p = incr (pitch_octave p) histo
 
 
 
-lowestPitch :: Phrase Pitch drn anno -> Maybe Pitch
+lowestPitch :: Part Pitch drn anno -> Maybe Pitch
 lowestPitch = foldPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isLower` p0     = Just p
                    | otherwise          = Just p0
 
-highestPitch :: Phrase Pitch drn anno -> Maybe Pitch
+highestPitch :: Part Pitch drn anno -> Maybe Pitch
 highestPitch = foldPitch fn Nothing
   where
     fn Nothing   p                      = Just p
@@ -102,7 +102,7 @@ highestPitch = foldPitch fn Nothing
                    | otherwise          = Just p0
 
 
-lowestStep :: Phrase ChromaticPitch drn anno -> Maybe DiatonicPitch
+lowestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
 lowestStep = fmap diatonic_base . foldPitch fn Nothing
   where
     fn Nothing   s                      = Just s
@@ -110,7 +110,7 @@ lowestStep = fmap diatonic_base . foldPitch fn Nothing
                    | otherwise          = Just s0
 
 
-highestStep :: Phrase ChromaticPitch drn anno -> Maybe DiatonicPitch
+highestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
 highestStep = fmap diatonic_base . foldPitch fn Nothing
   where
     fn Nothing   s                      = Just s
@@ -144,7 +144,7 @@ contourAlgo comp = TraceAlgo { initial_trace_state = Nothing
 
 
 semitoneInterval :: forall drn anno. 
-                    Phrase Pitch drn anno -> TracePhrase Int
+                    Part Pitch drn anno -> TracePart Int
 semitoneInterval = trace (contourAlgo comp)
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
@@ -152,7 +152,7 @@ semitoneInterval = trace (contourAlgo comp)
 
 
 grossContour :: forall drn anno. 
-                Phrase Pitch drn anno -> TracePhrase GrossContour
+                Part Pitch drn anno -> TracePart GrossContour
 grossContour = trace (contourAlgo comp)
   where
     comp pold pnew | pnew `isHigher` pold = UP
@@ -163,7 +163,7 @@ grossContour = trace (contourAlgo comp)
 
 
 refinedContour :: forall drn anno. 
-                  Phrase Pitch drn anno -> TracePhrase RefinedContour
+                  Part Pitch drn anno -> TracePart RefinedContour
 refinedContour = trace (contourAlgo comp)
   where
     comp pold pnew 
