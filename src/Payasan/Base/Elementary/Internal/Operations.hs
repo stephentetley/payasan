@@ -2,22 +2,22 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.TakeDrop
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.Base.Elementary.Internal.Operations
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Take and Drop operations - experimental so in a separate 
--- module for the time being.
+-- Phrase operations - often cf Data.List
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.TakeDrop
+module Payasan.Base.Elementary.Internal.Operations
   (
     nth
+
   , take
   , drop
   , takeBars
@@ -26,31 +26,32 @@ module Payasan.Base.Elementary.Internal.TakeDrop
   , dropSize
 
   , takeRange
+  , takeWhile
+  , dropWhile
+
+
+  , firstNote
+  , lastNote
+
 
   ) where
-
 
 
 import Payasan.Base.Elementary.Internal.Syntax
 import Payasan.Base.Elementary.Internal.Zipper
 
-
 import Payasan.Base.Internal.AnalysisCommon
+
 import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
-import Data.Maybe
 
-import Prelude hiding (take, drop)
+import Prelude hiding (take, drop, takeWhile, dropWhile)
 import qualified Prelude as PRE
 
 
-
-
---------------------------------------------------------------------------------
---
-
--- NOTE - Zipper seems to beat Linear for clarity.
-
+-- Implement Anchors here for the time being...
+-- firstNote is easy with Linear view
 
 
 
@@ -60,6 +61,27 @@ nth i ph           = step i $ makeLoc ph
   where
     step n loc | n <= 0    = atLoc loc 
                | otherwise = step (n-1) $ forward loc
+
+
+
+firstNote :: Phrase Pitch drn anno -> Anchor
+firstNote = step . viewl . toLinear
+  where
+    step Empty                  = noAnchor
+    step ((pos, Note {}) :< _)  = anchor pos
+    step ((_,_) :< rest)        = step $ viewl rest
+
+
+lastNote :: Phrase Pitch drn anno -> Anchor
+lastNote = step noAnchor . viewl . toLinear
+  where
+    step ac Empty                       = ac
+    step _  ((pos, Note {}) :< rest)    = step (anchor pos) $ viewl rest
+    step ac ((_,_) :< rest)             = step ac $ viewl rest
+
+
+
+
 
 
 
@@ -133,3 +155,30 @@ takeRange (Range {range_start = p1, range_end = p2}) ph =
     let ph1 = consumed $ gotoPosition p2 $ makeLoc ph
         ph2 = remaining $ gotoPosition p1 $ makeLoc ph1
     in ph2
+
+
+takeWhile :: (Element pch drn anno -> Bool) -> Phrase pch drn anno -> Phrase pch drn anno
+takeWhile test = step . makeLoc
+  where
+    step loc = case atLoc loc of 
+                    Just e -> if test e then step $ forward loc 
+                                        else consumed loc
+                    Nothing -> consumed loc
+
+dropWhile :: (Element pch drn anno -> Bool) -> Phrase pch drn anno -> Phrase pch drn anno
+dropWhile test = step . makeLoc
+  where
+    step loc = case atLoc loc of 
+                    Just e -> if test e then step $ forward loc 
+                                        else remaining loc
+                    Nothing -> remaining loc
+
+
+{-
+-- cf Data.List.words
+-- TODO - move from here...
+phrases :: Phrase pch drn anno -> [Phrase pch drn anno]
+phrases ph@(Phrase {phrase_header = hdr}) = []
+
+
+-}

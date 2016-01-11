@@ -112,6 +112,9 @@ forward loc = maybe loc id $ fwrdLoc loc
 backward :: Loc pch drn anno -> Loc pch drn anno
 backward loc = maybe loc id $ bwrdLoc loc
 
+-- API question - is there a case for an decons function?
+-- eg. decons :: Loc -> (Maybe Element, Loc)
+--
 
 -- Need a special test for end-of-bar (after initial forward)
 fwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.Syntax
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -55,6 +55,10 @@ module Payasan.Base.Elementary.Internal.Syntax
   , NoteGroup(..)
   , Element(..)
 
+  , isNote
+  , isPause
+  , isPunctuation
+
   , emptyOf
   , pushSectionInfo
   , sectionInfo
@@ -68,7 +72,6 @@ module Payasan.Base.Elementary.Internal.Syntax
   , View(..)
   , toLinear
   , fromLinear
-  , cons
   , viewl
 
   ) where
@@ -173,7 +176,25 @@ data Element pch drn anno =
 
 
 --------------------------------------------------------------------------------
--- Push RenderInfo into bars.
+-- Operations etc.
+
+
+-- Character class...
+
+isNote :: Element pdh drn anno -> Bool
+isNote (Note {})                = True
+isNote _                        = False
+
+isPause :: Element pdh drn anno -> Bool
+isPause (Note {})               = False
+isPause (Rest {})               = True
+isPause (Spacer {})             = True
+isPause (Skip {})               = True
+isPause (Punctuation {})        = False
+
+isPunctuation :: Element pdh drn anno -> Bool
+isPunctuation (Punctuation {})  = True
+isPunctuation _                 = False
 
 
 emptyOf :: Phrase pch drn anno -> Phrase pch drn anno
@@ -182,6 +203,8 @@ emptyOf (Phrase { phrase_header = info }) =
            , phrase_bars   = [] }
 
 
+-- Push RenderInfo into bars.
+--
 pushSectionInfo :: SectionInfo 
                 -> Phrase pch drn anno 
                 -> Phrase pch drn anno
@@ -259,9 +282,6 @@ viewl (Linear info pos xs ys) = elements xs
     nextbar (b:bs)                  = viewl $ Linear info (incPositionBar 1 pos) (bar_groups b) bs
     nextbar []                      = Empty
 
--- | Note - cons breaks pos...
-cons :: Element pch drn anno -> Linear pch drn anno -> Linear pch drn anno
-cons e (Linear info pos es bs) = Linear info pos (Atom e:es) bs
 
 listL :: [a] -> Maybe (a, [a])
 listL []     = Nothing

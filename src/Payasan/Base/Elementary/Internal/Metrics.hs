@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Elementary.Internal.Metrics
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -19,10 +19,8 @@
 
 module Payasan.Base.Elementary.Internal.Metrics
   (
-    firstNote
-  , lastNote
 
-  , barCount
+    barCount
   , pitchHisto
   , pitchNameHisto
   , octaveHisto
@@ -57,25 +55,6 @@ import Payasan.Base.ScaleDegree
 
 
 
--- Implement Anchors here for the time being...
--- firstNote is easy with Linear view
-
-
-firstNote :: Phrase Pitch drn anno -> Anchor
-firstNote = step . viewl . toLinear
-  where
-    step Empty                  = noAnchor
-    step ((pos, Note {}) :< _)  = anchor pos
-    step ((_,_) :< rest)        = step $ viewl rest
-
-
-lastNote :: Phrase Pitch drn anno -> Anchor
-lastNote = step noAnchor . viewl . toLinear
-  where
-    step ac Empty                       = ac
-    step _  ((pos, Note {}) :< rest)    = step (anchor pos) $ viewl rest
-    step ac ((_,_) :< rest)             = step ac $ viewl rest
-
 
 
 
@@ -83,7 +62,9 @@ lastNote = step noAnchor . viewl . toLinear
 
 barCount :: Phrase pch drn anno -> Int
 barCount (Phrase { phrase_bars = bs }) = length bs
-             
+
+
+
 
 -- histograms 
 

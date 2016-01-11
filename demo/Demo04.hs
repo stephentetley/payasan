@@ -4,7 +4,7 @@
 module Demo04 where
 
 import Payasan.Base.Elementary.Notelist
-import Payasan.Base.Elementary.Internal.TakeDrop
+import Payasan.Base.Elementary.Internal.Operations
 
 -- import Payasan.Base.Duration
 import Payasan.Base.Pitch
