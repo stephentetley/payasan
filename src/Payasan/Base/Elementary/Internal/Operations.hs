@@ -18,12 +18,15 @@ module Payasan.Base.Elementary.Internal.Operations
   (
 
     isNote
-  , isPause
+  , isRestlike
   , isPunctuation
 
 
   , null
   , nth
+
+  , firstNote
+  , lastNote
 
   , take
   , drop
@@ -32,14 +35,15 @@ module Payasan.Base.Elementary.Internal.Operations
   , takeSize
   , dropSize
 
-  , takeRange
+  , extractRange
+
   , takeWhile
   , dropWhile
 
+  , span
+  , break
 
-  , firstNote
-  , lastNote
-
+  , phrases
 
   ) where
 
@@ -53,7 +57,7 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-import Prelude hiding (null, take, drop, takeWhile, dropWhile)
+import Prelude hiding (null, take, drop, takeWhile, dropWhile, span, break)
 import qualified Prelude as PRE
 
 
@@ -64,12 +68,12 @@ isNote :: Element pdh drn anno -> Bool
 isNote (Note {})                = True
 isNote _                        = False
 
-isPause :: Element pdh drn anno -> Bool
-isPause (Note {})               = False
-isPause (Rest {})               = True
-isPause (Spacer {})             = True
-isPause (Skip {})               = True
-isPause (Punctuation {})        = False
+isRestlike :: Element pdh drn anno -> Bool
+isRestlike (Note {})            = False
+isRestlike (Rest {})            = True
+isRestlike (Spacer {})          = True
+isRestlike (Skip {})            = True
+isRestlike (Punctuation {})     = False
 
 isPunctuation :: Element pdh drn anno -> Bool
 isPunctuation (Punctuation {})  = True
@@ -180,8 +184,8 @@ dropSize rd = step 0 . makeLoc
 
 
 
-takeRange :: Range -> Part pch drn anno -> Part pch drn anno
-takeRange (Range {range_start = p1, range_end = p2}) ph = 
+extractRange :: Range -> Part pch drn anno -> Part pch drn anno
+extractRange (Range {range_start = p1, range_end = p2}) ph = 
     let ph1 = consumed $ gotoPosition p2 $ makeLoc ph
         ph2 = remaining $ gotoPosition p1 $ makeLoc ph1
     in ph2
@@ -204,11 +208,35 @@ dropWhile test = step . makeLoc
                     Nothing -> remaining loc
 
 
-{-
+
+span :: (Element pch drn anno -> Bool) 
+     -> Part pch drn anno 
+     -> (Part pch drn anno, Part pch drn anno)
+span test = step . makeLoc
+  where
+    step loc = case atLoc loc of 
+                    Just e -> if test e then step $ forward loc 
+                                        else (consumed loc, remaining loc)
+                    Nothing -> (consumed loc, remaining loc)
+
+
+
+
+break :: (Element pch drn anno -> Bool) 
+      -> Part pch drn anno 
+      -> (Part pch drn anno, Part pch drn anno)
+break test = span (not . test)
+
+
+
 -- cf Data.List.words
 -- TODO - move from here...
 phrases :: Part pch drn anno -> [Part pch drn anno]
-phrases ph@(Part { part_header = hdr }) = []
+phrases pt = let ans = dropWhile isRestlike pt in 
+             if null ans then []
+                         else let (b,bs) = break isRestlike ans
+                              in b : phrases bs
+   
 
 
--}
+

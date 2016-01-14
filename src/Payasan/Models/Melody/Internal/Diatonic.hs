@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.ScaleDegree
+-- Module      :  Payasan.Models.Melody.Internal.Diatonic
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -18,27 +18,23 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.ScaleDegree
+module Payasan.Models.Melody.Internal.Diatonic
+
   (
     DiatonicScale
   , fromDiatonicScale
   , buildDiatonicScale
 
   , ScaleDegree(..)
-  , DiatonicPitch(..)
-  , ChromaticPitch(..)
+  , Diatonic(..)
 
-  , toIndex
-  , fromIndex
-
-  , toDiatonicPitch
-  , fromDiatonicPitch
+  , toDiatonic
+  , fromDiatonic
+  , chromaticIndex
 
   , SimpleInterval(..)
   , DiatonicInterval(..)
 
-  , toChromaticPitch
-  , fromChromaticPitch
   , toDiatonicInterval
   , fromDiatonicInterval
 
@@ -46,11 +42,9 @@ module Payasan.Base.ScaleDegree
   , addDiatonicInterval
   , subDiatonicInterval
 
-  , diatonically
   , transposeWithDiatonicInterval
 
   ) where
-
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.CommonSyntax
@@ -96,21 +90,13 @@ data ScaleDegree = TONIC | SUPERTONIC | MEDIANT | SUBDOMINANT
                  | DOMINANT | SUBMEDIANT | LEADING_TONE
   deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
 
--- TODO - naming is bad, the differentiation between Diatonic 
--- pitch and Chromatic pitch is artificial and not present in 
--- the literature.
 
 
- 
-data DiatonicPitch = DiatonicPitch
-    { dp_scale_degree   :: !ScaleDegree
-    , dp_octave         :: !Int
-    }
-  deriving (Data,Eq,Show,Typeable)
 
-data ChromaticPitch = ChromaticPitch
-    { diatonic_base     :: !DiatonicPitch
-    , chromatic_alt     :: !Alt
+data Diatonic = Diatonic 
+    { dia_scale_degree  :: !ScaleDegree
+    , dia_alt           :: !Alt
+    , dia_octave        :: !Int
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -118,18 +104,6 @@ data ChromaticPitch = ChromaticPitch
 newtype Alt = Alt Int
   deriving (Data,Enum,Eq,Integral,Num,Ord,Real,Show,Typeable)
 
-
--- WRONG - see below
-instance PitchOrd ChromaticPitch where 
-  equivalent a b = chromaticIndex a == chromaticIndex b
-  isLower    a b = chromaticIndex a <  chromaticIndex b
-  isHigher   a b = chromaticIndex a >  chromaticIndex b
-
-
-instance PitchOrd DiatonicPitch where 
-  equivalent a b = toIndex a == toIndex b
-  isLower    a b = toIndex a <  toIndex b
-  isHigher   a b = toIndex a >  toIndex b
 
 
 toScaleDegree :: Int -> ScaleDegree
@@ -156,27 +130,14 @@ fromScaleDegree SUBMEDIANT      = 6
 fromScaleDegree LEADING_TONE    = 7
 
 
--- This is wrong - chromatic alteration is too large (cf Z12) 
--- to be added to diatonic (cf Z7).
+-- | Note - there is no reverse translation as index is not 
+-- unique.
 --
--- To get diatonic in Z12, need to interpret w.r.t a Key (major, 
--- minor, other mode).
---
-chromaticIndex :: ChromaticPitch -> Int
-chromaticIndex (ChromaticPitch { diatonic_base = p
-                               , chromatic_alt = a }) = 
-    toIndex p + fromIntegral a
-
-
-toIndex :: DiatonicPitch -> Int
-toIndex (DiatonicPitch d o) = fromScaleDegree d + (7*o)
-
-
-fromIndex :: Int -> DiatonicPitch
-fromIndex i = 
-    let (o,x) = i `divModS1` 7 
-    in DiatonicPitch { dp_scale_degree = toScaleDegree x
-                     , dp_octave       = o }
+chromaticIndex :: (ScaleDegree -> Int) -> Diatonic -> Int
+chromaticIndex fn (Diatonic { dia_scale_degree  = sd
+                            , dia_alt           = alt
+                            , dia_octave        = ove }) = 
+    fn sd + fromIntegral alt + (12*ove)
 
 
 
@@ -188,42 +149,33 @@ alterationBetween a b = Alt $ fromAlteration a - fromAlteration b
 keyRoot :: Key -> Pitch
 keyRoot (Key start _) = nearestRootToC4 start 
 
-tonic_root :: DiatonicPitch 
-tonic_root = DiatonicPitch { dp_scale_degree = TONIC
-                           , dp_octave       = 0 }
+tonic_root :: Diatonic
+tonic_root = Diatonic { dia_scale_degree = TONIC
+                      , dia_alt          = 0
+                      , dia_octave       = 0 }
 
 
-toChromaticPitch :: Key -> Pitch -> ChromaticPitch
-toChromaticPitch key p = ChromaticPitch { diatonic_base = dia_pitch
-                                        , chromatic_alt = alt  }
-  where
-    dia_pitch   = toDiatonicPitch key p
-    alt         = scaleToneAlteration (pitch_name p) key
 
-
--- | Loses resolution if input pitch is not a scale tone.
---
-toDiatonicPitch :: Key -> Pitch -> DiatonicPitch
-toDiatonicPitch key p = tonic_root `op` toDiatonicInterval arith_dist
+toDiatonic :: Key -> Pitch -> Diatonic
+toDiatonic key p = dia1 { dia_alt = alt }
   where
     root        = keyRoot key
     op          = if p `isHigher` root then addDiatonicInterval 
                                        else subDiatonicInterval
     arith_dist  = interval_distance $ intervalBetween root p
-    
+    alt         = scaleToneAlteration (pitch_name p) key
+    dia1        = tonic_root `op` toDiatonicInterval arith_dist
 
-fromChromaticPitch :: Key -> ChromaticPitch -> Pitch
-fromChromaticPitch key (ChromaticPitch root alt) = 
-    let p1 = fromDiatonicPitch key root in alterBy p1 alt
-
-fromDiatonicPitch :: Key -> DiatonicPitch -> Pitch
-fromDiatonicPitch key (DiatonicPitch deg o) = Pitch name (root_ove + o + carry)
+fromDiatonic :: Key -> Diatonic -> Pitch
+fromDiatonic key (Diatonic deg alt o) = 
+    alterBy (Pitch name (root_ove + o + carry)) alt
   where
     name        = lookupScaleDegree deg $ buildDiatonicScale key
     root        = keyRoot key
     root_ove    = pitch_octave root
     root_letter = pitch_letter $ pitch_name root
     carry       = octaveCarry root_letter (pitch_letter name)
+
 
 
 -- | return 0 same octave or 1 (next octave)
@@ -304,39 +256,64 @@ toSimpleInterval i = fn $ i `modS1` 7
 
 -- | Always positive.
 --
-diatonicIntervalBetween :: DiatonicPitch -> DiatonicPitch -> DiatonicInterval
+diatonicIntervalBetween :: Diatonic -> Diatonic -> DiatonicInterval
 diatonicIntervalBetween a b = fn (toIndex a) (toIndex b)
   where
     fn x y | y >= x     = toDiatonicInterval $ 1 + (y - x)
            | otherwise  = toDiatonicInterval $ 1 + (x - y)
 
+    toIndex :: Diatonic -> Int
+    toIndex (Diatonic d _ o) = fromScaleDegree d + (7*o)
 
-addDiatonicInterval :: DiatonicPitch -> DiatonicInterval -> DiatonicPitch
-addDiatonicInterval p ivl = 
-    fromIndex $ toIndex p + (fromDiatonicInterval ivl - 1)
+addDiatonicInterval :: Diatonic -> DiatonicInterval -> Diatonic
+addDiatonicInterval (Diatonic deg alt ove) ivl = 
+    Diatonic deg1 alt ove1
+  where
+    deg1  = addDiatonicInterval' deg ivl
+    carry = if deg1 < deg then 1 else 0
+    ove1  = ove + carry + dia_interval_octave ivl
 
-subDiatonicInterval :: DiatonicPitch -> DiatonicInterval -> DiatonicPitch
-subDiatonicInterval p ivl = 
-    fromIndex $ toIndex p - (fromDiatonicInterval ivl - 1)
+
+
+addDiatonicInterval' :: ScaleDegree -> DiatonicInterval -> ScaleDegree
+addDiatonicInterval' sd ivl = toScaleDegree $ i + j
+  where
+    i = fromScaleDegree sd 
+    j = fromDiatonicInterval ivl
 
 
 
---- TODO - not sure about the API for these two...
+subDiatonicInterval :: Diatonic -> DiatonicInterval -> Diatonic
+subDiatonicInterval (Diatonic deg alt ove) ivl = 
+    Diatonic deg1 alt ove1
+  where
+    deg1  = subDiatonicInterval' deg ivl
+    carry = if deg1 > deg then (-1) else 0
+    ove1  = ove + carry - dia_interval_octave ivl
 
-diatonically :: (DiatonicPitch -> DiatonicPitch) 
-             -> ChromaticPitch 
-             -> ChromaticPitch
-diatonically fn cp@(ChromaticPitch { diatonic_base = dp }) = 
-    cp { diatonic_base = fn dp }
+
+
+subDiatonicInterval' :: ScaleDegree -> DiatonicInterval -> ScaleDegree
+subDiatonicInterval' sd ivl = toScaleDegree $ i - j
+  where
+    i = fromScaleDegree sd 
+    j = fromDiatonicInterval ivl
+
+
+
+
 
 transposeWithDiatonicInterval :: Key -> DiatonicInterval -> Pitch -> Pitch 
 transposeWithDiatonicInterval key ivl p = 
-    let cp = toChromaticPitch key p 
-    in fromChromaticPitch key $ diatonically (`addDiatonicInterval` ivl) cp
+    let dp = toDiatonic key p 
+    in fromDiatonic key $ dp `addDiatonicInterval` ivl
+
+
 
 
 --------------------------------------------------------------------------------
 -- Pretty
+
 
 instance Pretty ScaleDegree where
   pPrint s = char '^' <> int (fromScaleDegree s)

@@ -29,8 +29,8 @@ module Payasan.Base.Elementary.Internal.Metrics
   , lowestPitch
   , highestPitch
 
-  , lowestStep
-  , highestStep
+  , lowestStep          -- * incorrect
+  , highestStep         -- * incorrect
 
   , semitoneInterval
 
@@ -101,7 +101,7 @@ highestPitch = foldPitch fn Nothing
     fn (Just p0) p | p `isHigher` p0    = Just p
                    | otherwise          = Just p0
 
-
+-- WRONG - OrdPitch instance ill defined
 lowestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
 lowestStep = fmap diatonic_base . foldPitch fn Nothing
   where
@@ -110,6 +110,7 @@ lowestStep = fmap diatonic_base . foldPitch fn Nothing
                    | otherwise          = Just s0
 
 
+-- WRONG - OrdPitch instance ill defined
 highestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
 highestStep = fmap diatonic_base . foldPitch fn Nothing
   where
