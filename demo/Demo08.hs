@@ -12,7 +12,7 @@ import qualified Payasan.Base.Elementary.Internal.Plain as MONO
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
-import Payasan.Base.ScaleDegree
+import Payasan.Base.Diatonic
 import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
@@ -73,7 +73,7 @@ test02 = MONO.shellOutLilyPond default_shell_info $
     MONO.outputAsLilyPond_Relative globals middle_c $ 
     MONO.fromNoteList locals $ map (\p -> MONO.note p d_quarter) $ pitches
   where
-    pitches = let fn = transposeWithDiatonicInterval c_major 
+    pitches = let fn = transposeDiatonically c_major 
               in [ fn simple_unison d_4
                  , fn simple_third  g_4
                  , fn simple_fourth b_4

@@ -39,7 +39,7 @@ module Payasan.Base.Names.DiatonicInterval
   ) where
 
 
-import Payasan.Base.ScaleDegree
+import Payasan.Base.Diatonic
 
 
 

@@ -29,8 +29,8 @@ module Payasan.Base.Elementary.Internal.Metrics
   , lowestPitch
   , highestPitch
 
-  , lowestStep          -- * incorrect
-  , highestStep         -- * incorrect
+  , lowestDiatonic
+  , highestDiatonic
 
   , semitoneInterval
 
@@ -51,7 +51,7 @@ import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Pitch
-import Payasan.Base.ScaleDegree
+import Payasan.Base.Diatonic
 
 
 
@@ -101,22 +101,18 @@ highestPitch = foldPitch fn Nothing
     fn (Just p0) p | p `isHigher` p0    = Just p
                    | otherwise          = Just p0
 
--- WRONG - OrdPitch instance ill defined
-lowestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
-lowestStep = fmap diatonic_base . foldPitch fn Nothing
+lowestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
+lowestDiatonic = fmap noAlteration . foldPitch fn Nothing
   where
-    fn Nothing   s                      = Just s
-    fn (Just s0) s | s `isLower` s0     = Just s
-                   | otherwise          = Just s0
+    fn Nothing   s = Just s
+    fn (Just s0) s = if diatonicIndex s < diatonicIndex s0 then Just s else Just s0
 
 
--- WRONG - OrdPitch instance ill defined
-highestStep :: Part ChromaticPitch drn anno -> Maybe DiatonicPitch
-highestStep = fmap diatonic_base . foldPitch fn Nothing
+highestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
+highestDiatonic = fmap noAlteration . foldPitch fn Nothing
   where
-    fn Nothing   s                      = Just s
-    fn (Just s0) s | s `isHigher` s0    = Just s
-                   | otherwise          = Just s0
+    fn Nothing   s = Just s
+    fn (Just s0) s = if diatonicIndex s > diatonicIndex s0 then Just s else Just s0
 
 
 

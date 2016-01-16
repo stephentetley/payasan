@@ -14,7 +14,6 @@ import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
 import Payasan.Base.Elementary.Internal.Metrics
-import Payasan.Base.ScaleDegree
 
 
 -- Note to me - debugging with a rhythm staff and markup would be good.

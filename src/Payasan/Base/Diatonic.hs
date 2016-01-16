@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Models.Melody.Internal.Diatonic
+-- Module      :  Payasan.Base.Diatonic
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Models.Melody.Internal.Diatonic
+module Payasan.Base.Diatonic
 
   (
     DiatonicScale
@@ -28,9 +28,15 @@ module Payasan.Models.Melody.Internal.Diatonic
   , ScaleDegree(..)
   , Diatonic(..)
 
+  , isDiatonic
+  , isChromatic
+
   , toDiatonic
   , fromDiatonic
+  , noAlteration
+
   , chromaticIndex
+  , diatonicIndex 
 
   , SimpleInterval(..)
   , DiatonicInterval(..)
@@ -42,7 +48,7 @@ module Payasan.Models.Melody.Internal.Diatonic
   , addDiatonicInterval
   , subDiatonicInterval
 
-  , transposeWithDiatonicInterval
+  , transposeDiatonically
 
   ) where
 
@@ -105,6 +111,15 @@ newtype Alt = Alt Int
   deriving (Data,Enum,Eq,Integral,Num,Ord,Real,Show,Typeable)
 
 
+isDiatonic :: Diatonic -> Bool
+isDiatonic (Diatonic { dia_alt = a }) = a == 0
+
+isChromatic :: Diatonic -> Bool
+isChromatic = not . isDiatonic
+
+
+noAlteration :: Diatonic -> Diatonic
+noAlteration d = d { dia_alt = 0 }
 
 toScaleDegree :: Int -> ScaleDegree
 toScaleDegree n = fn $ n `modS1` 7
@@ -139,6 +154,13 @@ chromaticIndex fn (Diatonic { dia_scale_degree  = sd
                             , dia_octave        = ove }) = 
     fn sd + fromIntegral alt + (12*ove)
 
+
+-- | Ignores chromatic alteration.
+--
+diatonicIndex :: Diatonic -> Int
+diatonicIndex (Diatonic { dia_scale_degree  = sd
+                        , dia_octave        = ove }) = 
+    fromScaleDegree sd +(7*ove)
 
 
 
@@ -303,8 +325,8 @@ subDiatonicInterval' sd ivl = toScaleDegree $ i - j
 
 
 
-transposeWithDiatonicInterval :: Key -> DiatonicInterval -> Pitch -> Pitch 
-transposeWithDiatonicInterval key ivl p = 
+transposeDiatonically :: Key -> DiatonicInterval -> Pitch -> Pitch 
+transposeDiatonically key ivl p = 
     let dp = toDiatonic key p 
     in fromDiatonic key $ dp `addDiatonicInterval` ivl
 

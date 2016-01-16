@@ -25,7 +25,7 @@ import Payasan.Base.Internal.CommonSyntax
 
 import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Pitch
-import Payasan.Base.ScaleDegree
+import Payasan.Base.Diatonic
 
 
 import Data.Maybe
@@ -52,6 +52,6 @@ applyIntervals :: Key -> GuitarTuning -> [Maybe DiatonicInterval] -> [Pitch]
 applyIntervals key gt ivs = catMaybes $ zipWith fn ivs gt
   where
     fn :: Maybe DiatonicInterval -> Pitch -> Maybe Pitch
-    fn mb p = fmap (\ivl -> transposeWithDiatonicInterval key ivl p) mb
+    fn mb p = fmap (\ivl -> transposeDiatonically key ivl p) mb
 
 

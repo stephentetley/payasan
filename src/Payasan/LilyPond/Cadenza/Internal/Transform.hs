@@ -42,7 +42,7 @@ import Payasan.Base.Duration
 import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Names.Interval
 import Payasan.Base.Pitch
-import Payasan.Base.ScaleDegree
+import Payasan.Base.Diatonic
 
 
 -- | Double note lengths.
@@ -56,6 +56,7 @@ diminute :: Part pch Duration anno -> Part pch Duration anno
 diminute = mapDuration halveDuration
 
 
+
 -- | Transpose by an exact interval - this may produce 
 -- non-scale tones.
 --
@@ -65,20 +66,10 @@ transposeChromatic :: Interval
 transposeChromatic ivl = mapPitch (.+^ ivl)
 
 
-
-
-addDiatonicIntervalC :: ChromaticPitch -> DiatonicInterval -> ChromaticPitch
-addDiatonicIntervalC (ChromaticPitch dp a) ivl = 
-    ChromaticPitch (dp `addDiatonicInterval` ivl) a
-
-
-
 transposeDiatonic :: DiatonicInterval 
                   -> Part Pitch drn anno 
                   -> Part Pitch drn anno
-transposeDiatonic ivl ph = interScaleStep (mapPitch (`addDiatonicIntervalC` ivl)) ph
-
-
+transposeDiatonic ivl ph = diatonically (mapPitch (`addDiatonicInterval` ivl)) ph
 
 retrograde :: Part pch Duration anno -> Part pch Duration anno
 retrograde (Part info gs) = Part info $ map revNG $ reverse gs
@@ -88,7 +79,8 @@ retrograde (Part info gs) = Part info $ map revNG $ reverse gs
     revNG (Tuplet spec es)  = Tuplet spec $ reverse es
 
 
--- | Note - seems to need /scale degrees/ - taking interal with 
+
+-- | Note - seems to need /scale degrees/ - taking interval with 
 -- top note and adding same interval to lowest note does not work.
 --
 invertChromatic :: Part Pitch drn anno -> Part Pitch drn anno
@@ -103,34 +95,36 @@ intervalsFromTop ph = case highestPitch ph of
     Just top -> mapPitch (\p -> p `intervalBetween` top) ph 
 
 
--- | 08 Oct - this is now wrong due to changes to ScaleDegree!
---
 invertDiatonic :: Part Pitch drn anno -> Part Pitch drn anno
-invertDiatonic = interScaleStep invertDiatonic1
+invertDiatonic = diatonically invertDiatonic1
 
-invertDiatonic1 :: Part ChromaticPitch drn anno -> Part ChromaticPitch drn anno
-invertDiatonic1 ph = case lowestStep ph of 
+
+
+invertDiatonic1 :: Part Diatonic drn anno -> Part Diatonic drn anno
+invertDiatonic1 ph = case lowestDiatonic ph of 
     Nothing -> ph
-    Just p0 -> mapPitch (\ival -> ChromaticPitch (p0 `addDiatonicInterval` ival) 0) $ diatonicsFromTop ph
+    Just p0 -> mapPitch (\ival -> p0 `addDiatonicInterval` ival) $ diatonicsFromTop ph
 
 
-diatonicsFromTop :: Part ChromaticPitch drn anno -> Part DiatonicInterval drn anno
-diatonicsFromTop ph = case highestStep ph of
+
+diatonicsFromTop :: Part Diatonic drn anno -> Part DiatonicInterval drn anno
+diatonicsFromTop ph = case highestDiatonic ph of
     Nothing -> mapPitch (const simple_unison) ph         -- notelist is empty or just rests
-    Just top -> mapPitch (\p -> diatonic_base p `diatonicIntervalBetween` top) ph 
+    Just top -> mapPitch (\p -> p `diatonicIntervalBetween` top) ph 
 
 
 
-interScaleStep :: (Part ChromaticPitch drn anno -> Part ChromaticPitch drn anno)
-               -> Part Pitch drn anno
-               -> Part Pitch drn anno
-interScaleStep fn = fromScaleStepRepr . fn . toScaleStepRepr
+diatonically :: (Part Diatonic drn anno -> Part Diatonic drn anno)
+             -> Part Pitch drn anno
+             -> Part Pitch drn anno
+diatonically fn = fromDiatonicPart . fn . toDiatonicPart
 
-toScaleStepRepr :: Part Pitch drn anno -> Part ChromaticPitch drn anno
-toScaleStepRepr = transformP step_algo
+
+toDiatonicPart :: Part Pitch drn anno -> Part Diatonic drn anno
+toDiatonicPart = transformP step_algo
   where
     step_algo = CadenzaPitchAlgo { initial_stateP = ()
-                                 , element_trafoP = change }
+                              , element_trafoP = change }
 
     change (Note p d a t)       = (\p1 -> Note p1 d a t) <$> mf p
     change (Rest d)             = pure $ Rest d
@@ -138,14 +132,14 @@ toScaleStepRepr = transformP step_algo
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
-    mf pch = (\key -> toChromaticPitch key pch) <$> asks section_key
+    mf pch = (\key -> toDiatonic key pch) <$> asks section_key
 
 
-fromScaleStepRepr :: Part ChromaticPitch drn anno -> Part Pitch drn anno
-fromScaleStepRepr = transformP step_algo
+fromDiatonicPart :: Part Diatonic drn anno -> Part Pitch drn anno
+fromDiatonicPart = transformP step_algo
   where
     step_algo = CadenzaPitchAlgo { initial_stateP = ()
-                                 , element_trafoP = change }
+                              , element_trafoP = change }
 
     change (Note p d a t)       = (\p1 -> Note p1 d a t) <$> mf p
     change (Rest d)             = pure $ Rest d
@@ -153,5 +147,5 @@ fromScaleStepRepr = transformP step_algo
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
-    mf oss = (\key -> fromChromaticPitch key oss) <$> asks section_key
+    mf oss = (\key -> fromDiatonic key oss) <$> asks section_key
 

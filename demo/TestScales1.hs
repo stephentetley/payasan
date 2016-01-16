@@ -11,7 +11,6 @@ import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.ScaleDegree                 -- TEMP
 import Payasan.Base.Elementary.Internal.Plain   -- TEMP
 
 -- a_major_temp :: Part LyPitch LyNoteLength
