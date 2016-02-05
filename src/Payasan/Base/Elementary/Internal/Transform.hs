@@ -37,6 +37,7 @@ import Payasan.Base.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.Scale
 
 import Payasan.Base.Duration
 import Payasan.Base.Names.DiatonicInterval
@@ -135,7 +136,7 @@ toDiatonicPart = transformP step_algo
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
-    mf pch = (\key -> toDiatonic key pch) <$> asks section_key
+    mf pch = (\key -> toDiatonic (buildScale key) pch) <$> asks section_key
 
 
 fromDiatonicPart :: Part Diatonic drn anno -> Part Pitch drn anno
@@ -150,5 +151,5 @@ fromDiatonicPart = transformP step_algo
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
-    mf oss = (\key -> fromDiatonic key oss) <$> asks section_key
+    mf oss = (\key -> fromDiatonic (buildScale key) oss) <$> asks section_key
 

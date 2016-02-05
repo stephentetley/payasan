@@ -12,6 +12,8 @@
 --
 -- Named pitches (ET12)
 --
+-- c_4 is middle C.
+--
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Names.Pitch

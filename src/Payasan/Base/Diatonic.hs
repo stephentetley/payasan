@@ -35,6 +35,9 @@ module Payasan.Base.Diatonic
   , fromDiatonic
   , noAlteration
 
+  , toScaleDegree
+  , fromScaleDegree
+
   , chromaticIndex
   , diatonicIndex 
 
@@ -50,9 +53,9 @@ module Payasan.Base.Diatonic
 
   , transposeDiatonically
 
+
   ) where
 
-import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Internal.Utils
@@ -73,9 +76,13 @@ newtype DiatonicScale = DiatonicScale {
   deriving (Data,Eq,Show,Typeable)
 
 
-buildDiatonicScale :: Key -> DiatonicScale
-buildDiatonicScale key = DiatonicScale $ 
-    MAP.fromList $ zip [TONIC .. LEADING_TONE] (fromScale $ buildScale key)
+-- buildDiatonicScale :: Key -> DiatonicScale
+-- buildDiatonicScale key = DiatonicScale $ 
+--     MAP.fromList $ zip [TONIC .. LEADING_TONE] (fromScale $ buildScale key)
+
+buildDiatonicScale :: Scale -> DiatonicScale
+buildDiatonicScale sc = DiatonicScale $ 
+    MAP.fromList $ zip [TONIC .. LEADING_TONE] (fromScale sc)
 
 
 -- | This throws an error for ill-formed scales.
@@ -98,7 +105,6 @@ data ScaleDegree = TONIC | SUPERTONIC | MEDIANT | SUBDOMINANT
 
 
 
-
 data Diatonic = Diatonic 
     { dia_scale_degree  :: !ScaleDegree
     , dia_alt           :: !Alt
@@ -107,8 +113,31 @@ data Diatonic = Diatonic
   deriving (Data,Eq,Show,Typeable)
 
 
+-- | Diatonic operations are oblivious to alterations
+data DiaCore = DiaCore
+    { dc_scale_degree :: !ScaleDegree
+    , dc_octave       :: !Int
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+
 newtype Alt = Alt Int
   deriving (Data,Enum,Eq,Integral,Num,Ord,Real,Show,Typeable)
+
+
+extractCore :: Diatonic -> DiaCore
+extractCore (Diatonic { dia_scale_degree = sd, dia_octave = ove }) =
+    DiaCore { dc_scale_degree = sd, dc_octave = ove }
+
+
+succN :: Int -> ScaleDegree -> ScaleDegree
+succN i sd | i < 0 = precN (abs i) sd
+succN i sd         = toScaleDegree $ (fromScaleDegree sd) + i
+
+precN :: Int -> ScaleDegree -> ScaleDegree
+precN i sd | i < 0 = succN (abs i) sd
+precN i sd         = toScaleDegree $ (fromScaleDegree sd) - i
+
 
 
 isDiatonic :: Diatonic -> Bool
@@ -168,59 +197,48 @@ alterationBetween :: Alteration -> Alteration -> Alt
 alterationBetween a b = Alt $ fromAlteration a - fromAlteration b
 
 
-keyRoot :: Key -> Pitch
-keyRoot (Key start _) = nearestRootToC4 start 
 
-tonic_root :: Diatonic
-tonic_root = Diatonic { dia_scale_degree = TONIC
-                      , dia_alt          = 0
-                      , dia_octave       = 0 }
-
-
-
-toDiatonic :: Key -> Pitch -> Diatonic
-toDiatonic key p = dia1 { dia_alt = alt }
+-- | Scale is ordered pitches,  so we can count through them...
+--
+identifyScaleDegree :: Pitch -> Scale -> ScaleDegree
+identifyScaleDegree pch sc = step TONIC $ fromScale sc
   where
-    root        = keyRoot key
-    op          = if p `isHigher` root then addDiatonicInterval 
-                                       else subDiatonicInterval
-    arith_dist  = interval_distance $ intervalBetween root p
-    alt         = scaleToneAlteration (pitch_name p) key
-    dia1        = tonic_root `op` toDiatonicInterval arith_dist
+    lettr           = pitch_letter $ pitch_name pch    
+    step _  []      = error $ "unidentified scale degree"
+    step sd (p:ps)  | pitch_letter p == lettr = sd
+                    | otherwise               = step (succN 1 sd) ps
 
-fromDiatonic :: Key -> Diatonic -> Pitch
-fromDiatonic key (Diatonic deg alt o) = 
-    alterBy (Pitch name (root_ove + o + carry)) alt
+
+toDiatonic :: Scale -> Pitch -> Diatonic
+toDiatonic sc pch = 
+    Diatonic { dia_scale_degree = identifyScaleDegree pch sc
+             , dia_alt          = scaleToneAlteration (pitch_name pch) sc
+             , dia_octave       = pitch_octave pch }
+
+
+
+
+fromDiatonic :: Scale -> Diatonic -> Pitch
+fromDiatonic sc dia = 
+    Pitch { pitch_name   = name2
+          , pitch_octave = dia_octave dia
+          }
   where
-    name        = lookupScaleDegree deg $ buildDiatonicScale key
-    root        = keyRoot key
-    root_ove    = pitch_octave root
-    root_letter = pitch_letter $ pitch_name root
-    carry       = octaveCarry root_letter (pitch_letter name)
+    name1 = lookupScaleDegree (dia_scale_degree dia) (buildDiatonicScale sc)
+    name2 = alterBy name1 (dia_alt dia)
 
 
-
--- | return 0 same octave or 1 (next octave)
-
-octaveCarry :: PitchLetter -> PitchLetter -> Int
-octaveCarry a b | a <= b    = 0
-                | otherwise = 1
-
-
-alterBy :: Pitch -> Alt -> Pitch
-alterBy p alt = fn $ pitch_alteration $ pitch_name p
+alterBy :: PitchName -> Alt -> PitchName
+alterBy name alt = name { pitch_alteration = fn $ pitch_alteration name }
   where
-    fn a = let i = fromAlteration a; a1 = toAlteration (i + alt)
-           in setAlteration p a1
+    fn a = toAlteration (fromAlteration a + alt)
 
 
-scaleToneAlteration :: PitchName -> Key -> Alt
-scaleToneAlteration (PitchName l a) key = 
-    let sc = buildScale key 
-    in case findAlteration l sc of
+scaleToneAlteration :: PitchName -> Scale -> Alt
+scaleToneAlteration (PitchName l a) sc = 
+    case findAlteration l sc of
       Nothing -> error $ "scaleToneAlteration - ill-formed scale: " ++ show sc
       Just alt -> alterationBetween a alt
-
 
 
 --------------------------------------------------------------------------------
@@ -276,6 +294,64 @@ toSimpleInterval i = fn $ i `modS1` 7
     fn n = error $ "toSimpleInterval - unreachable: " ++ show n
 
 
+addDiatonicInterval :: Diatonic -> DiatonicInterval -> Diatonic
+addDiatonicInterval dia ivl = 
+     Diatonic { dia_scale_degree  = sd
+              , dia_alt           = dia_alt dia
+              , dia_octave        = ove 
+              }
+   where
+     DiaCore sd ove = addDiatonicIntervalD1 (extractCore dia) ivl
+
+subDiatonicInterval :: Diatonic -> DiatonicInterval -> Diatonic
+subDiatonicInterval dia ivl = 
+     Diatonic { dia_scale_degree  = sd
+              , dia_alt           = dia_alt dia
+              , dia_octave        = ove 
+              }
+   where
+     DiaCore sd ove = subDiatonicIntervalD1 (extractCore dia) ivl
+
+
+
+addDiatonicIntervalD1 :: DiaCore -> DiatonicInterval -> DiaCore
+addDiatonicIntervalD1 dia1 ivl = 
+    DiaCore { dc_scale_degree = sd, dc_octave = ove + dia_interval_octave ivl }
+  where
+    DiaCore sd ove = addSimpleInterval dia1 (dia_interval_type ivl)
+    
+
+subDiatonicIntervalD1 :: DiaCore -> DiatonicInterval -> DiaCore
+subDiatonicIntervalD1 dia1 ivl = 
+    DiaCore { dc_scale_degree = sd, dc_octave = ove - dia_interval_octave ivl }
+  where
+    DiaCore sd ove = subSimpleInterval dia1 (dia_interval_type ivl)
+    
+
+
+addSimpleInterval :: DiaCore -> SimpleInterval -> DiaCore
+addSimpleInterval (DiaCore { dc_scale_degree = sd
+                             , dc_octave       = ove }) ivl = 
+    DiaCore { dc_scale_degree = sd1, dc_octave = ove1 }
+  where
+    sd1  = addSimpleInterval1 sd ivl
+    ove1 = if sd1 < sd then ove+1 else ove
+
+subSimpleInterval :: DiaCore -> SimpleInterval -> DiaCore
+subSimpleInterval (DiaCore { dc_scale_degree = sd
+                           , dc_octave       = ove }) ivl = 
+    DiaCore { dc_scale_degree = sd1, dc_octave = ove1 }
+  where
+    sd1  = subSimpleInterval1 sd ivl
+    ove1 = if sd1 > sd then ove-1 else ove
+
+addSimpleInterval1 :: ScaleDegree -> SimpleInterval -> ScaleDegree
+addSimpleInterval1 sd ivl = succN (fromSimpleInterval ivl - 1) sd
+
+subSimpleInterval1 :: ScaleDegree -> SimpleInterval -> ScaleDegree
+subSimpleInterval1 sd ivl = precN (fromSimpleInterval ivl - 1) sd
+
+
 -- | Always positive.
 --
 diatonicIntervalBetween :: Diatonic -> Diatonic -> DiatonicInterval
@@ -287,48 +363,12 @@ diatonicIntervalBetween a b = fn (toIndex a) (toIndex b)
     toIndex :: Diatonic -> Int
     toIndex (Diatonic d _ o) = fromScaleDegree d + (7*o)
 
-addDiatonicInterval :: Diatonic -> DiatonicInterval -> Diatonic
-addDiatonicInterval (Diatonic deg alt ove) ivl = 
-    Diatonic deg1 alt ove1
-  where
-    deg1  = addDiatonicInterval' deg ivl
-    carry = if deg1 < deg then 1 else 0
-    ove1  = ove + carry + dia_interval_octave ivl
-
-
-
-addDiatonicInterval' :: ScaleDegree -> DiatonicInterval -> ScaleDegree
-addDiatonicInterval' sd ivl = toScaleDegree $ i + j
-  where
-    i = fromScaleDegree sd 
-    j = fromDiatonicInterval ivl
-
-
-
-subDiatonicInterval :: Diatonic -> DiatonicInterval -> Diatonic
-subDiatonicInterval (Diatonic deg alt ove) ivl = 
-    Diatonic deg1 alt ove1
-  where
-    deg1  = subDiatonicInterval' deg ivl
-    carry = if deg1 > deg then (-1) else 0
-    ove1  = ove + carry - dia_interval_octave ivl
-
-
-
-subDiatonicInterval' :: ScaleDegree -> DiatonicInterval -> ScaleDegree
-subDiatonicInterval' sd ivl = toScaleDegree $ i - j
-  where
-    i = fromScaleDegree sd 
-    j = fromDiatonicInterval ivl
-
-
-
-
 
 transposeDiatonically :: Key -> DiatonicInterval -> Pitch -> Pitch 
-transposeDiatonically key ivl p = 
-    let dp = toDiatonic key p 
-    in fromDiatonic key $ dp `addDiatonicInterval` ivl
+transposeDiatonically key ivl pch = 
+    let sc = buildScale key
+        dp = toDiatonic sc pch
+    in fromDiatonic sc $ dp `addDiatonicInterval` ivl
 
 
 

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Internal.Scale
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -41,6 +41,7 @@ import qualified Data.List as LIST
 import qualified Data.Map as MAP
 
 
+-- perhaps Scale could also include name::String for debugging
 
 newtype Scale = Scale { fromScale :: [PitchName] }
   deriving (Data,Eq,Show,Typeable)

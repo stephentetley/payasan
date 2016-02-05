@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Names.Interval
--- Copyright   :  (c) Stephen Tetley 2014-2015
+-- Copyright   :  (c) Stephen Tetley 2014-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
