@@ -28,15 +28,21 @@ module Payasan.Base.Diatonic
   , ScaleDegree(..)
   , Diatonic(..)
 
+  , isTonic
   , isDiatonic
   , isChromatic
+  , isChromaticSharp
+  , isChromaticFlat
+
 
   , toDiatonic
   , fromDiatonic
-  , noAlteration
+  , nubAlteration
 
   , toScaleDegree
   , fromScaleDegree
+
+  , scaleDegreeInt 
 
   , chromaticIndex
   , diatonicIndex 
@@ -130,6 +136,8 @@ extractCore (Diatonic { dia_scale_degree = sd, dia_octave = ove }) =
     DiaCore { dc_scale_degree = sd, dc_octave = ove }
 
 
+
+
 succN :: Int -> ScaleDegree -> ScaleDegree
 succN i sd | i < 0 = precN (abs i) sd
 succN i sd         = toScaleDegree $ (fromScaleDegree sd) + i
@@ -139,6 +147,9 @@ precN i sd | i < 0 = succN (abs i) sd
 precN i sd         = toScaleDegree $ (fromScaleDegree sd) - i
 
 
+isTonic :: Diatonic -> Bool
+isTonic p = isDiatonic p && dia_scale_degree p == TONIC
+
 
 isDiatonic :: Diatonic -> Bool
 isDiatonic (Diatonic { dia_alt = a }) = a == 0
@@ -146,9 +157,16 @@ isDiatonic (Diatonic { dia_alt = a }) = a == 0
 isChromatic :: Diatonic -> Bool
 isChromatic = not . isDiatonic
 
+isChromaticSharp :: Diatonic -> Bool
+isChromaticSharp (Diatonic { dia_alt = a }) = a > 0
 
-noAlteration :: Diatonic -> Diatonic
-noAlteration d = d { dia_alt = 0 }
+isChromaticFlat :: Diatonic -> Bool
+isChromaticFlat (Diatonic { dia_alt = a }) = a < 0
+
+
+
+nubAlteration :: Diatonic -> Diatonic
+nubAlteration d = d { dia_alt = 0 }
 
 toScaleDegree :: Int -> ScaleDegree
 toScaleDegree n = fn $ n `modS1` 7
@@ -173,6 +191,9 @@ fromScaleDegree DOMINANT        = 5
 fromScaleDegree SUBMEDIANT      = 6
 fromScaleDegree LEADING_TONE    = 7
 
+
+scaleDegreeInt :: Diatonic -> Int
+scaleDegreeInt = fromScaleDegree . dia_scale_degree
 
 -- | Note - there is no reverse translation as index is not 
 -- unique.

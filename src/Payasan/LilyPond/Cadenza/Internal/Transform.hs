@@ -133,6 +133,7 @@ toDiatonicPart = transformP step_algo
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
+    -- This is poor, scale should be built just once...
     mf pch = (\key -> toDiatonic (buildScale key) pch) <$> asks section_key
 
 
@@ -148,5 +149,6 @@ fromDiatonicPart = transformP step_algo
     change (Skip d)             = pure $ Skip d
     change (Punctuation s)      = pure $ Punctuation s
 
+    -- This is poor, scale should be built just once...
     mf oss = (\key -> fromDiatonic (buildScale key) oss) <$> asks section_key
 

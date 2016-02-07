@@ -102,14 +102,14 @@ highestPitch = foldPitch fn Nothing
                    | otherwise          = Just p0
 
 lowestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
-lowestDiatonic = fmap noAlteration . foldPitch fn Nothing
+lowestDiatonic = fmap nubAlteration . foldPitch fn Nothing
   where
     fn Nothing   s = Just s
     fn (Just s0) s = if diatonicIndex s < diatonicIndex s0 then Just s else Just s0
 
 
 highestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
-highestDiatonic = fmap noAlteration . foldPitch fn Nothing
+highestDiatonic = fmap nubAlteration . foldPitch fn Nothing
   where
     fn Nothing   s = Just s
     fn (Just s0) s = if diatonicIndex s > diatonicIndex s0 then Just s else Just s0
