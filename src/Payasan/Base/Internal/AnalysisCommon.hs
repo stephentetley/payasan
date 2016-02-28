@@ -26,6 +26,7 @@ module Payasan.Base.Internal.AnalysisCommon
   , fromAnchor
   
   , Position(..)
+  , start_position
   , incPositionBar
   , incPositionIndex
 
@@ -68,6 +69,8 @@ data Position = Position
     }
   deriving (Data,Eq,Ord,Show,Typeable)
 
+start_position :: Position 
+start_position = Position { position_bar = 1, position_index = 1}
 
 anchor :: Position -> Anchor
 anchor pos = Anchor $ Just $ pos 
@@ -80,9 +83,9 @@ fromAnchor a f = maybe a fPosn . getAnchor
   where
     fPosn (Position b ix) = f b ix
 
-
+-- Also sets position_index to 1
 incPositionBar :: Int -> Position -> Position
-incPositionBar n = (\s i -> s { position_bar = i + n}) <*> position_bar
+incPositionBar n = (\s i -> s { position_bar = i + n, position_index = 1}) <*> position_bar
 
 incPositionIndex :: Int -> Position -> Position
 incPositionIndex n = (\s i -> s { position_index = i + n}) <*> position_index

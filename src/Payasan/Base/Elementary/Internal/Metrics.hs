@@ -86,6 +86,10 @@ octaveHisto = foldPitch fn empty
     fn histo p = incr (pitch_octave p) histo
 
 
+lastPitch :: Part pch drn anno -> Maybe pch
+lastPitch = foldPitch fn Nothing
+  where
+    fn _ p = Just p
 
 lowestPitch :: Part Pitch drn anno -> Maybe Pitch
 lowestPitch = foldPitch fn Nothing

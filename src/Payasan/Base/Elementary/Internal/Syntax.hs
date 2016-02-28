@@ -266,3 +266,8 @@ viewl (Linear info pos xs ys) = elements xs
 listL :: [a] -> Maybe (a, [a])
 listL []     = Nothing
 listL (x:xs) = Just (x,xs)
+
+
+--- 
+
+-- TODO - indexed map?

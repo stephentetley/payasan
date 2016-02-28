@@ -57,20 +57,6 @@ unstack []     ys = ys
 unstack (x:xs) ys = unstack xs (x:ys)
 
 
--- Need an end sentinel cf. parsing.
--- Note this is getting more like parsing than zipping...
-
--- put ctx before inp - ctx is the left, inp is the right
-
-
--- A modular implementation (zip bars, descend and zip 
--- note-groups, descend and zip tuplets) is problematic due 
--- to counting errors.
---
--- At the end of a bar and at the start of a new bar become 
--- separate states so counting (iterating) with one operation 
--- e.g. @forward@ needs non-intuitive counting handling.
---
 
 data Loc pch drn anno = Loc 
     { loc_info       :: !SectionInfo 
