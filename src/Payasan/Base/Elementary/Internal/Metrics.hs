@@ -25,7 +25,8 @@ module Payasan.Base.Elementary.Internal.Metrics
   , pitchNameHisto
   , octaveHisto
 
-
+  , firstPitch
+  , lastPitch
   , lowestPitch
   , highestPitch
 
@@ -69,25 +70,29 @@ barCount (Part { part_bars = bs }) = length bs
 -- histograms 
 
 pitchHisto :: Part Pitch drn anno -> Histogram Pitch
-pitchHisto = foldPitch fn empty
-  where
-    fn histo p = incr p histo
+pitchHisto = accumPitch (\ac p -> incr p ac) empty
 
 
 pitchNameHisto :: Part Pitch drn anno -> Histogram PitchName
-pitchNameHisto = foldPitch fn empty
-  where
-    fn histo p = incr (pitch_name p) histo
+pitchNameHisto = accumPitch (\ac p -> incr (pitch_name p) ac) empty
 
 
 octaveHisto :: Part Pitch drn anno -> Histogram Int
-octaveHisto = foldPitch fn empty
+octaveHisto = accumPitch fn empty
   where
     fn histo p = incr (pitch_octave p) histo
 
 
+firstPitch :: Part pch drn anno -> Maybe pch
+firstPitch = accumStop (\ac e -> fn ac e) Nothing
+  where 
+    fn _  (Note p _ _ _) = Stop (Just p)
+    fn ac _              = Go ac
+
+
+
 lastPitch :: Part pch drn anno -> Maybe pch
-lastPitch = foldPitch fn Nothing
+lastPitch = accumPitch fn Nothing
   where
     fn _ p = Just p
 

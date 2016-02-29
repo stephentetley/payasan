@@ -51,6 +51,16 @@ module Payasan.Base.Elementary.Internal.Traversals
   , transformCtxIxM
 
 
+  , accumPitch
+  , accumPitchM
+  , accumDuration
+  , accumAnno
+
+  , transformPitch
+  , transformPitchM
+  , transformPitchCtx
+  , transformPitchIx
+
   , Mon 
 
   , ElemPitchAlgo(..)
@@ -399,6 +409,84 @@ transformCtxIxM :: Monad m
 transformCtxIxM cxf mf part = transformIxM f1 part 
   where
     f1 = mf (cxf $ part_header part)
+
+
+--------------------------------------------------------------------------------
+-- Targeted traversals
+
+accPch :: (ac -> pch -> ac) -> ac -> Element pch drn anno -> ac
+accPch f ac (Note p _ _ _)    = f ac p
+accPch _ ac _                 = ac
+
+accPchM :: Monad m => (ac -> pch -> m ac) -> ac -> Element pch drn anno -> m ac
+accPchM mf ac (Note p _ _ _)  = mf ac p
+accPchM _  ac _               = return ac
+
+accDrn :: (ac -> drn -> ac) -> ac -> Element pch drn anno -> ac
+accDrn f ac (Note _ d _ _)    = f ac d
+accDrn f ac (Rest d)          = f ac d
+accDrn f ac (Spacer d)        = f ac d
+accDrn f ac (Skip d)          = f ac d
+accDrn _ ac (Punctuation {})  = ac
+
+
+accAnno :: (ac -> anno -> ac) -> ac -> Element pch drn anno -> ac
+accAnno f ac (Note _ _ a _)   = f ac a
+accAnno _ ac _                = ac
+
+
+trafoPch :: (pch1 -> pch2) 
+         -> Element pch1 drn anno 
+         -> Element pch2 drn anno
+trafoPch f (Note p d a t)   = Note (f p) d a t
+trafoPch _ (Rest d)         = Rest d
+trafoPch _ (Spacer d)       = Spacer d
+trafoPch _ (Skip d)         = Skip d
+trafoPch _ (Punctuation s)  = Punctuation s
+
+trafoPchM :: Monad m 
+          => (pch1 -> m pch2) 
+          -> Element pch1 drn anno 
+          -> m (Element pch2 drn anno)
+trafoPchM mf (Note p d a t)   = (\p1 -> Note p1 d a t) <$> mf p
+trafoPchM _  (Rest d)         = return $ Rest d
+trafoPchM _  (Spacer d)       = return $ Spacer d
+trafoPchM _  (Skip d)         = return $ Skip d
+trafoPchM _  (Punctuation s)  = return $ Punctuation s
+
+accumPitch :: (ac -> pch -> ac) -> ac -> Part pch drn anno -> ac
+accumPitch f = accumFull (accPch f)
+
+accumPitchM :: Monad m => (ac -> pch -> m ac) -> ac -> Part pch drn anno -> m ac
+accumPitchM mf = accumFullM (accPchM mf)
+
+accumDuration :: (ac -> drn -> ac) -> ac -> Part pch drn anno -> ac
+accumDuration f = accumFull (accDrn f)
+
+
+accumAnno :: (ac -> anno -> ac) -> ac -> Part pch drn anno -> ac
+accumAnno f = accumFull (accAnno f)
+
+
+transformPitch :: (pch1 -> pch2) -> Part pch1 drn anno -> Part pch2 drn anno
+transformPitch f = transform (trafoPch f)
+
+transformPitchM :: Monad m 
+                => (pch1 -> m pch2) 
+                -> Part pch1 drn anno 
+                -> m (Part pch2 drn anno)
+transformPitchM mf = transformM (trafoPchM mf)
+
+transformPitchCtx :: (SectionInfo -> ctx)
+                  -> (ctx -> pch1 -> pch2) -> Part pch1 drn anno -> Part pch2 drn anno
+transformPitchCtx cxf f = transformCtx cxf (\cx -> trafoPch (f cx))
+
+
+transformPitchIx :: (Position -> pch1 -> pch2) 
+                 -> Part pch1 drn anno
+                 -> Part pch2 drn anno
+transformPitchIx f = transformIx (\ix -> trafoPch (f ix))
+
 
 
 --------------------------------------------------------------------------------
