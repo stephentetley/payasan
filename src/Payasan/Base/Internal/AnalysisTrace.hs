@@ -37,7 +37,7 @@ data TraceBar a = TraceBar { trace_elements :: [TraceElement a] }
   deriving (Data,Eq,Show,Typeable)
 
 
--- Usually Blank will be a rest, sapcer etc.
+-- Usually Blank will be a rest, spacer etc.
 data TraceElement a = Blank
                     | Element a
   deriving (Data,Eq,Show,Typeable)

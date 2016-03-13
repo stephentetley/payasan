@@ -49,7 +49,6 @@ import Payasan.Base.Elementary.Internal.Traversals
 import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.AnalysisTrace
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Pitch
 import Payasan.Base.Diatonic
@@ -97,28 +96,28 @@ lastPitch = accumPitch fn Nothing
     fn _ p = Just p
 
 lowestPitch :: Part Pitch drn anno -> Maybe Pitch
-lowestPitch = foldPitch fn Nothing
+lowestPitch = accumPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isLower` p0     = Just p
                    | otherwise          = Just p0
 
 highestPitch :: Part Pitch drn anno -> Maybe Pitch
-highestPitch = foldPitch fn Nothing
+highestPitch = accumPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isHigher` p0    = Just p
                    | otherwise          = Just p0
 
 lowestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
-lowestDiatonic = fmap nubAlteration . foldPitch fn Nothing
+lowestDiatonic = fmap nubAlteration . accumPitch fn Nothing
   where
     fn Nothing   s = Just s
     fn (Just s0) s = if diatonicIndex s < diatonicIndex s0 then Just s else Just s0
 
 
 highestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
-highestDiatonic = fmap nubAlteration . foldPitch fn Nothing
+highestDiatonic = fmap nubAlteration . accumPitch fn Nothing
   where
     fn Nothing   s = Just s
     fn (Just s0) s = if diatonicIndex s > diatonicIndex s0 then Just s else Just s0
@@ -128,38 +127,23 @@ highestDiatonic = fmap nubAlteration . foldPitch fn Nothing
 --------------------------------------------------------------------------------
 -- Contours
 
-
-contourAlgo :: (Pitch -> Pitch -> ctour) 
-             -> TraceAlgo (Maybe Pitch) Pitch drn anno ctour
-contourAlgo comp = TraceAlgo { initial_trace_state = Nothing
-                             , element_trace_trafo = fn }
-  where   
-    fn (Note p _ _ _)   = do { opt <- get 
-                             ; case opt of 
-                                  Nothing -> put (Just p) >> return Blank
-                                  Just p0 -> 
-                                     let ct = comp p0 p
-                                     in put (Just p) >> return (Element ct)
-                             }
-
-    fn (Rest {})        = pure $ Blank
-    fn (Spacer {})      = pure $ Blank
-    fn (Skip {})        = pure $ Blank
-    fn (Punctuation {}) = pure $ Blank
+contourStep :: (Pitch -> Pitch -> ctour) 
+            -> (Maybe Pitch -> Element Pitch d a -> (Maybe Pitch, TraceElement ctour))
+contourStep fn (Just p0) (Note p _ _ _) = (Just p, Element $ fn p0 p)
+contourStep _  Nothing   (Note p _ _ _) = (Just p, Blank)
+contourStep _  st        _              = (st, Blank)
 
 
 
-semitoneInterval :: forall drn anno. 
-                    Part Pitch drn anno -> TracePart Int
-semitoneInterval = trace (contourAlgo comp)
+semitoneInterval :: Part Pitch drn anno -> TracePart Int
+semitoneInterval = snd . intoTraceAccum (contourStep comp) Nothing
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
                      in if pnew `isLower` pold then negate sc else sc
 
 
-grossContour :: forall drn anno. 
-                Part Pitch drn anno -> TracePart GrossContour
-grossContour = trace (contourAlgo comp)
+grossContour :: Part Pitch drn anno -> TracePart GrossContour
+grossContour = snd . intoTraceAccum (contourStep comp) Nothing
   where
     comp pold pnew | pnew `isHigher` pold = UP
                    | pnew `isLower`  pold = DOWN
@@ -168,9 +152,8 @@ grossContour = trace (contourAlgo comp)
 
 
 
-refinedContour :: forall drn anno. 
-                  Part Pitch drn anno -> TracePart RefinedContour
-refinedContour = trace (contourAlgo comp)
+refinedContour :: Part Pitch drn anno -> TracePart RefinedContour
+refinedContour = snd . intoTraceAccum (contourStep comp) Nothing
   where
     comp pold pnew 
         | pnew `isHigher` pold = let ival = intervalBetween pold pnew

@@ -95,8 +95,11 @@ module Payasan.Base.Elementary.Internal.Traversals
 
 
 
-  , TraceAlgo(..)
-  , trace
+  , intoTrace
+  , intoTraceIx
+  , intoTraceM
+  , intoTraceIxM
+  , intoTraceAccum
 
   ) where
 
@@ -109,7 +112,7 @@ import Payasan.Base.Internal.AnalysisTrace
 import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 
-
+import Data.Bifunctor
 import Data.Data
 import Data.Foldable (foldlM)
 import Data.List (mapAccumL)
@@ -848,27 +851,71 @@ changeSkipToRest (Part info bs) = Part info (map bar1 bs)
 --------------------------------------------------------------------------------
 -- Traces
 
-data TraceAlgo st pch drn anno e = TraceAlgo 
-    { initial_trace_state :: st
-    , element_trace_trafo :: Element pch drn anno -> Mon st (TraceElement e)
-    }
 
+intoTrace :: (Element p d a -> TraceElement e) -> Part p d a -> TracePart e
+intoTrace f = intoTraceIx (\_ e -> f e)
 
-trace :: forall st pch drn anno e. 
-         TraceAlgo st pch drn anno e
-      -> Part pch drn anno
-      -> TracePart e
-trace (TraceAlgo st0 elemT) ph = evalRewrite (partT ph) st0
+intoTraceIx :: forall p d a e. 
+               (Position -> Element p d a -> TraceElement e) 
+            -> Part p d a
+            -> TracePart e
+intoTraceIx f (Part _ bs0) = TracePart $ snd $ bars start_position bs0
   where
-    partT :: Part pch drn anno -> Mon st (TracePart e) 
-    partT (Part _ bs)           = TracePart <$> mapM barT bs
+   bars :: Position -> [Bar p d a] -> (Position, [TraceBar e])
+   bars = mapAccumL (\ix b -> let (_,b2) = bar1 ix b in (incPositionBar 1 ix,b2)) 
 
-    barT :: Bar pch drn anno -> Mon st (TraceBar e)
-    barT (Bar cs)               = (TraceBar . concat) <$> mapM noteGroupT cs
-
-    noteGroupT :: NoteGroup pch drn anno -> Mon st [TraceElement e]
-    noteGroupT (Atom e)         = (\a -> [a]) <$> elemT e
-    noteGroupT (Tuplet _ es)    = mapM elemT es
+   bar1 :: Position -> Bar p d a -> (Position, TraceBar e)
+   bar1 ix (Bar cs) = second (TraceBar . concat) $ mapAccumL ngroup1 ix cs
 
 
+   ngroup1 :: Position -> NoteGroup p d a -> (Position, [TraceElement e])
+   ngroup1 ix (Atom e)         = let (ix1,e1) = elem1 ix e in (ix1,[e1])
+   ngroup1 ix (Tuplet _ es)    = let (ix1,es1) = mapAccumL elem1 ix es 
+                                 in (ix1, es1)
 
+   elem1 :: Position -> Element p d a -> (Position, TraceElement e)
+   elem1 ix e = let e1 = f ix e in (incPositionIndex 1 ix, e1) 
+
+
+intoTraceM :: Monad m 
+           => (Element p d a -> m (TraceElement e)) -> Part p d a -> m (TracePart e)
+intoTraceM mf = intoTraceIxM (\_ e -> mf e)
+
+intoTraceIxM :: forall p d a e m. Monad m => 
+               (Position -> Element p d a -> m (TraceElement e))
+            -> Part p d a
+            -> m (TracePart e)
+intoTraceIxM mf (Part _ bs0) = (TracePart . snd) <$> bars start_position bs0
+  where
+    bars :: Position -> [Bar p d a] -> m (Position, [TraceBar e])
+    bars = mapAccumLM (\ix b -> do { (_,b2) <- bar1 ix b; return (incPositionBar 1 ix,b2)})
+
+    bar1 :: Position -> Bar p d a -> m (Position, TraceBar e)
+    bar1 ix (Bar cs) = second (TraceBar . concat) <$> mapAccumLM ngroup1 ix cs
+
+
+    ngroup1 :: Position -> NoteGroup p d a -> m (Position, [TraceElement e])
+    ngroup1 ix (Atom e)         = do {(ix1,e1) <- elem1 ix e; return (ix1,[e1]) }
+    ngroup1 ix (Tuplet _ es)    = mapAccumLM elem1 ix es 
+                                 
+
+    elem1 :: Position -> Element p d a -> m (Position, TraceElement e)
+    elem1 ix e = do { e1 <- mf ix e ; return (incPositionIndex 1 ix, e1)}
+
+
+intoTraceAccum :: forall p d a ac e. 
+                  (ac -> Element p d a -> (ac, TraceElement e)) 
+               -> ac -> Part p d a -> (ac,TracePart e)
+intoTraceAccum f a0 (Part _ bs0) = second TracePart $ mapAccumL bar1 a0 bs0 
+  where
+   bar1 :: ac -> Bar p d a -> (ac, TraceBar e)
+   bar1 ac (Bar cs) = second (TraceBar . concat) $ mapAccumL ngroup1 ac cs
+
+   ngroup1 :: ac -> NoteGroup p d a -> (ac, [TraceElement e])
+   ngroup1 ac (Atom e)      = second (\a -> [a]) $ elem1 ac e
+   ngroup1 ac (Tuplet _ es) = mapAccumL elem1 ac es 
+                                
+
+   elem1 :: ac -> Element p d a -> (ac, TraceElement e)
+   elem1 = f
+ 
