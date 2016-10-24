@@ -107,7 +107,6 @@ library
     Payasan.Base.Names.Pitch,
     Payasan.Base.Notelist,
     Payasan.Base.Pitch,
-    Payasan.Base.ScaleDegree,
     Payasan.LilyPond.Cadenza.Notelist,
     Payasan.LilyPond.Cadenza.Internal.CadenzaToBeam,
     Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary,
