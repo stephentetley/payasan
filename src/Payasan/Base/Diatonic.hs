@@ -62,8 +62,8 @@ module Payasan.Base.Diatonic
 
   ) where
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Scale
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Internal.Utils
 
 import Payasan.Base.Pitch

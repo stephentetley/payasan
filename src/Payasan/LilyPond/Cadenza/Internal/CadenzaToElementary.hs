@@ -25,7 +25,7 @@ import Payasan.LilyPond.Cadenza.Internal.Syntax
 
 import qualified Payasan.Base.Elementary.Internal.RecalcBars    as T
 import qualified Payasan.Base.Elementary.Internal.Syntax        as T
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 
 translateToElem :: Time -> Part pch Duration anno -> T.Part pch Duration anno

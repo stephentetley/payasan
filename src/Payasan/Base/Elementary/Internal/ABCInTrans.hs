@@ -27,9 +27,9 @@ import Payasan.Base.Elementary.Internal.Traversals
 import Payasan.Base.Internal.ABC.Syntax ( ABCPitch, ABCNoteLength
                                         , toPitch, toDuration )
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.Scale
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

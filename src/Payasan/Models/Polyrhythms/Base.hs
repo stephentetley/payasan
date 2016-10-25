@@ -33,8 +33,8 @@ import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
-import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.Pipeline                 as MAIN
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

@@ -31,7 +31,7 @@ import Payasan.Models.Lyrics.Internal.Base
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
 import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 

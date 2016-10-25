@@ -46,7 +46,7 @@ module Payasan.Base.Internal.LilyPond.Parser
 import Payasan.Base.Internal.LilyPond.Lexer
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec

@@ -21,7 +21,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Interpret
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Pitch

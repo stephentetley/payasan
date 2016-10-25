@@ -35,8 +35,8 @@ import Payasan.Base.Elementary.Internal.RecalcBars
 import Payasan.Base.Elementary.Internal.Syntax
 import Payasan.Base.Elementary.Internal.Traversals
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Scale
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Names.DiatonicInterval

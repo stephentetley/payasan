@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.CommonSyntax
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.Base.Internal.SyntaxCommon
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.CommonSyntax
+module Payasan.Base.Internal.SyntaxCommon
   ( 
 
     ScoreInfo(..)

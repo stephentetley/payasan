@@ -54,8 +54,8 @@ module Payasan.LilyPond.Cadenza.Internal.Traversals
 
 import Payasan.LilyPond.Cadenza.Internal.Syntax
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.SyntaxCommon
 
 import Data.Foldable (foldlM)
 import Data.Maybe

@@ -23,9 +23,9 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 
 import qualified Payasan.Base.Internal.BeamSyntax    as BEAM
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.Base.Internal.SyntaxCommon
 
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty

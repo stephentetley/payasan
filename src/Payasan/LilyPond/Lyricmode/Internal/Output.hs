@@ -31,7 +31,7 @@ import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty

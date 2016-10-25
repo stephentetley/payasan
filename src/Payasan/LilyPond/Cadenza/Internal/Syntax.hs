@@ -49,8 +49,8 @@ module Payasan.LilyPond.Cadenza.Internal.Syntax
 
   ) where
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

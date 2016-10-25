@@ -27,7 +27,7 @@ module Payasan.Base.Internal.TiedNoteStream
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 

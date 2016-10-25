@@ -75,8 +75,8 @@ module Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.AnalysisCommon
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.Syntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

@@ -68,10 +68,10 @@ import Payasan.Base.Elementary.Internal.TabularOutput
 import qualified Payasan.Base.Elementary.Notelist                     as ELEM
 
 import Payasan.Base.Internal.AddBeams
-import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.MainSyntax as MAIN
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
+import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY

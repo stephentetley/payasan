@@ -24,7 +24,7 @@ module Payasan.Base.Internal.AddBeams
 
 
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 
 

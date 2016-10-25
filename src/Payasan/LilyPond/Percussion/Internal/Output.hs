@@ -21,9 +21,9 @@ module Payasan.LilyPond.Percussion.Internal.Output
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.Base.Internal.SyntaxCommon
 
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty

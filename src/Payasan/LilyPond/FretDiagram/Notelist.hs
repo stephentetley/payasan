@@ -49,8 +49,8 @@ import qualified Payasan.Base.Internal.LilyPond.OutTrans      as LY
 import qualified Payasan.Base.Elementary.Internal.ElementaryToMain  as ELEM
 
 
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Shell
+import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Notelist as MAIN
 

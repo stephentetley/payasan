@@ -90,8 +90,9 @@ import Payasan.Base.Elementary.Internal.Traversals
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Shell
+import Payasan.Base.Internal.SyntaxCommon
+
 import qualified Payasan.Base.Notelist as MAIN
 
 import Payasan.Base.Duration

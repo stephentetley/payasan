@@ -31,7 +31,7 @@ module Payasan.Base.Internal.Scale
   ) where
 
 
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 

@@ -51,10 +51,10 @@ import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
 import qualified Payasan.Base.Internal.LilyPond.Utils           as PP
 
 import Payasan.Base.Internal.AddBeams (noBeams)
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.Pipeline (LilyPondPipeline(..))
 import qualified Payasan.Base.Internal.Pipeline                 as MAIN
 import Payasan.Base.Internal.Shell
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Pitch
 

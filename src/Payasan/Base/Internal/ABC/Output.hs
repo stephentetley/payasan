@@ -22,8 +22,8 @@ module Payasan.Base.Internal.ABC.Output
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.CommonSyntax
 import Payasan.Base.Internal.RewriteMonad
+import Payasan.Base.Internal.SyntaxCommon
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 

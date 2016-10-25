@@ -25,7 +25,7 @@ module Payasan.Base.Internal.Plain
 
 
 import Payasan.Base.Internal.MainSyntax
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

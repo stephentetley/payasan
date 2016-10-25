@@ -54,7 +54,7 @@ module Payasan.Base.Names.Key
 
   ) where
 
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Names.Pitch
 
 

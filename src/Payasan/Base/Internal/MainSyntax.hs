@@ -41,7 +41,7 @@ module Payasan.Base.Internal.MainSyntax
   ) where
 
 
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

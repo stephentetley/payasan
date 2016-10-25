@@ -36,7 +36,7 @@ module Payasan.Base.Elementary.Internal.Zipper
 import Payasan.Base.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.AnalysisCommon
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import Data.Data
 

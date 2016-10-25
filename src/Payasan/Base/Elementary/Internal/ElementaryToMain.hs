@@ -25,8 +25,8 @@ module Payasan.Base.Elementary.Internal.ElementaryToMain
 
 import Payasan.Base.Elementary.Internal.Syntax
 
-import Payasan.Base.Internal.CommonSyntax
 import qualified Payasan.Base.Internal.MainSyntax as T
+import Payasan.Base.Internal.SyntaxCommon
 
 
 

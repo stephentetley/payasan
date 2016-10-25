@@ -105,7 +105,7 @@ module Payasan.Base.Internal.LilyPond.Utils
   ) where
 
 import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.CommonSyntax
+import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Pitch as P
 import Payasan.Base.Duration
