@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.Parser
+-- Module      :  Payasan.Score.Cadenza.Internal.Parser
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.Parser
+module Payasan.Score.Cadenza.Internal.Parser
   (
 
     cadenza
@@ -27,7 +27,7 @@ module Payasan.LilyPond.Cadenza.Internal.Parser
   ) where
 
 
-import Payasan.LilyPond.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P

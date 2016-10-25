@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.InTrans
+-- Module      :  Payasan.Score.Cadenza.Internal.InTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.InTrans
+module Payasan.Score.Cadenza.Internal.InTrans
   (
 
     lilyPondTranslate_Relative
@@ -28,8 +28,8 @@ module Payasan.LilyPond.Cadenza.Internal.InTrans
 
 
 
-import Payasan.LilyPond.Cadenza.Internal.Syntax
-import Payasan.LilyPond.Cadenza.Internal.Traversals
+import Payasan.Score.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Base.Internal.LilyPond.Syntax
 

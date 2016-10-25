@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.CadenzaToBeam
+-- Module      :  Payasan.Score.Cadenza.Internal.CadenzaToBeam
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,13 +15,13 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.CadenzaToBeam
+module Payasan.Score.Cadenza.Internal.CadenzaToBeam
   (
     translateToBeam
   ) where
 
 
-import Payasan.LilyPond.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Syntax
 
 import qualified Payasan.Base.Internal.BeamSyntax as T
 

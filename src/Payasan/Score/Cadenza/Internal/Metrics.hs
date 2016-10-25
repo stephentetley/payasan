@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.Metrics
+-- Module      :  Payasan.Score.Cadenza.Internal.Metrics
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.Metrics
+module Payasan.Score.Cadenza.Internal.Metrics
   (
 
     lowestPitch
@@ -36,8 +36,8 @@ module Payasan.LilyPond.Cadenza.Internal.Metrics
   ) where
 
 
-import Payasan.LilyPond.Cadenza.Internal.Syntax
-import Payasan.LilyPond.Cadenza.Internal.Traversals
+import Payasan.Score.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.AnalysisCommon

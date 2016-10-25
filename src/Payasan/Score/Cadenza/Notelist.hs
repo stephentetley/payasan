@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Notelist
+-- Module      :  Payasan.Score.Cadenza.Notelist
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -10,11 +10,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Cadenza for LilyPond.
+-- Score represenation for Cadenza (free metered) music.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Notelist
+module Payasan.Score.Cadenza.Notelist
   ( 
 
     module Payasan.Base.Internal.Shell
@@ -40,10 +40,10 @@ module Payasan.LilyPond.Cadenza.Notelist
 
   ) where
 
-import Payasan.LilyPond.Cadenza.Internal.CadenzaToBeam
-import Payasan.LilyPond.Cadenza.Internal.InTrans
-import Payasan.LilyPond.Cadenza.Internal.Parser
-import Payasan.LilyPond.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.CadenzaToBeam
+import Payasan.Score.Cadenza.Internal.InTrans
+import Payasan.Score.Cadenza.Internal.Parser
+import Payasan.Score.Cadenza.Internal.Syntax
 
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY

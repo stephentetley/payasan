@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.Transform
+-- Module      :  Payasan.Score.Cadenza.Internal.Transform
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.Transform
+module Payasan.Score.Cadenza.Internal.Transform
   (
     augment
   , diminute
@@ -31,9 +31,9 @@ module Payasan.LilyPond.Cadenza.Internal.Transform
   ) where
 
 
-import Payasan.LilyPond.Cadenza.Internal.Metrics
-import Payasan.LilyPond.Cadenza.Internal.Syntax
-import Payasan.LilyPond.Cadenza.Internal.Traversals
+import Payasan.Score.Cadenza.Internal.Metrics
+import Payasan.Score.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.Scale

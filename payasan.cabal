@@ -11,7 +11,7 @@ description:
   .
   Framework for music composition / song writing.
   .
-  (c) Stephen Tetley 2015
+  (c) Stephen Tetley 2015-16
   .
 
 build-type:         Simple
@@ -108,15 +108,6 @@ library
     Payasan.Base.Names.Pitch,
     Payasan.Base.Notelist,
     Payasan.Base.Pitch,
-    Payasan.LilyPond.Cadenza.Notelist,
-    Payasan.LilyPond.Cadenza.Internal.CadenzaToBeam,
-    Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary,
-    Payasan.LilyPond.Cadenza.Internal.InTrans,
-    Payasan.LilyPond.Cadenza.Internal.Metrics,
-    Payasan.LilyPond.Cadenza.Internal.Parser,
-    Payasan.LilyPond.Cadenza.Internal.Syntax,
-    Payasan.LilyPond.Cadenza.Internal.Traversals,
-    Payasan.LilyPond.Cadenza.Internal.Transform,
     Payasan.LilyPond.Chordmode.Notelist,
     Payasan.LilyPond.Chordmode.Internal.Base,
     Payasan.LilyPond.Chordmode.Internal.Interpret,
@@ -147,7 +138,16 @@ library
     Payasan.Models.Lyrics.Internal.Plain,
     Payasan.Models.Lyrics.Internal.Syllable,
     Payasan.Models.Polyrhythms.Base,
-    Payasan.Models.UTT.Base
+    Payasan.Models.UTT.Base,
+    Payasan.Score.Cadenza.Notelist,
+    Payasan.Score.Cadenza.Internal.CadenzaToBeam,
+    Payasan.Score.Cadenza.Internal.CadenzaToElementary,
+    Payasan.Score.Cadenza.Internal.InTrans,
+    Payasan.Score.Cadenza.Internal.Metrics,
+    Payasan.Score.Cadenza.Internal.Parser,
+    Payasan.Score.Cadenza.Internal.Syntax,
+    Payasan.Score.Cadenza.Internal.Traversals,
+    Payasan.Score.Cadenza.Internal.Transform
 
     
 

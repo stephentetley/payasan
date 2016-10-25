@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary
+-- Module      :  Payasan.Score.Cadenza.Internal.CadenzaToElementary
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,13 +15,13 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.CadenzaToElementary
+module Payasan.Score.Cadenza.Internal.CadenzaToElementary
   (
     translateToElem
   ) where
 
 
-import Payasan.LilyPond.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Syntax
 
 import qualified Payasan.Base.Elementary.Internal.RecalcBars    as T
 import qualified Payasan.Base.Elementary.Internal.Syntax        as T

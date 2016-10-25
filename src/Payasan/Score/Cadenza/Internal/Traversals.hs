@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.Traversals
+-- Module      :  Payasan.Score.Cadenza.Internal.Traversals
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.Traversals
+module Payasan.Score.Cadenza.Internal.Traversals
   (
     Mon 
   , CadenzaPitchAlgo(..)
@@ -52,7 +52,7 @@ module Payasan.LilyPond.Cadenza.Internal.Traversals
   ) where
 
 
-import Payasan.LilyPond.Cadenza.Internal.Syntax
+import Payasan.Score.Cadenza.Internal.Syntax
 
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.SyntaxCommon

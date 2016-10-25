@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.LilyPond.Cadenza.Internal.Syntax
+-- Module      :  Payasan.Score.Cadenza.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.LilyPond.Cadenza.Internal.Syntax
+module Payasan.Score.Cadenza.Internal.Syntax
   ( 
 
     StdCadenzaPart
