@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.LilyPondInTrans
+-- Module      :  Payasan.Score.Elementary.Internal.LilyPondInTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.LilyPondInTrans
+module Payasan.Score.Elementary.Internal.LilyPondInTrans
   (
 
     lilyPondTranslate_Relative
@@ -29,8 +29,8 @@ module Payasan.Base.Elementary.Internal.LilyPondInTrans
 
 
 
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.LilyPond.Syntax
 

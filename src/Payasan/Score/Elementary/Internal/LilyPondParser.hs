@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.LilyPondParser
+-- Module      :  Payasan.Score.Elementary.Internal.LilyPondParser
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.LilyPondParser
+module Payasan.Score.Elementary.Internal.LilyPondParser
   (
 
     lilypond
@@ -27,7 +27,7 @@ module Payasan.Base.Elementary.Internal.LilyPondParser
   ) where
 
 
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import qualified Payasan.Base.Internal.LilyPond.Parser as P

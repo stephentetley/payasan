@@ -3,8 +3,9 @@
 
 module Demo04 where
 
-import Payasan.Base.Elementary.Notelist
-import Payasan.Base.Elementary.Internal.Operations
+import Payasan.Score.Elementary.Notelist
+import Payasan.Score.Elementary.Internal.Metrics
+import Payasan.Score.Elementary.Internal.Operations
 
 -- import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -13,7 +14,6 @@ import Payasan.Base.Names.Interval
 import Payasan.Base.Names.Key
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Elementary.Internal.Metrics
 
 
 -- Note to me - debugging with a rhythm staff and markup would be good.

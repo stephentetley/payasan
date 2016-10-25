@@ -5,7 +5,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Traversals
+-- Module      :  Payasan.Score.Elementary.Internal.Traversals
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Traversals
+module Payasan.Score.Elementary.Internal.Traversals
   (
     Cut(..)  
 
@@ -105,7 +105,7 @@ module Payasan.Base.Elementary.Internal.Traversals
 
 
 
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.AnalysisTrace

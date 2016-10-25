@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Plain
+-- Module      :  Payasan.Score.Elementary.Internal.Plain
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Plain
+module Payasan.Score.Elementary.Internal.Plain
   ( 
     NoteListAtom
   , fromNoteList
@@ -24,8 +24,8 @@ module Payasan.Base.Elementary.Internal.Plain
   ) where
 
 
-import Payasan.Base.Elementary.Internal.RecalcBars
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.RecalcBars
+import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration

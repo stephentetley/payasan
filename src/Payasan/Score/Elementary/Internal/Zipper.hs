@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Zipper
+-- Module      :  Payasan.Score.Elementary.Internal.Zipper
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Zipper
+module Payasan.Score.Elementary.Internal.Zipper
   (
     Loc
   , makeLoc
@@ -33,7 +33,7 @@ module Payasan.Base.Elementary.Internal.Zipper
   )  where
 
 
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.SyntaxCommon

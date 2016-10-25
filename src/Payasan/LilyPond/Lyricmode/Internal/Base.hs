@@ -36,8 +36,8 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
 
   ) where
 
-import Payasan.Base.Elementary.Internal.LilyPondInTrans
-import qualified Payasan.Base.Elementary.Internal.Syntax    as ELEM
+import Payasan.Score.Elementary.Internal.LilyPondInTrans
+import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
 import Payasan.Base.Internal.SyntaxCommon

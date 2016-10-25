@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.ABCParser
+-- Module      :  Payasan.Score.Elementary.Internal.ABCParser
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,12 +15,12 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.ABCParser
+module Payasan.Score.Elementary.Internal.ABCParser
   (
     abc
   ) where
 
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.ABC.Lexer
 import qualified Payasan.Base.Internal.ABC.Parser as P

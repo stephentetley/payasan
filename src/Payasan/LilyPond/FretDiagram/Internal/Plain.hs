@@ -27,8 +27,8 @@ module Payasan.LilyPond.FretDiagram.Internal.Plain
 import Payasan.LilyPond.FretDiagram.Internal.Base
 import Payasan.LilyPond.FretDiagram.Internal.Interpret
 
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration

@@ -33,7 +33,7 @@ import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 import qualified Payasan.Base.Internal.LilyPond.Parser          as P
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Elementary.Internal.Syntax        as ELEM
+import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM
 
 import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Internal.Utils (ParsecParser)

@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Syntax
+-- Module      :  Payasan.Score.Elementary.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Syntax
+module Payasan.Score.Elementary.Internal.Syntax
   ( 
 
     StdElemPart

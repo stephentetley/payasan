@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Transform
+-- Module      :  Payasan.Score.Elementary.Internal.Transform
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Transform
+module Payasan.Score.Elementary.Internal.Transform
   (
     augment
   , diminute
@@ -30,10 +30,10 @@ module Payasan.Base.Elementary.Internal.Transform
   ) where
 
 
-import Payasan.Base.Elementary.Internal.Metrics
-import Payasan.Base.Elementary.Internal.RecalcBars
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.Metrics
+import Payasan.Score.Elementary.Internal.RecalcBars
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Internal.SyntaxCommon

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.AnalysisOutput
+-- Module      :  Payasan.Score.Elementary.Internal.AnalysisOutput
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.AnalysisOutput
+module Payasan.Score.Elementary.Internal.AnalysisOutput
   (
     analysisScore
   ) where

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Notelist
+-- Module      :  Payasan.Score.Elementary.Notelist
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,11 +14,11 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Notelist
+module Payasan.Score.Elementary.Notelist
   ( 
 
     module Payasan.Base.Internal.Shell
-  , module Payasan.Base.Elementary.Internal.Transform
+  , module Payasan.Score.Elementary.Internal.Transform
 
   , Part
   , StdElemPart
@@ -76,16 +76,16 @@ module Payasan.Base.Elementary.Notelist
 
   ) where
 
-import Payasan.Base.Elementary.Internal.ABCInTrans
-import Payasan.Base.Elementary.Internal.ABCParser (abc)
-import Payasan.Base.Elementary.Internal.ElementaryToMain
-import Payasan.Base.Elementary.Internal.LilyPondInTrans
-import Payasan.Base.Elementary.Internal.LilyPondParser (lilypond)
-import Payasan.Base.Elementary.Internal.LinearOutput
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.TabularOutput
-import Payasan.Base.Elementary.Internal.Transform
-import Payasan.Base.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.ABCInTrans
+import Payasan.Score.Elementary.Internal.ABCParser (abc)
+import Payasan.Score.Elementary.Internal.ElementaryToMain
+import Payasan.Score.Elementary.Internal.LilyPondInTrans
+import Payasan.Score.Elementary.Internal.LilyPondParser (lilypond)
+import Payasan.Score.Elementary.Internal.LinearOutput
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.TabularOutput
+import Payasan.Score.Elementary.Internal.Transform
+import Payasan.Score.Elementary.Internal.Traversals
 
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
 

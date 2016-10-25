@@ -21,9 +21,9 @@ module Payasan.LilyPond.Chordmode.Internal.InTrans
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 
-import Payasan.Base.Elementary.Internal.LilyPondInTrans
-import Payasan.Base.Elementary.Internal.Traversals
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.LilyPondInTrans
+import Payasan.Score.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.LilyPond.Syntax
 

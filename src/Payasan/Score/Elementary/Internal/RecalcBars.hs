@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.RecalcBars
+-- Module      :  Payasan.Score.Elementary.Internal.RecalcBars
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.RecalcBars
+module Payasan.Score.Elementary.Internal.RecalcBars
   (
     NoteList(..) 
   , Notes
@@ -28,7 +28,7 @@ module Payasan.Base.Elementary.Internal.RecalcBars
   ) where
 
 
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration

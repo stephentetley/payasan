@@ -36,22 +36,6 @@ library
                       zmidi-core
   exposed-modules:
     Payasan.Base.Duration,
-    Payasan.Base.Elementary.Notelist,
-    Payasan.Base.Elementary.Internal.ABCInTrans,
-    Payasan.Base.Elementary.Internal.ABCParser,
-    Payasan.Base.Elementary.Internal.AnalysisOutput,
-    Payasan.Base.Elementary.Internal.LilyPondInTrans,
-    Payasan.Base.Elementary.Internal.LilyPondParser,
-    Payasan.Base.Elementary.Internal.LinearOutput,
-    Payasan.Base.Elementary.Internal.Metrics,
-    Payasan.Base.Elementary.Internal.ElementaryToMain,
-    Payasan.Base.Elementary.Internal.Plain,
-    Payasan.Base.Elementary.Internal.RecalcBars,
-    Payasan.Base.Elementary.Internal.Syntax,
-    Payasan.Base.Elementary.Internal.TabularOutput,
-    Payasan.Base.Elementary.Internal.Transform,
-    Payasan.Base.Elementary.Internal.Traversals,
-    Payasan.Base.Elementary.Internal.Zipper,
     Payasan.Base.Internal.ABC.InTrans,
     Payasan.Base.Internal.ABC.Lexer,
     Payasan.Base.Internal.ABC.Output,
@@ -147,7 +131,24 @@ library
     Payasan.Score.Cadenza.Internal.Parser,
     Payasan.Score.Cadenza.Internal.Syntax,
     Payasan.Score.Cadenza.Internal.Traversals,
-    Payasan.Score.Cadenza.Internal.Transform
+    Payasan.Score.Cadenza.Internal.Transform,
+    Payasan.Score.Elementary.Notelist,
+    Payasan.Score.Elementary.Internal.ABCInTrans,
+    Payasan.Score.Elementary.Internal.ABCParser,
+    Payasan.Score.Elementary.Internal.AnalysisOutput,
+    Payasan.Score.Elementary.Internal.LilyPondInTrans,
+    Payasan.Score.Elementary.Internal.LilyPondParser,
+    Payasan.Score.Elementary.Internal.LinearOutput,
+    Payasan.Score.Elementary.Internal.Metrics,
+    Payasan.Score.Elementary.Internal.ElementaryToMain,
+    Payasan.Score.Elementary.Internal.Operations,
+    Payasan.Score.Elementary.Internal.Plain,
+    Payasan.Score.Elementary.Internal.RecalcBars,
+    Payasan.Score.Elementary.Internal.Syntax,
+    Payasan.Score.Elementary.Internal.TabularOutput,
+    Payasan.Score.Elementary.Internal.Transform,
+    Payasan.Score.Elementary.Internal.Traversals,
+    Payasan.Score.Elementary.Internal.Zipper
 
     
 

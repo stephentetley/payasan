@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.ElementaryToMain
+-- Module      :  Payasan.Score.Elementary.Internal.ElementaryToMain
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,14 +16,14 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.ElementaryToMain
+module Payasan.Score.Elementary.Internal.ElementaryToMain
   (
     translateToMain
   , chordTranslateToMain
   ) where
 
 
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 import qualified Payasan.Base.Internal.MainSyntax as T
 import Payasan.Base.Internal.SyntaxCommon

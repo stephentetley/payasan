@@ -24,7 +24,7 @@ module Payasan.LilyPond.Lyricmode.Internal.Parser
   ) where
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
-import Payasan.Base.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Syntax
 
 
 import Payasan.Base.Internal.LilyPond.Lexer

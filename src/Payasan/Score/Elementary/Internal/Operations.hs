@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Operations
+-- Module      :  Payasan.Score.Elementary.Internal.Operations
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Operations
+module Payasan.Score.Elementary.Internal.Operations
   (
 
     isNote
@@ -48,8 +48,8 @@ module Payasan.Base.Elementary.Internal.Operations
   ) where
 
 
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.Zipper
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Zipper
 
 import Payasan.Base.Internal.AnalysisCommon
 

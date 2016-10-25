@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.Metrics
+-- Module      :  Payasan.Score.Elementary.Internal.Metrics
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.Metrics
+module Payasan.Score.Elementary.Internal.Metrics
   (
 
     barCount
@@ -43,8 +43,8 @@ module Payasan.Base.Elementary.Internal.Metrics
   ) where
 
 
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.AnalysisTrace

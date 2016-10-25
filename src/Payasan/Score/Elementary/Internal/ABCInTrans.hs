@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Elementary.Internal.ABCInTrans
+-- Module      :  Payasan.Score.Elementary.Internal.ABCInTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,15 +14,15 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Elementary.Internal.ABCInTrans
+module Payasan.Score.Elementary.Internal.ABCInTrans
   (
     abcTranslate
   ) where
 
 
 
-import Payasan.Base.Elementary.Internal.Syntax
-import Payasan.Base.Elementary.Internal.Traversals
+import Payasan.Score.Elementary.Internal.Syntax
+import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.ABC.Syntax ( ABCPitch, ABCNoteLength
                                         , toPitch, toDuration )

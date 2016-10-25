@@ -43,9 +43,9 @@ import Payasan.LilyPond.Lyricmode.Internal.Interpret
 import Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Parser
 
-import qualified Payasan.Base.Elementary.Internal.Syntax        as ELEM
-import qualified Payasan.Base.Elementary.Internal.Traversals    as ELEM
-import qualified Payasan.Base.Elementary.Notelist               as ELEM
+import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM
+import qualified Payasan.Score.Elementary.Internal.Traversals   as ELEM
+import qualified Payasan.Score.Elementary.Notelist              as ELEM
 
 import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 
