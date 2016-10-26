@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Csound.BeamToCsound
+-- Module      :  Payasan.Score.Csound.Internal.BeamToCsound
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Csound.BeamToCsound
+module Payasan.Score.Csound.Internal.BeamToCsound
   ( 
 
     GenIStmt
@@ -23,8 +23,8 @@ module Payasan.Base.Internal.Csound.BeamToCsound
 
   ) where
 
-import Payasan.Base.Internal.Csound.IStmt
-import Payasan.Base.Internal.Csound.Syntax
+import Payasan.Score.Csound.Internal.IStmt
+import Payasan.Score.Csound.Internal.Syntax
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.RewriteMonad

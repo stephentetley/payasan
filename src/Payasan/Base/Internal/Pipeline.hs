@@ -80,15 +80,19 @@ module Payasan.Base.Internal.Pipeline
 
   ) where
 
+-- Note - temporary imports
+-- Csound imports should not be accessed by Payasan.Base
+import Payasan.Score.Csound.Internal.BeamToCsound
+import Payasan.Score.Csound.Internal.Output
+import qualified Payasan.Score.Csound.Internal.OutTrans          as CS
+
+
 import qualified Payasan.Base.Internal.ABC.InTrans              as ABC
 import qualified Payasan.Base.Internal.ABC.OutTrans             as ABC
 import Payasan.Base.Internal.ABC.Output (abcOutput)
 import Payasan.Base.Internal.ABC.Parser (abc)
 import Payasan.Base.Internal.ABC.Syntax (ABCPart)
 
-import Payasan.Base.Internal.Csound.BeamToCsound
-import Payasan.Base.Internal.Csound.Output
-import qualified Payasan.Base.Internal.Csound.OutTrans          as CS
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans         as LY
 import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY

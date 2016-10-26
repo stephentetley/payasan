@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Csound.Output
+-- Module      :  Payasan.Score.Csound.Internal.Output
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Csound.Output
+module Payasan.Score.Csound.Internal.Output
   ( 
 
     ColumnSpecs
@@ -28,7 +28,7 @@ module Payasan.Base.Internal.Csound.Output
 
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Csound.IStmt
+import Payasan.Score.Csound.Internal.IStmt
 
 import Text.PrettyPrint.HughesPJ hiding ( empty, render ) -- package: pretty
 import qualified Text.PrettyPrint.HughesPJ as P

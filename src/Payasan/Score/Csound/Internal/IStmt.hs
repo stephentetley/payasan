@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Csound.IStmt
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.Score.Csound.Internal.IStmt
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Csound.IStmt
+module Payasan.Score.Csound.Internal.IStmt
   ( 
     IStmt(..)
   , IStmtList
