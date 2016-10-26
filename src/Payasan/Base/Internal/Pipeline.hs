@@ -82,9 +82,9 @@ module Payasan.Base.Internal.Pipeline
 
 -- Note - temporary imports
 -- Csound imports should not be accessed by Payasan.Base
-import Payasan.Score.Csound.Internal.BeamToCsound
-import Payasan.Score.Csound.Internal.Output
-import qualified Payasan.Score.Csound.Internal.OutTrans          as CS
+import Payasan.Backend.Csound.Internal.BeamToCsound
+import Payasan.Backend.Csound.Internal.Output
+import qualified Payasan.Backend.Csound.Internal.OutTrans          as CS
 
 
 import qualified Payasan.Base.Internal.ABC.InTrans              as ABC

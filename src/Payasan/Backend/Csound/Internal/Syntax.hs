@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Csound.Internal.Syntax
+-- Module      :  Payasan.Backend.Csound.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Csound.Internal.Syntax
+module Payasan.Backend.Csound.Internal.Syntax
   ( 
 
     CsoundNoteStream
@@ -34,7 +34,7 @@ module Payasan.Score.Csound.Internal.Syntax
 
   ) where
 
-import Payasan.Score.Csound.Internal.IStmt
+import Payasan.Backend.Csound.Internal.IStmt
 
 import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 

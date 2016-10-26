@@ -35,6 +35,11 @@ library
                       parsec       >= 3.1   && <= 4.0,
                       zmidi-core
   exposed-modules:
+    Payasan.Backend.Csound.Internal.BeamToCsound,
+    Payasan.Backend.Csound.Internal.IStmt,
+    Payasan.Backend.Csound.Internal.Output,
+    Payasan.Backend.Csound.Internal.OutTrans,
+    Payasan.Backend.Csound.Internal.Syntax,
     Payasan.Base.Duration,
     Payasan.Base.Internal.ABC.InTrans,
     Payasan.Base.Internal.ABC.Lexer,
@@ -127,11 +132,6 @@ library
     Payasan.Score.Cadenza.Internal.Syntax,
     Payasan.Score.Cadenza.Internal.Traversals,
     Payasan.Score.Cadenza.Internal.Transform,
-    Payasan.Score.Csound.Internal.BeamToCsound,
-    Payasan.Score.Csound.Internal.IStmt,
-    Payasan.Score.Csound.Internal.Output,
-    Payasan.Score.Csound.Internal.OutTrans,
-    Payasan.Score.Csound.Internal.Syntax,
     Payasan.Score.Elementary.Notelist,
     Payasan.Score.Elementary.Internal.ABCInTrans,
     Payasan.Score.Elementary.Internal.ABCParser,

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Csound.Internal.OutTrans
+-- Module      :  Payasan.Backend.Csound.Internal.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,13 +14,13 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Csound.Internal.OutTrans
+module Payasan.Backend.Csound.Internal.OutTrans
   ( 
     translateToCsoundP
   ) where
 
 
-import Payasan.Score.Csound.Internal.Syntax
+import Payasan.Backend.Csound.Internal.Syntax
 
 import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.BeamTraversals
