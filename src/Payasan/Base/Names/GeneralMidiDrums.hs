@@ -70,8 +70,8 @@ module Payasan.Base.Names.GeneralMidiDrums
 
   ) where
 
-
-import Payasan.Base.Internal.MIDI.PrimitiveSyntax
+-- TODO - imports in Payasan.Base should not look outside...
+import Payasan.Backend.MIDI.Internal.PrimitiveSyntax
 
 -------------------------------------------------------------------------------
 -- GM drums

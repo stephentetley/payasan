@@ -86,6 +86,11 @@ import Payasan.Backend.Csound.Internal.BeamToCsound
 import Payasan.Backend.Csound.Internal.Output
 import qualified Payasan.Backend.Csound.Internal.OutTrans          as CS
 
+import qualified Payasan.Backend.MIDI.Internal.BeamToMIDI       as MIDI
+import qualified Payasan.Backend.MIDI.Internal.Output           as MIDI
+import qualified Payasan.Backend.MIDI.Internal.OutTrans         as MIDI
+import qualified Payasan.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
+
 
 import qualified Payasan.Base.Internal.ABC.InTrans              as ABC
 import qualified Payasan.Base.Internal.ABC.OutTrans             as ABC
@@ -103,10 +108,6 @@ import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
 import Payasan.Base.Internal.LilyPond.Syntax (LyPart1)
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Internal.MIDI.BeamToMIDI          as MIDI
-import qualified Payasan.Base.Internal.MIDI.Output              as MIDI
-import qualified Payasan.Base.Internal.MIDI.OutTrans            as MIDI
-import qualified Payasan.Base.Internal.MIDI.PrimitiveSyntax     as MIDI
 
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Tabular.OutputBeam
