@@ -26,8 +26,8 @@ module Payasan.Base.Internal.ABC.InTrans
 
 import Payasan.Base.Internal.ABC.Syntax
 
-import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamTraversals
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.Traversals
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Internal.SyntaxCommon

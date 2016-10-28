@@ -30,9 +30,9 @@ import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import Payasan.Base.Internal.AddBeams
-import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamTraversals
+import Payasan.Repr.IRBeam.AddBeams
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.Traversals
 import qualified Payasan.Base.Internal.Pipeline                 as MAIN
 import Payasan.Base.Internal.SyntaxCommon
 

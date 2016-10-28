@@ -26,9 +26,9 @@ module Payasan.Backend.Csound.Internal.BeamToCsound
 import Payasan.Backend.Csound.Internal.IStmt
 import Payasan.Backend.Csound.Internal.Syntax
 
-import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.TiedNoteStream
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.TiedNoteStream
 
 import Payasan.Base.Duration
 

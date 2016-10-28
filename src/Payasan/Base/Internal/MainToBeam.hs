@@ -22,7 +22,7 @@ module Payasan.Base.Internal.MainToBeam
 
 
 
-import qualified Payasan.Base.Internal.BeamSyntax as T
+import qualified Payasan.Repr.IRBeam.Syntax as T
 import Payasan.Base.Internal.MainSyntax
 
 

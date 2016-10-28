@@ -36,7 +36,7 @@ module Payasan.Backend.Csound.Internal.Syntax
 
 import Payasan.Backend.Csound.Internal.IStmt
 
-import qualified Payasan.Base.Internal.BeamSyntax as BEAM
+import qualified Payasan.Repr.IRBeam.Syntax as BEAM
 
 import Payasan.Base.Pitch hiding ( middle_c )
 

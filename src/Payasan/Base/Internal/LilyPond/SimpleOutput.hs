@@ -34,7 +34,7 @@ module Payasan.Base.Internal.LilyPond.SimpleOutput
 
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
-import Payasan.Base.Internal.BeamSyntax
+import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.SyntaxCommon
 

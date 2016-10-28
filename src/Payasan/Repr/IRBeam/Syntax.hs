@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.BeamSyntax
+-- Module      :  Payasan.Repr.IRBeam.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -20,7 +20,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.BeamSyntax
+module Payasan.Repr.IRBeam.Syntax
   ( 
 
   -- * Common Aliases

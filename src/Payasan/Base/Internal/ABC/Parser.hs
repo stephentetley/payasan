@@ -31,7 +31,7 @@ module Payasan.Base.Internal.ABC.Parser
 
 import Payasan.Base.Internal.ABC.Lexer
 import Payasan.Base.Internal.ABC.Syntax
-import Payasan.Base.Internal.BeamSyntax
+import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 
 import Text.Parsec                              -- package: parsec

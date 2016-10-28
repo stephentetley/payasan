@@ -37,7 +37,7 @@ module Payasan.LilyPond.Chordmode.Internal.Base
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 import Payasan.Base.Internal.LilyPond.Syntax
-import qualified Payasan.Base.Internal.BeamSyntax           as BEAM
+import qualified Payasan.Repr.IRBeam.Syntax           as BEAM
 
 
 import Payasan.Base.Duration

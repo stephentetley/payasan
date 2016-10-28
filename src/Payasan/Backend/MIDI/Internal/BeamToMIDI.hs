@@ -24,9 +24,9 @@ module Payasan.Backend.MIDI.Internal.BeamToMIDI
 import qualified Payasan.Backend.MIDI.Internal.PrimitiveSyntax     as T
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.BeamSyntax
 import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.TiedNoteStream
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.TiedNoteStream
 
 import Payasan.Base.Duration
 

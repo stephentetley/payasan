@@ -116,12 +116,13 @@ import Payasan.Base.Internal.Output.Linear.OutputBeam
 import Payasan.Base.Internal.Output.Linear.OutputMain
 
 
-import Payasan.Base.Internal.AddBeams
-import qualified Payasan.Base.Internal.BeamSyntax               as BEAM
 import Payasan.Base.Internal.BeamToMain
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.MainSyntax
 import Payasan.Base.Internal.SyntaxCommon
+
+import Payasan.Repr.IRBeam.AddBeams
+import qualified Payasan.Repr.IRBeam.Syntax               as BEAM
 
 
 

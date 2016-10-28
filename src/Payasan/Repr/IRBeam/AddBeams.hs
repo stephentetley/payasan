@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.AddBeams
+-- Module      :  Payasan.Repr.IRBeam.AddBeams
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.AddBeams
+module Payasan.Repr.IRBeam.AddBeams
   (
     addBeams
   , noBeams
@@ -23,7 +23,7 @@ module Payasan.Base.Internal.AddBeams
 
 
 
-import Payasan.Base.Internal.BeamSyntax
+import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 

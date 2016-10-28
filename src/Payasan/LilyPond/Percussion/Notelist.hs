@@ -56,12 +56,13 @@ import Payasan.LilyPond.Percussion.Internal.Output (drumsOutput)
 import Payasan.LilyPond.Percussion.Internal.Parser (drums)  -- to re-export
 import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
-import Payasan.Base.Internal.AddBeams
 import Payasan.Base.Internal.BeamToMain
-import qualified Payasan.Base.Internal.BeamSyntax as BEAM
 import Payasan.Base.Internal.MainToBeam
 import Payasan.Base.Internal.Shell
 import Payasan.Base.Internal.SyntaxCommon
+
+import Payasan.Repr.IRBeam.AddBeams
+import qualified Payasan.Repr.IRBeam.Syntax as BEAM
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans     as LY
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY

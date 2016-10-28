@@ -28,7 +28,7 @@ module Payasan.LilyPond.Percussion.Internal.Base
 
   ) where
 
-import qualified Payasan.Base.Internal.BeamSyntax as BEAM
+import qualified Payasan.Repr.IRBeam.Syntax as BEAM
 import qualified Payasan.Base.Internal.MainSyntax as MAIN
 
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)

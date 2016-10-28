@@ -23,7 +23,7 @@ module Payasan.Score.Cadenza.Internal.CadenzaToBeam
 
 import Payasan.Score.Cadenza.Internal.Syntax
 
-import qualified Payasan.Base.Internal.BeamSyntax as T
+import qualified Payasan.Repr.IRBeam.Syntax as T
 
 
 translateToBeam :: Part pch drn anno -> T.Part pch drn anno

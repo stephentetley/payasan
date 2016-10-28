@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.BeamTraversals
+-- Module      :  Payasan.Repr.IRBeam.Traversals
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.BeamTraversals
+module Payasan.Repr.IRBeam.Traversals
   (
     Mon 
   , liftElementTrafo
@@ -34,7 +34,7 @@ module Payasan.Base.Internal.BeamTraversals
 
 
 
-import Payasan.Base.Internal.BeamSyntax
+import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.RewriteMonad
 
 

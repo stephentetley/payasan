@@ -21,8 +21,8 @@ module Payasan.Backend.MIDI.Internal.OutTrans
 
 
 import Payasan.Backend.MIDI.Internal.PrimitiveSyntax (MidiPitch, pitchToMidi)
-import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamTraversals
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.Traversals
 
 import Payasan.Base.Pitch
 

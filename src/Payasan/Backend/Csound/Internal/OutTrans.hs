@@ -22,8 +22,8 @@ module Payasan.Backend.Csound.Internal.OutTrans
 
 import Payasan.Backend.Csound.Internal.Syntax
 
-import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamTraversals
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.Traversals
 
 import Payasan.Base.Pitch
 

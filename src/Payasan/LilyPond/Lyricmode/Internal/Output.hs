@@ -30,7 +30,7 @@ import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Base.Internal.BeamSyntax as BEAM
+import qualified Payasan.Repr.IRBeam.Syntax as BEAM
 import Payasan.Base.Internal.SyntaxCommon
 
 

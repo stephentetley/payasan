@@ -26,8 +26,8 @@ module Payasan.Base.Internal.LilyPond.OutTrans
 
 import Payasan.Base.Internal.LilyPond.Syntax
 
-import Payasan.Base.Internal.BeamSyntax
-import Payasan.Base.Internal.BeamTraversals
+import Payasan.Repr.IRBeam.Syntax
+import Payasan.Repr.IRBeam.Traversals
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration
