@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.MainToBeam
+-- Module      :  Payasan.Repr.ExternalToIRBeam
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.MainToBeam
+module Payasan.Repr.ExternalToIRBeam
   (
     translateToBeam
   ) where
@@ -23,7 +23,7 @@ module Payasan.Base.Internal.MainToBeam
 
 
 import qualified Payasan.Repr.IRBeam.Syntax as T
-import Payasan.Base.Internal.MainSyntax
+import Payasan.Repr.External.Syntax
 
 
 

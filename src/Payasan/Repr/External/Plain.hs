@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Plain
+-- Module      :  Payasan.Repr.External.Plain
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Plain
+module Payasan.Repr.External.Plain
   ( 
     NoteListAtom
   , fromNoteList
@@ -24,7 +24,7 @@ module Payasan.Base.Internal.Plain
   ) where
 
 
-import Payasan.Base.Internal.MainSyntax
+import Payasan.Repr.External.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration

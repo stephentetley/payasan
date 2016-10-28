@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Elementary.Internal.ElementaryToMain
+-- Module      :  Payasan.Score.Elementary.Internal.ElementaryToExternal
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -11,12 +11,12 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Elementary syntax to Main syntax (pipline output 
--- from Main syntax).
+-- Convert Elementary syntax to External (Main) syntax (pipline output 
+-- from External syntax).
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Elementary.Internal.ElementaryToMain
+module Payasan.Score.Elementary.Internal.ElementaryToExternal
   (
     translateToMain
   , chordTranslateToMain
@@ -25,7 +25,7 @@ module Payasan.Score.Elementary.Internal.ElementaryToMain
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import qualified Payasan.Base.Internal.MainSyntax as T
+import qualified Payasan.Repr.External.Syntax as T
 import Payasan.Base.Internal.SyntaxCommon
 
 

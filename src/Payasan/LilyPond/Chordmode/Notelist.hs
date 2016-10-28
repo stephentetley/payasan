@@ -60,7 +60,7 @@ import Payasan.LilyPond.Chordmode.Internal.OutTrans
 import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 
 
-import qualified Payasan.Score.Elementary.Internal.ElementaryToMain     as ELEM
+import qualified Payasan.Score.Elementary.Internal.ElementaryToExternal as ELEM
 import qualified Payasan.Score.Elementary.Internal.Syntax               as ELEM
 import qualified Payasan.Score.Elementary.Internal.Traversals           as ELEM
 import Payasan.Score.Elementary.Internal.LinearOutput
@@ -68,7 +68,8 @@ import Payasan.Score.Elementary.Internal.TabularOutput
 import qualified Payasan.Score.Elementary.Notelist                      as ELEM
 
 import Payasan.Repr.IRBeam.AddBeams
-import qualified Payasan.Base.Internal.MainSyntax as MAIN
+import qualified Payasan.Repr.External.Syntax as MAIN
+
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
 import Payasan.Base.Internal.SyntaxCommon

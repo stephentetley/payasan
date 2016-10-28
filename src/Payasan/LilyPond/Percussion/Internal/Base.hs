@@ -28,8 +28,8 @@ module Payasan.LilyPond.Percussion.Internal.Base
 
   ) where
 
+import qualified Payasan.Repr.External.Syntax as MAIN
 import qualified Payasan.Repr.IRBeam.Syntax as BEAM
-import qualified Payasan.Base.Internal.MainSyntax as MAIN
 
 import Payasan.Base.Internal.LilyPond.Syntax (LyNoteLength)
 import Payasan.Backend.MIDI.Internal.PrimitiveSyntax (MidiPitch)

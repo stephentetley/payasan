@@ -78,7 +78,7 @@ module Payasan.Score.Elementary.Notelist
 
 import Payasan.Score.Elementary.Internal.ABCInTrans
 import Payasan.Score.Elementary.Internal.ABCParser (abc)
-import Payasan.Score.Elementary.Internal.ElementaryToMain
+import Payasan.Score.Elementary.Internal.ElementaryToExternal
 import Payasan.Score.Elementary.Internal.LilyPondInTrans
 import Payasan.Score.Elementary.Internal.LilyPondParser (lilypond)
 import Payasan.Score.Elementary.Internal.LinearOutput

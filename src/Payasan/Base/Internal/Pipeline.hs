@@ -115,11 +115,11 @@ import Payasan.Base.Internal.Output.Tabular.OutputMain
 import Payasan.Base.Internal.Output.Linear.OutputBeam
 import Payasan.Base.Internal.Output.Linear.OutputMain
 
-
-import Payasan.Base.Internal.BeamToMain
-import Payasan.Base.Internal.MainToBeam
-import Payasan.Base.Internal.MainSyntax
 import Payasan.Base.Internal.SyntaxCommon
+
+import Payasan.Repr.IRBeamToExternal
+import Payasan.Repr.ExternalToIRBeam
+import Payasan.Repr.External.Syntax
 
 import Payasan.Repr.IRBeam.AddBeams
 import qualified Payasan.Repr.IRBeam.Syntax               as BEAM

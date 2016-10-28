@@ -26,7 +26,7 @@ module Payasan.Base.Internal.Output.Linear.OutputMain
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Linear.Utils
 
-import Payasan.Base.Internal.MainSyntax
+import Payasan.Repr.External.Syntax
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
