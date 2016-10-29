@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Output.Linear.Utils
+-- Module      :  Payasan.PSC.Backend.Output.Linear.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Output.Linear.Utils
+module Payasan.PSC.Backend.Output.Linear.Utils
   ( 
 
     rest

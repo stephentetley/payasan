@@ -70,12 +70,12 @@ import Payasan.Base.Internal.Shell
 import Payasan.Base.Internal.SyntaxCommon
 
 
-import qualified Payasan.Base.Internal.LilyPond.InTrans     as LY
-import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY
+import qualified Payasan.PSC.Backend.LilyPond.InTrans     as LY
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans    as LY
 
-import Payasan.Base.Internal.Output.Common
-import Payasan.Base.Internal.Output.Linear.OutputMain
-import Payasan.Base.Internal.Output.Tabular.OutputMain
+import Payasan.PSC.Backend.Output.Common
+import Payasan.PSC.Backend.Output.Linear.OutputMain
+import Payasan.PSC.Backend.Output.Tabular.OutputMain
 
 import qualified Payasan.Base.Notelist as MAIN
 

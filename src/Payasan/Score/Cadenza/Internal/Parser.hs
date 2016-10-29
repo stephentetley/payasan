@@ -29,9 +29,9 @@ module Payasan.Score.Cadenza.Internal.Parser
 
 import Payasan.Score.Cadenza.Internal.Syntax
 
-import Payasan.Base.Internal.LilyPond.Lexer
-import qualified Payasan.Base.Internal.LilyPond.Parser as P
-import Payasan.Base.Internal.LilyPond.Parser (LyParserDef(..), pitch, noAnno)
+import Payasan.PSC.Backend.LilyPond.Lexer
+import qualified Payasan.PSC.Backend.LilyPond.Parser as P
+import Payasan.PSC.Backend.LilyPond.Parser (LyParserDef(..), pitch, noAnno)
 import Payasan.Base.Internal.SyntaxCommon
 
 

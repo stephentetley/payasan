@@ -21,10 +21,10 @@ module Payasan.LilyPond.Chordmode.Internal.Output
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 
+import Payasan.PSC.Backend.LilyPond.SimpleOutput
+import Payasan.PSC.Backend.LilyPond.Utils
 import qualified Payasan.PSC.Repr.IRBeam.Syntax    as BEAM
 
-import Payasan.Base.Internal.LilyPond.SimpleOutput
-import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Internal.SyntaxCommon
 
 

@@ -70,13 +70,13 @@ import qualified Payasan.Score.Elementary.Notelist                      as ELEM
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import qualified Payasan.PSC.Repr.External.Syntax as MAIN
 
-import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
+import Payasan.PSC.Backend.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
 import Payasan.Base.Internal.SyntaxCommon
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
-import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as RHY
-import Payasan.Base.Internal.LilyPond.Utils
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
+import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as RHY
+import Payasan.PSC.Backend.LilyPond.Utils
 
 import qualified Payasan.Base.Notelist as MAIN
 import Payasan.Base.Duration

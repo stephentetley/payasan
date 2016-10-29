@@ -47,7 +47,7 @@ import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM
 import qualified Payasan.Score.Elementary.Internal.Traversals   as ELEM
 import qualified Payasan.Score.Elementary.Notelist              as ELEM
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
 
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import qualified Payasan.Base.Internal.Pipeline                 as MAIN

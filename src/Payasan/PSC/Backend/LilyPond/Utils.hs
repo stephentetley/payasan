@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPond.Utils
+-- Module      :  Payasan.PSC.Backend.LilyPond.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPond.Utils
+module Payasan.PSC.Backend.LilyPond.Utils
   ( 
 
   -- * Markup
@@ -104,7 +104,8 @@ module Payasan.Base.Internal.LilyPond.Utils
  
   ) where
 
-import Payasan.Base.Internal.LilyPond.Syntax
+import Payasan.PSC.Backend.LilyPond.Syntax
+
 import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Pitch as P

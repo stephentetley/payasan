@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPond.SimpleOutput
+-- Module      :  Payasan.PSC.Backend.LilyPond.SimpleOutput
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPond.SimpleOutput
+module Payasan.PSC.Backend.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
 
@@ -32,10 +32,11 @@ module Payasan.Base.Internal.LilyPond.SimpleOutput
 
   ) where
 
+import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Backend.LilyPond.Utils
+
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.LilyPond.Utils
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.SyntaxCommon
 

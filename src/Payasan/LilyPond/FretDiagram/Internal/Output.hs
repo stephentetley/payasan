@@ -25,9 +25,9 @@ import Payasan.PSC.Repr.IRBeam.Syntax (Part, firstSectionInfo)
 
 import Payasan.Base.Internal.SyntaxCommon
 
-import Payasan.Base.Internal.LilyPond.SimpleOutput
-import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.PSC.Backend.LilyPond.SimpleOutput
+import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Backend.LilyPond.Utils
 
 
 

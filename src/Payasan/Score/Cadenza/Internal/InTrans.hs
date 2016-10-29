@@ -31,7 +31,7 @@ module Payasan.Score.Cadenza.Internal.InTrans
 import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.Score.Cadenza.Internal.Traversals
 
-import Payasan.Base.Internal.LilyPond.Syntax
+import Payasan.PSC.Backend.LilyPond.Syntax
 
 import Payasan.Base.Internal.RewriteMonad
 

@@ -1,9 +1,8 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABC.InTrans
+-- Module      :  Payasan.PSC.Backend.ABC.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -11,34 +10,36 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert ABC to Main Syntax, plus /pushing/ render info
--- into bars as this cannot be done during parsing / 
--- quasiquoting.
+-- Convert pitch and duration to their ABC equivalents prior 
+-- to printing.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABC.InTrans
+module Payasan.PSC.Backend.ABC.OutTrans
   (
-    translateFromInput
+    translateToOutput
   ) where
 
 
+import Payasan.PSC.Backend.ABC.Syntax
+
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals
-
-import Payasan.Base.Internal.ABC.Syntax
 
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Internal.SyntaxCommon
 
+
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-translateFromInput :: Part ABCPitch ABCNoteLength anno 
-                   -> Part Pitch Duration anno
-translateFromInput = transformP pch_algo . transformD drn_algo
+
+
+
+translateToOutput :: StdBeamPart1 anno -> ABCPart1 anno
+translateToOutput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a
 type DTMon a = Mon UnitNoteLength a
@@ -47,7 +48,10 @@ type DTMon a = Mon UnitNoteLength a
 -- Pitch translation
 
 
-pch_algo :: BeamPitchAlgo () ABCPitch Pitch
+-- TODO - This should be aware of keysig changes...
+
+
+pch_algo :: BeamPitchAlgo () Pitch ABCPitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
@@ -55,8 +59,8 @@ pch_algo = BeamPitchAlgo
 
 
 
-elementP :: Element ABCPitch drn anno -> PTMon (Element Pitch drn anno)
-elementP (NoteElem e a t)       = (\e1 -> NoteElem e1 a t)  <$> noteP e
+elementP :: Element Pitch drn anno -> PTMon (Element ABCPitch drn anno)
+elementP (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
 elementP (Spacer d)             = pure $ Spacer d
 elementP (Skip d)               = pure $ Skip d
@@ -67,31 +71,28 @@ elementP (Graces ns)            = Graces    <$> mapM noteP ns
 elementP (Punctuation s)        = pure $ Punctuation s
 
 
-noteP :: Note ABCPitch drn -> PTMon (Note Pitch drn)
+noteP :: Note Pitch drn -> PTMon (Note ABCPitch drn)
 noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
 
-
-
--- Pitches might be /natural/ in the score when the are
--- actually sharpened or flattened according to key 
--- signature
-
-transPch :: ABCPitch -> PTMon Pitch
-transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
-
-
+-- This should be optimized to not make a scale each time!
+--
+transPch :: Pitch -> PTMon ABCPitch
+transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asks section_key
 
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: BeamDurationAlgo UnitNoteLength ABCNoteLength Duration
+drn_algo :: BeamDurationAlgo UnitNoteLength Duration ABCNoteLength
 drn_algo = BeamDurationAlgo
     { initial_stateD    = UNIT_NOTE_8
     , element_trafoD    = elementD
     }
 
 
-elementD :: Element pch ABCNoteLength anno -> DTMon (Element pch Duration anno)
+
+-- Skip is just a Rest to ABC
+--
+elementD :: Element pch Duration anno -> DTMon (Element pch ABCNoteLength anno)
 elementD (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteD e
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Spacer d)             = Spacer    <$> changeDrn d
@@ -101,12 +102,12 @@ elementD (Graces ns)            = Graces    <$> mapM noteD ns
 elementD (Punctuation s)        = pure $ Punctuation s
 
 
-noteD :: Note pch ABCNoteLength -> DTMon (Note pch Duration)
+noteD :: Note pch Duration -> DTMon (Note pch ABCNoteLength)
 noteD (Note pch drn)            = Note pch <$> changeDrn drn
 
 
-changeDrn :: ABCNoteLength -> DTMon Duration
+changeDrn :: Duration -> DTMon ABCNoteLength
 changeDrn d                     = 
-    (\unl -> toDuration unl d) <$> asks section_unit_note_len
+    (\unl -> fromDuration unl d) <$> asks section_unit_note_len
 
 

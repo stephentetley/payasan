@@ -23,7 +23,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Parser
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
 
-import Payasan.Base.Internal.LilyPond.Lexer
+import Payasan.PSC.Backend.LilyPond.Lexer
 
 
 

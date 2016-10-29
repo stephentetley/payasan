@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABC.Output
+-- Module      :  Payasan.PSC.Backend.ABC.Output
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,15 +14,16 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABC.Output
+module Payasan.PSC.Backend.ABC.Output
   ( 
     abcOutput
   ) where
 
+import Payasan.PSC.Backend.ABC.Syntax
+import Payasan.PSC.Backend.ABC.Utils
+
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Internal.ABC.Syntax
-import Payasan.Base.Internal.ABC.Utils
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.SyntaxCommon
 

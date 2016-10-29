@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPond.OutTrans
+-- Module      :  Payasan.PSC.Backend.LilyPond.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPond.OutTrans
+module Payasan.PSC.Backend.LilyPond.OutTrans
   (
     translateToOutput_Relative
   , translateToOutput_Absolute
@@ -23,11 +23,11 @@ module Payasan.Base.Internal.LilyPond.OutTrans
   ) where
 
 
+import Payasan.PSC.Backend.LilyPond.Syntax
 
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals
 
-import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration

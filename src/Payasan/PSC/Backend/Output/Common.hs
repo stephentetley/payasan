@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Output.Common
+-- Module      :  Payasan.PSC.Backend.Output.Common
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Output.Common
+module Payasan.PSC.Backend.Output.Common
   ( 
 
     LeafOutput(..)
@@ -34,8 +34,8 @@ module Payasan.Base.Internal.Output.Common
   ) where
 
 
-import qualified Payasan.Base.Internal.LilyPond.Syntax as LY
-import qualified Payasan.Base.Internal.ABC.Syntax as ABC
+import qualified Payasan.PSC.Backend.LilyPond.Syntax    as LY
+import qualified Payasan.PSC.Backend.ABC.Syntax         as ABC
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

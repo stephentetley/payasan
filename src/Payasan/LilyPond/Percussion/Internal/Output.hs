@@ -21,8 +21,8 @@ module Payasan.LilyPond.Percussion.Internal.Output
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.Base.Internal.LilyPond.SimpleOutput
-import Payasan.Base.Internal.LilyPond.Utils
+import Payasan.PSC.Backend.LilyPond.SimpleOutput
+import Payasan.PSC.Backend.LilyPond.Utils
 import Payasan.Base.Internal.SyntaxCommon
 
 

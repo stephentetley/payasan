@@ -22,9 +22,9 @@ module Payasan.Score.Elementary.Internal.ABCParser
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.Base.Internal.ABC.Lexer
-import qualified Payasan.Base.Internal.ABC.Parser as P
-import Payasan.Base.Internal.ABC.Syntax (ABCPitch)
+import Payasan.PSC.Backend.ABC.Lexer
+import qualified Payasan.PSC.Backend.ABC.Parser as P
+import Payasan.PSC.Backend.ABC.Syntax (ABCPitch)
 
 import Payasan.Base.Internal.SyntaxCommon
 

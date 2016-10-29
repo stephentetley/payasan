@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABC.Utils
+-- Module      :  Payasan.PSC.Backend.ABC.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABC.Utils
+module Payasan.PSC.Backend.ABC.Utils
   ( 
 
   -- * Output
@@ -39,9 +39,10 @@ module Payasan.Base.Internal.ABC.Utils
  
   ) where
 
+import Payasan.PSC.Backend.ABC.Syntax
+
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Pitch as P

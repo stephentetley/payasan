@@ -92,28 +92,28 @@ import qualified Payasan.PSC.Backend.MIDI.Internal.OutTrans         as MIDI
 import qualified Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
 
 
-import qualified Payasan.Base.Internal.ABC.InTrans              as ABC
-import qualified Payasan.Base.Internal.ABC.OutTrans             as ABC
-import Payasan.Base.Internal.ABC.Output (abcOutput)
-import Payasan.Base.Internal.ABC.Parser (abc)
-import Payasan.Base.Internal.ABC.Syntax (ABCPart)
+import qualified Payasan.PSC.Backend.ABC.InTrans              as ABC
+import qualified Payasan.PSC.Backend.ABC.OutTrans             as ABC
+import Payasan.PSC.Backend.ABC.Output (abcOutput)
+import Payasan.PSC.Backend.ABC.Parser (abc)
+import Payasan.PSC.Backend.ABC.Syntax (ABCPart)
 
 
-import qualified Payasan.Base.Internal.LilyPond.InTrans         as LY
-import qualified Payasan.Base.Internal.LilyPond.RhythmicMarkup  as LY
-import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
-import Payasan.Base.Internal.LilyPond.Parser (lilypond)
-import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
-import qualified Payasan.Base.Internal.LilyPond.Syntax          as LY
-import Payasan.Base.Internal.LilyPond.Syntax (LyPart1)
-import Payasan.Base.Internal.LilyPond.Utils
+import qualified Payasan.PSC.Backend.LilyPond.InTrans         as LY
+import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LY
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
+import Payasan.PSC.Backend.LilyPond.Parser (lilypond)
+import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LY
+import qualified Payasan.PSC.Backend.LilyPond.Syntax          as LY
+import Payasan.PSC.Backend.LilyPond.Syntax (LyPart1)
+import Payasan.PSC.Backend.LilyPond.Utils
 
 
-import Payasan.Base.Internal.Output.Common
-import Payasan.Base.Internal.Output.Tabular.OutputBeam
-import Payasan.Base.Internal.Output.Tabular.OutputMain
-import Payasan.Base.Internal.Output.Linear.OutputBeam
-import Payasan.Base.Internal.Output.Linear.OutputMain
+import Payasan.PSC.Backend.Output.Common
+import Payasan.PSC.Backend.Output.Tabular.OutputBeam
+import Payasan.PSC.Backend.Output.Tabular.OutputMain
+import Payasan.PSC.Backend.Output.Linear.OutputBeam
+import Payasan.PSC.Backend.Output.Linear.OutputMain
 
 import Payasan.Base.Internal.SyntaxCommon
 

@@ -25,10 +25,10 @@ module Payasan.Models.Polyrhythms.Base
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
-import Payasan.Base.Internal.LilyPond.SimpleOutput
-import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Base.Internal.LilyPond.Utils
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
+import Payasan.PSC.Backend.LilyPond.SimpleOutput
+import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Backend.LilyPond.Utils
 
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import Payasan.PSC.Repr.IRBeam.Syntax

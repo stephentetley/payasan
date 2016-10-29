@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.LilyPond.Syntax
+-- Module      :  Payasan.PSC.Backend.LilyPond.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.LilyPond.Syntax
+module Payasan.PSC.Backend.LilyPond.Syntax
   ( 
 
     LyPart1

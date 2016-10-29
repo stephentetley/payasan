@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Output.Tabular.Utils
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Backend.Output.Tabular.Utils
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Output.Tabular.Utils
+module Payasan.PSC.Backend.Output.Tabular.Utils
   ( 
 
     (<++>)

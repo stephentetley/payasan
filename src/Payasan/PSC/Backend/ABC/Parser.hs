@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.ABC.Parser
+-- Module      :  Payasan.PSC.Backend.ABC.Parser
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.ABC.Parser
+module Payasan.PSC.Backend.ABC.Parser
   (
     abc
 
@@ -29,10 +29,11 @@ module Payasan.Base.Internal.ABC.Parser
 
   ) where
 
+import Payasan.PSC.Backend.ABC.Lexer
+import Payasan.PSC.Backend.ABC.Syntax
+
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Internal.ABC.Lexer
-import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 
 import Text.Parsec                              -- package: parsec
