@@ -82,14 +82,14 @@ module Payasan.Base.Internal.Pipeline
 
 -- Note - temporary imports
 -- Csound imports should not be accessed by Payasan.Base
-import Payasan.Backend.Csound.Internal.BeamToCsound
-import Payasan.Backend.Csound.Internal.Output
-import qualified Payasan.Backend.Csound.Internal.OutTrans          as CS
+import Payasan.PSC.Backend.Csound.Internal.BeamToCsound
+import Payasan.PSC.Backend.Csound.Internal.Output
+import qualified Payasan.PSC.Backend.Csound.Internal.OutTrans          as CS
 
-import qualified Payasan.Backend.MIDI.Internal.BeamToMIDI       as MIDI
-import qualified Payasan.Backend.MIDI.Internal.Output           as MIDI
-import qualified Payasan.Backend.MIDI.Internal.OutTrans         as MIDI
-import qualified Payasan.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Internal.BeamToMIDI       as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Internal.Output           as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Internal.OutTrans         as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
 
 
 import qualified Payasan.Base.Internal.ABC.InTrans              as ABC
@@ -117,12 +117,12 @@ import Payasan.Base.Internal.Output.Linear.OutputMain
 
 import Payasan.Base.Internal.SyntaxCommon
 
-import Payasan.Repr.IRBeamToExternal
-import Payasan.Repr.ExternalToIRBeam
-import Payasan.Repr.External.Syntax
+import Payasan.PSC.Repr.IRBeamToExternal
+import Payasan.PSC.Repr.ExternalToIRBeam
+import Payasan.PSC.Repr.External.Syntax
 
-import Payasan.Repr.IRBeam.AddBeams
-import qualified Payasan.Repr.IRBeam.Syntax               as BEAM
+import Payasan.PSC.Repr.IRBeam.AddBeams
+import qualified Payasan.PSC.Repr.IRBeam.Syntax               as BEAM
 
 
 

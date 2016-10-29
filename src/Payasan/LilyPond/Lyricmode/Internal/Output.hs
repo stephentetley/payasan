@@ -26,11 +26,12 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
+import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import qualified Payasan.Repr.IRBeam.Syntax as BEAM
 import Payasan.Base.Internal.SyntaxCommon
 
 

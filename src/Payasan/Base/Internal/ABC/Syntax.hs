@@ -49,7 +49,7 @@ module Payasan.Base.Internal.ABC.Syntax
 
   ) where
 
-import qualified Payasan.Repr.IRBeam.Syntax as BEAM
+import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Internal.SyntaxCommon
 

@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Backend.Csound.Internal.Syntax
+-- Module      :  Payasan.PSC.Backend.Csound.Internal.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Backend.Csound.Internal.Syntax
+module Payasan.PSC.Backend.Csound.Internal.Syntax
   ( 
 
     CsoundNoteStream
@@ -34,9 +34,9 @@ module Payasan.Backend.Csound.Internal.Syntax
 
   ) where
 
-import Payasan.Backend.Csound.Internal.IStmt
+import Payasan.PSC.Backend.Csound.Internal.IStmt
 
-import qualified Payasan.Repr.IRBeam.Syntax as BEAM
+import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 
 import Payasan.Base.Pitch hiding ( middle_c )
 

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Backend.MIDI.Internal.Output
+-- Module      :  Payasan.PSC.Backend.MIDI.Internal.Output
 -- Copyright   :  (c) Stephen Tetley 2014-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Backend.MIDI.Internal.Output
+module Payasan.PSC.Backend.MIDI.Internal.Output
   ( 
     render
   , midiFileFormat0
@@ -24,7 +24,7 @@ module Payasan.Backend.MIDI.Internal.Output
 
   ) where
 
-import Payasan.Backend.MIDI.Internal.PrimitiveSyntax
+import Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.Utils

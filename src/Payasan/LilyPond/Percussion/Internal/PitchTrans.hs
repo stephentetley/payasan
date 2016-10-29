@@ -21,9 +21,9 @@ module Payasan.LilyPond.Percussion.Internal.PitchTrans
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.Backend.MIDI.Internal.PrimitiveSyntax (MidiPitch)
-import Payasan.Repr.IRBeam.Syntax
-import Payasan.Repr.IRBeam.Traversals
+import Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax (MidiPitch)
+import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.Traversals
 
 import Payasan.Base.Duration
 

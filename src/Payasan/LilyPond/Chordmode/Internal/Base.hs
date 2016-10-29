@@ -34,10 +34,10 @@ module Payasan.LilyPond.Chordmode.Internal.Base
 
   ) where
 
+import qualified Payasan.PSC.Repr.IRBeam.Syntax             as BEAM
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 import Payasan.Base.Internal.LilyPond.Syntax
-import qualified Payasan.Repr.IRBeam.Syntax           as BEAM
 
 
 import Payasan.Base.Duration

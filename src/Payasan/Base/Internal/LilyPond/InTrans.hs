@@ -22,10 +22,10 @@ module Payasan.Base.Internal.LilyPond.InTrans
   ) where
 
 
-import Payasan.Base.Internal.LilyPond.Syntax
+import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.Traversals
 
-import Payasan.Repr.IRBeam.Syntax
-import Payasan.Repr.IRBeam.Traversals
+import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Duration

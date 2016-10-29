@@ -39,8 +39,9 @@ module Payasan.Base.Internal.ABC.Utils
  
   ) where
 
+import Payasan.PSC.Repr.IRBeam.Syntax
+
 import Payasan.Base.Internal.ABC.Syntax
-import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Pitch as P

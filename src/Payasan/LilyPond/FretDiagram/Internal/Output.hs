@@ -21,7 +21,8 @@ module Payasan.LilyPond.FretDiagram.Internal.Output
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
-import Payasan.Repr.IRBeam.Syntax (Part, firstSectionInfo)
+import Payasan.PSC.Repr.IRBeam.Syntax (Part, firstSectionInfo)
+
 import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Internal.LilyPond.SimpleOutput

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Repr.IRBeamToExternal
+-- Module      :  Payasan.Repr.PSC.IRBeamToExternal
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -12,16 +12,19 @@
 --
 -- Convert Beam syntax to Main syntax after parsing.
 --
+-- WARNING / TODO - this module should be redundant. Concrete syntax
+-- should parse to external.
+--
 --------------------------------------------------------------------------------
 
-module Payasan.Repr.IRBeamToExternal
+module Payasan.PSC.Repr.IRBeamToExternal
   (
     translateToMain
   ) where
 
 
-import Payasan.Repr.IRBeam.Syntax
-import qualified Payasan.Repr.External.Syntax as T
+import Payasan.PSC.Repr.IRBeam.Syntax
+import qualified Payasan.PSC.Repr.External.Syntax as T
 
 
 

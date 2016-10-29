@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Backend.MIDI.Internal.BeamToMIDI
+-- Module      :  Payasan.PSC.Backend.MIDI.Internal.BeamToMIDI
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,19 +14,19 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Backend.MIDI.Internal.BeamToMIDI
+module Payasan.PSC.Backend.MIDI.Internal.BeamToMIDI
   ( 
 
     translateToMIDI
 
   ) where
 
-import qualified Payasan.Backend.MIDI.Internal.PrimitiveSyntax     as T
+import qualified Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax     as T
 
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.RewriteMonad
-import Payasan.Repr.IRBeam.Syntax
-import Payasan.Repr.IRBeam.TiedNoteStream
+import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.TiedNoteStream
 
 import Payasan.Base.Duration
 

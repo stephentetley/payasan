@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Backend.MIDI.Internal.OutTrans
+-- Module      :  Payasan.PSC.Backend.MIDI.Internal.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,15 +14,15 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Backend.MIDI.Internal.OutTrans
+module Payasan.PSC.Backend.MIDI.Internal.OutTrans
   ( 
     translateToMidiP
   ) where
 
 
-import Payasan.Backend.MIDI.Internal.PrimitiveSyntax (MidiPitch, pitchToMidi)
-import Payasan.Repr.IRBeam.Syntax
-import Payasan.Repr.IRBeam.Traversals
+import Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax (MidiPitch, pitchToMidi)
+import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.Traversals
 
 import Payasan.Base.Pitch
 

@@ -60,7 +60,7 @@ module Payasan.Base.Internal.LilyPond.Syntax
 
   ) where
 
-import Payasan.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
 

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Repr.ExternalToIRBeam
+-- Module      :  Payasan.PSC.Repr.ExternalToIRBeam
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,15 +15,15 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Repr.ExternalToIRBeam
+module Payasan.PSC.Repr.ExternalToIRBeam
   (
     translateToBeam
   ) where
 
 
 
-import qualified Payasan.Repr.IRBeam.Syntax as T
-import Payasan.Repr.External.Syntax
+import qualified Payasan.PSC.Repr.IRBeam.Syntax as T
+import Payasan.PSC.Repr.External.Syntax
 
 
 

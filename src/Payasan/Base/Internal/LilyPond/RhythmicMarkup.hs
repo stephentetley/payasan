@@ -27,14 +27,14 @@ module Payasan.Base.Internal.LilyPond.RhythmicMarkup
   ) where
 
 
+import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.Traversals
 
 import Payasan.Base.Internal.LilyPond.OutTrans
 import Payasan.Base.Internal.LilyPond.SimpleOutput
 import Payasan.Base.Internal.LilyPond.Syntax
 import Payasan.Base.Internal.LilyPond.Utils
 
-import Payasan.Repr.IRBeam.Syntax
-import Payasan.Repr.IRBeam.Traversals
 import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration

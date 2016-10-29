@@ -19,9 +19,10 @@ module Payasan.Base.Internal.ABC.Output
     abcOutput
   ) where
 
+import Payasan.PSC.Repr.IRBeam.Syntax
+
 import Payasan.Base.Internal.ABC.Syntax
 import Payasan.Base.Internal.ABC.Utils
-import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.SyntaxCommon
 

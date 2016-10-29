@@ -25,10 +25,10 @@ module Payasan.Base.Internal.Output.Tabular.OutputBeam
     
   ) where
 
+import Payasan.PSC.Repr.IRBeam.Syntax
+
 import Payasan.Base.Internal.Output.Common (LeafOutput(..))
 import Payasan.Base.Internal.Output.Tabular.Utils
-
-import Payasan.Repr.IRBeam.Syntax
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty

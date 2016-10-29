@@ -42,10 +42,10 @@ module Payasan.Base.Internal.LilyPond.Parser
 
   ) where
 
+import Payasan.PSC.Repr.IRBeam.Syntax
 
 import Payasan.Base.Internal.LilyPond.Lexer
 import Payasan.Base.Internal.LilyPond.Syntax
-import Payasan.Repr.IRBeam.Syntax
 import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 

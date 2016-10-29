@@ -23,11 +23,11 @@ module Payasan.Base.Internal.ABC.InTrans
   ) where
 
 
+import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.IRBeam.Traversals
 
 import Payasan.Base.Internal.ABC.Syntax
 
-import Payasan.Repr.IRBeam.Syntax
-import Payasan.Repr.IRBeam.Traversals
 import Payasan.Base.Internal.RewriteMonad
 import Payasan.Base.Internal.Scale
 import Payasan.Base.Internal.SyntaxCommon

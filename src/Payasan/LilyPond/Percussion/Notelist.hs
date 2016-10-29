@@ -56,13 +56,19 @@ import Payasan.LilyPond.Percussion.Internal.Output (drumsOutput)
 import Payasan.LilyPond.Percussion.Internal.Parser (drums)  -- to re-export
 import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
-import Payasan.Repr.IRBeamToExternal
-import Payasan.Repr.ExternalToIRBeam
+import Payasan.PSC.Repr.IRBeamToExternal
+import Payasan.PSC.Repr.ExternalToIRBeam
+import Payasan.PSC.Repr.IRBeam.AddBeams
+import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+
+import qualified Payasan.PSC.Backend.MIDI.Internal.BeamToMIDI       as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Internal.Output           as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
+
+
 import Payasan.Base.Internal.Shell
 import Payasan.Base.Internal.SyntaxCommon
 
-import Payasan.Repr.IRBeam.AddBeams
-import qualified Payasan.Repr.IRBeam.Syntax as BEAM
 
 import qualified Payasan.Base.Internal.LilyPond.InTrans     as LY
 import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY
@@ -70,10 +76,6 @@ import qualified Payasan.Base.Internal.LilyPond.OutTrans    as LY
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Linear.OutputMain
 import Payasan.Base.Internal.Output.Tabular.OutputMain
-
-import qualified Payasan.Backend.MIDI.Internal.BeamToMIDI       as MIDI
-import qualified Payasan.Backend.MIDI.Internal.Output           as MIDI
-import qualified Payasan.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
 
 import qualified Payasan.Base.Notelist as MAIN
 

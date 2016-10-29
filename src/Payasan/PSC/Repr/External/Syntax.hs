@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Repr.External.Syntax
+-- Module      :  Payasan.PSC.Repr.External.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Repr.External.Syntax
+module Payasan.PSC.Repr.External.Syntax
   ( 
    
     StdPart

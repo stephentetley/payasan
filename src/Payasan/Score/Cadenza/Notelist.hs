@@ -50,7 +50,7 @@ import qualified Payasan.Base.Internal.LilyPond.OutTrans        as LY
 import qualified Payasan.Base.Internal.LilyPond.SimpleOutput    as LY
 import qualified Payasan.Base.Internal.LilyPond.Utils           as PP
 
-import Payasan.Repr.IRBeam.AddBeams (noBeams)
+import Payasan.PSC.Repr.IRBeam.AddBeams (noBeams)
 import Payasan.Base.Internal.Pipeline (LilyPondPipeline(..))
 import qualified Payasan.Base.Internal.Pipeline                 as MAIN
 import Payasan.Base.Internal.Shell

@@ -25,7 +25,8 @@ module Payasan.Score.Elementary.Internal.ElementaryToExternal
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import qualified Payasan.Repr.External.Syntax as T
+import qualified Payasan.PSC.Repr.External.Syntax as T
+
 import Payasan.Base.Internal.SyntaxCommon
 
 

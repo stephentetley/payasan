@@ -25,10 +25,10 @@ module Payasan.Base.Internal.Output.Tabular.OutputMain
     
   ) where
 
+import Payasan.PSC.Repr.External.Syntax
+
 import Payasan.Base.Internal.Output.Common
 import Payasan.Base.Internal.Output.Tabular.Utils
-
-import Payasan.Repr.External.Syntax
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty

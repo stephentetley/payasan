@@ -67,8 +67,8 @@ import Payasan.Score.Elementary.Internal.LinearOutput
 import Payasan.Score.Elementary.Internal.TabularOutput
 import qualified Payasan.Score.Elementary.Notelist                      as ELEM
 
-import Payasan.Repr.IRBeam.AddBeams
-import qualified Payasan.Repr.External.Syntax as MAIN
+import Payasan.PSC.Repr.IRBeam.AddBeams
+import qualified Payasan.PSC.Repr.External.Syntax as MAIN
 
 import Payasan.Base.Internal.Output.Common ( LeafOutput(..) )
 import Payasan.Base.Internal.Shell
