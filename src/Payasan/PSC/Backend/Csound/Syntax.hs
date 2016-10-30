@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.Internal.Syntax
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Backend.Csound.Syntax
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.Internal.Syntax
+module Payasan.PSC.Backend.Csound.Syntax
   ( 
 
     CsoundNoteStream
@@ -34,7 +34,7 @@ module Payasan.PSC.Backend.Csound.Internal.Syntax
 
   ) where
 
-import Payasan.PSC.Backend.Csound.Internal.IStmt
+import Payasan.PSC.Backend.Csound.IStmt
 
 import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 

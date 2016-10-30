@@ -61,9 +61,9 @@ import Payasan.PSC.Repr.ExternalToIRBeam
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 
-import qualified Payasan.PSC.Backend.MIDI.Internal.BeamToMIDI       as MIDI
-import qualified Payasan.PSC.Backend.MIDI.Internal.Output           as MIDI
-import qualified Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
+import qualified Payasan.PSC.Backend.MIDI.BeamToMIDI       as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Output           as MIDI
+import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax  as MIDI
 
 
 import Payasan.PSC.Shell

@@ -13,10 +13,10 @@ import Payasan.Base.Names.Pitch
 
 import Payasan.PSC.Backend.LilyPond.Syntax (fromPitchRel, LyPitch)
 
-import Payasan.PSC.Backend.Csound.Internal.BeamToCsound
-import Payasan.PSC.Backend.Csound.Internal.IStmt
-import Payasan.PSC.Backend.Csound.Internal.Output
-import Payasan.PSC.Backend.Csound.Internal.Syntax hiding (middle_c)
+import Payasan.PSC.Backend.Csound.BeamToCsound
+import Payasan.PSC.Backend.Csound.IStmt
+import Payasan.PSC.Backend.Csound.Output
+import Payasan.PSC.Backend.Csound.Syntax hiding (middle_c)
 
 
 import Payasan.Base.Names.Pitch

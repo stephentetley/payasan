@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.Internal.Output
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Backend.Csound.Output
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.Internal.Output
+module Payasan.PSC.Backend.Csound.Output
   ( 
 
     ColumnSpecs
@@ -28,7 +28,7 @@ module Payasan.PSC.Backend.Csound.Internal.Output
 
 
 import Payasan.Base.Internal.Base
-import Payasan.PSC.Backend.Csound.Internal.IStmt
+import Payasan.PSC.Backend.Csound.IStmt
 
 import Text.PrettyPrint.HughesPJ hiding ( empty, render ) -- package: pretty
 import qualified Text.PrettyPrint.HughesPJ as P
