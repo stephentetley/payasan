@@ -17,7 +17,7 @@
 module Payasan.LilyPond.Lyricmode.Notelist
   ( 
 
-    module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Shell
    
   , LyricPart1
   , lyricmode
@@ -47,12 +47,12 @@ import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM
 import qualified Payasan.Score.Elementary.Internal.Traversals   as ELEM
 import qualified Payasan.Score.Elementary.Notelist              as ELEM
 
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans          as LY
 
 import Payasan.PSC.Repr.IRBeam.AddBeams
-import qualified Payasan.Base.Internal.Pipeline                 as MAIN
-import Payasan.Base.Internal.Shell
-import Payasan.Base.Internal.SyntaxCommon
+import qualified Payasan.PSC.Pipeline                           as MAIN
+import Payasan.PSC.Shell
+import Payasan.PSC.Base.SyntaxCommon
 
 
 

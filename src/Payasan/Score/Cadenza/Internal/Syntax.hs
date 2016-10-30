@@ -50,7 +50,7 @@ module Payasan.Score.Cadenza.Internal.Syntax
   ) where
 
 import Payasan.PSC.Backend.LilyPond.Syntax
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

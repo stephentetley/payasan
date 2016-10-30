@@ -28,7 +28,7 @@ module Payasan.PSC.Repr.IRBeam.TiedNoteStream
 import Payasan.PSC.Repr.IRBeam.Syntax
 
 import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 

@@ -24,8 +24,8 @@ import Payasan.PSC.Backend.ABC.Utils
 
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 

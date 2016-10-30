@@ -35,7 +35,7 @@ module Payasan.PSC.Repr.IRBeam.Traversals
 
 
 import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.Base.Internal.RewriteMonad
+import Payasan.PSC.Base.RewriteMonad
 
 
 type Mon st a = Rewrite st a

@@ -75,9 +75,9 @@ module Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.PSC.Backend.ABC.Syntax
 import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Internal.AnalysisCommon
-import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

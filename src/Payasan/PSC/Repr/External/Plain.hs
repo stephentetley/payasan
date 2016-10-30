@@ -25,7 +25,7 @@ module Payasan.PSC.Repr.External.Plain
 
 
 import Payasan.PSC.Repr.External.Syntax
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

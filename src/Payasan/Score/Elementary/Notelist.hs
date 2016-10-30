@@ -17,7 +17,7 @@
 module Payasan.Score.Elementary.Notelist
   ( 
 
-    module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Shell
   , module Payasan.Score.Elementary.Internal.Transform
 
   , Part
@@ -90,10 +90,10 @@ import Payasan.Score.Elementary.Internal.Traversals
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LY
 
 import Payasan.PSC.Backend.Output.Common ( LeafOutput(..) )
-import Payasan.Base.Internal.Shell
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Shell
+import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.Base.Notelist as MAIN
+import qualified Payasan.PSC.Notelist as MAIN
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

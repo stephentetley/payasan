@@ -35,7 +35,7 @@ import Payasan.PSC.Backend.LilyPond.Utils
 
 import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Internal.Utils (ParsecParser)
 
 import Payasan.Base.Duration

@@ -27,7 +27,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 
 import qualified Payasan.PSC.Repr.External.Syntax as T
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 
 

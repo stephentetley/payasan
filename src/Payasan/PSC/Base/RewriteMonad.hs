@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.RewriteMonad
+-- Module      :  Payasan.PSC.Base.RewriteMonad
 -- Copyright   :  (c) Stephen Tetley 2014-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.RewriteMonad
+module Payasan.PSC.Base.RewriteMonad
   ( 
 
     Rewrite
@@ -30,7 +30,7 @@ module Payasan.Base.Internal.RewriteMonad
 
   )  where
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 --------------------------------------------------------------------------------
 

@@ -30,7 +30,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.PSC.Backend.LilyPond.Lexer
 import qualified Payasan.PSC.Backend.LilyPond.Parser as P
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 
 import Text.Parsec                              -- package: parsec

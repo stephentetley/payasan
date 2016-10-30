@@ -33,8 +33,8 @@ import Payasan.PSC.Backend.LilyPond.Utils
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals
-import qualified Payasan.Base.Internal.Pipeline                 as MAIN
-import Payasan.Base.Internal.SyntaxCommon
+import qualified Payasan.PSC.Pipeline                 as MAIN
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

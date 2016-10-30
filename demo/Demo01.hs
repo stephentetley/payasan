@@ -3,8 +3,8 @@
 
 module Demo01 where
 
-import Payasan.Base.Internal.ABC.Output (abcOutput) -- temp
-import Payasan.Base.Notelist
+import Payasan.PSC.Backend.ABC.Output (abcOutput) -- temp
+import Payasan.PSC.Notelist
 
 
 

@@ -24,7 +24,7 @@ module Payasan.PSC.Repr.IRBeam.AddBeams
 
 
 import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 
 

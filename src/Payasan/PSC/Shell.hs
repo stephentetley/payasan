@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Shell
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Shell
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Shell
+module Payasan.PSC.Shell
   ( 
     payasan_temp_directory
   , default_shell_help

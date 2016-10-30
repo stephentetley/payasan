@@ -17,7 +17,7 @@
 module Payasan.Score.Cadenza.Notelist
   ( 
 
-    module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Shell
    
   , StdCadenzaPart
   , cadenza
@@ -51,10 +51,10 @@ import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LY
 import qualified Payasan.PSC.Backend.LilyPond.Utils           as PP
 
 import Payasan.PSC.Repr.IRBeam.AddBeams (noBeams)
-import Payasan.Base.Internal.Pipeline (LilyPondPipeline(..))
-import qualified Payasan.Base.Internal.Pipeline                 as MAIN
-import Payasan.Base.Internal.Shell
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Pipeline (LilyPondPipeline(..))
+import qualified Payasan.PSC.Pipeline                         as MAIN
+import Payasan.PSC.Shell
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Pitch
 

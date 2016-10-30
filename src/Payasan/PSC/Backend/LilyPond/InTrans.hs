@@ -27,7 +27,7 @@ import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals
 
-import Payasan.Base.Internal.RewriteMonad
+import Payasan.PSC.Base.RewriteMonad
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

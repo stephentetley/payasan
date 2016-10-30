@@ -27,9 +27,10 @@ import Payasan.PSC.Backend.ABC.Syntax
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals
 
-import Payasan.Base.Internal.RewriteMonad
+import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
+
 import Payasan.Base.Internal.Scale
-import Payasan.Base.Internal.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

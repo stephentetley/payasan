@@ -17,7 +17,7 @@
 module Payasan.LilyPond.Chordmode.Notelist
   ( 
 
-    module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Shell
 
   , StdChordPart
   , chordmode
@@ -71,14 +71,14 @@ import Payasan.PSC.Repr.IRBeam.AddBeams
 import qualified Payasan.PSC.Repr.External.Syntax as MAIN
 
 import Payasan.PSC.Backend.Output.Common ( LeafOutput(..) )
-import Payasan.Base.Internal.Shell
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Shell
+import Payasan.PSC.Base.SyntaxCommon
 
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as RHY
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import qualified Payasan.Base.Notelist as MAIN
+import qualified Payasan.PSC.Notelist as MAIN
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

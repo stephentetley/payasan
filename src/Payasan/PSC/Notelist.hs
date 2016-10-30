@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Notelist
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Notelist
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -11,16 +11,18 @@
 -- Portability :  GHC
 --
 -- (Just export Pipeline for time being)
+-- 
+-- NOTE - this module will soon be removed
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Notelist
+module Payasan.PSC.Notelist
   ( 
 
-    module Payasan.Base.Internal.Pipeline
-  , module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Pipeline
+  , module Payasan.PSC.Shell
 
   ) where
 
-import Payasan.Base.Internal.Pipeline
-import Payasan.Base.Internal.Shell
+import Payasan.PSC.Pipeline
+import Payasan.PSC.Shell

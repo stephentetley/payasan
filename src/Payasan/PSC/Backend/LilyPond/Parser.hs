@@ -46,8 +46,8 @@ import Payasan.PSC.Backend.LilyPond.Lexer
 import Payasan.PSC.Backend.LilyPond.Syntax
 
 import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.Internal.SyntaxCommon
 import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec

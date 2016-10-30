@@ -25,7 +25,7 @@ import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty

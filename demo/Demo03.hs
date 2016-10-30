@@ -7,22 +7,22 @@ module Demo03 where
 import qualified Payasan.Models.Polyrhythms.Base as POLY
 
 -- import Payasan.Base.Duration
-import Payasan.Base.Notelist
+import Payasan.PSC.Notelist
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Internal.LilyPond.Syntax (fromPitchRel, LyPitch)
+import Payasan.PSC.Backend.LilyPond.Syntax (fromPitchRel, LyPitch)
 
-import Payasan.Base.Internal.Csound.BeamToCsound
-import Payasan.Base.Internal.Csound.IStmt
-import Payasan.Base.Internal.Csound.Output
-import Payasan.Base.Internal.Csound.Syntax hiding (middle_c)
+import Payasan.PSC.Backend.Csound.Internal.BeamToCsound
+import Payasan.PSC.Backend.Csound.Internal.IStmt
+import Payasan.PSC.Backend.Csound.Internal.Output
+import Payasan.PSC.Backend.Csound.Internal.Syntax hiding (middle_c)
 
 
 import Payasan.Base.Names.Pitch
 
-import Payasan.Base.Internal.Output.Common
-import Payasan.Base.Internal.Output.Tabular.OutputBeam
+import Payasan.PSC.Backend.Output.Common
+import Payasan.PSC.Backend.Output.Tabular.OutputBeam
 
 import Data.Monoid ( (<>) )
 

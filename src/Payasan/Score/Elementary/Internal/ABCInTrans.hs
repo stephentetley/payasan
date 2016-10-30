@@ -27,10 +27,10 @@ import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.PSC.Backend.ABC.Syntax ( ABCPitch, ABCNoteLength
                                       , toPitch, toDuration )
 
-import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.Scale
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Internal.Scale
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

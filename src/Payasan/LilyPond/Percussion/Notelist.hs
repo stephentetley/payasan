@@ -17,7 +17,7 @@
 module Payasan.LilyPond.Percussion.Notelist
   ( 
 
-    module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Shell
 
   , StdDrumPart
   , drums
@@ -66,8 +66,8 @@ import qualified Payasan.PSC.Backend.MIDI.Internal.Output           as MIDI
 import qualified Payasan.PSC.Backend.MIDI.Internal.PrimitiveSyntax  as MIDI
 
 
-import Payasan.Base.Internal.Shell
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Shell
+import Payasan.PSC.Base.SyntaxCommon
 
 
 import qualified Payasan.PSC.Backend.LilyPond.InTrans     as LY
@@ -77,7 +77,7 @@ import Payasan.PSC.Backend.Output.Common
 import Payasan.PSC.Backend.Output.Linear.OutputMain
 import Payasan.PSC.Backend.Output.Tabular.OutputMain
 
-import qualified Payasan.Base.Notelist as MAIN
+import qualified Payasan.PSC.Notelist as MAIN
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 

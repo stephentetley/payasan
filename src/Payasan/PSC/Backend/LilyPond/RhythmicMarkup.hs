@@ -35,7 +35,7 @@ import Payasan.PSC.Backend.LilyPond.Utils
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 

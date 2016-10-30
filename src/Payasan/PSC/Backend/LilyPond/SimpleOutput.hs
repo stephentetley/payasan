@@ -36,9 +36,9 @@ import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Backend.LilyPond.Utils
 
 import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.RewriteMonad
 
 import Payasan.Base.Pitch
 

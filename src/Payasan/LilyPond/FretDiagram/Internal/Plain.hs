@@ -29,7 +29,7 @@ import Payasan.LilyPond.FretDiagram.Internal.Interpret
 
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

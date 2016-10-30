@@ -50,8 +50,8 @@ module Payasan.PSC.Backend.ABC.Syntax
   ) where
 
 import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Internal.Scale
-import Payasan.Base.Internal.SyntaxCommon
 
 import qualified Payasan.Base.Pitch as PCH
 import Payasan.Base.Duration

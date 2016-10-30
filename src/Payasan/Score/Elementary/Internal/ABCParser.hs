@@ -26,7 +26,7 @@ import Payasan.PSC.Backend.ABC.Lexer
 import qualified Payasan.PSC.Backend.ABC.Parser as P
 import Payasan.PSC.Backend.ABC.Syntax (ABCPitch)
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 
 import Text.Parsec                              -- package: parsec

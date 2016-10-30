@@ -39,9 +39,10 @@ module Payasan.Score.Cadenza.Internal.Metrics
 import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.Score.Cadenza.Internal.Traversals
 
+import Payasan.PSC.Base.RewriteMonad
+
 import Payasan.Base.Internal.Base
 import Payasan.Base.Internal.AnalysisCommon
-import Payasan.Base.Internal.RewriteMonad
 
 import Payasan.Base.Pitch
 import Payasan.Base.Diatonic

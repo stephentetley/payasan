@@ -28,7 +28,7 @@ import Payasan.PSC.Backend.Csound.Internal.Syntax
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.TiedNoteStream
 
-import Payasan.Base.Internal.RewriteMonad
+import Payasan.PSC.Base.RewriteMonad
 
 import Payasan.Base.Duration
 

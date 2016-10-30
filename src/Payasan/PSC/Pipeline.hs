@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Pipeline
+-- Module      :  Payasan.PSC.Pipeline
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Pipeline
+module Payasan.PSC.Pipeline
   ( 
 
     StdPart             -- * re-export
@@ -115,7 +115,7 @@ import Payasan.PSC.Backend.Output.Tabular.OutputMain
 import Payasan.PSC.Backend.Output.Linear.OutputBeam
 import Payasan.PSC.Backend.Output.Linear.OutputMain
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.PSC.Repr.IRBeamToExternal
 import Payasan.PSC.Repr.ExternalToIRBeam

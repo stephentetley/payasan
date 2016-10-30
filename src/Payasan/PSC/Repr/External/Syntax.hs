@@ -41,7 +41,7 @@ module Payasan.PSC.Repr.External.Syntax
   ) where
 
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

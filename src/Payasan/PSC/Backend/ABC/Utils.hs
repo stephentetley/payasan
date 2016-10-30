@@ -43,7 +43,7 @@ import Payasan.PSC.Backend.ABC.Syntax
 
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import qualified Payasan.Base.Pitch as P
 

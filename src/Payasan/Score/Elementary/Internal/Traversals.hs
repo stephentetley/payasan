@@ -109,8 +109,8 @@ import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.AnalysisTrace
-import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
 
 import Data.Bifunctor
 import Data.Data

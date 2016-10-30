@@ -32,7 +32,7 @@ import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.PSC.Backend.LilyPond.Lexer
 import qualified Payasan.PSC.Backend.LilyPond.Parser as P
 import Payasan.PSC.Backend.LilyPond.Parser (LyParserDef(..), pitch, noAnno)
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 
 import Text.Parsec                              -- package: parsec

@@ -54,8 +54,8 @@ module Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Score.Cadenza.Internal.Syntax
 
-import Payasan.Base.Internal.RewriteMonad
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
 
 import Data.Foldable (foldlM)
 import Data.Maybe

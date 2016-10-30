@@ -17,7 +17,7 @@
 module Payasan.LilyPond.FretDiagram.Notelist
   ( 
    
-    module Payasan.Base.Internal.Shell
+    module Payasan.PSC.Shell
   , module Payasan.LilyPond.FretDiagram.Internal.Plain
 
   , ScoreInfo(..)               -- Re-export
@@ -49,10 +49,10 @@ import qualified Payasan.PSC.Backend.LilyPond.OutTrans      as LY
 import qualified Payasan.Score.Elementary.Internal.ElementaryToExternal   as ELEM
 
 
-import Payasan.Base.Internal.Shell
-import Payasan.Base.Internal.SyntaxCommon
+import Payasan.PSC.Shell
+import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.Base.Notelist as MAIN
+import qualified Payasan.PSC.Notelist as MAIN
 
 
 
