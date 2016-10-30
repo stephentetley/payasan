@@ -31,6 +31,8 @@ module Payasan.Score.Elementary.Internal.RecalcBars
 import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.PSC.Base.SyntaxCommon
+
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 
 import Data.Data

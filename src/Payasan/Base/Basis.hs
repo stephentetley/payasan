@@ -1,8 +1,10 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Base
+-- Module      :  Payasan.Base.Basis
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -10,11 +12,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Base
+-- Basis (or Prelude...)
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Base
+module Payasan.Base.Basis
   ( 
 
     Decimal
@@ -23,9 +25,17 @@ module Payasan.Base.Internal.Base
 
   , PitchOrd(..)
 
+  , MidiPitch
+
+  , Meter(..)
+  , Time(..)
+
   )  where
 
 
+
+
+import Data.Data
 import Data.Fixed
 
 
@@ -46,3 +56,20 @@ class PitchOrd a where
 
 
 
+newtype MidiPitch = MidiPitch Int
+  deriving (Enum,Eq,Ord,Num,Real,Integral,Show)
+
+
+
+
+-- | CommonTime = 4/4
+--   CutTime = 2/4
+--
+-- TODO - add free metered.
+--
+data Meter = Unmetered | TimeSig Time
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+
+data Time = Time Int Int
+  deriving (Data,Eq,Ord,Show,Typeable)

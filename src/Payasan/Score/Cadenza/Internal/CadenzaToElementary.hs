@@ -26,6 +26,8 @@ import Payasan.Score.Cadenza.Internal.Syntax
 import qualified Payasan.Score.Elementary.Internal.RecalcBars   as T
 import qualified Payasan.Score.Elementary.Internal.Syntax       as T
 import Payasan.PSC.Base.SyntaxCommon
+
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 
 translateToElem :: Time -> Part pch Duration anno -> T.Part pch Duration anno

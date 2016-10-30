@@ -29,7 +29,7 @@ module Payasan.PSC.Backend.ABC.Lexer
   , whiteSpace
   ) where
 
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Utils
 
 import Text.Parsec.Language                             -- package: parser
 import qualified Text.Parsec.Token as P

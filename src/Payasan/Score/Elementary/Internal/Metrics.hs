@@ -48,8 +48,7 @@ import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.Base.Internal.AnalysisCommon
 import Payasan.Base.Internal.AnalysisTrace
-import Payasan.Base.Internal.Base
-
+import Payasan.Base.Basis
 import Payasan.Base.Pitch
 import Payasan.Base.Diatonic
 

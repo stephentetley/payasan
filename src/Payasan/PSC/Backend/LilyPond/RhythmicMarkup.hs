@@ -37,6 +37,7 @@ import Payasan.PSC.Repr.IRBeam.Traversals
 
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 
 

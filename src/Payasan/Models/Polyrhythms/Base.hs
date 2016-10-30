@@ -36,6 +36,7 @@ import Payasan.PSC.Repr.IRBeam.Traversals
 import qualified Payasan.PSC.Pipeline                 as MAIN
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

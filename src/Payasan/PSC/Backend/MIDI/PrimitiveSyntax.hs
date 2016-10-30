@@ -1,4 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -28,7 +27,7 @@ module Payasan.PSC.Backend.MIDI.PrimitiveSyntax
   , MidiNote(..)
   , NoteValue(..)
   , MidiNoteList
-  , MidiPitch
+  , MidiPitch   -- re-export
 
   -- * Helpers
   , simpleTrackData
@@ -38,8 +37,8 @@ module Payasan.PSC.Backend.MIDI.PrimitiveSyntax
   ) where
 
 
-import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Basis
+import Payasan.Base.Utils
 
 import Payasan.Base.Pitch
 
@@ -90,8 +89,6 @@ type MidiNoteList = H MidiNote
 
 
 
-newtype MidiPitch = MidiPitch Int
-  deriving (Enum,Eq,Ord,Num,Real,Integral,Show)
 
 
 --------------------------------------------------------------------------------

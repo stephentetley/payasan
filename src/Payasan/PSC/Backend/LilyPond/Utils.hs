@@ -107,8 +107,9 @@ module Payasan.PSC.Backend.LilyPond.Utils
 import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.Base.Pitch as P
 import Payasan.Base.Duration
+import qualified Payasan.Base.Pitch     as P
+import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 

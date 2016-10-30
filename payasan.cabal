@@ -35,11 +35,10 @@ library
                       parsec       >= 3.1   && <= 4.0,
                       zmidi-core
   exposed-modules:
+    Payasan.Base.Basis,
     Payasan.Base.Duration,
     Payasan.Base.Internal.AnalysisCommon,
     Payasan.Base.Internal.AnalysisTrace,
-    Payasan.Base.Internal.Scale,
-    Payasan.Base.Internal.Utils,
     Payasan.Base.Names.Chord,
     Payasan.Base.Names.DiatonicInterval,
     Payasan.Base.Names.Duration,
@@ -49,6 +48,8 @@ library
     Payasan.Base.Names.Key,
     Payasan.Base.Names.Pitch,
     Payasan.Base.Pitch,
+    Payasan.Base.Scale,
+    Payasan.Base.Utils,
     Payasan.LilyPond.Chordmode.Notelist,
     Payasan.LilyPond.Chordmode.Internal.Base,
     Payasan.LilyPond.Chordmode.Internal.Interpret,

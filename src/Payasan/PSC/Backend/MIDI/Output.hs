@@ -26,8 +26,8 @@ module Payasan.PSC.Backend.MIDI.Output
 
 import Payasan.PSC.Backend.MIDI.PrimitiveSyntax
 
-import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Basis
+import Payasan.Base.Utils
 
 import qualified ZMidi.Core as Z                -- packahe: zmidi-core
 

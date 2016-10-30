@@ -51,10 +51,10 @@ module Payasan.PSC.Backend.ABC.Syntax
 
 import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 import Payasan.PSC.Base.SyntaxCommon
-import Payasan.Base.Internal.Scale
 
-import qualified Payasan.Base.Pitch as PCH
 import Payasan.Base.Duration
+import qualified Payasan.Base.Pitch as PCH
+import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 

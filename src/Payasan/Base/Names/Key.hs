@@ -54,8 +54,8 @@ module Payasan.Base.Names.Key
 
   ) where
 
-import Payasan.PSC.Base.SyntaxCommon    -- TODO should not depend outside Payasan.Base
 import Payasan.Base.Names.Pitch
+import Payasan.Base.Scale
 
 
 

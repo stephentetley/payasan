@@ -30,9 +30,9 @@ import Payasan.PSC.Backend.ABC.Syntax ( ABCPitch, ABCNoteLength
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.Internal.Scale
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
+import Payasan.Base.Scale
 
 
 abcTranslate :: ABCElemPart -> Part Pitch Duration ()

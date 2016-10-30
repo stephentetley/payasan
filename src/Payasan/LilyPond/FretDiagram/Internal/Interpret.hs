@@ -21,11 +21,10 @@ module Payasan.LilyPond.FretDiagram.Internal.Interpret
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
-import Payasan.PSC.Base.SyntaxCommon
-
 import Payasan.Base.Names.DiatonicInterval
-import Payasan.Base.Pitch
 import Payasan.Base.Diatonic
+import Payasan.Base.Pitch
+import Payasan.Base.Scale
 
 
 import Data.Maybe

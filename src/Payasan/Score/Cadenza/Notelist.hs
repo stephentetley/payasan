@@ -56,6 +56,7 @@ import qualified Payasan.PSC.Pipeline                         as MAIN
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Basis
 import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty

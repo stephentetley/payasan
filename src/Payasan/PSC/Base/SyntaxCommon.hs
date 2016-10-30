@@ -32,9 +32,6 @@ module Payasan.PSC.Base.SyntaxCommon
   , Anno(..)
   , AnnoDU(..)
 
-  , Key(..)
-  , Mode(..)
-  , Meter(..)
   , Time(..)
 
   , default_section_info
@@ -51,10 +48,11 @@ module Payasan.PSC.Base.SyntaxCommon
 
   ) where
 
-import Payasan.Base.Internal.Base
-
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
+import Payasan.Base.Scale
+
 
 import Text.PrettyPrint.HughesPJ hiding (Mode)               -- package: pretty
 
@@ -146,25 +144,6 @@ instance Anno () where anno = const empty
 data AnnoDU a = AnnoDU { defs :: Doc, use :: a -> Doc }
 
 
-
-data Key = Key !PitchName !Mode
-  deriving (Data,Eq,Ord,Show,Typeable)
-
-
-data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
-
--- | CommonTime = 4/4
---   CutTime = 2/4
---
--- TODO - add free metered.
---
-data Meter = Unmetered | TimeSig Time
-  deriving (Data,Eq,Ord,Show,Typeable)
-
-
-data Time = Time Int Int
-  deriving (Data,Eq,Ord,Show,Typeable)
 
 
 -- TODO - span bars with meter pattern (e.g. for 2-bar patterns

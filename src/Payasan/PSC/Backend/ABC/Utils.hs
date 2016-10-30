@@ -40,12 +40,12 @@ module Payasan.PSC.Backend.ABC.Utils
   ) where
 
 import Payasan.PSC.Backend.ABC.Syntax
-
 import Payasan.PSC.Repr.IRBeam.Syntax
-
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Basis
 import qualified Payasan.Base.Pitch as P
+import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 

@@ -62,9 +62,8 @@ module Payasan.Base.Diatonic
 
   ) where
 
-import Payasan.Base.Internal.Scale
-import Payasan.PSC.Base.SyntaxCommon       -- TODO dep path wrong
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Scale
+import Payasan.Base.Utils
 
 import Payasan.Base.Pitch
 

@@ -57,6 +57,8 @@ import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Scale
+
 import Data.Foldable (foldlM)
 import Data.Maybe
 

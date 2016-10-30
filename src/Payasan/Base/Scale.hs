@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Scale
+-- Module      :  Payasan.Base.Scale
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,10 +15,13 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Scale
+module Payasan.Base.Scale
   ( 
 
-    Scale
+    Key(..)
+  , Mode(..)
+
+  , Scale
   , fromScale
   , buildScale
 
@@ -31,7 +34,6 @@ module Payasan.Base.Internal.Scale
   ) where
 
 
-import Payasan.PSC.Base.SyntaxCommon            -- TODO - dep path wrong
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 
@@ -39,6 +41,15 @@ import Payasan.Base.Names.Pitch
 import Data.Data
 import qualified Data.List as LIST
 import qualified Data.Map as MAP
+
+
+data Key = Key !PitchName !Mode
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+
+data Mode = MAJOR | MINOR | MIXOLYDIAN | DORIAN | PHRYGIAN | LYDIAN | LOCRIAN
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
 
 
 -- perhaps Scale could also include name::String for debugging

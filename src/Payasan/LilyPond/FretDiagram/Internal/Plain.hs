@@ -33,6 +33,7 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
+import Payasan.Base.Scale
 
 -- Use Elementary syntax or not? - Initially do, see what happens...
 

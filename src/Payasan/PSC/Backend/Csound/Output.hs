@@ -27,8 +27,9 @@ module Payasan.PSC.Backend.Csound.Output
   ) where
 
 
-import Payasan.Base.Internal.Base
 import Payasan.PSC.Backend.Csound.IStmt
+
+import Payasan.Base.Basis
 
 import Text.PrettyPrint.HughesPJ hiding ( empty, render ) -- package: pretty
 import qualified Text.PrettyPrint.HughesPJ as P

@@ -37,13 +37,13 @@ import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.Internal.Scale
 
 import Payasan.Base.Duration
+import Payasan.Base.Diatonic
 import Payasan.Base.Names.DiatonicInterval
 import Payasan.Base.Names.Interval
 import Payasan.Base.Pitch
-import Payasan.Base.Diatonic
+import Payasan.Base.Scale
 
 
 -- | Double note lengths (and recalc bars).

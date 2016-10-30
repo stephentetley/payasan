@@ -40,7 +40,9 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.PSC.Base.RewriteMonad
 
+import Payasan.Base.Basis
 import Payasan.Base.Pitch
+import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 

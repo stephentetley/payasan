@@ -23,11 +23,11 @@ module Payasan.PSC.Backend.MIDI.BeamToMIDI
 
 import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as T
 
-import Payasan.Base.Internal.Base
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.TiedNoteStream
 
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 
 

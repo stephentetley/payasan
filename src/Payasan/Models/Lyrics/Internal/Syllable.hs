@@ -28,9 +28,7 @@ module Payasan.Models.Lyrics.Internal.Syllable
 
 import Payasan.Models.Lyrics.Internal.Base hiding (lyrics)
 
-import Payasan.Base.Internal.Utils
-
-
+import Payasan.Base.Utils
 
 
 

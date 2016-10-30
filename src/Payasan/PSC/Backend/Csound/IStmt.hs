@@ -30,8 +30,8 @@ module Payasan.PSC.Backend.Csound.IStmt
   ) where
 
 
-import Payasan.Base.Internal.Base
-import Payasan.Base.Internal.Utils
+import Payasan.Base.Basis
+import Payasan.Base.Utils
 
 
 import Data.Fixed

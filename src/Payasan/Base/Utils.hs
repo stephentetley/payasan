@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.Utils
--- Copyright   :  (c) Stephen Tetley 2014-2015
+-- Module      :  Payasan.Base.Utils
+-- Copyright   :  (c) Stephen Tetley 2014-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.Utils
+module Payasan.Base.Utils
   ( 
     
     ParsecParser
