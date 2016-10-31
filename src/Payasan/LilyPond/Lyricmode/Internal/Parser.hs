@@ -27,8 +27,8 @@ import Payasan.LilyPond.Lyricmode.Internal.Base
 import Payasan.Score.Elementary.Internal.Syntax
 
 
-import Payasan.PSC.Backend.LilyPond.Lexer
-import qualified Payasan.PSC.Backend.LilyPond.Parser as P
+import Payasan.PSC.Base.LilyPondLexer
+import qualified Payasan.PSC.Repr.External.LilyPondParser as P
 
 import Payasan.PSC.Base.SyntaxCommon
 

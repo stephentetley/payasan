@@ -95,14 +95,14 @@ import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as MIDI
 import qualified Payasan.PSC.Backend.ABC.InTrans              as ABC
 import qualified Payasan.PSC.Backend.ABC.OutTrans             as ABC
 import Payasan.PSC.Backend.ABC.Output (abcOutput)
-import Payasan.PSC.Backend.ABC.Parser (abc)
+import Payasan.PSC.Repr.External.ABCParser (abc)
 import Payasan.PSC.Backend.ABC.Syntax (ABCPart)
 
 
 import qualified Payasan.PSC.Backend.LilyPond.InTrans         as LY
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LY
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
-import Payasan.PSC.Backend.LilyPond.Parser (lilypond)
+import Payasan.PSC.Repr.External.LilyPondParser (lilypond)
 import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LY
 import qualified Payasan.PSC.Backend.LilyPond.Syntax          as LY
 import Payasan.PSC.Backend.LilyPond.Syntax (LyPart1)

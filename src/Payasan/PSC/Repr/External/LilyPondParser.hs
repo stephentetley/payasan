@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.LilyPond.Parser
+-- Module      :  Payasan.PSC.Repr.External.LilyPondParser
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.LilyPond.Parser
+module Payasan.PSC.Repr.External.LilyPondParser
   (
 
     lilypond
@@ -42,8 +42,8 @@ module Payasan.PSC.Backend.LilyPond.Parser
 
   ) where
 
-import Payasan.PSC.Backend.LilyPond.Lexer
-import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Base.LilyPondLexer
+import Payasan.PSC.Backend.LilyPond.Syntax -- TODO should produce External
 
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Base.SyntaxCommon

@@ -30,7 +30,7 @@ import qualified Payasan.LilyPond.Lyricmode.Internal.Base       as LY
 import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
 import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
-import qualified Payasan.PSC.Backend.LilyPond.Parser          as P
+import qualified Payasan.PSC.Repr.External.LilyPondParser       as P
 import Payasan.PSC.Backend.LilyPond.Utils
 
 import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM

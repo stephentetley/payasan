@@ -24,8 +24,8 @@ module Payasan.LilyPond.Percussion.Internal.Parser
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.PSC.Backend.LilyPond.Lexer
-import Payasan.PSC.Backend.LilyPond.Parser
+import Payasan.PSC.Base.LilyPondLexer
+import Payasan.PSC.Repr.External.LilyPondParser
 import Payasan.PSC.Backend.LilyPond.Syntax
 
 import Text.Parsec                              -- package: parsec

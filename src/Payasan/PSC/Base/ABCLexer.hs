@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.ABC.Lexer
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Base.ABCLexer
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.ABC.Lexer
+module Payasan.PSC.Base.ABCLexer
   (
     ABCParser
   , ABCLexer
