@@ -24,7 +24,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.PSC.Base.ABCLexer
 import qualified Payasan.PSC.Repr.External.ABCParser as P
-import Payasan.PSC.Backend.ABC.Syntax (ABCPitch)
+import Payasan.PSC.Base.ABCCommon
 
 import Payasan.PSC.Base.SyntaxCommon
 

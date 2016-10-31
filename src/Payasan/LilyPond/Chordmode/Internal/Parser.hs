@@ -24,8 +24,8 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.Score.Elementary.Internal.LilyPondParser
 
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.LilyPondLexer
-import Payasan.PSC.Backend.LilyPond.Syntax
 
 import Text.Parsec                              -- package: parsec
 

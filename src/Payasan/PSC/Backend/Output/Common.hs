@@ -34,8 +34,8 @@ module Payasan.PSC.Backend.Output.Common
   ) where
 
 
-import qualified Payasan.PSC.Backend.LilyPond.Syntax    as LY
-import qualified Payasan.PSC.Backend.ABC.Syntax         as ABC
+import qualified Payasan.PSC.Base.LilyPondCommon      as LY
+import qualified Payasan.PSC.Base.ABCCommon           as ABC
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

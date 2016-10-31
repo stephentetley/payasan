@@ -41,6 +41,7 @@ module Payasan.PSC.Backend.ABC.Utils
 
 import Payasan.PSC.Backend.ABC.Syntax
 import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Basis

@@ -105,6 +105,7 @@ module Payasan.PSC.Backend.LilyPond.Utils
   ) where
 
 import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration

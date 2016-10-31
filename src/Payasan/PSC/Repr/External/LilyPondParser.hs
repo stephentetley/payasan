@@ -42,10 +42,10 @@ module Payasan.PSC.Repr.External.LilyPondParser
 
   ) where
 
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.LilyPondLexer
-import Payasan.PSC.Backend.LilyPond.Syntax -- TODO should produce External
+import Payasan.PSC.Repr.External.Syntax -- TODO should produce External
 
-import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
@@ -118,17 +118,19 @@ makeLyParser def = fullParseLy part
     -- member of the beam group.
     --
     bar :: LyParser (LyBar2 pch anno)
-    bar = (Bar default_section_info . reconcileBeamHeads) <$> noteGroups 
+    bar = Bar default_section_info <$> noteGroups 
 
     noteGroups :: LyParser [LyNoteGroup2 pch anno]
-    noteGroups = whiteSpace *> many noteGroup
+    noteGroups = concat <$> (whiteSpace *> many noteGroup)
 
-    noteGroup :: LyParser (LyNoteGroup2 pch anno)
-    noteGroup = tuplet <|> beamTail <|> atom
+    noteGroup :: LyParser [LyNoteGroup2 pch anno]
+    noteGroup = mult tuplet <|> beamTail <|> mult atom
+      where
+        mult p = (\a -> [a]) <$> p
 
 
-    beamTail :: LyParser (LyNoteGroup2 pch anno)
-    beamTail = Beamed <$> squares noteGroups
+    beamTail :: LyParser [LyNoteGroup2 pch anno]
+    beamTail = squares noteGroups
 
 
     -- Unlike ABC, LilyPond does not need to count the number
@@ -183,20 +185,6 @@ barline = reservedOp "|"
 
 command :: String -> LyParser String
 command s = try $ symbol ('\\' : s)
-
-
--- | @reconcileBeamHeads@ expects sensible beam groups. 
--- It does not test for duration < quarter, or similar.
---
-reconcileBeamHeads :: [LyNoteGroup2 pch anno] -> [LyNoteGroup2 pch anno]
-reconcileBeamHeads = step1
-  where
-    step1 []               = []
-    step1 (x:xs)           = step2 x xs
-   
-    step2 a (Beamed gs:bs) = Beamed (a:gs) : step1 bs
-    step2 a (b:bs)         = a : step2 b bs
-    step2 a []             = [a]
 
 
 --------------------------------------------------------------------------------

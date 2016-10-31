@@ -24,9 +24,7 @@ module Payasan.Score.Elementary.Internal.ABCInTrans
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
-import Payasan.PSC.Backend.ABC.Syntax ( ABCPitch, ABCNoteLength
-                                      , toPitch, toDuration )
-
+import Payasan.PSC.Base.ABCCommon 
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 

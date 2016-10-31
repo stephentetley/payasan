@@ -32,8 +32,7 @@ module Payasan.Score.Elementary.Internal.LilyPondInTrans
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
-import Payasan.PSC.Backend.LilyPond.Syntax
-
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.RewriteMonad
 
 import Payasan.Base.Duration

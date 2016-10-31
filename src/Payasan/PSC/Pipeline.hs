@@ -92,20 +92,19 @@ import qualified Payasan.PSC.Backend.MIDI.OutTrans              as MIDI
 import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as MIDI
 
 
-import qualified Payasan.PSC.Backend.ABC.InTrans              as ABC
+import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC
 import qualified Payasan.PSC.Backend.ABC.OutTrans             as ABC
 import Payasan.PSC.Backend.ABC.Output (abcOutput)
 import Payasan.PSC.Repr.External.ABCParser (abc)
-import Payasan.PSC.Backend.ABC.Syntax (ABCPart)
+import qualified Payasan.PSC.Backend.ABC.Syntax               as ABCOut
 
 
-import qualified Payasan.PSC.Backend.LilyPond.InTrans         as LY
+import qualified Payasan.PSC.Repr.External.LilyPondInTrans    as LY
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LY
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
 import Payasan.PSC.Repr.External.LilyPondParser (lilypond)
 import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LY
-import qualified Payasan.PSC.Backend.LilyPond.Syntax          as LY
-import Payasan.PSC.Backend.LilyPond.Syntax (LyPart1)
+import qualified Payasan.PSC.Backend.LilyPond.Syntax          as LYOut
 import Payasan.PSC.Backend.LilyPond.Utils
 
 
@@ -178,10 +177,14 @@ fromABC = fromABCWith default_section_info
 
 fromABCWith :: SectionInfo -> ABCPart -> StdPart
 fromABCWith locals = 
-    translateToMain . ABC.translateFromInput . BEAM.pushSectionInfo locals
+    error "TODO fromABCWith"
+--    translateToMain . ABC.translateFromInput . BEAM.pushSectionInfo locals
 
 
 fromABCWithIO :: SectionInfo -> ABCPart -> IO StdPart
+fromABCWithIO _ _ = error "TODO fromABCWithIO"
+
+{-
 fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -190,21 +193,22 @@ fromABCWithIO locals ph =
               ; ph3 <- debug (mainTabular pitch_duration_output) $ translateToMain ph2
               ; return ph3
               }
+-}
 
 
-
-fromLilyPond_Relative :: Pitch -> LY.LyPart1 () -> StdPart 
+fromLilyPond_Relative :: Pitch -> LyPart1 () -> StdPart 
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 
-fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPart1 () -> StdPart
+fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LyPart1 () -> StdPart
 fromLilyPondWith_Relative pch locals = 
-    translateToMain . LY.translateFromInput_Relative pch . BEAM.pushSectionInfo locals
+    error "TODO fromLilyPondWith_Relative"
+--    translateToMain . LY.translateFromInput_Relative pch . pushSectionInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
                             -> SectionInfo 
-                            -> LY.LyPart1 () 
+                            -> LYOut.LyPart1 () 
                             -> IO StdPart
 fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
@@ -236,8 +240,8 @@ printAsABC infos staff = putStrLn . outputAsABC infos staff
 --
 data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
     { beam_trafo    :: BEAM.Part p1i Duration a1i -> BEAM.Part p1i Duration a1i
-    , out_trafo     :: BEAM.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
-    , output_func   :: LY.LyPart2 p1o a1o -> Doc
+    , out_trafo     :: BEAM.Part p1i Duration a1i -> LYOut.LyPart2 p1o a1o
+    , output_func   :: LYOut.LyPart2 p1o a1o -> Doc
     }
 
 
@@ -256,10 +260,10 @@ genOutputAsLilyPond config =
 
 data LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o  = LilyPondPipeline2
     { pipe2_beam_trafo1   :: BEAM.Part p1i Duration a1i -> BEAM.Part p1i Duration a1i
-    , pipe2_out_trafo1    :: BEAM.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
+    , pipe2_out_trafo1    :: BEAM.Part p1i Duration a1i -> LYOut.LyPart2 p1o a1o
     , pipe2_beam_trafo2   :: BEAM.Part p2i Duration a2i -> BEAM.Part p2i Duration a2i
-    , pipe2_out_trafo2    :: BEAM.Part p2i Duration a2i -> LY.LyPart2 p2o a2o
-    , pipe2_output_func   :: LY.LyPart2 p1o a1o -> LY.LyPart2 p2o a2o -> Doc
+    , pipe2_out_trafo2    :: BEAM.Part p2i Duration a2i -> LYOut.LyPart2 p2o a2o
+    , pipe2_output_func   :: LYOut.LyPart2 p1o a1o -> LYOut.LyPart2 p2o a2o -> Doc
     }
 
 

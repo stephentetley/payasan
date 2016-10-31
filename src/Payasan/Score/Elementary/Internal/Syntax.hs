@@ -73,8 +73,8 @@ module Payasan.Score.Elementary.Internal.Syntax
 
   ) where
 
-import Payasan.PSC.Backend.ABC.Syntax
-import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Internal.AnalysisCommon

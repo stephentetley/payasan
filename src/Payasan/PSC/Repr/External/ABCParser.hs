@@ -29,11 +29,10 @@ module Payasan.PSC.Repr.External.ABCParser
 
   ) where
 
+import Payasan.PSC.Repr.External.Syntax
+
 import Payasan.PSC.Base.ABCLexer
-import Payasan.PSC.Backend.ABC.Syntax
-
-import Payasan.PSC.Repr.IRBeam.Syntax
-
+import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Text.Parsec                              -- package: parsec
@@ -218,6 +217,5 @@ tie = atie <|> notie
 
 elementSize :: ABCNoteGroup -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
-elementSize (Beamed xs)     = sum $ map elementSize xs
 elementSize _               = 1
 

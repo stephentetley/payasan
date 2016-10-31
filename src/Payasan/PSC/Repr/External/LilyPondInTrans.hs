@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.LilyPond.InTrans
+-- Module      :  Payasan.PSC.Repr.External.LilyPondInTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.LilyPond.InTrans
+module Payasan.PSC.Repr.External.LilyPondInTrans
   (
     translateFromInput_Relative
   , translateFromInput_Absolute
@@ -23,6 +23,7 @@ module Payasan.PSC.Backend.LilyPond.InTrans
 
 
 import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Base.LilyPondCommon
 
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals

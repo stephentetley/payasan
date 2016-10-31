@@ -31,6 +31,8 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 drumsOutput :: ScoreInfo -> LyDrumPart -> Doc
+drumsOutput _ _ = error "drumsOutput TODO"
+{-
 drumsOutput globals ph = 
         header
     $+$ drumsBlock notes
@@ -40,7 +42,7 @@ drumsOutput globals ph =
     drum_def        = LyOutputDef { printPitch = text . shortName
                                   , printAnno  = ppAccent }
 
-
+-}
 
 
 drumsBlock :: Doc -> Doc

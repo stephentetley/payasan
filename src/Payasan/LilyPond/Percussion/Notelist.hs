@@ -70,7 +70,7 @@ import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 
-import qualified Payasan.PSC.Backend.LilyPond.InTrans     as LY
+import qualified Payasan.PSC.Repr.External.LilyPondInTrans     as LY
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans    as LY
 
 import Payasan.PSC.Backend.Output.Common
@@ -90,11 +90,14 @@ fromLilyPondWith :: SectionInfo
                  -> LyDrumPart
                  -> StdDrumPart
 fromLilyPondWith locals = 
-    translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushSectionInfo locals
+    error "TODO fromLilyPondWith"
+--     translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushSectionInfo locals
 
 
 
 outputAsLilyPond :: ScoreInfo -> StdDrumPart -> String
+outputAsLilyPond globals = error "TODO outputAsLilyPond"
+{-
 outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
   where
     config  = MAIN.LilyPondPipeline 
@@ -102,7 +105,7 @@ outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
                 , MAIN.out_trafo   = LY.translateToOutput_DurationOnly
                 , MAIN.output_func = drumsOutput globals 
                 }
-
+-}
 
 printAsLilyPond :: ScoreInfo -> StdDrumPart -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

@@ -21,13 +21,14 @@ module Payasan.LilyPond.FretDiagram.Internal.Output
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
-import Payasan.PSC.Repr.IRBeam.Syntax (Part, firstSectionInfo)
-
-import Payasan.PSC.Base.SyntaxCommon
+import Payasan.PSC.Repr.IRBeam.Syntax (Part, firstSectionInfo)  -- TODO
 
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Backend.LilyPond.Utils
+
+import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 
 

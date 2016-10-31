@@ -24,6 +24,7 @@ module Payasan.PSC.Backend.LilyPond.OutTrans
 
 
 import Payasan.PSC.Backend.LilyPond.Syntax
+import Payasan.PSC.Base.LilyPondCommon
 
 import Payasan.PSC.Repr.IRBeam.Syntax
 import Payasan.PSC.Repr.IRBeam.Traversals

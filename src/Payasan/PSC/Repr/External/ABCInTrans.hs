@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.ABC.InTrans
+-- Module      :  Payasan.PSC.Repr.External.ABCInTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,15 +17,15 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.ABC.InTrans
+module Payasan.PSC.Repr.External.ABCInTrans
   (
     translateFromInput
   ) where
 
-import Payasan.PSC.Backend.ABC.Syntax
+import Payasan.PSC.Base.ABCCommon
 
-import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.PSC.Repr.IRBeam.Traversals
+import Payasan.PSC.Repr.External.Syntax
+import Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
