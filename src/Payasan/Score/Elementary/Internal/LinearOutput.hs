@@ -25,8 +25,8 @@ module Payasan.Score.Elementary.Internal.LinearOutput
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.PSC.Backend.Output.Common
-import Payasan.PSC.Backend.Output.Linear.Utils
+import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Base.ShowLinearUtils
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Output.Linear.OutputBeam
+-- Module      :  Payasan.PSC.Repr.IRBeam.ShowLinear
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,17 +16,19 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Output.Linear.OutputBeam
+module Payasan.PSC.Repr.IRBeam.ShowLinear
   ( 
 
     beamLinear
     
   ) where
 
-import Payasan.PSC.Backend.Output.Common (LeafOutput(..))
-import Payasan.PSC.Backend.Output.Linear.Utils
-
 import Payasan.PSC.Repr.IRBeam.Syntax
+
+import Payasan.PSC.Base.ShowCommon (LeafOutput(..))
+import Payasan.PSC.Base.ShowLinearUtils
+
+
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 

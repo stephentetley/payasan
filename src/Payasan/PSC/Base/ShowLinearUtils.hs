@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Output.Linear.Utils
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Base.ShowLinearUtils
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Output.Linear.Utils
+module Payasan.PSC.Base.ShowLinearUtils
   ( 
 
     rest

@@ -108,11 +108,11 @@ import qualified Payasan.PSC.Backend.LilyPond.Syntax          as LYOut
 import Payasan.PSC.Backend.LilyPond.Utils
 
 
-import Payasan.PSC.Backend.Output.Common
-import Payasan.PSC.Backend.Output.Tabular.OutputBeam
-import Payasan.PSC.Backend.Output.Tabular.OutputMain
-import Payasan.PSC.Backend.Output.Linear.OutputBeam
-import Payasan.PSC.Backend.Output.Linear.OutputMain
+import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Repr.External.ShowLinear
+import Payasan.PSC.Repr.External.ShowTabular
+import Payasan.PSC.Repr.IRBeam.ShowLinear
+import Payasan.PSC.Repr.IRBeam.ShowTabular
 
 import Payasan.PSC.Base.SyntaxCommon
 

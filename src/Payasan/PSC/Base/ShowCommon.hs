@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Output.Common
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.PSC.Base.ShowCommon
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Output.Common
+module Payasan.PSC.Base.ShowCommon
   ( 
 
     LeafOutput(..)
@@ -34,8 +34,9 @@ module Payasan.PSC.Backend.Output.Common
   ) where
 
 
-import qualified Payasan.PSC.Base.LilyPondCommon      as LY
-import qualified Payasan.PSC.Base.ABCCommon           as ABC
+
+import qualified Payasan.PSC.Base.ABCCommon as ABC
+import qualified Payasan.PSC.Base.LilyPondCommon as LY
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

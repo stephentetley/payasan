@@ -70,7 +70,7 @@ import qualified Payasan.Score.Elementary.Notelist                      as ELEM
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import qualified Payasan.PSC.Repr.External.Syntax as MAIN
 
-import Payasan.PSC.Backend.Output.Common ( LeafOutput(..) )
+import Payasan.PSC.Base.ShowCommon ( LeafOutput(..) )
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 

@@ -73,9 +73,9 @@ import Payasan.PSC.Base.SyntaxCommon
 import qualified Payasan.PSC.Repr.External.LilyPondInTrans     as LY
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans    as LY
 
-import Payasan.PSC.Backend.Output.Common
-import Payasan.PSC.Backend.Output.Linear.OutputMain
-import Payasan.PSC.Backend.Output.Tabular.OutputMain
+import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Repr.External.ShowLinear
+import Payasan.PSC.Repr.External.ShowTabular
 
 import qualified Payasan.PSC.Notelist as MAIN
 

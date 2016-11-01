@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Output.Tabular.Utils
+-- Module      :  Payasan.PSC.Base.ShowTabularUtils
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Output.Tabular.Utils
+module Payasan.PSC.Base.ShowTabularUtils
   ( 
 
     (<++>)

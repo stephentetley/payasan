@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Output.Tabular.OutputBeam
+-- Module      :  Payasan.PSC.Repr.External.ShowTabular
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Output intermediate Beam syntax to a Humdrum-like form.
+-- Output Main syntax to a Humdrum-like form.
 --
 -- This is intended debugging and checking purposes, so it is
 -- specialized to represent Payasan and is not directly 
@@ -18,25 +18,24 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Output.Tabular.OutputBeam
+module Payasan.PSC.Repr.External.ShowTabular
   ( 
 
-    beamTabular
+    mainTabular
     
   ) where
 
-import Payasan.PSC.Backend.Output.Common (LeafOutput(..))
-import Payasan.PSC.Backend.Output.Tabular.Utils
+import Payasan.PSC.Repr.External.Syntax
 
-import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Base.ShowTabularUtils
+
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-beamTabular :: LeafOutput pch drn anno -> Part pch drn anno -> Doc
-beamTabular ppl ph = concatBars 2 $ oPart ppl ph
-
-
+mainTabular :: LeafOutput pch drn anno -> Part pch drn anno -> Doc
+mainTabular ppl ph = concatBars 2 $ oPart ppl ph
 
 
 oPart :: LeafOutput pch drn anno -> Part pch drn anno -> [Doc]
@@ -53,7 +52,6 @@ oNoteGroupList ppl xs           = vcat $ map (oNoteGroup ppl) xs
 
 oNoteGroup :: LeafOutput pch drn anno -> NoteGroup pch drn anno -> Doc
 oNoteGroup ppl (Atom e)         = oElement ppl e
-oNoteGroup ppl (Beamed cs)      = oNoteGroupList ppl cs
 oNoteGroup ppl (Tuplet _ cs)    = oNoteGroupList ppl cs
 
 oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
@@ -64,7 +62,7 @@ oElement ppl elt = case elt of
     Skip d              -> skip <++> ppD d 
     Chord ps d _ _      -> oPitches ppl ps <+> ppD d 
     Graces xs           -> vcat $ map (oNote ppl) xs
-    Punctuation s       -> text s
+    Punctuation {}      -> empty
   where
     ppD = pp_duration ppl
 

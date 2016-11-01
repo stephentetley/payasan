@@ -27,8 +27,8 @@ module Payasan.Score.Elementary.Internal.TabularOutput
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.PSC.Backend.Output.Common
-import Payasan.PSC.Backend.Output.Tabular.Utils
+import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Base.ShowTabularUtils
 
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
