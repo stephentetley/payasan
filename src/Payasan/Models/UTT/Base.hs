@@ -47,10 +47,7 @@ module Payasan.Models.UTT.Base
   ) where
 
 
-import Payasan.Models.Base.Classes
-import Payasan.Models.Base.Z12
-
-
+import Payasan.Base.Z12
 
 -- Mode is Z2 so it could have Num, AdditiveGroup... instances
 
@@ -62,15 +59,12 @@ instance Show Mode where
   showsPrec _ Pos = showChar '+'
   showsPrec _ Neg = showChar '-'
 
-instance Invert Mode where
-  invert Pos = Neg
-  invert Neg = Pos
 
-instance Mult Mode where
-  Pos ^*^ Pos = Pos
-  Pos ^*^ Neg = Neg
-  Neg ^*^ Pos = Neg
-  Neg ^*^ Neg = Pos
+(^*^) :: Mode -> Mode -> Mode
+Pos ^*^ Pos = Pos
+Pos ^*^ Neg = Neg
+Neg ^*^ Pos = Neg
+Neg ^*^ Neg = Pos
   
 
 
@@ -107,19 +101,6 @@ instance Show UTT where
 select :: Mode -> UTT -> Z12
 select Pos (UTT _ tpos _   ) = tpos
 select Neg (UTT _ _    tneg) = tneg
-
-
-instance Mult UTT where
-  (UTT rhoU tposU tnegU)  ^*^ v@(UTT rhoV _ _) = UTT rho tpos tneg
-    where
-      rho  = rhoU ^*^ rhoV
-      tpos = tposU + select rhoU v
-      tneg = tnegU + select (invert rhoU) v
-
-
-instance Invert UTT where
-  invert u@(UTT rho _ _) = 
-    UTT rho (invert $ select rho u) (invert $ select (invert rho) u)
 
 
 act :: Triad -> UTT -> Triad

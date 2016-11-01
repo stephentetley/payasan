@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Models.Base.Z12
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.Base.Z12
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  Stephen Tetley <stephen.tetley@gmail.com>
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Models.Base.Z12
+module Payasan.Base.Z12
   ( 
   -- * Datatype
     Z12
@@ -22,8 +22,6 @@ module Payasan.Models.Base.Z12
   , Modulo12(..)
   ) where
 
-
-import Payasan.Models.Base.Classes
 
 
 newtype Z12 = Z12 Int
@@ -52,8 +50,6 @@ instance Num Z12 where
 
 
 
-instance Invert Z12 where
-  invert z = 0 - z
 
 --------------------------------------------------------------------------------
 
