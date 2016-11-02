@@ -35,7 +35,7 @@ module Payasan.Score.Elementary.Internal.Zipper
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.Base.Internal.AnalysisCommon
+import Payasan.Base.AnalysisCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Data.Data

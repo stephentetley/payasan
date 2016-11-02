@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.AnalysisTrace
+-- Module      :  Payasan.Base.AnalysisTrace
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.AnalysisTrace
+module Payasan.Base.AnalysisTrace
   (
 
     TracePart(..)

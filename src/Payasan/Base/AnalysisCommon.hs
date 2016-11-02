@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.Internal.AnalysisCommon
--- Copyright   :  (c) Stephen Tetley 2015
+-- Module      :  Payasan.Base.AnalysisCommon
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.Internal.AnalysisCommon
+module Payasan.Base.AnalysisCommon
   (
 
     Anchor
