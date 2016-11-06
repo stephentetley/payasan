@@ -22,11 +22,10 @@ module Payasan.PSC.Repr.External.LilyPondInTrans
   ) where
 
 
-import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Base.LilyPondCommon
 
-import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.PSC.Repr.IRBeam.Traversals
+import Payasan.PSC.Repr.External.Syntax
+import Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Base.RewriteMonad
 

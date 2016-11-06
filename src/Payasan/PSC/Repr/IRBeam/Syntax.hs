@@ -43,7 +43,6 @@ module Payasan.PSC.Repr.IRBeam.Syntax
   , Note(..)
 
   -- * Operations
-  , pushSectionInfo
   , sizeNoteGroup
   , firstSectionInfo 
 
@@ -133,12 +132,6 @@ data Note pch drn = Note pch drn
 --------------------------------------------------------------------------------
 -- Operations (maybe should be in another module)
 
-pushSectionInfo :: SectionInfo 
-                -> Part pch drn anno 
-                -> Part pch drn anno
-pushSectionInfo ri (Part bs) = Part $ map upd bs
-  where
-    upd bar = bar { bar_header = ri }
 
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration

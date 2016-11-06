@@ -61,6 +61,8 @@ module Payasan.PSC.Repr.External.Syntax
   , ABCNoteGroup1
   , ABCElement1
 
+  -- * Operations
+  , pushSectionInfo
 
 
   ) where
@@ -181,3 +183,14 @@ type ABCPart1 anno              = Part        ABCPitch ABCNoteLength anno
 type ABCBar1 anno               = Bar         ABCPitch ABCNoteLength anno
 type ABCNoteGroup1 anno         = NoteGroup   ABCPitch ABCNoteLength anno
 type ABCElement1 anno           = Element     ABCPitch ABCNoteLength anno
+
+
+--------------------------------------------------------------------------------
+-- Operations
+
+pushSectionInfo :: SectionInfo 
+                -> Part pch drn anno 
+                -> Part pch drn anno
+pushSectionInfo si (Part bs) = Part $ map upd bs
+  where
+    upd bar = bar { bar_info = si }

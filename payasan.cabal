@@ -107,7 +107,6 @@ library
     Payasan.PSC.Base.ShowLinearUtils,
     Payasan.PSC.Base.ShowTabularUtils,
     Payasan.PSC.Base.SyntaxCommon,
-    Payasan.PSC.Notelist,
     Payasan.PSC.Pipeline,
     Payasan.PSC.Repr.ExternalToIRBeam,
     Payasan.PSC.Repr.IRBeamToExternal,

@@ -78,7 +78,7 @@ import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as RHY
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import qualified Payasan.PSC.Notelist as MAIN
+import qualified Payasan.PSC.Pipeline                       as MAIN
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

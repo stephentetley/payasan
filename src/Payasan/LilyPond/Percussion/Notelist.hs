@@ -56,56 +56,53 @@ import Payasan.LilyPond.Percussion.Internal.Output (drumsOutput)
 import Payasan.LilyPond.Percussion.Internal.Parser (drums)  -- to re-export
 import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
-import Payasan.PSC.Repr.IRBeamToExternal
 import Payasan.PSC.Repr.ExternalToIRBeam
-import Payasan.PSC.Repr.IRBeam.AddBeams
-import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+import qualified Payasan.PSC.Repr.IRBeam.AddBeams           as BEAM
 
-import qualified Payasan.PSC.Backend.MIDI.BeamToMIDI       as MIDI
-import qualified Payasan.PSC.Backend.MIDI.Output           as MIDI
-import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax  as MIDI
+import qualified Payasan.PSC.Backend.MIDI.BeamToMIDI        as MIDI
+import qualified Payasan.PSC.Backend.MIDI.Output            as MIDI
+import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax   as MIDI
 
 
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 
-import qualified Payasan.PSC.Repr.External.LilyPondInTrans     as LY
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans    as LY
+import qualified Payasan.PSC.Repr.External.LilyPondInTrans      as LY
+import qualified Payasan.PSC.Backend.LilyPond.OutTrans          as LYOut
 
 import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.ShowLinear
 import Payasan.PSC.Repr.External.ShowTabular
 
-import qualified Payasan.PSC.Notelist as MAIN
+import qualified Payasan.PSC.Pipeline                           as MAIN
+
+
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fromLilyPond :: LyDrumPart -> StdDrumPart
+fromLilyPond :: InputDrumPart -> StdDrumPart
 fromLilyPond = fromLilyPondWith default_section_info
 
 fromLilyPondWith :: SectionInfo 
-                 -> LyDrumPart
+                 -> InputDrumPart
                  -> StdDrumPart
 fromLilyPondWith locals = 
-    error "TODO fromLilyPondWith"
---     translateToMain . LY.translateFromInput_DurationOnly . BEAM.pushSectionInfo locals
+    LY.translateFromInput_DurationOnly . pushSectionInfo locals
 
 
 
 outputAsLilyPond :: ScoreInfo -> StdDrumPart -> String
-outputAsLilyPond globals = error "TODO outputAsLilyPond"
-{-
 outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
   where
     config  = MAIN.LilyPondPipeline 
-                { MAIN.beam_trafo  = addBeams
-                , MAIN.out_trafo   = LY.translateToOutput_DurationOnly
+                { MAIN.beam_trafo  = BEAM.addBeams
+                , MAIN.out_trafo   = LYOut.translateToOutput_DurationOnly
                 , MAIN.output_func = drumsOutput globals 
                 }
--}
 
 printAsLilyPond :: ScoreInfo -> StdDrumPart -> IO ()
 printAsLilyPond gi = putStrLn . outputAsLilyPond gi

@@ -29,7 +29,6 @@ import Payasan.LilyPond.Lyricmode.Internal.Base
 import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Backend.LilyPond.Utils
 
 import Payasan.PSC.Base.LilyPondCommon

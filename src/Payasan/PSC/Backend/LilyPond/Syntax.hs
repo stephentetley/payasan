@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -39,13 +38,9 @@ module Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Repr.IRBeam.Syntax
 
-import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as PCH
 
 
-import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
-import Data.Data
 
 
 

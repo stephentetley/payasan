@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -38,16 +37,9 @@ module Payasan.PSC.Backend.ABC.Syntax
 
 import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
 import Payasan.PSC.Base.ABCCommon
-import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.Duration
-import qualified Payasan.Base.Pitch as PCH
-import Payasan.Base.Scale
 
-import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
-import Data.Data
-import Data.Ratio
 
 --------------------------------------------------------------------------------
 -- Syntax

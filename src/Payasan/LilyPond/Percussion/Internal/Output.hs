@@ -25,24 +25,21 @@ import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
 import Payasan.PSC.Base.SyntaxCommon
 
-
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-drumsOutput :: ScoreInfo -> LyDrumPart -> Doc
-drumsOutput _ _ = error "drumsOutput TODO"
-{-
-drumsOutput globals ph = 
+drumsOutput :: ScoreInfo -> BeamDrumPart -> Doc
+drumsOutput globals beampart = 
         header
     $+$ drumsBlock notes
   where
     header          = scoreHeader globals
-    notes           = lilypondNotes drum_def default_section_info ph
+    notes           = lilypondNotes drum_def default_section_info beampart
     drum_def        = LyOutputDef { printPitch = text . shortName
                                   , printAnno  = ppAccent }
 
--}
+
 
 
 drumsBlock :: Doc -> Doc

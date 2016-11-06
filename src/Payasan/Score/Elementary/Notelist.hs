@@ -93,7 +93,7 @@ import Payasan.PSC.Base.ShowCommon ( LeafOutput(..) )
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.PSC.Notelist as MAIN
+import qualified Payasan.PSC.Pipeline as MAIN
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

@@ -4,8 +4,9 @@
 module Demo01 where
 
 import Payasan.PSC.Backend.ABC.Output (abcOutput) -- temp
-import Payasan.PSC.Notelist
+import Payasan.PSC.Pipeline
 
+import Payasan.PSC.Repr.ExternalToIRBeam
 
 
 
@@ -17,7 +18,7 @@ locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = printAsABC default_score_info default_staff_info phrase01
+demo01 = printAsABC default_score_info default_staff_info (translateToBeam phrase01)
 
 demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01

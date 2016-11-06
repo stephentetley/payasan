@@ -52,7 +52,7 @@ import qualified Payasan.Score.Elementary.Internal.ElementaryToExternal   as ELE
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.PSC.Notelist as MAIN
+import qualified Payasan.PSC.Pipeline as MAIN
 
 
 
