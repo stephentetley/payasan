@@ -7,22 +7,25 @@ module Demo03 where
 import qualified Payasan.Models.Polyrhythms.Base as POLY
 
 -- import Payasan.Base.Duration
-import Payasan.PSC.Notelist
+import Payasan.PSC.Pipeline
+import Payasan.PSC.Shell
 import Payasan.Base.Pitch
 import Payasan.Base.Names.Pitch
 
-import Payasan.PSC.Backend.LilyPond.Syntax (fromPitchRel, LyPitch)
+import Payasan.PSC.Base.LilyPondCommon hiding (middle_c)
+
 
 import Payasan.PSC.Backend.Csound.BeamToCsound
 import Payasan.PSC.Backend.Csound.IStmt
 import Payasan.PSC.Backend.Csound.Output
+
 import Payasan.PSC.Backend.Csound.Syntax hiding (middle_c)
 
 
 import Payasan.Base.Names.Pitch
 
-import Payasan.PSC.Backend.Output.Common
-import Payasan.PSC.Backend.Output.Tabular.OutputBeam
+import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Repr.External.ShowTabular
 
 import Data.Monoid ( (<>) )
 
@@ -120,7 +123,7 @@ test04 = simpleIntervalOf $ Interval 8 12
 test05 :: LyPitch
 test05 = fromPitchRel c_5 fs_4
 
-test06 = beamTabular std_ly_output $ [lilypond| c4 d e fis | c' |]
+test06 = mainTabular std_ly_output $ [lilypond| c4 d e fis | c' |]
 
 
 test07 :: LyPitch

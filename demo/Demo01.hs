@@ -18,7 +18,7 @@ locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
 
 
 demo01 :: IO ()
-demo01 = printAsABC default_score_info default_staff_info (translateToBeam phrase01)
+demo01 = printAsABC default_score_info default_staff_info phrase01
 
 demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01
@@ -31,12 +31,12 @@ phrase02 = fromABCWith locals $
 demo02 :: IO ()
 demo02 = printAsABC default_score_info default_staff_info phrase02
 
-phrase03 :: ABCPart
-phrase03 = [abc|
-    (3cde e2 | (6cegczg (3czg | (3:2:2G4c2 | (3:2:4G2A2Bc | (3:2:6(3GGGA2Bc |]
+phrase03 :: StdPart
+phrase03 = fromABCWith locals $ 
+    [abc| (3cde e2 | (6cegczg (3czg | (3:2:2G4c2 | (3:2:4G2A2Bc | (3:2:6(3GGGA2Bc |]
 
 demo03:: IO ()
-demo03 = putStrLn $ ppRender $ abcOutput default_score_info default_staff_info phrase03
+demo03 = printAsABC default_score_info default_staff_info phrase03
 
 
 testPh :: StdPart
