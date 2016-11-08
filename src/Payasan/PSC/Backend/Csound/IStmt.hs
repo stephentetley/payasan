@@ -19,11 +19,9 @@ module Payasan.PSC.Backend.Csound.IStmt
     IStmt(..)
   , IStmtList
   , Value(..)
-  , TimeSpan(..)
 
   , Seconds             -- re-export
 
-  , timeSpanIStmt
   , ellipsisEq
   , sameInst
   , compareIStmt
@@ -37,8 +35,13 @@ import Payasan.Base.Utils
 import Data.Fixed
 import Data.Function ( on )
 
--- Just encode i-stmts, f-stmts can be added during rendering.
 
+
+
+-- Just encode i-stmts, f-stmts can be added during rendering.
+--
+-- Design note - this is an intrinsic representation - start and duration
+-- are inside the @event@ rather than wrapped listitem.
 data IStmt = IStmt 
     { inst_num      :: Int
     , istart        :: Seconds
@@ -48,13 +51,6 @@ data IStmt = IStmt
   deriving (Eq,Show)
 
 
--- | Time span - note does not support monoid instance.
---
-data TimeSpan = TimeSpan 
-    { tspan_start       :: !Seconds
-    , tspan_duration    :: !Seconds
-    } 
-  deriving (Eq,Show)
 
 -- We want statements at a concrete type that allows snocing.
 --
@@ -74,12 +70,6 @@ data Value = VStr       !String
            | VCpsPitch  !Milli
   deriving (Eq,Show)
 
-
-
-
-
-timeSpanIStmt :: IStmt -> TimeSpan
-timeSpanIStmt stmt = TimeSpan (istart stmt) (iduration stmt)
 
 
 

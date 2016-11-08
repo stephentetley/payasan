@@ -114,7 +114,7 @@ ppRender = MAIN.ppRender
 
 writeAsMIDI :: FilePath -> StdDrumPart -> IO ()
 writeAsMIDI path ph = 
-   let notes = PERC.translate $ translateToBeam ph
+   let notes = PERC.translate $ transExternalToIRBeam ph
        trk   = MIDI.translateToMIDI (MIDI.simpleTrackData 9) notes
    in MIDI.writeMF1 path [trk]
 

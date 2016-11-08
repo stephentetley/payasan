@@ -17,7 +17,7 @@
 
 module Payasan.PSC.Repr.ExternalToIRBeam
   (
-    translateToBeam
+    transExternalToIRBeam
   ) where
 
 
@@ -27,8 +27,8 @@ import Payasan.PSC.Repr.External.Syntax
 
 
 
-translateToBeam :: Part pch drn anno -> T.Part pch drn anno
-translateToBeam                 = partT
+transExternalToIRBeam :: Part pch drn anno -> T.Part pch drn anno
+transExternalToIRBeam           = partT
 
 
 partT :: Part pch drn anno -> T.Part pch drn anno

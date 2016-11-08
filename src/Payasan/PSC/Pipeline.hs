@@ -219,7 +219,7 @@ outputAsABC infos staff =
     ppRender . ABCOut.abcOutput infos staff
              . ABCOut.translateToOutput
              . addBeams 
-             . translateToBeam
+             . transExternalToIRBeam
 
 printAsABC :: ScoreInfo -> StaffInfo -> EXT.StdPart1 anno -> IO ()
 printAsABC infos staff = putStrLn . outputAsABC infos staff
@@ -244,7 +244,7 @@ genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
                     -> EXT.Part p1i Duration a1i
                     -> Doc
 genOutputAsLilyPond config = 
-    outputStep . toGenLyPart . beamingRewrite . translateToBeam
+    outputStep . toGenLyPart . beamingRewrite . transExternalToIRBeam
   where
     beamingRewrite      = beam_trafo config
     toGenLyPart       = out_trafo config
@@ -266,8 +266,8 @@ genOutputAsLilyPond2 :: LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o
                      -> EXT.Part p2i Duration a2i
                      -> Doc
 genOutputAsLilyPond2 config ph1 ph2 = 
-    let a = toGenLyPart1 $ beamingRewrite1 $ translateToBeam ph1
-        b = toGenLyPart2 $ beamingRewrite2 $ translateToBeam ph2
+    let a = toGenLyPart1 $ beamingRewrite1 $ transExternalToIRBeam ph1
+        b = toGenLyPart2 $ beamingRewrite2 $ transExternalToIRBeam ph2
     in outputStep a b
   where
     beamingRewrite1     = pipe2_beam_trafo1 config
@@ -305,7 +305,7 @@ genOutputAsRhythmicMarkup :: LYOut.MarkupOutput pch
 genOutputAsRhythmicMarkup def infos = 
     LYOut.rhythmicMarkupScore ppDef infos . LYOut.translateToRhythmicMarkup def
                                           . addBeams 
-                                          . translateToBeam
+                                          . transExternalToIRBeam
   where
     ppDef = LYOut.LyOutputDef { LYOut.printPitch = LYOut.pitch
                               , LYOut.printAnno = const empty }
@@ -335,7 +335,7 @@ ppRender = renderStyle (style {lineLength=500})
 
 writeAsMIDI :: FilePath -> EXT.StdPart1 anno -> IO ()
 writeAsMIDI path ph = 
-    let notes   = MIDI.translateToMidiP $ translateToBeam ph
+    let notes   = MIDI.translateToMidiP $ transExternalToIRBeam ph
         trk     = MIDI.translateToMIDI (MIDI.simpleTrackData 1) notes
     in MIDI.writeMF1 path [trk]
 
@@ -346,7 +346,7 @@ writeAsMIDI path ph =
 
 outputAsCsound :: ColumnSpecs -> GenIStmt anno -> EXT.StdPart1 anno -> String
 outputAsCsound cols gf ph =
-    let notes   = CS.translateToCsoundP $ translateToBeam ph
+    let notes   = CS.translateToCsoundP $ transExternalToIRBeam ph
         stmts   = translateToCsound gf notes
     in ppRender $ csoundOutput cols stmts
 
