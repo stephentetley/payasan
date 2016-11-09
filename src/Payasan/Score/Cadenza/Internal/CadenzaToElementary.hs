@@ -30,7 +30,7 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Basis
 import Payasan.Base.Duration
 
--- TODO - it would be better to translate directly to External...
+-- TODO - maybe it would be better to translate directly to External...
 
 transCadenzaToElementary :: Time 
                          -> Part pch Duration anno -> T.Part pch Duration anno

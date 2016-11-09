@@ -127,7 +127,7 @@ library
     Payasan.PSC.Repr.IRBeam.Traversals,
     Payasan.PSC.Shell,
     Payasan.Score.Cadenza.Notelist,
-    Payasan.Score.Cadenza.Internal.CadenzaToBeam,
+    Payasan.Score.Cadenza.Internal.CadenzaToIRBeam,
     Payasan.Score.Cadenza.Internal.CadenzaToElementary,
     Payasan.Score.Cadenza.Internal.InTrans,
     Payasan.Score.Cadenza.Internal.Metrics,

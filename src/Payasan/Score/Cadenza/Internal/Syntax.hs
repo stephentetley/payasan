@@ -11,7 +11,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Symbolic notelist without bars.
+-- Symbolic notelist without bars, but with beam groups.
 --
 --------------------------------------------------------------------------------
 
