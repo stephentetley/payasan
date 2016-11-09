@@ -18,8 +18,8 @@
 
 module Payasan.Score.Elementary.Internal.ElementaryToExternal
   (
-    translateToMain
-  , chordTranslateToMain
+    transElementaryToExternal
+  , chord_transElementaryToExternal
   ) where
 
 
@@ -31,9 +31,9 @@ import Payasan.PSC.Base.SyntaxCommon
 
 
 
-translateToMain :: forall pch drn anno.
-                   Part pch drn anno -> T.Part pch drn anno
-translateToMain = partT
+transElementaryToExternal :: forall pch drn anno.
+                             Part pch drn anno -> T.Part pch drn anno
+transElementaryToExternal           = partT
   where
     partT :: Part pch drn anno -> T.Part pch drn anno
     partT (Part info bs)            = T.Part $ map (barT info) bs
@@ -62,10 +62,10 @@ translateToMain = partT
 -- would be opaque, it cannot be with the Main and Elementary
 -- representations).
 --
-chordTranslateToMain :: forall pch drn anno. 
-                        Part [pch] drn anno
-                     -> T.Part pch drn anno
-chordTranslateToMain = partT
+chord_transElementaryToExternal :: forall pch drn anno. 
+                                   Part [pch] drn anno
+                                -> T.Part pch drn anno
+chord_transElementaryToExternal     = partT
   where
     partT :: Part [pch] drn anno -> T.Part pch drn anno
     partT (Part info bs)            = T.Part $ map (barT info) bs

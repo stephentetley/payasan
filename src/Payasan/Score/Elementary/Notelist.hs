@@ -121,37 +121,39 @@ fromLilyPondWith_Relative pch locals =
 
 outputAsABC :: ScoreInfo -> StaffInfo -> StdElemPart -> String
 outputAsABC infos staff = 
-    MAIN.outputAsABC infos staff . translateToMain
+    MAIN.outputAsABC infos staff . transElementaryToExternal
 
 printAsABC :: ScoreInfo -> StaffInfo -> StdElemPart -> IO ()
 printAsABC infos staff = 
-    MAIN.printAsABC infos staff . translateToMain
+    MAIN.printAsABC infos staff . transElementaryToExternal
 
 
 
 genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2
                     -> Part p1 Duration a1
                     -> Doc
-genOutputAsLilyPond config = MAIN.genOutputAsLilyPond config . translateToMain
+genOutputAsLilyPond config = 
+    MAIN.genOutputAsLilyPond config . transElementaryToExternal
 
 genOutputAsLilyPond2 :: MAIN.LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o
                      -> Part p1i Duration a1i
                      -> Part p2i Duration a2i
                      -> Doc
 genOutputAsLilyPond2 config ph1 ph2 = 
-    MAIN.genOutputAsLilyPond2 config (translateToMain ph1) (translateToMain ph2)
+    MAIN.genOutputAsLilyPond2 config (transElementaryToExternal ph1)
+                                     (transElementaryToExternal ph2)
 
 
 
 
 outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPart -> String
 outputAsLilyPond_Relative infos pch = 
-    MAIN.outputAsLilyPond_Relative infos pch . translateToMain
+    MAIN.outputAsLilyPond_Relative infos pch . transElementaryToExternal
 
 
 printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPart -> IO ()
 printAsLilyPond_Relative infos pch = 
-    MAIN.printAsLilyPond_Relative infos pch . translateToMain
+    MAIN.printAsLilyPond_Relative infos pch . transElementaryToExternal
 
 
 
@@ -161,15 +163,15 @@ genOutputAsRhythmicMarkup :: LY.MarkupOutput pch
                           -> Part pch Duration anno
                           -> Doc
 genOutputAsRhythmicMarkup def infos = 
-    MAIN.genOutputAsRhythmicMarkup def infos . translateToMain
+    MAIN.genOutputAsRhythmicMarkup def infos . transElementaryToExternal
 
 outputAsRhythmicMarkup :: ScoreInfo -> StdElemPart -> String
 outputAsRhythmicMarkup infos = 
-    MAIN.outputAsRhythmicMarkup infos . translateToMain
+    MAIN.outputAsRhythmicMarkup infos . transElementaryToExternal
 
 printAsRhythmicMarkup :: ScoreInfo -> StdElemPart -> IO ()
 printAsRhythmicMarkup infos = 
-    MAIN.printAsRhythmicMarkup infos . translateToMain
+    MAIN.printAsRhythmicMarkup infos . transElementaryToExternal
 
 
 
@@ -179,7 +181,7 @@ ppRender = MAIN.ppRender
 
 
 writeAsMIDI :: FilePath -> StdElemPart -> IO ()
-writeAsMIDI path = MAIN.writeAsMIDI path . translateToMain
+writeAsMIDI path = MAIN.writeAsMIDI path . transElementaryToExternal
 
 
 

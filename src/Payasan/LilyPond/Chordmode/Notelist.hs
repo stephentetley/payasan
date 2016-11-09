@@ -99,7 +99,7 @@ fromLilyPondWith locals = translateInput . ELEM.pushSectionInfo locals
 outputAsLilyPond :: ScoreInfo -> StdChordPart -> String
 outputAsLilyPond globals = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config
-                  . ELEM.translateToMain 
+                  . ELEM.transElementaryToExternal
                   . translateOutput
   where
     config  = MAIN.LilyPondPipeline 
@@ -137,7 +137,7 @@ writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes
 -- for MIDI - notes become chords...
 
 midiTrans :: StdChordPart -> MAIN.Part Pitch Duration ()
-midiTrans = ELEM.chordTranslateToMain . chordTrans
+midiTrans = ELEM.chord_transElementaryToExternal . chordTrans
 
 
 

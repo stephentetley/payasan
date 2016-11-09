@@ -46,7 +46,7 @@ import Payasan.LilyPond.FretDiagram.Internal.Plain
 
 import Payasan.PSC.Repr.IRBeam.AddBeams
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans      as LY
-import qualified Payasan.Score.Elementary.Internal.ElementaryToExternal   as ELEM
+import Payasan.Score.Elementary.Internal.ElementaryToExternal
 
 
 import Payasan.PSC.Shell
@@ -62,7 +62,7 @@ import qualified Payasan.PSC.Pipeline as MAIN
 
 outputAsLilyPond :: ScoreInfo -> [FretDiagram] -> FretDiagramPart -> String
 outputAsLilyPond globals diags = 
-    MAIN.ppRender . MAIN.genOutputAsLilyPond config . ELEM.chordTranslateToMain 
+    MAIN.ppRender . MAIN.genOutputAsLilyPond config . chord_transElementaryToExternal 
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams

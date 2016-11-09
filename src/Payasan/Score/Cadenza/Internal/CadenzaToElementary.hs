@@ -17,7 +17,7 @@
 
 module Payasan.Score.Cadenza.Internal.CadenzaToElementary
   (
-    translateToElem
+    transCadenzaToElementary
   ) where
 
 
@@ -30,8 +30,11 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Basis
 import Payasan.Base.Duration
 
-translateToElem :: Time -> Part pch Duration anno -> T.Part pch Duration anno
-translateToElem ts (Part info gs) = 
+-- TODO - it would be better to translate directly to External...
+
+transCadenzaToElementary :: Time 
+                         -> Part pch Duration anno -> T.Part pch Duration anno
+transCadenzaToElementary ts (Part info gs) = 
     let info1 = info { section_meter = TimeSig ts } 
     in T.recalcBars $ partT (Part info1 gs) 
 
