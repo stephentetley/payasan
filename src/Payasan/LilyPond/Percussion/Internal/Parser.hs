@@ -24,6 +24,7 @@ module Payasan.LilyPond.Percussion.Internal.Parser
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
+import Payasan.PSC.Base.LilyPondCommon (LyNoteLength)
 import Payasan.PSC.Base.LilyPondLexer
 import Payasan.PSC.Repr.External.LilyPondParser
 import Payasan.PSC.Repr.External.Syntax
@@ -56,11 +57,11 @@ drums = QuasiQuoter
 -- Parser
 
 
-parseLyDrums :: String -> Either ParseError (LyPart2 DrumPitch Accent)
+parseLyDrums :: String -> Either ParseError (Part DrumPitch LyNoteLength Accent)
 parseLyDrums = parseLyPart (makeDrumsDef accent)
 
 
-makeDrumsParser :: LyParser anno -> LyParser (LyPart2 DrumPitch anno)
+makeDrumsParser :: LyParser anno -> LyParser (Part DrumPitch LyNoteLength anno)
 makeDrumsParser pAnno = makeLyParser (makeDrumsDef pAnno)
 
 

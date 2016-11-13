@@ -25,8 +25,8 @@ module Payasan.PSC.Backend.Csound.BeamToCsound
 
 import Payasan.PSC.Backend.Csound.IStmt
 import Payasan.PSC.Backend.Csound.Syntax
-import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.PSC.Repr.IRBeam.TiedNoteStream
+import Payasan.PSC.Repr.External.Syntax
+import Payasan.PSC.Repr.External.TiedNoteStream
 
 import Payasan.PSC.Base.RewriteMonad
 

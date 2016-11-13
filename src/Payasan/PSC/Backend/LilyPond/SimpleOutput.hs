@@ -32,12 +32,12 @@ module Payasan.PSC.Backend.LilyPond.SimpleOutput
 
   ) where
 
-import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.PSC.Base.SyntaxCommon
+import Payasan.PSC.Repr.External.LilyPondAliases
+import Payasan.PSC.Repr.External.Syntax
 
+import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.RewriteMonad
 
 import Payasan.Base.Basis

@@ -26,7 +26,7 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
-import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+import qualified Payasan.PSC.Repr.External.Syntax as EXT
 
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
@@ -40,8 +40,8 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 lyricsScore :: Anno a1 
             => ScoreInfo 
-            -> BEAM.Part LyPitch LyNoteLength a1 
-            -> BEAM.Part Syllable LyNoteLength a2 
+            -> EXT.Part LyPitch LyNoteLength a1 
+            -> EXT.Part Syllable LyNoteLength a2 
             -> Doc
 lyricsScore globals ph1 ph2 = 
         header $+$ simultaneous1 (rhythm $+$ lyrics)
@@ -53,8 +53,8 @@ lyricsScore globals ph1 ph2 =
 
 lyricsScoreDU :: AnnoDU a
               -> ScoreInfo 
-              -> BEAM.Part LyPitch LyNoteLength a
-              -> BEAM.Part Syllable LyNoteLength az
+              -> EXT.Part LyPitch LyNoteLength a
+              -> EXT.Part Syllable LyNoteLength az
               -> Doc
 lyricsScoreDU annos globals ph1 ph2 = 
         header $+$ defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
@@ -69,7 +69,7 @@ lyricsScoreDU annos globals ph1 ph2 =
 -- rhythmVoice would be better with an explicit annof printer 
 -- than the Anno instance... 
 
-rhythmVoice :: (a -> Doc) -> BEAM.Part LyPitch LyNoteLength a -> Doc
+rhythmVoice :: (a -> Doc) -> EXT.Part LyPitch LyNoteLength a -> Doc
 rhythmVoice annof ph = newVoiceDefn "rhythm" <+> anonBlock body
   where
     body        = vcat [ hide_ "Staff.StaffSymbol" 
@@ -81,11 +81,11 @@ rhythmVoice annof ph = newVoiceDefn "rhythm" <+> anonBlock body
     def         = LyOutputDef { printPitch = pitch, printAnno = annof }
                       
 
-lyricsVoice :: BEAM.Part Syllable LyNoteLength a -> Doc
+lyricsVoice :: EXT.Part Syllable LyNoteLength a -> Doc
 lyricsVoice ph = block (Just prefix) (overrides $+$ notes)
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
-    locals1     = maybe default_section_info id $ BEAM.firstSectionInfo ph
+    locals1     = maybe default_section_info id $ EXT.firstSectionInfo ph
     overrides   = vcat [ override_ "LyricText #'font-size = #-1"
                        , override_ "Lyrics.LyricSpace.minimum-distance = #1.4"
                        , set_ "associatedVoice = #\"rhythm\""

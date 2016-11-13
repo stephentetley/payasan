@@ -42,9 +42,11 @@ module Payasan.PSC.Repr.External.LilyPondParser
 
   ) where
 
+import Payasan.PSC.Repr.External.LilyPondAliases
+import Payasan.PSC.Repr.External.Syntax
+
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.LilyPondLexer
-import Payasan.PSC.Repr.External.Syntax -- TODO should produce External
 
 import Payasan.PSC.Base.SyntaxCommon
 

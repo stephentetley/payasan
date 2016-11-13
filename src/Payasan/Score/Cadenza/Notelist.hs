@@ -40,7 +40,7 @@ module Payasan.Score.Cadenza.Notelist
 
   ) where
 
-import Payasan.Score.Cadenza.Internal.CadenzaToIRBeam
+import Payasan.Score.Cadenza.Internal.CadenzaToExternal
 import Payasan.Score.Cadenza.Internal.InTrans
 import Payasan.Score.Cadenza.Internal.Parser
 import Payasan.Score.Cadenza.Internal.Syntax
@@ -50,7 +50,7 @@ import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
 import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LY
 import qualified Payasan.PSC.Backend.LilyPond.Utils           as PP
 
-import Payasan.PSC.Repr.IRBeam.AddBeams (noBeams)
+import Payasan.PSC.Repr.External.AddBeams (noBeams)
 import Payasan.PSC.Pipeline (LilyPondPipeline(..))
 import qualified Payasan.PSC.Pipeline                         as MAIN
 import Payasan.PSC.Shell
@@ -81,7 +81,7 @@ genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
                     -> StdCadenzaPart2 p1i a1i
                     -> Doc
 genOutputAsLilyPond config = 
-    outputStep . toGenLyPart . beamingRewrite . transCadenzaToIRBeam
+    outputStep . toGenLyPart . beamingRewrite . transCadenzaToExternal
   where
     beamingRewrite      = beam_trafo config
     toGenLyPart         = out_trafo config

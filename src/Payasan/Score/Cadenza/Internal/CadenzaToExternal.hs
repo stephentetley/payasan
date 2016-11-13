@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Cadenza.Internal.CadenzaToIRBeam
+-- Module      :  Payasan.Score.Cadenza.Internal.CadenzaToExternal
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -10,24 +10,24 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Cadenza syntax to IRBeam syntax prior to outputting 
+-- Convert Cadenza syntax to External syntax prior to outputting 
 -- LilyPond.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Cadenza.Internal.CadenzaToIRBeam
+module Payasan.Score.Cadenza.Internal.CadenzaToExternal
   (
-    transCadenzaToIRBeam
+    transCadenzaToExternal
   ) where
 
 
 import Payasan.Score.Cadenza.Internal.Syntax
 
-import qualified Payasan.PSC.Repr.IRBeam.Syntax as T
+import qualified Payasan.PSC.Repr.External.Syntax as T
 
 
-transCadenzaToIRBeam :: Part pch drn anno -> T.Part pch drn anno
-transCadenzaToIRBeam            = partT
+transCadenzaToExternal :: Part pch drn anno -> T.Part pch drn anno
+transCadenzaToExternal          = partT
 
 
 partT ::Part pch drn anno -> T.Part pch drn anno

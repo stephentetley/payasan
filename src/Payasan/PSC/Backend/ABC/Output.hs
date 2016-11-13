@@ -19,10 +19,10 @@ module Payasan.PSC.Backend.ABC.Output
     abcOutput
   ) where
 
-import Payasan.PSC.Backend.ABC.Syntax
 import Payasan.PSC.Backend.ABC.Utils
 
-import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.External.ABCAliases
+import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon

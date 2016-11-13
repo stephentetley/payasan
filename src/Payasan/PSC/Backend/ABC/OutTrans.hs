@@ -21,11 +21,11 @@ module Payasan.PSC.Backend.ABC.OutTrans
   ) where
 
 
-import Payasan.PSC.Backend.ABC.Syntax
 import Payasan.PSC.Base.ABCCommon
 
-import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.PSC.Repr.IRBeam.Traversals
+import Payasan.PSC.Repr.External.ABCAliases
+import Payasan.PSC.Repr.External.Syntax
+import Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
@@ -39,7 +39,7 @@ import Payasan.Base.Scale
 
 
 
-translateToOutput :: StdBeamPart1 anno -> ABCPart1 anno
+translateToOutput :: Part Pitch Duration anno -> ABCPart1 anno
 translateToOutput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a

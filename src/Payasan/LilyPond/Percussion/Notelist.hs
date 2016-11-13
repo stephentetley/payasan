@@ -56,8 +56,7 @@ import Payasan.LilyPond.Percussion.Internal.Output (drumsOutput)
 import Payasan.LilyPond.Percussion.Internal.Parser (drums)  -- to re-export
 import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
-import Payasan.PSC.Repr.ExternalToIRBeam
-import qualified Payasan.PSC.Repr.IRBeam.AddBeams           as BEAM
+import qualified Payasan.PSC.Repr.External.AddBeams           as BEAM
 
 import qualified Payasan.PSC.Backend.MIDI.BeamToMIDI        as MIDI
 import qualified Payasan.PSC.Backend.MIDI.Output            as MIDI
@@ -82,13 +81,13 @@ import qualified Payasan.PSC.Pipeline                           as MAIN
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
+transExternalToIRBeam = id
 
-
-fromLilyPond :: InputDrumPart -> StdDrumPart
+fromLilyPond :: LyDrumPart -> StdDrumPart
 fromLilyPond = fromLilyPondWith default_section_info
 
 fromLilyPondWith :: SectionInfo 
-                 -> InputDrumPart
+                 -> LyDrumPart
                  -> StdDrumPart
 fromLilyPondWith locals = 
     LY.translateFromInput_DurationOnly . pushSectionInfo locals

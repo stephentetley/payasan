@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.ABC.Syntax
+-- Module      :  Payasan.PSC.Repr.External.ABCAliases
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.ABC.Syntax
+module Payasan.PSC.Repr.External.ABCAliases
   ( 
 
     ABCPart
@@ -35,7 +35,7 @@ module Payasan.PSC.Backend.ABC.Syntax
 
   ) where
 
-import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.ABCCommon
 
 
@@ -51,15 +51,15 @@ type ABCPart                    = ABCPart1      ()
 type ABCBar                     = ABCBar1       ()      
 type ABCNoteGroup               = ABCNoteGroup1 ()
 type ABCElement                 = ABCElement1   ()
-type ABCNote                    = BEAM.Note     ABCPitch ABCNoteLength
+type ABCNote                    = Note          ABCPitch ABCNoteLength
 
 
 -- Gen- prefix indicates the must general syntax allowed.
 
-type ABCPart1 anno              = BEAM.Part        ABCPitch ABCNoteLength anno
-type ABCBar1 anno               = BEAM.Bar         ABCPitch ABCNoteLength anno
-type ABCNoteGroup1 anno         = BEAM.NoteGroup   ABCPitch ABCNoteLength anno
-type ABCElement1 anno           = BEAM.Element     ABCPitch ABCNoteLength anno
+type ABCPart1 anno              = Part        ABCPitch ABCNoteLength anno
+type ABCBar1 anno               = Bar         ABCPitch ABCNoteLength anno
+type ABCNoteGroup1 anno         = NoteGroup   ABCPitch ABCNoteLength anno
+type ABCElement1 anno           = Element     ABCPitch ABCNoteLength anno
 
 
 

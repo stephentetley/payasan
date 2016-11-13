@@ -29,11 +29,11 @@ module Payasan.PSC.Backend.LilyPond.RhythmicMarkup
 
 import Payasan.PSC.Backend.LilyPond.OutTrans
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Syntax
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.PSC.Repr.IRBeam.Syntax
-import Payasan.PSC.Repr.IRBeam.Traversals
+import Payasan.PSC.Repr.External.LilyPondAliases
+import Payasan.PSC.Repr.External.Syntax
+import Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon

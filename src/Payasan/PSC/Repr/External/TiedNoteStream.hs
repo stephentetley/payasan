@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.IRBeam.TiedNoteStream
+-- Module      :  Payasan.PSC.Repr.External.TiedNoteStream
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.IRBeam.TiedNoteStream
+module Payasan.PSC.Repr.External.TiedNoteStream
   ( 
 
     makeTiedNoteStream
@@ -25,7 +25,7 @@ module Payasan.PSC.Repr.IRBeam.TiedNoteStream
   ) where
 
 
-import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Basis

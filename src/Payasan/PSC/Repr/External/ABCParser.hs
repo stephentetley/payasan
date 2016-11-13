@@ -29,6 +29,7 @@ module Payasan.PSC.Repr.External.ABCParser
 
   ) where
 
+import Payasan.PSC.Repr.External.ABCAliases
 import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.PSC.Base.ABCLexer

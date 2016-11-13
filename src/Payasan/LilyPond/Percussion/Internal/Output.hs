@@ -29,7 +29,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-drumsOutput :: ScoreInfo -> BeamDrumPart -> Doc
+drumsOutput :: ScoreInfo -> LyDrumPart -> Doc
 drumsOutput globals beampart = 
         header
     $+$ drumsBlock notes

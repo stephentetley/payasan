@@ -19,10 +19,10 @@ module Payasan.PSC.Pipeline
 
     EXT.StdPart         -- * re-export
   
-  , EXT.ABCPart         -- * re-export
+  , ABC.ABCPart         -- * re-export
   , ABC.abc             -- * re-export
 
-  , EXT.LyPart1         -- * re-export
+  , LY.LyPart1          -- * re-export
   , LY.lilypond        
 
   , ScoreInfo(..)
@@ -75,9 +75,6 @@ module Payasan.PSC.Pipeline
   , outputAsLinear
   , printAsLinear
 
-  , beamAsTabular
-  , beamAsLinear
-
   ) where
 
 -- Note - temporary imports
@@ -92,8 +89,9 @@ import qualified Payasan.PSC.Backend.MIDI.OutTrans              as MIDI
 import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as MIDI
 
 
-import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
+import qualified Payasan.PSC.Repr.External.ABCAliases         as ABC
 import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC
+import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
 
 import qualified Payasan.PSC.Backend.ABC.OutTrans             as ABCOut
 import qualified Payasan.PSC.Backend.ABC.Output               as ABCOut
@@ -101,27 +99,23 @@ import qualified Payasan.PSC.Backend.ABC.Output               as ABCOut
 
 import qualified Payasan.PSC.Repr.External.LilyPondInTrans    as LY
 import qualified Payasan.PSC.Repr.External.LilyPondParser     as LY
+import qualified Payasan.PSC.Repr.External.LilyPondAliases    as LY
 
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LYOut
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LYOut
 import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LYOut
-import qualified Payasan.PSC.Backend.LilyPond.Syntax          as LYOut
 import qualified Payasan.PSC.Backend.LilyPond.Utils           as LYOut
 
 
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Repr.External.ShowLinear
 import Payasan.PSC.Repr.External.ShowTabular
-import Payasan.PSC.Repr.IRBeam.ShowLinear
-import Payasan.PSC.Repr.IRBeam.ShowTabular
 
 import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.PSC.Repr.ExternalToIRBeam
 import qualified Payasan.PSC.Repr.External.Syntax             as EXT
 
-import Payasan.PSC.Repr.IRBeam.AddBeams
-import qualified Payasan.PSC.Repr.IRBeam.Syntax               as BEAM
+import Payasan.PSC.Repr.External.AddBeams
 
 
 
@@ -172,15 +166,17 @@ debug f a = tell (f a) >> return a
 --------------------------------------------------------------------------------
 -- 
 
-fromABC :: EXT.ABCPart -> EXT.StdPart
+transExternalToIRBeam = id
+
+fromABC :: ABC.ABCPart -> EXT.StdPart
 fromABC = fromABCWith default_section_info
 
-fromABCWith :: SectionInfo -> EXT.ABCPart -> EXT.StdPart
+fromABCWith :: SectionInfo -> ABC.ABCPart -> EXT.StdPart
 fromABCWith locals = 
     ABC.translateFromInput . EXT.pushSectionInfo locals
 
 
-fromABCWithIO :: SectionInfo -> EXT.ABCPart -> IO EXT.StdPart
+fromABCWithIO :: SectionInfo -> ABC.ABCPart -> IO EXT.StdPart
 fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -191,18 +187,18 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond_Relative :: Pitch -> EXT.LyPart1 () -> EXT.StdPart 
+fromLilyPond_Relative :: Pitch -> LY.LyPart1 () -> EXT.StdPart 
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 
-fromLilyPondWith_Relative :: Pitch -> SectionInfo -> EXT.LyPart1 () -> EXT.StdPart
+fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPart1 () -> EXT.StdPart
 fromLilyPondWith_Relative pch locals = 
     LY.translateFromInput_Relative pch . EXT.pushSectionInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
                             -> SectionInfo 
-                            -> EXT.LyPart1 () 
+                            -> LY.LyPart1 () 
                             -> IO EXT.StdPart
 fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
@@ -232,9 +228,9 @@ printAsABC infos staff = putStrLn . outputAsABC infos staff
 -- one for full score and one for just notelist.
 --
 data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
-    { beam_trafo    :: BEAM.Part p1i Duration a1i -> BEAM.Part p1i Duration a1i
-    , out_trafo     :: BEAM.Part p1i Duration a1i -> LYOut.LyPart2 p1o a1o
-    , output_func   :: LYOut.LyPart2 p1o a1o -> Doc
+    { beam_trafo    :: EXT.Part p1i Duration a1i -> EXT.Part p1i Duration a1i
+    , out_trafo     :: EXT.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
+    , output_func   :: LY.LyPart2 p1o a1o -> Doc
     }
 
 
@@ -252,11 +248,11 @@ genOutputAsLilyPond config =
 
 
 data LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o  = LilyPondPipeline2
-    { pipe2_beam_trafo1   :: BEAM.Part p1i Duration a1i -> BEAM.Part p1i Duration a1i
-    , pipe2_out_trafo1    :: BEAM.Part p1i Duration a1i -> LYOut.LyPart2 p1o a1o
-    , pipe2_beam_trafo2   :: BEAM.Part p2i Duration a2i -> BEAM.Part p2i Duration a2i
-    , pipe2_out_trafo2    :: BEAM.Part p2i Duration a2i -> LYOut.LyPart2 p2o a2o
-    , pipe2_output_func   :: LYOut.LyPart2 p1o a1o -> LYOut.LyPart2 p2o a2o -> Doc
+    { pipe2_beam_trafo1   :: EXT.Part p1i Duration a1i -> EXT.Part p1i Duration a1i
+    , pipe2_out_trafo1    :: EXT.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
+    , pipe2_beam_trafo2   :: EXT.Part p2i Duration a2i -> EXT.Part p2i Duration a2i
+    , pipe2_out_trafo2    :: EXT.Part p2i Duration a2i -> LY.LyPart2 p2o a2o
+    , pipe2_output_func   :: LY.LyPart2 p1o a1o -> LY.LyPart2 p2o a2o -> Doc
     }
 
 
@@ -384,23 +380,4 @@ printAsLinear :: (Pretty pch, Pretty drn)
               => ScoreInfo -> EXT.Part pch drn anno ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi
 
-
-
-beamAsLinear :: (Pretty pch, Pretty drn) 
-             => ScoreInfo -> BEAM.Part pch drn anno -> String
-beamAsLinear _gi ph = ppRender $ beamLinear lo ph
-  where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
-
-beamAsTabular :: (Pretty pch, Pretty drn) 
-              => ScoreInfo -> BEAM.Part pch drn anno -> String
-beamAsTabular _gi ph = ppRender $ beamTabular lo ph
-  where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
 

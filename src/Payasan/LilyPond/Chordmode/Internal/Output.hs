@@ -23,7 +23,7 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
-import qualified Payasan.PSC.Repr.IRBeam.Syntax    as BEAM
+import qualified Payasan.PSC.Repr.External.Syntax    as EXT
 
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -38,7 +38,7 @@ chordmodeOutput globals ph =
     $+$ chordmodeBlock notes
   where
     header          = scoreHeader globals
-    local1          = maybe default_section_info id $ BEAM.firstSectionInfo ph
+    local1          = maybe default_section_info id $ EXT.firstSectionInfo ph
     notes           = lilypondNotes chord_def local1 ph
     chord_def       = LyOutputDef { printPitch = pitch
                                   , printAnno  = oChordSuffix }

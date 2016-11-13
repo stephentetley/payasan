@@ -49,7 +49,7 @@ import qualified Payasan.Score.Elementary.Notelist              as ELEM
 
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans          as LY
 
-import Payasan.PSC.Repr.IRBeam.AddBeams
+import Payasan.PSC.Repr.External.AddBeams
 import qualified Payasan.PSC.Pipeline                           as MAIN
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon

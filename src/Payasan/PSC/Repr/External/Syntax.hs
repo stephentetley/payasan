@@ -38,32 +38,11 @@ module Payasan.PSC.Repr.External.Syntax
   , Element(..)
   , Note(..)
 
-  , LyPart1
-  , LyBar1
-  , LyNoteGroup1
-  , LyElement1
-  , LyNote1
-
-  , LyPart2
-  , LyBar2
-  , LyNoteGroup2
-  , LyElement2
-  , LyNote2
-
-  , ABCPart
-  , ABCBar
-  , ABCNoteGroup
-  , ABCElement
-  , ABCNote
-
-  , ABCPart1
-  , ABCBar1
-  , ABCNoteGroup1
-  , ABCElement1
 
   -- * Operations
   , pushSectionInfo
-
+  , sizeNoteGroup
+  , firstSectionInfo
 
   ) where
 
@@ -117,6 +96,7 @@ data Bar pch drn anno = Bar
 --
 data NoteGroup pch drn anno = 
       Atom     (Element pch drn anno)
+    | Beamed   [NoteGroup pch drn anno]
     | Tuplet   TupletSpec        [NoteGroup pch drn anno]
   deriving (Data,Eq,Show,Typeable)
 
@@ -146,43 +126,6 @@ data Element pch drn anno =
 data Note pch drn = Note pch drn
   deriving (Data,Eq,Show,Typeable)
 
---------------------------------------------------------------------------------
--- LilyPond Aliases
-
-
-type LyPart1 anno               = LyPart2        LyPitch anno
-type LyBar1 anno                = LyBar2         LyPitch anno
-type LyNoteGroup1 anno          = LyNoteGroup2   LyPitch anno
-type LyElement1 anno            = LyElement2     LyPitch anno
-type LyNote1 anno               = LyNote2        LyPitch anno
-
-
-type LyPart2        pch anno    = Part        pch LyNoteLength anno
-type LyBar2         pch anno    = Bar         pch LyNoteLength anno
-type LyNoteGroup2   pch anno    = NoteGroup   pch LyNoteLength anno
-type LyElement2     pch anno    = Element     pch LyNoteLength anno
-type LyNote2        pch anno    = Note        pch LyNoteLength
-
-
---------------------------------------------------------------------------------
--- Syntax
-
--- | ABC is not annotated, though polymorphic anno is used
--- so that /more/ syntax can be printed.
-
-type ABCPart                    = ABCPart1      ()
-type ABCBar                     = ABCBar1       ()      
-type ABCNoteGroup               = ABCNoteGroup1 ()
-type ABCElement                 = ABCElement1   ()
-type ABCNote                    = Note     ABCPitch ABCNoteLength
-
-
--- Gen- prefix indicates the must general syntax allowed.
-
-type ABCPart1 anno              = Part        ABCPitch ABCNoteLength anno
-type ABCBar1 anno               = Bar         ABCPitch ABCNoteLength anno
-type ABCNoteGroup1 anno         = NoteGroup   ABCPitch ABCNoteLength anno
-type ABCElement1 anno           = Element     ABCPitch ABCNoteLength anno
 
 
 --------------------------------------------------------------------------------
@@ -194,3 +137,27 @@ pushSectionInfo :: SectionInfo
 pushSectionInfo si (Part bs) = Part $ map upd bs
   where
     upd bar = bar { bar_info = si }
+
+
+sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
+sizeNoteGroup (Atom e)              = sizeElement e
+sizeNoteGroup (Beamed es)           = sum $ map sizeNoteGroup es
+sizeNoteGroup (Tuplet spec es)      = tupletUnitRDuration spec (firstOf es)
+  where
+    firstOf (x:_)   = sizeNoteGroup x
+    firstOf []      = toRDuration d_eighth
+
+sizeElement :: Element pch Duration anno -> RDuration
+sizeElement (NoteElem (Note _ d) _ _)   = toRDuration d
+sizeElement (Rest d)                    = toRDuration d
+sizeElement (Spacer d)                  = toRDuration d
+sizeElement (Skip d)                    = toRDuration d
+sizeElement (Chord _ d _ _)             = toRDuration d
+sizeElement (Graces {})                 = 0
+sizeElement (Punctuation {})            = 0
+
+
+
+firstSectionInfo :: Part pch drn anno -> Maybe SectionInfo
+firstSectionInfo (Part [])    = Nothing
+firstSectionInfo (Part (b:_)) = Just $ bar_info b

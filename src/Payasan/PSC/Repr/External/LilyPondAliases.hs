@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.LilyPond.Syntax
+-- Module      :  Payasan.PSC.Repr.External.LilyPondAliases
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.LilyPond.Syntax
+module Payasan.PSC.Repr.External.LilyPondAliases
   ( 
 
     LyPart1
@@ -36,7 +36,7 @@ module Payasan.PSC.Backend.LilyPond.Syntax
   ) where
 
 import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Repr.IRBeam.Syntax
+import Payasan.PSC.Repr.External.Syntax
 
 
 

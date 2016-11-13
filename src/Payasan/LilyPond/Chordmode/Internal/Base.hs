@@ -35,7 +35,7 @@ module Payasan.LilyPond.Chordmode.Internal.Base
   ) where
 
 import Payasan.PSC.Base.LilyPondCommon
-import qualified Payasan.PSC.Repr.IRBeam.Syntax             as BEAM
+import qualified Payasan.PSC.Repr.External.Syntax           as EXT
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 
@@ -52,7 +52,7 @@ import Data.Data
 -- beam syntax (with bars).
 
 type LyChordPart        = ELEM.Part LyChordRoot LyNoteLength ChordSuffix
-type OutChordPart       = BEAM.Part LyChordRoot LyNoteLength ChordSuffix
+type OutChordPart       = EXT.Part  LyChordRoot LyNoteLength ChordSuffix
 
 type LyChordRoot        = LyPitch
 

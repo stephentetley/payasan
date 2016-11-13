@@ -36,7 +36,7 @@ module Payasan.PSC.Backend.Csound.Syntax
 
 import Payasan.PSC.Backend.Csound.IStmt
 
-import qualified Payasan.PSC.Repr.IRBeam.Syntax as BEAM
+import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.Base.Pitch hiding ( middle_c )
 
@@ -49,7 +49,7 @@ import Data.Fixed
 -- Syntax
 
 
-type CsoundNoteStream anno = [BEAM.Element CpsPitch Seconds anno]
+type CsoundNoteStream anno = [Element CpsPitch Seconds anno]
 
 
 
