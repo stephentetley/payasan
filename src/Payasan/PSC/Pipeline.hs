@@ -357,10 +357,10 @@ outputAsTabular :: (Pretty pch, Pretty drn)
                 => ScoreInfo -> EXT.Part pch drn anno -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsTabular :: (Pretty pch, Pretty drn) 
                => ScoreInfo -> EXT.Part pch drn anno ->  IO ()
@@ -371,10 +371,10 @@ outputAsLinear :: (Pretty pch, Pretty drn)
                => ScoreInfo -> EXT.Part pch drn anno -> String
 outputAsLinear _gi ph = ppRender $ mainLinear lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsLinear :: (Pretty pch, Pretty drn) 
               => ScoreInfo -> EXT.Part pch drn anno ->  IO ()

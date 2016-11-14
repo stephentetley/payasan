@@ -19,8 +19,8 @@
 module Payasan.PSC.Base.ShowCommon
   ( 
 
-    LeafOutput(..)
-
+    LeafOutputNote(..)
+  , LeafOutputEvent(..)
   , std_ly_output
   , lyNoteLength
   , lyPitch
@@ -45,19 +45,23 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
-data LeafOutput pch drn anno = LeafOutput 
+data LeafOutputNote pch drn anno = LeafOutputNote
     { pp_pitch          :: pch -> Doc
     , pp_duration       :: drn -> Doc 
     , pp_anno           :: anno -> Doc
     }
 
+data LeafOutputEvent ot evt = LeafOutputEvent
+    { pp_onset          :: ot -> Doc
+    , pp_event          :: evt -> Doc
+    }
 
-
-std_ly_output :: LeafOutput LY.LyPitch LY.LyNoteLength ()
-std_ly_output = LeafOutput { pp_pitch     = lyPitch
-                           , pp_duration  = lyNoteLength
-                           , pp_anno      = const empty
-                           }
+std_ly_output :: LeafOutputNote LY.LyPitch LY.LyNoteLength ()
+std_ly_output = 
+    LeafOutputNote { pp_pitch     = lyPitch
+                   , pp_duration  = lyNoteLength
+                   , pp_anno      = const empty
+                   }
 
 lyNoteLength :: LY.LyNoteLength -> Doc
 lyNoteLength (LY.DrnDefault)    = char '.'
@@ -67,11 +71,12 @@ lyPitch :: LY.LyPitch -> Doc
 lyPitch = pPrint
 
 
-std_abc_output :: LeafOutput ABC.ABCPitch ABC.ABCNoteLength ()
-std_abc_output = LeafOutput { pp_pitch     = abcPitch
-                            , pp_duration  = abcNoteLength
-                            , pp_anno      = const empty
-                            }
+std_abc_output :: LeafOutputNote ABC.ABCPitch ABC.ABCNoteLength ()
+std_abc_output = 
+    LeafOutputNote { pp_pitch     = abcPitch
+                   , pp_duration  = abcNoteLength
+                   , pp_anno      = const empty
+                   }
 
 abcNoteLength :: ABC.ABCNoteLength -> Doc
 abcNoteLength (ABC.DNL)         = char '.'
@@ -81,11 +86,12 @@ abcPitch :: ABC.ABCPitch -> Doc
 abcPitch = pPrint
 
 
-pitch_duration_output :: LeafOutput Pitch Duration anno
-pitch_duration_output = LeafOutput { pp_pitch     = pPrint
-                                   , pp_duration  = pPrint
-                                   , pp_anno      = const empty
-                                   }
+pitch_duration_output :: LeafOutputNote Pitch Duration anno
+pitch_duration_output = 
+    LeafOutputNote { pp_pitch     = pPrint
+                   , pp_duration  = pPrint
+                   , pp_anno      = const empty
+                   }
 
 
 duration :: Duration -> Doc

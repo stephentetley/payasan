@@ -81,15 +81,15 @@ import Payasan.Score.Elementary.Internal.ABCParser (abc)
 import Payasan.Score.Elementary.Internal.ElementaryToExternal
 import Payasan.Score.Elementary.Internal.LilyPondInTrans
 import Payasan.Score.Elementary.Internal.LilyPondParser (lilypond)
-import Payasan.Score.Elementary.Internal.LinearOutput
+import Payasan.Score.Elementary.Internal.ShowLinear
+import Payasan.Score.Elementary.Internal.ShowTabular
 import Payasan.Score.Elementary.Internal.Syntax
-import Payasan.Score.Elementary.Internal.TabularOutput
 import Payasan.Score.Elementary.Internal.Transform
 import Payasan.Score.Elementary.Internal.Traversals
 
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LY
 
-import Payasan.PSC.Base.ShowCommon ( LeafOutput(..) )
+import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -189,10 +189,10 @@ outputAsTabular :: (Pretty pch, Pretty drn)
                 => ScoreInfo -> Part pch drn anno -> String
 outputAsTabular _gi ph = ppRender $ elemTabular lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsTabular :: (Pretty pch, Pretty drn) 
                => ScoreInfo -> Part pch drn anno ->  IO ()
@@ -205,10 +205,10 @@ outputAsLinear :: (Pretty pch, Pretty drn)
                 => ScoreInfo -> Part pch drn anno -> String
 outputAsLinear _gi ph = ppRender $ elemLinear lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsLinear :: (Pretty pch, Pretty drn) 
                => ScoreInfo -> Part pch drn anno ->  IO ()

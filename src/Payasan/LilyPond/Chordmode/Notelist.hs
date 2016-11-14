@@ -63,14 +63,14 @@ import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
 import qualified Payasan.Score.Elementary.Internal.ElementaryToExternal as ELEM
 import qualified Payasan.Score.Elementary.Internal.Syntax               as ELEM
 import qualified Payasan.Score.Elementary.Internal.Traversals           as ELEM
-import Payasan.Score.Elementary.Internal.LinearOutput
-import Payasan.Score.Elementary.Internal.TabularOutput
 import qualified Payasan.Score.Elementary.Notelist                      as ELEM
+import Payasan.Score.Elementary.Internal.ShowLinear
+import Payasan.Score.Elementary.Internal.ShowTabular
 
 import Payasan.PSC.Repr.External.AddBeams
 import qualified Payasan.PSC.Repr.External.Syntax as MAIN
 
-import Payasan.PSC.Base.ShowCommon ( LeafOutput(..) )
+import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -148,10 +148,10 @@ chordTrans = ELEM.mapPitch buildNotes
 outputAsTabular :: ScoreInfo -> StdChordPart -> String
 outputAsTabular _gi ph = ppRender $ elemTabular lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsTabular :: ScoreInfo -> StdChordPart ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
@@ -162,10 +162,10 @@ printAsTabular gi = putStrLn . outputAsTabular gi
 outputAsLinear :: ScoreInfo -> StdChordPart -> String
 outputAsLinear _gi ph = ppRender $ elemLinear lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsLinear :: ScoreInfo -> StdChordPart ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

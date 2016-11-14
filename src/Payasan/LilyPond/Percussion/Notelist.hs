@@ -124,10 +124,10 @@ writeAsMIDI path ph =
 outputAsTabular :: ScoreInfo -> StdDrumPart -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsTabular :: ScoreInfo -> StdDrumPart ->  IO ()
 printAsTabular gi = putStrLn . outputAsTabular gi
@@ -138,10 +138,10 @@ printAsTabular gi = putStrLn . outputAsTabular gi
 outputAsLinear ::  ScoreInfo -> StdDrumPart -> String
 outputAsLinear _gi ph = ppRender $ mainLinear lo ph
   where
-    lo = LeafOutput { pp_pitch     = pPrint
-                    , pp_duration  = pPrint
-                    , pp_anno      = const empty
-                    }
+    lo = LeafOutputNote { pp_pitch     = pPrint
+                        , pp_duration  = pPrint
+                        , pp_anno      = const empty
+                        }
 
 printAsLinear :: ScoreInfo -> StdDrumPart ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi

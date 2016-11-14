@@ -26,7 +26,7 @@ module Payasan.PSC.Repr.IREventFlat.Syntax
   , groupByEventBody
   ) where
 
-
+import Data.List
 import Data.Data
 
 
@@ -57,10 +57,10 @@ sortByOnset (Part es) = Part $ sortBy fn es
     fn (Event ot1 _) (Event ot2 _) = compare ot1 ot2
 
 -- | Note this is intentionally oblivious to onset time.    
-groupByEventBody :: (evt -> evt -> Bool) Part ot evt -> [Part ot evt]
-groupByEventBoby evF (Part es) = map Part $ groupBy (adapt evF)
+groupByEventBody :: (evt -> evt -> Bool) -> Part ot evt -> [Part ot evt]
+groupByEventBody evF (Part es) = map Part $ groupBy fn es
   where
-    adapt (Event _ e1) (Event _ e2) = evF e1 e2
+    fn (Event _ e1) (Event _ e2) = evF e1 e2
     
     
     

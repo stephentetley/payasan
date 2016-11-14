@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Elementary.Internal.TabularOutput
+-- Module      :  Payasan.Score.Elementary.Internal.ShowTabular
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Elementary.Internal.TabularOutput
+module Payasan.Score.Elementary.Internal.ShowTabular
   ( 
 
     elemTabular
@@ -34,29 +34,29 @@ import Payasan.PSC.Base.ShowTabularUtils
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-elemTabular :: LeafOutput pch drn anno -> Part pch drn anno -> Doc
+elemTabular :: LeafOutputNote pch drn anno -> Part pch drn anno -> Doc
 elemTabular ppl ph = concatBars 2 $ oPart ppl ph
 
 
 
 
-oPart :: LeafOutput pch drn anno -> Part pch drn anno -> [Doc]
+oPart :: LeafOutputNote pch drn anno -> Part pch drn anno -> [Doc]
 oPart ppl (Part _  xs)          = map (oBar ppl) xs
 
 
-oBar :: LeafOutput pch drn anno -> Bar pch drn anno -> Doc
+oBar :: LeafOutputNote pch drn anno -> Bar pch drn anno -> Doc
 oBar ppl (Bar cs)               = oNoteGroupList ppl cs
 
 
-oNoteGroupList :: LeafOutput pch drn anno -> [NoteGroup pch drn anno] -> Doc
+oNoteGroupList :: LeafOutputNote pch drn anno -> [NoteGroup pch drn anno] -> Doc
 oNoteGroupList ppl xs = vcat $ map (oNoteGroup ppl) xs
 
 
-oNoteGroup :: LeafOutput pch drn anno -> NoteGroup pch drn anno -> Doc
+oNoteGroup :: LeafOutputNote pch drn anno -> NoteGroup pch drn anno -> Doc
 oNoteGroup ppl (Atom e)         = oElement ppl e
 oNoteGroup ppl (Tuplet _ cs)    = vcat $ map (oElement ppl) cs
 
-oElement :: LeafOutput pch drn anno -> Element pch drn anno -> Doc
+oElement :: LeafOutputNote pch drn anno -> Element pch drn anno -> Doc
 oElement ppl elt = case elt of
     Note p d _ _    -> ppP p <++> ppD d
     Rest d          -> rest  <++> ppD d 
