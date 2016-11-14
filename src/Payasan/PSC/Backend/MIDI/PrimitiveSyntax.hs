@@ -27,21 +27,17 @@ module Payasan.PSC.Backend.MIDI.PrimitiveSyntax
   , MidiNote(..)
   , NoteValue(..)
   , MidiNoteList
-  , MidiPitch   -- re-export
 
   -- * Helpers
   , simpleTrackData
   , compareMidiNote
-  , pitchToMidi
 
   ) where
 
 
-import Payasan.Base.Basis
+import Payasan.Base.AltPitch
+import Payasan.Base.Basis (Seconds)
 import Payasan.Base.Utils
-
-import Payasan.Base.Pitch
-
 
 import Data.Function ( on )
 
@@ -108,9 +104,6 @@ compareMidiNote :: MidiNote -> MidiNote -> Ordering
 compareMidiNote = compare `on` note_start
 
 
-
-pitchToMidi :: Pitch -> MidiPitch
-pitchToMidi = fromIntegral . midiSemitoneCount
 
 
 

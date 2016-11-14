@@ -22,6 +22,7 @@ module Payasan.PSC.Backend.MIDI.BeamToMIDI
   ) where
 
 import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as T
+import qualified Payasan.Base.AltPitch                          as T
 
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Repr.External.Syntax

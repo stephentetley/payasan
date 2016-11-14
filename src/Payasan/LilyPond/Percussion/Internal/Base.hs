@@ -24,18 +24,19 @@ module Payasan.LilyPond.Percussion.Internal.Base
   , Accent(..)
   , DrumPitch(..)
   , shortName
-  , toMidiPitch
+  , toMidiValue
 
   ) where
 
-import Payasan.PSC.Backend.MIDI.PrimitiveSyntax (MidiPitch)
 import Payasan.PSC.Base.LilyPondCommon (LyNoteLength)
 
 import qualified Payasan.PSC.Repr.External.Syntax       as EXT
 
 
 
+import Payasan.Base.AltPitch
 import Payasan.Base.Duration
+import qualified Payasan.Base.Names.GeneralMidiDrums    as GM
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
@@ -207,80 +208,80 @@ shortName Fivedown              = "de"
 -- there does not always seem to be a correspondence when 
 -- they match.
 --
-toMidiPitch :: DrumPitch -> MidiPitch
-toMidiPitch Acousticbassdrum    = 35            -- MIDI B0
-toMidiPitch Bassdrum            = 36            -- MIDI C1
-toMidiPitch Hisidestick         = 37            -- use Sidestick
-toMidiPitch Sidestick           = 37            -- MIDI C#1
-toMidiPitch Losidestick         = 37            -- use Sidestick
-toMidiPitch Acousticsnare       = 38            -- MIDI D1
-toMidiPitch Snare               = 38            -- use Acousticksnare
-toMidiPitch Handclap            = 39            -- MIDI D#1
-toMidiPitch Electricsnare       = 40            -- MIDI E1
-toMidiPitch Lowfloortom         = 41            -- MIDI F1
-toMidiPitch Closedhihat         = 42            -- MIDI F#1
-toMidiPitch Hihat               = 42            -- use Closedhihat
-toMidiPitch Highfloortom        = 43            -- MIDI G1
-toMidiPitch Pedalhihat          = 44            -- MIDI G#1
-toMidiPitch Lowtom              = 45            -- MIDI A1
-toMidiPitch Openhihat           = 46            -- MIDI A#1
-toMidiPitch Halfopenhihat       = 46            -- use Halfopenhihat
-toMidiPitch Lowmidtom           = 47            -- MIDI B1
-toMidiPitch Himidtom            = 48            -- MIDI C2
-toMidiPitch Crashcymbala        = 49            -- MIDI C#2
-toMidiPitch Crashcymbal         = 49            -- use Crashcymbala
-toMidiPitch Hightom             = 50            -- MIDI D2
-toMidiPitch Ridecymbala         = 51            -- MIDI D#2
-toMidiPitch Ridecymbal          = 51            -- use Ridecymbala
-toMidiPitch Chinesecymbal       = 52            -- MIDI E2
-toMidiPitch Ridebell            = 53            -- MIDI F2
-toMidiPitch Tambourine          = 54            -- MIDI F#2
-toMidiPitch Splashcymbal        = 55            -- MIDI G2
-toMidiPitch Cowbell             = 56            -- MIDI G#2
-toMidiPitch Crashcymbalb        = 57            -- MIDI A2
-toMidiPitch Vibraslap           = 58            -- MIDI A#2
-toMidiPitch Ridecymbalb         = 59            -- MIDI B2
-toMidiPitch Mutehibongo         = 60            -- use Hibongo
-toMidiPitch Hibongo             = 60            -- MIDI C3
-toMidiPitch Openhibongo         = 60            -- use Hibongo
-toMidiPitch Mutelobongo         = 61            -- use Lobongo
-toMidiPitch Lobongo             = 61            -- MIDI C#3
-toMidiPitch Openlobongo         = 61            -- use Lobongo
-toMidiPitch Mutehiconga         = 62            -- MIDI D3
-toMidiPitch Muteloconga         = 62            -- use Muteloconga
-toMidiPitch Openhiconga         = 63            -- MIDI D#3
-toMidiPitch Hiconga             = 63            -- use Openhiconga
-toMidiPitch Openloconga         = 64            -- use Loconga
-toMidiPitch Loconga             = 64            -- MIDI E3
-toMidiPitch Hitimbale           = 65            -- MIDI F3
-toMidiPitch Lotimbale           = 66            -- MIDI F#3
-toMidiPitch Hiagogo             = 67            -- MIDI G3
-toMidiPitch Loagogo             = 68            -- MIDI G#3
-toMidiPitch Cabasa              = 69            -- MIDI A3
-toMidiPitch Maracas             = 70            -- MIDI A#3
-toMidiPitch Shortwhistle        = 71            -- MIDI B3
-toMidiPitch Longwhistle         = 72            -- MIDI C4
-toMidiPitch Shortguiro          = 73            -- MIDI C#4
-toMidiPitch Longguiro           = 74            -- MIDI D4
-toMidiPitch Guiro               = 74            -- Use Longguiro
-toMidiPitch Claves              = 75            -- MIDI D#4
-toMidiPitch Hiwoodblock         = 76            -- MIDI E4
-toMidiPitch Lowoodblock         = 77            -- MIDI F4
-toMidiPitch Mutecuica           = 78            -- MIDI F#4
-toMidiPitch Opencuica           = 79            -- MIDI G4
-toMidiPitch Mutetriangle        = 80            -- MIDI A#4
-toMidiPitch Triangle            = 80            -- Use Mutetriangle
-toMidiPitch Opentriangle        = 81            -- MIDI B4
-toMidiPitch Oneup               = 62            -- same as Mutehiconga
-toMidiPitch Twoup               = 64            -- same as Loconga
-toMidiPitch Threeup             = 65            -- same as Hitambale 
-toMidiPitch Fourup              = 67            -- same as Hiagogo
-toMidiPitch Fiveup              = 69            -- same as Cabasa
-toMidiPitch Onedown             = 59            -- same as Ridecymbalb
-toMidiPitch Twodown             = 57            -- same as CrashCymbalb
-toMidiPitch Threedown           = 55            -- same as Splashcymbal
-toMidiPitch Fourdown            = 53            -- same as Ridebell
-toMidiPitch Fivedown            = 52            -- same as Chinesecymbal 
+toMidiValue :: DrumPitch -> MidiPitch
+toMidiValue Acousticbassdrum    = GM.acoustic_bass_drum         -- MIDI B0
+toMidiValue Bassdrum            = GM.bass_drum_1                -- MIDI C1
+toMidiValue Hisidestick         = GM.side_stick                 -- use Sidestick
+toMidiValue Sidestick           = GM.side_stick                 -- MIDI C#1
+toMidiValue Losidestick         = GM.side_stick                 -- use Sidestick
+toMidiValue Acousticsnare       = GM.acoustic_snare             -- MIDI D1
+toMidiValue Snare               = GM.acoustic_snare             -- use Acousticksnare
+toMidiValue Handclap            = GM.hand_clap                  -- MIDI D#1
+toMidiValue Electricsnare       = GM.electric_snare             -- MIDI E1
+toMidiValue Lowfloortom         = GM.low_floor_tom              -- MIDI F1
+toMidiValue Closedhihat         = GM.closed_hi_hat              -- MIDI F#1
+toMidiValue Hihat               = GM.closed_hi_hat              -- use Closedhihat
+toMidiValue Highfloortom        = GM.high_floor_tom             -- MIDI G1
+toMidiValue Pedalhihat          = GM.pedal_hi_hat               -- MIDI G#1
+toMidiValue Lowtom              = GM.low_tom                    -- MIDI A1
+toMidiValue Openhihat           = GM.open_hi_hat                -- MIDI A#1
+toMidiValue Halfopenhihat       = GM.open_hi_hat                -- use Openhihat
+toMidiValue Lowmidtom           = GM.low_mid_tom                -- MIDI B1
+toMidiValue Himidtom            = GM.high_mid_tom               -- MIDI C2
+toMidiValue Crashcymbala        = GM.crash_cymbal_1             -- MIDI C#2
+toMidiValue Crashcymbal         = GM.crash_cymbal_1             -- use Crashcymbala
+toMidiValue Hightom             = GM.high_tom                   -- MIDI D2
+toMidiValue Ridecymbala         = GM.ride_cymbal_1              -- MIDI D#2
+toMidiValue Ridecymbal          = GM.ride_cymbal_1              -- use Ridecymbala
+toMidiValue Chinesecymbal       = GM.chinese_cymbal             -- MIDI E2
+toMidiValue Ridebell            = GM.ride_bell                  -- MIDI F2
+toMidiValue Tambourine          = GM.tambourine                 -- MIDI F#2
+toMidiValue Splashcymbal        = GM.splash_cymbal              -- MIDI G2
+toMidiValue Cowbell             = GM.cowbell                    -- MIDI G#2
+toMidiValue Crashcymbalb        = GM.crash_cymbal_2             -- MIDI A2
+toMidiValue Vibraslap           = GM.vibraslap                  -- MIDI A#2
+toMidiValue Ridecymbalb         = GM.ride_cymbal_2              -- MIDI B2
+toMidiValue Mutehibongo         = GM.high_bongo                 -- use Hibongo
+toMidiValue Hibongo             = GM.high_bongo                 -- MIDI C3
+toMidiValue Openhibongo         = GM.high_bongo                 -- use Hibongo
+toMidiValue Mutelobongo         = GM.low_bongo                  -- use Lobongo
+toMidiValue Lobongo             = GM.low_bongo                  -- MIDI C#3
+toMidiValue Openlobongo         = GM.low_bongo                  -- use Lobongo
+toMidiValue Mutehiconga         = GM.mute_high_conga            -- MIDI D3
+toMidiValue Muteloconga         = GM.low_conga                  -- useLoconga
+toMidiValue Openhiconga         = GM.open_high_conga            -- MIDI D#3
+toMidiValue Hiconga             = GM.open_high_conga            -- use Openhiconga
+toMidiValue Openloconga         = GM.low_conga                  -- use Loconga
+toMidiValue Loconga             = GM.low_conga                  -- MIDI E3
+toMidiValue Hitimbale           = GM.high_timbale               -- MIDI F3
+toMidiValue Lotimbale           = GM.low_timbale                -- MIDI F#3
+toMidiValue Hiagogo             = GM.high_agogo                 -- MIDI G3
+toMidiValue Loagogo             = GM.low_agogo                  -- MIDI G#3
+toMidiValue Cabasa              = GM.cabasa                     -- MIDI A3
+toMidiValue Maracas             = GM.maracas                    -- MIDI A#3
+toMidiValue Shortwhistle        = GM.short_whistle              -- MIDI B3
+toMidiValue Longwhistle         = GM.long_whistle               -- MIDI C4
+toMidiValue Shortguiro          = GM.short_guiro                -- MIDI C#4
+toMidiValue Longguiro           = GM.long_guiro                 -- MIDI D4
+toMidiValue Guiro               = GM.long_guiro                 -- Use Longguiro
+toMidiValue Claves              = GM.claves                     -- MIDI D#4
+toMidiValue Hiwoodblock         = GM.high_wood_block            -- MIDI E4
+toMidiValue Lowoodblock         = GM.low_wood_block             -- MIDI F4
+toMidiValue Mutecuica           = GM.mute_cuica                 -- MIDI F#4
+toMidiValue Opencuica           = GM.open_cuica                 -- MIDI G4
+toMidiValue Mutetriangle        = GM.mute_triangle              -- MIDI A#4
+toMidiValue Triangle            = GM.open_triangle              -- Use Opentriangle
+toMidiValue Opentriangle        = GM.open_triangle              -- MIDI B4
+toMidiValue Oneup               = GM.mute_high_conga            -- same as Mutehiconga
+toMidiValue Twoup               = GM.low_conga                  -- same as Loconga
+toMidiValue Threeup             = GM.high_timbale               -- same as Hitambale 
+toMidiValue Fourup              = GM.high_agogo                 -- same as Hiagogo
+toMidiValue Fiveup              = GM.cabasa                     -- same as Cabasa
+toMidiValue Onedown             = GM.ride_cymbal_2              -- same as Ridecymbalb
+toMidiValue Twodown             = GM.crash_cymbal_2             -- same as CrashCymbalb
+toMidiValue Threedown           = GM.splash_cymbal              -- same as Splashcymbal
+toMidiValue Fourdown            = GM.ride_bell                  -- same as Ridebell
+toMidiValue Fivedown            = GM.chinese_cymbal             -- same as Chinesecymbal 
 
 
 

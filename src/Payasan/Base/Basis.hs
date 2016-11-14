@@ -25,8 +25,6 @@ module Payasan.Base.Basis
 
   , PitchOrd(..)
 
-  , MidiPitch
-
   , Meter(..)
   , Time(..)
 
@@ -53,11 +51,6 @@ class PitchOrd a where
   equivalent :: a -> a -> Bool
   isHigher   :: a -> a -> Bool
   isLower    :: a -> a -> Bool
-
-
-
-newtype MidiPitch = MidiPitch Int
-  deriving (Enum,Eq,Ord,Num,Real,Integral,Show)
 
 
 

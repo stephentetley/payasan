@@ -11,8 +11,9 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Flat Event list syntax (no metrical division into bars).
--- For audition, e.g. Csound or MIDI
+-- Flat eventlist syntax (no metrical division into bars).
+-- Intended as the final intermediate representation before 
+-- rendering to an audio format - e.g. Csound or MIDI.
 --
 --------------------------------------------------------------------------------
 
@@ -21,29 +22,45 @@ module Payasan.PSC.Repr.IREventFlat.Syntax
     Part(..)
   , Event(..)
 
+  , sortByOnset
+  , groupByEventBody
   ) where
 
 
 import Data.Data
 
 
--- Design note
--- This is the very low level event list to support e.g. MIDI or Csound
--- generation.
+-- Parametric on time type to model seconds or MIDI ticks.
+--
+-- Interpretion of the onset time is left to the processing 
+-- function - it could represent absolute times or delta times.
+--
+-- Duration is hidden (think sustenueto), but it will be 
+-- inspected by the rendering dictionary, which will know the
+-- concrete instantiation of the event_body.
 
-
-
--- Parametric on time to model (pre-) MIDI upto delta repr.
--- Allow onset time and duration to be different time representations
-
-data Part ot drn note = Part { part_events :: [Event ot drn note] }
+data Part ot evt = Part { part_events :: [Event ot evt] }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Event ot drn note = Event
+data Event ot evt = Event
     { event_onset      :: ot
-    , event_duration   :: drn
-    , event_note       :: note
+    , event_body       :: evt
     }
   deriving (Data,Eq,Show,Typeable)
 
+
+  
+sortByOnset :: Ord ot => Part ot evt -> Part ot evt
+sortByOnset (Part es) = Part $ sortBy fn es
+  where
+    fn (Event ot1 _) (Event ot2 _) = compare ot1 ot2
+
+-- | Note this is intentionally oblivious to onset time.    
+groupByEventBody :: (evt -> evt -> Bool) Part ot evt -> [Part ot evt]
+groupByEventBoby evF (Part es) = map Part $ groupBy (adapt evF)
+  where
+    adapt (Event _ e1) (Event _ e2) = evF e1 e2
+    
+    
+    

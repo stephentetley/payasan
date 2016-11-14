@@ -21,10 +21,10 @@ module Payasan.LilyPond.Percussion.Internal.PitchTrans
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.PSC.Backend.MIDI.PrimitiveSyntax (MidiPitch)
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
+import Payasan.Base.AltPitch (MidiPitch)
 import Payasan.Base.Duration
 
 
@@ -51,10 +51,10 @@ elementP (NoteElem e a t)       = (\n -> NoteElem n a t) <$> noteP e
 elementP (Rest d)               = pure $ Rest d
 elementP (Spacer d)             = pure $ Spacer d
 elementP (Skip d)               = pure $ Skip d
-elementP (Chord ps d a t)       = pure $ Chord (map toMidiPitch ps) d a t
+elementP (Chord ps d a t)       = pure $ Chord (map toMidiValue ps) d a t
 elementP (Graces ns)            = Graces <$> mapM noteP ns
 elementP (Punctuation s)        = pure $ Punctuation s
 
 
 noteP :: Note DrumPitch drn -> PTMon (Note MidiPitch drn)
-noteP (Note pch drn)            = pure $ Note (toMidiPitch pch) drn
+noteP (Note pch drn)            = pure $ Note (toMidiValue pch) drn

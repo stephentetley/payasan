@@ -27,28 +27,47 @@ module Payasan.PSC.Repr.IREventBeam.Syntax
 import Data.Data
 
 -- Design note
--- The point of an eventlist representation is to support temporal
--- and expressive rendering (e.g quantization, accentation) and potentially
--- crescendos etc. Hence Bar is included.
+-- The point of this eventlist representation is to support 
+-- temporal and expressive rendering (e.g quantization, 
+-- accentation) and potentially crescendos etc. 
+--
+-- It is expected that these transformations will require some 
+-- metrical "addressing" as to when they are activated, hence 
+-- we retain division into bars.
+--
 
 
-
--- Parametric on onset time which may be a different type to duration
-
-data Part ot drn note = Part { part_bars :: [Bar ot drn note] }
+-- This representation should support onset changing 
+-- transformations, but disallow duration changing 
+-- transformation, hence duration is hidden in the event body. 
+--
+-- Duration for an event does not match metrical length of a 
+-- note in a score. For an event, duration might be e.g. a 
+-- fixed length for all notes (e.g. marimba notes that all decay 
+-- for the same length). Musically, it is the successive onsets 
+-- of marimba notes that are variable to match a rhythm.
+--
+data Part ot evt = Part { part_bars :: [Bar ot evt] }
   deriving (Data,Eq,Show,Typeable)
 
-data Bar ot drn note = Bar
-    { bar_onset         :: ot
-    , bar_events        :: [Event ot drn note]
+data Bar ot evt = Bar
+    { bar_onset         :: !ot
+    , bar_events        :: [Event ot evt]
     }
   deriving (Data,Eq,Show,Typeable)
 
-
-data Event ot drn note = Event
-    { event_delta_time  :: ot
-    , event_duration    :: drn
-    , event_note        :: note
+-- TODO - ideally duration should be abstract and not visible to 
+-- users. What ramifications does this have for Csound / MIDI 
+-- renderers? And when must we perform translations from Seconds
+-- (e.g. to MIDI ticks) if they are needed?
+--
+-- Also what mechanisms are there to alter e.g. the amplitude of 
+-- a note. Potentially only type classes / method dictionaries 
+-- can implement this if event is abstract.
+--
+data Event ot evt = Event
+    { event_onset       :: !ot
+    , event_body        :: !evt
     }
   deriving (Data,Eq,Show,Typeable)
 

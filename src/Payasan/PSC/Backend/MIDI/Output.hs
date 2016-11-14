@@ -26,7 +26,8 @@ module Payasan.PSC.Backend.MIDI.Output
 
 import Payasan.PSC.Backend.MIDI.PrimitiveSyntax
 
-import Payasan.Base.Basis
+import Payasan.Base.AltPitch (MidiPitch(..), getMidiPitch)
+import Payasan.Base.Basis (Seconds)
 import Payasan.Base.Utils
 
 import qualified ZMidi.Core as Z                -- packahe: zmidi-core
@@ -135,7 +136,7 @@ expandMidiNote :: Word8 -> MidiNote -> (AbsMessage, AbsMessage)
 expandMidiNote chan (MidiNote { note_start    = ot
                               , note_dur      = drn
                               , note_value    = val }) = 
-    let pch   = fromIntegral $ note_pitch val
+    let pch   = fromIntegral $ getMidiPitch $ note_pitch val
         von   = fromIntegral $ note_velo_on val
         voff  = fromIntegral $ note_velo_off val
         onn   = Z.VoiceEvent Z.RS_OFF (Z.NoteOn chan pch von)
