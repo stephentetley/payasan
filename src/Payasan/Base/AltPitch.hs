@@ -35,8 +35,11 @@ module Payasan.Base.AltPitch
 
 import Payasan.Base.Pitch hiding ( middle_c )
 
+import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
 import Data.Data
 import Data.Fixed
+
 
 
 
@@ -54,8 +57,18 @@ newtype CpsPitch = CpsPitch { getCpsPitch :: Milli }
   deriving (Data,Eq,Ord,Show,Typeable)
   
 
+
 newtype HzPitch = HzPitch { getHzPitch :: Milli }
   deriving (Data,Eq,Ord,Show,Typeable)  
+
+
+
+--------------------------------------------------------------------------------
+-- Pretty instances are for debugging.
+
+instance Pretty CpsPitch where 
+  pPrint (CpsPitch a)   = text $ show a
+
 
 cps_middle_c :: CpsPitch
 cps_middle_c = CpsPitch 8.000

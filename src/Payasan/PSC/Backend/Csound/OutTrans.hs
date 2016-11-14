@@ -25,6 +25,7 @@ import Payasan.PSC.Backend.Csound.Syntax
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
+import Payasan.Base.AltPitch
 import Payasan.Base.Pitch
 
 

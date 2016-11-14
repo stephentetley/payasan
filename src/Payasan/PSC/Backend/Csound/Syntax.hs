@@ -23,12 +23,8 @@ module Payasan.PSC.Backend.Csound.Syntax
 
     CsoundNoteStream
 
-  , CpsPitch(..)
+  , CpsPitch
   , Seconds             -- re-export
-
-  , middle_c
-
-  , toCpsPitch
 
   , cpsPitchValue 
 
@@ -38,9 +34,7 @@ import Payasan.PSC.Backend.Csound.IStmt
 
 import Payasan.PSC.Repr.External.Syntax
 
-import Payasan.Base.Pitch hiding ( middle_c )
-
-import Text.PrettyPrint.HughesPJClass           -- package: pretty
+import Payasan.Base.AltPitch
 
 import Data.Data
 import Data.Fixed
@@ -54,27 +48,6 @@ type CsoundNoteStream anno = [Element CpsPitch Seconds anno]
 
 
 
--- Use CpsPch - we can always print it as Hz if prefered.
--- 
-data CpsPitch = CpsPitch { getCpsPitch :: Milli }
-  deriving (Data,Eq,Ord,Show,Typeable)
-
-
-
-
-
-middle_c :: CpsPitch
-middle_c = CpsPitch 8.000
-
-
-
-toCpsPitch :: Pitch -> CpsPitch
-toCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
-  where
-    o    = fromIntegral $ 4 + ove
-    semis = fromPitchLetter l + fromAlteration a
-    frac = (realToFrac semis) / 100
-
 
 -- TODO - Probably should have a CPitch constructor in Value to 
 -- ensure nice printing...
@@ -83,11 +56,6 @@ cpsPitchValue :: CpsPitch -> Value
 cpsPitchValue = VCpsPitch . getCpsPitch
 
 
---------------------------------------------------------------------------------
--- Pretty instances are for debugging.
-
-instance Pretty CpsPitch where 
-  pPrint (CpsPitch a)   = text $ show a
 
 
 
