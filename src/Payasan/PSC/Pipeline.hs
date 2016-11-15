@@ -79,6 +79,7 @@ module Payasan.PSC.Pipeline
 
 -- Note - temporary imports
 -- Csound imports should not be accessed by Payasan.Base
+import Payasan.PSC.Backend.Csound.Base
 import Payasan.PSC.Backend.Csound.BeamToCsound
 import Payasan.PSC.Backend.Csound.Output
 import qualified Payasan.PSC.Backend.Csound.OutTrans            as CS

@@ -10,7 +10,9 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Beam syntax to Csound i-stmts.
+-- Convert External syntax to Csound i-stmts.
+--
+-- This module is old and in the process of being superceded.
 -- 
 --------------------------------------------------------------------------------
 

@@ -12,13 +12,14 @@
 --
 -- i-stmt types.
 -- 
+-- This module is old and in the process of being superceded.
+-- 
 --------------------------------------------------------------------------------
 
 module Payasan.PSC.Backend.Csound.IStmt
   ( 
     IStmt(..)
   , IStmtList
-  , Value(..)
 
   , Seconds             -- re-export
 
@@ -27,6 +28,7 @@ module Payasan.PSC.Backend.Csound.IStmt
   , compareIStmt
   ) where
 
+import Payasan.PSC.Backend.Csound.Base ( InstNumber, Value(..), ellipsisEq )
 
 import Payasan.Base.Basis
 import Payasan.Base.Utils
@@ -43,7 +45,7 @@ import Data.Function ( on )
 -- Design note - this is an intrinsic representation - start and duration
 -- are inside the @event@ rather than wrapped listitem.
 data IStmt = IStmt 
-    { inst_num      :: Int
+    { inst_num      :: InstNumber
     , istart        :: Seconds
     , iduration     :: Seconds
     , ivalues       :: [Value]
@@ -55,30 +57,6 @@ data IStmt = IStmt
 -- We want statements at a concrete type that allows snocing.
 --
 type IStmtList = H IStmt
-
-
--- | High level value with booleans (i.e. Higher level than Csound 
--- which has no booleans).
--- 
--- This represents the value in an i- or f-statement in a Csound 
--- score.
--- 
-data Value = VStr       !String
-           | VInt       !Int
-           | VFloat     !Decimal
-           | VBool      !Bool
-           | VCpsPitch  !Milli
-  deriving (Eq,Show)
-
-
-
-
--- | Don\'t ellide negative values or Strings...
-
-ellipsisEq :: Value -> Value -> Bool
-ellipsisEq (VInt i)   (VInt j)    | i >= 0 = i == j
-ellipsisEq (VFloat i) (VFloat j)  | i >= 0 = i == j
-ellipsisEq _          _                    = False
 
 
 

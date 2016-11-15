@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -16,6 +15,8 @@
 --
 -- Concrete syntax following Csound notelists.
 --
+-- This module is old and in the process of being superceded.
+--
 --------------------------------------------------------------------------------
 
 module Payasan.PSC.Backend.Csound.Syntax
@@ -30,14 +31,13 @@ module Payasan.PSC.Backend.Csound.Syntax
 
   ) where
 
-import Payasan.PSC.Backend.Csound.IStmt
+import Payasan.PSC.Backend.Csound.Base
 
 import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.Base.AltPitch
+import Payasan.Base.Basis
 
-import Data.Data
-import Data.Fixed
 
 --------------------------------------------------------------------------------
 -- Syntax
