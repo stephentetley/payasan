@@ -113,6 +113,7 @@ library
     Payasan.PSC.Repr.External.ABCAliases,
     Payasan.PSC.Repr.External.ABCInTrans,
     Payasan.PSC.Repr.External.ABCParser,
+    Payasan.PSC.Repr.External.Clocktime,
     Payasan.PSC.Repr.External.LilyPondAliases,
     Payasan.PSC.Repr.External.LilyPondInTrans,
     Payasan.PSC.Repr.External.LilyPondParser,

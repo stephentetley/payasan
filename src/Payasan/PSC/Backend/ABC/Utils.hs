@@ -86,8 +86,8 @@ meter :: Meter -> Doc
 meter (Unmetered)       = text "none"
 meter (TimeSig t)       = time t
 
-time :: Time -> Doc
-time (Time n d)  = int n <> char '/' <> int d
+time :: TimeRatio -> Doc
+time (TimeRatio n d)    = int n <> char '/' <> int d
 
 unitNoteLength :: UnitNoteLength -> Doc
 unitNoteLength UNIT_NOTE_4      = text "1/4"

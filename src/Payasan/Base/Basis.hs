@@ -26,7 +26,10 @@ module Payasan.Base.Basis
   , PitchOrd(..)
 
   , Meter(..)
-  , Time(..)
+  , TimeRatio(..)
+
+  , barLength
+  , quarterNoteLength
 
   )  where
 
@@ -58,11 +61,20 @@ class PitchOrd a where
 -- | CommonTime = 4/4
 --   CutTime = 2/4
 --
--- TODO - add free metered.
---
-data Meter = Unmetered | TimeSig Time
+data Meter = Unmetered | TimeSig TimeRatio
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-data Time = Time Int Int
+data TimeRatio = TimeRatio Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
+
+
+-- note use length in naming to imply Seconds...
+
+barLength :: BPM -> TimeRatio -> Seconds
+barLength bpm (TimeRatio n d) =
+    (realToFrac n / realToFrac d) * (4 * quarterNoteLength bpm)
+
+
+quarterNoteLength :: BPM -> Seconds
+quarterNoteLength bpm = realToFrac $ 60 / bpm

@@ -32,11 +32,9 @@ module Payasan.PSC.Base.SyntaxCommon
   , Anno(..)
   , AnnoDU(..)
 
-  , Time(..)
-
   , default_section_info
 
-  , barLength
+  , barDuration
 
   , MeterPattern
   , TupletSpec(..)
@@ -163,7 +161,7 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
 default_section_info :: SectionInfo
 default_section_info = SectionInfo 
     { section_key               = c_maj
-    , section_meter             = TimeSig $ Time 4 4 
+    , section_meter             = TimeSig $ TimeRatio 4 4 
     , section_meter_pattern     = [1%2,1%2]
     , section_unit_note_len     = UNIT_NOTE_8
     , section_bpm               = 120
@@ -174,8 +172,8 @@ default_section_info = SectionInfo
 
 
 
-barLength :: Time -> RDuration
-barLength (Time n d) = (fromIntegral n) * fn d
+barDuration :: TimeRatio -> RDuration
+barDuration (TimeRatio n d) = (fromIntegral n) * fn d
   where
     fn i = 1 % fromIntegral i
 

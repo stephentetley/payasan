@@ -44,6 +44,8 @@ module Payasan.PSC.Repr.External.Syntax
   , sizeNoteGroup
   , firstSectionInfo
 
+  , extractBarInfos
+
   ) where
 
 
@@ -159,3 +161,6 @@ sizeElement (Punctuation {})            = 0
 firstSectionInfo :: Part pch drn anno -> Maybe SectionInfo
 firstSectionInfo (Part [])    = Nothing
 firstSectionInfo (Part (b:_)) = Just $ bar_info b
+
+extractBarInfos :: Part pch drn anno -> [SectionInfo]
+extractBarInfos = map bar_info . part_bars

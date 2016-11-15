@@ -107,6 +107,7 @@ module Payasan.PSC.Backend.LilyPond.Utils
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch     as P
 import Payasan.Base.Scale
@@ -289,8 +290,8 @@ mode_ LYDIAN            = command "lydian"
 mode_ LOCRIAN           = command "locrian"
 
 
-time_ :: Time -> Doc
-time_ (Time n d) = command "time" <+> int n <> char '/' <> int d
+time_ :: TimeRatio -> Doc
+time_ (TimeRatio n d) = command "time" <+> int n <> char '/' <> int d
 
 cadenzaOn_      :: Doc
 cadenzaOn_      = command "cadenzaOn"

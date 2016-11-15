@@ -87,7 +87,7 @@ remake (NoteList info es) =
          , part_bars   = fn $ section_meter info }
   where
     fn (Unmetered)  = [Bar es]
-    fn (TimeSig t)  = map Bar $ split (barLength t) es
+    fn (TimeSig t)  = map Bar $ split (barDuration t) es
 
 split :: RDuration 
       -> [NoteGroup pch Duration anno]
