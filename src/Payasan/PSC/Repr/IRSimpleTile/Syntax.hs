@@ -1,0 +1,84 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
+{-# OPTIONS -Wall #-}
+
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Payasan.PSC.Repr.IRSimpleTile.Syntax
+-- Copyright   :  (c) Stephen Tetley 2016
+-- License     :  BSD3
+--
+-- Maintainer  :  stephen.tetley@gmail.com
+-- Stability   :  unstable
+-- Portability :  GHC
+--
+-- Simple tiled syntax - immediate form between External and
+-- IREventBeam.
+--
+-- This syntax is intended to simplify joining tied notes 
+-- and "time stealing" for grace notes.
+--
+--------------------------------------------------------------------------------
+
+module Payasan.PSC.Repr.IRSimpleTile.Syntax
+  ( 
+    Part(..)
+  , Bar(..)
+  , Element(..)
+
+  ) where
+
+
+import Payasan.PSC.Base.SyntaxCommon
+import Payasan.Base.Basis
+
+
+import Data.Data
+
+-- Design note
+-- This syntax is designed to support a simple implmentation of 
+-- joining tied notes.
+-- 
+-- A tie is a property of a symbolic representation - it goes 
+-- some way towards the construction of arbitrary durations.
+-- Events are thought of as discreet (singular) so the notion 
+-- of joining events feels wrong.
+-- Thus it makes sense to perform tie-joining on a note list 
+-- rather than an event list. 
+--
+-- We simplify the syntax - because we represent duration by 
+-- Seconds we can: 
+--
+-- Remove tuplets (we can calculate scale note durations).
+--
+-- Coalesce ties (we can add arbitrary durations)
+-- 
+-- "Time steal" for grace notes from their sucessor.
+--
+-- Remove meter indications from Bar headers (metrical info is
+-- already accounted for in calculating duration).
+-- 
+-- We can also: 
+--
+-- Get rid of beams (beams are considered to be just a reading 
+-- aid).
+--
+-- Unify Skips, Rests and Spacers (rendering/audition is 
+-- oblivious to their differences).
+--
+-- Remove punctuation (rendering is oblivious to punctuation).
+--
+
+data Part pch anno = Part { part_bars :: [Bar pch anno] }
+  deriving (Data,Eq,Show,Typeable)
+
+data Bar pch anno = Bar
+    { bar_elems         :: [Element pch anno]
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+data Element pch anno = 
+      Note      Seconds pch   anno Tie
+    | Rest      Seconds
+    | Chord     Seconds [pch] anno Tie
+    | Graces    [(Seconds,pch)]
+  deriving (Data,Eq,Show,Typeable)
