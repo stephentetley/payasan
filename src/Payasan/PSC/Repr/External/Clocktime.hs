@@ -51,11 +51,8 @@ transClocktime p =
         notelist = coalesceTies $ linearize p
     in rebuildBars metrics notelist
 
+-- noteDuration becomes durationLength
 
-
-noteDuration :: BPM -> Duration -> Seconds
-noteDuration bpm d = 
-    realToFrac (toRDuration d) * (4 * quarterNoteLength bpm)
 
 
 --------------------------------------------------------------------------------
@@ -79,16 +76,16 @@ linearizeNG bpm (Tuplet spec es)    = map (scaleD (t%n)) $ concatMap (linearizeN
 
 linearizeE :: BPM -> Element pch Duration anno -> Element pch Seconds anno
 linearizeE bpm (NoteElem e a t)     = NoteElem (linearizeN bpm e) a t
-linearizeE bpm (Rest d)             = Rest $ noteDuration bpm d
-linearizeE bpm (Spacer d)           = Spacer $ noteDuration bpm d
-linearizeE bpm (Skip d)             = Skip $ noteDuration bpm d
-linearizeE bpm (Chord ps d a t)     = Chord ps (noteDuration bpm d) a t
+linearizeE bpm (Rest d)             = Rest $ durationLength bpm d
+linearizeE bpm (Spacer d)           = Spacer $ durationLength bpm d
+linearizeE bpm (Skip d)             = Skip $ durationLength bpm d
+linearizeE bpm (Chord ps d a t)     = Chord ps (durationLength bpm d) a t
 linearizeE bpm (Graces ns)          = Graces $ map (linearizeN bpm) ns
 linearizeE _   (Punctuation s)      = Punctuation s
 
 
 linearizeN :: BPM -> Note pch Duration -> Note pch Seconds
-linearizeN bpm (Note pch drn)   = Note pch $ noteDuration bpm drn
+linearizeN bpm (Note pch drn)   = Note pch $ durationLength bpm drn
 
 
 

@@ -32,10 +32,10 @@ import Payasan.Base.Duration
 
 -- TODO - maybe it would be better to translate directly to External...
 
-transCadenzaToElementary :: TimeRatio
+transCadenzaToElementary :: TimeSig
                          -> Part pch Duration anno -> T.Part pch Duration anno
 transCadenzaToElementary ts (Part info gs) = 
-    let info1 = info { section_meter = TimeSig ts } 
+    let info1 = info { section_meter = Metered ts } 
     in T.recalcBars $ partT (Part info1 gs) 
 
 

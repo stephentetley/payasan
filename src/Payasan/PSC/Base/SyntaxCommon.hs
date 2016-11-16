@@ -34,11 +34,11 @@ module Payasan.PSC.Base.SyntaxCommon
 
   , default_section_info
 
-  , barDuration
+  , barRatDuration
 
   , MeterPattern
   , TupletSpec(..)
-  , tupletUnitRDuration 
+  , tupletUnitRatDuration 
 
 
   -- * Keys
@@ -147,7 +147,7 @@ data AnnoDU a = AnnoDU { defs :: Doc, use :: a -> Doc }
 -- TODO - span bars with meter pattern (e.g. for 2-bar patterns
 -- as in Latin music).
 --
-type MeterPattern = [RDuration]
+type MeterPattern = [RatDuration]
 
 data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
@@ -161,7 +161,7 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
 default_section_info :: SectionInfo
 default_section_info = SectionInfo 
     { section_key               = c_maj
-    , section_meter             = TimeSig $ TimeRatio 4 4 
+    , section_meter             = Metered $ TimeSig 4 4 
     , section_meter_pattern     = [1%2,1%2]
     , section_unit_note_len     = UNIT_NOTE_8
     , section_bpm               = 120
@@ -172,8 +172,8 @@ default_section_info = SectionInfo
 
 
 
-barDuration :: TimeRatio -> RDuration
-barDuration (TimeRatio n d) = (fromIntegral n) * fn d
+barRatDuration :: TimeSig -> RatDuration
+barRatDuration (TimeSig n d) = (fromIntegral n) * fn d
   where
     fn i = 1 % fromIntegral i
 
@@ -189,8 +189,8 @@ data TupletSpec = TupletSpec
   deriving (Data,Eq,Show,Typeable)
 
 
-tupletUnitRDuration :: TupletSpec -> RDuration -> RDuration 
-tupletUnitRDuration (TupletSpec { tuplet_time_mult = m }) unitd = 
+tupletUnitRatDuration :: TupletSpec -> RatDuration -> RatDuration 
+tupletUnitRatDuration (TupletSpec { tuplet_time_mult = m }) unitd = 
     unitd * realToFrac m
 
 

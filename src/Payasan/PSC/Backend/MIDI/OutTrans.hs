@@ -53,12 +53,12 @@ elementP (NoteElem e a t)       = NoteElem (noteP e) a t
 elementP (Rest d)               = Rest d
 elementP (Spacer d)             = Spacer d
 elementP (Skip d)               = Skip d
-elementP (Chord ps d a t)       = Chord (map toMidiPitch ps) d a t
+elementP (Chord ps d a t)       = Chord (map pitchToMidiPitch ps) d a t
 elementP (Graces ns)            = Graces $ map noteP ns
 elementP (Punctuation s)        = Punctuation s
 
 
 noteP :: Note Pitch drn -> Note MidiPitch drn
-noteP (Note pch drn)            = Note (toMidiPitch pch) drn
+noteP (Note pch drn)            = Note (pitchToMidiPitch pch) drn
 
 

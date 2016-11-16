@@ -147,7 +147,7 @@ oPartHeader staff locals =
         clef_ (staff_clef staff)
     $+$ key_  (section_key locals)
     $+$ case section_meter locals of Unmetered -> empty
-                                     TimeSig t -> time_ t
+                                     Metered t -> time_ t
 
 
 polyVoice_Relative :: LyOutputDef pch anno 

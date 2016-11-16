@@ -132,7 +132,7 @@ scoreHeader globals =
 phraseHeader :: SectionInfo -> Doc
 phraseHeader locals = case section_meter locals of
     Unmetered -> cadenzaOn_ $+$ keyline
-    TimeSig t -> keyline $+$ time_ t
+    Metered t -> keyline $+$ time_ t
   where
     keyline = key_ (section_key locals)
 
@@ -222,7 +222,7 @@ lilypondNotes def prefix_locals ph =
                    ; case m of  
                        Unmetered -> setTerminator (Just cadenzaOff_) >>
                                     return (d0 $?+$ cadenzaOn_ $+$ d)
-                       TimeSig t -> setTerminator Nothing >> 
+                       Metered t -> setTerminator Nothing >> 
                                     return (time_ t $+$ d)
                    }
 

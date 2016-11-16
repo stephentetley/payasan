@@ -151,19 +151,19 @@ sectionInfo = part_header
 
 
 
-sizeNoteGroup :: NoteGroup pch Duration anno -> RDuration
+sizeNoteGroup :: NoteGroup pch Duration anno -> RatDuration
 sizeNoteGroup (Atom e)          = sizeElement e
 sizeNoteGroup (Beamed gs)       = sum $ map sizeNoteGroup gs
-sizeNoteGroup (Tuplet spec es)  = tupletUnitRDuration spec (firstOf es)
+sizeNoteGroup (Tuplet spec es)  = tupletUnitRatDuration spec (firstOf es)
   where
     firstOf (x:_)   = sizeElement x
-    firstOf []      = toRDuration d_eighth
+    firstOf []      = durationToRatDuration d_eighth
 
-sizeElement :: Element pch Duration anno -> RDuration
-sizeElement (Note _ d _ _)          = toRDuration d
-sizeElement (Rest d)                = toRDuration d
-sizeElement (Spacer d)              = toRDuration d
-sizeElement (Skip d)                = toRDuration d
+sizeElement :: Element pch Duration anno -> RatDuration
+sizeElement (Note _ d _ _)          = durationToRatDuration d
+sizeElement (Rest d)                = durationToRatDuration d
+sizeElement (Spacer d)              = durationToRatDuration d
+sizeElement (Skip d)                = durationToRatDuration d
 sizeElement (Punctuation {})        = 0
 
 

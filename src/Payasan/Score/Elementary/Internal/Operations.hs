@@ -162,7 +162,7 @@ dropBars :: Int -> Part pch drn anno -> Part pch drn anno
 dropBars i (Part info bs) = Part info $ PRE.drop i bs
 
 
-takeSize :: RDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
+takeSize :: RatDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
 takeSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -173,7 +173,7 @@ takeSize rd = step 0 . makeLoc
 
 
 
-dropSize :: RDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
+dropSize :: RatDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
 dropSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 

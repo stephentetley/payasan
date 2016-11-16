@@ -119,6 +119,6 @@ rhythmicMarkupVoice def ph =
 oPartHeader :: SectionInfo -> Doc
 oPartHeader locals = case section_meter locals of
     Unmetered -> keyline
-    TimeSig t -> keyline $+$ time_ t
+    Metered t -> keyline $+$ time_ t
   where
     keyline = key_  (section_key locals)

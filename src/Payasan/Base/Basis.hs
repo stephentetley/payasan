@@ -26,7 +26,7 @@ module Payasan.Base.Basis
   , PitchOrd(..)
 
   , Meter(..)
-  , TimeRatio(..)
+  , TimeSig(..)
 
   , barLength
   , quarterNoteLength
@@ -34,6 +34,8 @@ module Payasan.Base.Basis
   )  where
 
 
+
+-- Basis should have no dependencies on other Payasan modules
 
 
 import Data.Data
@@ -49,7 +51,9 @@ type Seconds = Decimal
 type BPM     = Decimal
 
 
-
+-- | Pitches can be spelled differently but still represent the
+-- same absolute pitch (frequency), hence Haskell's Ord class
+-- does not really apply 
 class PitchOrd a where
   equivalent :: a -> a -> Bool
   isHigher   :: a -> a -> Bool
@@ -58,21 +62,24 @@ class PitchOrd a where
 
 
 
+-- TODO - this isn't strictly metering as meter needs more 
+-- information that just Time Signature
+data Meter = Unmetered | Metered TimeSig
+  deriving (Data,Eq,Ord,Show,Typeable)
+
+  
+  
 -- | CommonTime = 4/4
 --   CutTime = 2/4
 --
-data Meter = Unmetered | TimeSig TimeRatio
-  deriving (Data,Eq,Ord,Show,Typeable)
-
-
-data TimeRatio = TimeRatio Int Int
+data TimeSig = TimeSig Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
 -- note use length in naming to imply Seconds...
 
-barLength :: BPM -> TimeRatio -> Seconds
-barLength bpm (TimeRatio n d) =
+barLength :: BPM -> TimeSig -> Seconds
+barLength bpm (TimeSig n d) =
     (realToFrac n / realToFrac d) * (4 * quarterNoteLength bpm)
 
 

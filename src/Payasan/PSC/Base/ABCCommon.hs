@@ -171,7 +171,7 @@ toDuration unl d =
       Just ans -> ans
 
 
-rduration :: UnitNoteLength -> ABCNoteLength -> RDuration
+rduration :: UnitNoteLength -> ABCNoteLength -> RatDuration
 rduration unl (DNL)      = unitLength unl
 rduration unl (Mult i)   = let r = fromIntegral i in r * unitLength unl
 rduration unl (Divd i)   = let r = fromIntegral i in (unitLength unl) / r
@@ -179,7 +179,7 @@ rduration unl (Frac n d) =
     let nr = fromIntegral n; nd = fromIntegral d in (unitLength unl) * (nr%nd)
 
 
-unitLength :: UnitNoteLength -> RDuration
+unitLength :: UnitNoteLength -> RatDuration
 unitLength UNIT_NOTE_4  = 1%4
 unitLength UNIT_NOTE_8  = 1%8
 unitLength UNIT_NOTE_16 = 1%16
@@ -187,7 +187,7 @@ unitLength UNIT_NOTE_16 = 1%16
 
 fromDuration :: UnitNoteLength -> Duration -> ABCNoteLength
 fromDuration unl nd = 
-    (fn . fork numerator denominator) $ (toRDuration nd) / unitLength unl
+    (fn . fork numerator denominator) $ (durationToRatDuration nd) / unitLength unl
   where  
     fork f g a = (f a, g a)
     fn (1,1)   = DNL

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Duration
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -20,7 +20,7 @@
 module Payasan.Base.Duration
   (
     Duration
-  , RDuration
+  , RatDuration
   , Numeral(..)
 
   -- * Operations
@@ -32,11 +32,14 @@ module Payasan.Base.Duration
   , doubleDuration
   , halveDuration
 
-  , components
+  , durationComponents
   , symbolicComponents
   , lilyPondComponents
-  , toRDuration
+  
+  , durationToRatDuration
   , rationalToDuration
+  
+  , durationLength
 
   -- * Named durations
   , d_zero
@@ -53,25 +56,42 @@ module Payasan.Base.Duration
   , d_one_hundred_and_twenty_eighth
   ) where
 
-
+import Payasan.Base.Basis (BPM, Seconds, quarterNoteLength)
+  
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 import Data.Ratio
 
-data Numeral = D128   | D64     | D32     | D16
-             | D8     | D4      | D2      | D1
-             | Breve  | Longa   | Maxima
-  deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
 
 
-
+-- | The main duration type - it is symbolic (printable) but 
+-- otherwise it only allows a very limited set of 
+-- operations. 
+--
+-- It does not support numeric operations.
+--
 data Duration = DZero
               | Drn { _numeral :: Numeral, _dot_count :: Int }
   deriving (Data,Eq,Ord,Show,Typeable)
 
 
-type RDuration = Rational
+-- | Fixed set of printable duration ,numerals,.
+--
+data Numeral = D128   | D64     | D32     | D16
+             | D8     | D4      | D2      | D1
+             | Breve  | Longa   | Maxima
+  deriving (Bounded,Data,Enum,Eq,Ord,Show,Typeable)
+  
+
+-- | A secondary duration type that properly supports numeric 
+-- operations.
+--
+-- All Durations can be converted to RatDuration but the reverse
+-- does not hold (only symbolically printable ratios can be 
+-- converted to Duration).
+-- 
+type RatDuration = Rational
 
 
 -- Pretty instances are for debugging and may not
@@ -103,8 +123,11 @@ instance Pretty Numeral where
 
 
 
--- | Zero durations do exist (the duration of a grace notes is officially
--- zero), however we ought not to be able to construct them.
+-- | Zero durations do exist - the duration of a grace notes is 
+-- zero for some interpretations. 
+-- 
+-- However we are careful to hide the construction of zero 
+-- durations.
 --
 isZero :: Duration -> Bool
 isZero DZero = True
@@ -118,8 +141,9 @@ isDotted (Drn _ dc)     = dc>0
 -- more convenient to have this one...
 notDotted :: Duration -> Bool
 notDotted = not . isDotted
-       
--- | Dot a duration. 
+
+
+-- | Dot a Duration. 
 --
 -- Note, @DZero@ an opaque value in the internal representation
 -- cannot be dotted.
@@ -128,7 +152,8 @@ dot :: Duration -> Duration
 dot DZero               = DZero
 dot (Drn n dc)          = Drn n (dc+1)
 
-
+-- | Add dots to a Duration.
+--
 addDots :: Int -> Duration -> Duration
 addDots _ (DZero)       = DZero
 addDots i (Drn n dc)    = Drn n (dc+i)
@@ -136,7 +161,8 @@ addDots i (Drn n dc)    = Drn n (dc+i)
 
 -- | Double the duration.
 --
--- @Maxima@ is /saturated/:
+-- The maths is fudged to make this a total operation - @Maxima@ 
+-- is /saturated/:
 --
 -- > doubleDuration Maxima = Maxima
 --
@@ -158,7 +184,8 @@ doubleDuration (Drn n dc)   = Drn (fn n) dc
     
 -- | Halve the duration (diminution).
 -- 
--- D128 is /saturated/:
+-- The maths is fudged to make this a total operation - @D128@ 
+-- is /saturated/:
 -- 
 -- > halveDuration D128 = D128
 --
@@ -178,9 +205,9 @@ halveDuration (Drn n dc)   = Drn (fn n) dc
     fn Longa     = Breve
     fn Maxima    = Longa
 
-components :: Duration -> (Rational,Int)
-components (DZero)              = (0,0)
-components (Drn n dc)           = (toRat n,dc)
+durationComponents :: Duration -> (Rational,Int)
+durationComponents (DZero)      = (0,0)
+durationComponents (Drn n dc)   = (toRat n,dc)
 
 symbolicComponents :: Duration -> Maybe (Numeral,Int)
 symbolicComponents (DZero)      = Nothing
@@ -207,9 +234,9 @@ lilyPondComponents (Drn n dc)   = (fn n, dc)
 -- | 'extent' - get the size of a Duration as a Rational 
 -- (DurationMeasure).
 --
-toRDuration :: Duration -> RDuration
-toRDuration (DZero)    = 0 
-toRDuration (Drn n dc) 
+durationToRatDuration :: Duration -> RatDuration
+durationToRatDuration (DZero)    = 0 
+durationToRatDuration (Drn n dc) 
     | dc <= 0           = toRat n
     | otherwise         = let r = toRat n in step r (r/2) dc
   where
@@ -258,6 +285,14 @@ rationalToDuration r
     fn _   = Nothing
     
 
+-- | Interpret the length (seconds) of a duration with respect 
+-- to tempo (i.e. BPM - beats / quarter notes per minute).
+--
+durationLength :: BPM -> Duration -> Seconds
+durationLength bpm d = 
+    realToFrac (durationToRatDuration d) * (4 * quarterNoteLength bpm)
+
+    
 --------------------------------------------------------------------------------
 -- Named durations
 
@@ -303,3 +338,5 @@ d_sixty_fourth                      = makeDuration D64
 
 d_one_hundred_and_twenty_eighth     :: Duration
 d_one_hundred_and_twenty_eighth     = makeDuration D128
+
+

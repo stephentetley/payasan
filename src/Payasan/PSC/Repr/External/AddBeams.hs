@@ -60,7 +60,7 @@ noBeams = id
 
 data InputRest pch drn anno = 
       GoodSplit [NoteGroup pch drn anno]
-    | Straddle  RDuration  (NoteGroup pch drn anno)   [NoteGroup pch drn anno]
+    | Straddle  RatDuration  (NoteGroup pch drn anno)   [NoteGroup pch drn anno]
 
 
 
@@ -74,7 +74,7 @@ segment (d:ds) xs = let (seg1, rest) = segment1 d xs in
        (Straddle rightd y ys) -> seg1 : [y] : segment (decrease rightd ds) ys
 
 
-segment1 :: RDuration 
+segment1 :: RatDuration 
          -> [NoteGroup pch Duration anno] 
          -> ([NoteGroup pch Duration anno], InputRest pch Duration anno)
 segment1 _   []     = ([], GoodSplit [])
@@ -93,7 +93,7 @@ runOut :: [NoteGroup pch Duration anno] -> [[NoteGroup pch Duration anno]]
 runOut = map (\a -> [a])
 
 
-decrease :: RDuration -> MeterPattern -> MeterPattern
+decrease :: RatDuration -> MeterPattern -> MeterPattern
 decrease _ []         = []
 decrease r (d:ds)     
     | r <  d          = (d - r) : ds
@@ -123,7 +123,7 @@ singleout1 (x:xs) = step [] x xs
 isSmall :: NoteGroup pch Duration anno -> Bool
 isSmall a = sizeNoteGroup a < qtrnote_len
 
-qtrnote_len :: RDuration 
+qtrnote_len :: RatDuration 
 qtrnote_len = (1%4)
 
 --------------------------------------------------------------------------------

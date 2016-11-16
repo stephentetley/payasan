@@ -87,16 +87,16 @@ remake (NoteList info es) =
          , part_bars   = fn $ section_meter info }
   where
     fn (Unmetered)  = [Bar es]
-    fn (TimeSig t)  = map Bar $ split (barDuration t) es
+    fn (Metered t)  = map Bar $ split (barRatDuration t) es
 
-split :: RDuration 
+split :: RatDuration 
       -> [NoteGroup pch Duration anno]
       -> [[NoteGroup pch Duration anno]]
 split _    [] = []
 split dbar cs = let (bar1,rest) = breakBar dbar cs in bar1 : split dbar rest
 
 
-breakBar :: RDuration 
+breakBar :: RatDuration 
          -> [NoteGroup pch Duration anno] 
          -> ([NoteGroup pch Duration anno], [NoteGroup pch Duration anno])
 breakBar _    [] = ([],[])

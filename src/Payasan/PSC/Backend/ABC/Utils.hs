@@ -84,10 +84,10 @@ tupletSpec (TupletSpec { tuplet_num       = n
 
 meter :: Meter -> Doc
 meter (Unmetered)       = text "none"
-meter (TimeSig t)       = time t
+meter (Metered t)       = time t
 
-time :: TimeRatio -> Doc
-time (TimeRatio n d)    = int n <> char '/' <> int d
+time :: TimeSig -> Doc
+time (TimeSig n d)    = int n <> char '/' <> int d
 
 unitNoteLength :: UnitNoteLength -> Doc
 unitNoteLength UNIT_NOTE_4      = text "1/4"

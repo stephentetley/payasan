@@ -23,22 +23,23 @@ module Payasan.Base.AltPitch
     MidiPitch(..)
   , CpsPitch(..)
   , HzPitch(..)
-
-  , cps_middle_c
-  , toCpsPitch
   
   , midi_middle_c
-  , toMidiPitch
+  , pitchToMidiPitch
+  
+  , cps_middle_c
+  , pitchToCpsPitch
+
   
   )  where
 
 
-import Payasan.Base.Pitch hiding ( middle_c )
+import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
-import Data.Fixed
+import qualified Data.Fixed as FIXED
 
 
 
@@ -53,12 +54,13 @@ newtype MidiPitch = MidiPitch { getMidiPitch :: Int }
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
-newtype CpsPitch = CpsPitch { getCpsPitch :: Milli }
+-- | Middle C is octave 8
+newtype CpsPitch = CpsPitch { getCpsPitch :: FIXED.Milli }
   deriving (Data,Eq,Ord,Show,Typeable)
   
 
 
-newtype HzPitch = HzPitch { getHzPitch :: Milli }
+newtype HzPitch = HzPitch { getHzPitch :: FIXED.Milli }
   deriving (Data,Eq,Ord,Show,Typeable)  
 
 
@@ -66,28 +68,44 @@ newtype HzPitch = HzPitch { getHzPitch :: Milli }
 --------------------------------------------------------------------------------
 -- Pretty instances are for debugging.
 
+
+instance Pretty MidiPitch where 
+  pPrint (MidiPitch i)   = text $ show i
+
 instance Pretty CpsPitch where 
-  pPrint (CpsPitch a)   = text $ show a
-
-
+  pPrint (CpsPitch d)   = text $ show d
+  
+instance Pretty HzPitch where 
+  pPrint (HzPitch d)   = text $ show d
+  
+  
+--------------------------------------------------------------------------------
+-- operations and constants  
+  
 cps_middle_c :: CpsPitch
 cps_middle_c = CpsPitch 8.000
 
 
-toCpsPitch :: Pitch -> CpsPitch
-toCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
+pitchToCpsPitch :: Pitch -> CpsPitch
+pitchToCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
   where
     o     = fromIntegral $ 4 + ove
     semis = fromPitchLetter l + fromAlteration a
     frac  = (realToFrac semis) / 100
 
-toMidiPitch :: Pitch -> MidiPitch
-toMidiPitch = MidiPitch . midiSemitoneCount
+
 
 midi_middle_c :: MidiPitch
 midi_middle_c = MidiPitch 60
 
--- TODO add conversions to HzPitch etc.
+
+pitchToMidiPitch :: Pitch -> MidiPitch
+pitchToMidiPitch = MidiPitch . midiSemitoneCount
+
+
+-- TODO - add conversions to HzPitch etc. 
+-- Haskell code that I've already written exists somewhere in
+-- Copperbox (Googlecode)...
 
 
 

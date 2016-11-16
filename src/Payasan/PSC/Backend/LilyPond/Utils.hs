@@ -290,8 +290,8 @@ mode_ LYDIAN            = command "lydian"
 mode_ LOCRIAN           = command "locrian"
 
 
-time_ :: TimeRatio -> Doc
-time_ (TimeRatio n d) = command "time" <+> int n <> char '/' <> int d
+time_ :: TimeSig -> Doc
+time_ (TimeSig n d) = command "time" <+> int n <> char '/' <> int d
 
 cadenzaOn_      :: Doc
 cadenzaOn_      = command "cadenzaOn"

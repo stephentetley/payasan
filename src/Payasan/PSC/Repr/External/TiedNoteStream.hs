@@ -143,7 +143,7 @@ together1 (Note p1 d1) (Note p2 d2) t
 
 noteDuration :: BPM -> Duration -> Seconds
 noteDuration bpm d = 
-    realToFrac (toRDuration d) * (4 * quarterNoteDuration bpm)
+    realToFrac (durationToRatDuration d) * (4 * quarterNoteDuration bpm)
 
 quarterNoteDuration :: BPM -> Seconds
 quarterNoteDuration bpm = realToFrac $ 60 / bpm
