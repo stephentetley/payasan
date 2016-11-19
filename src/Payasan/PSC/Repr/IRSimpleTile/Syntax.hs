@@ -25,6 +25,9 @@ module Payasan.PSC.Repr.IRSimpleTile.Syntax
   , Bar(..)
   , Element(..)
 
+  , elementLengthSymbolic
+  , elementLengthAbsolute
+  
   ) where
 
 
@@ -82,3 +85,20 @@ data Element pch anno =
     | Chord     Seconds [pch] anno Tie
     | Graces    [(Seconds,pch)]
   deriving (Data,Eq,Show,Typeable)
+
+  
+  
+-- | Note - graces have zero length.  
+elementLengthSymbolic :: Element pch anno -> Seconds
+elementLengthSymbolic (Note d _ _ _)    = d
+elementLengthSymbolic (Rest d)          = d
+elementLengthSymbolic (Chord d _ _ _)   = d
+elementLengthSymbolic (Graces {})       = 0
+
+-- | Note - graces have a combined length.  
+elementLengthAbsolute :: Element pch anno -> Seconds
+elementLengthAbsolute (Note d _ _ _)    = d
+elementLengthAbsolute (Rest d)          = d
+elementLengthAbsolute (Chord d _ _ _)   = d
+elementLengthAbsolute (Graces xs)       = sum $ map fst xs
+
