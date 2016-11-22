@@ -196,15 +196,18 @@ lilypondNotes def prefix_locals ph =
 
     oLyPart :: LyPart2 pch anno -> Mon Doc
     oLyPart (Part [])               = return empty
-    oLyPart (Part (x:xs))           = do { d <- oBar x; step d xs }
+    oLyPart (Part (x:xs))           = do { d <- oSection x; step d xs }
       where
         step d []     = return d
-        step d (b:bs) = do { d1    <- oBar b
+        step d (s:ss) = do { d1    <- oSection s
                            ; let ac = d <+> char '|' $+$ d1
-                           ; step ac bs 
+                           ; step ac ss
                            }
 
+    oSection :: LySection2 pch anno -> Mon Doc
+    oSection _ = error "TODO - SimpleOutput"
 
+{-
     oBar :: LyBar2 pch anno -> Mon Doc
     oBar (Bar locals cs)            = 
           do { dkey     <- deltaKey locals
@@ -226,7 +229,7 @@ lilypondNotes def prefix_locals ph =
                                     return (time_ t $+$ d)
                    }
 
-
+-}
 
     oNoteGroup :: LyNoteGroup2 pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e

@@ -110,7 +110,7 @@ makeLyParser def = fullParseLy part
     pAnno  = annoParser def
     
     part :: LyParser (LyPart2 pch anno)
-    part = Part <$> bars
+    part = (\bs -> Part [Section "un-named" default_section_info bs]) <$> bars
 
     bars :: LyParser [LyBar2 pch anno]
     bars = sepBy bar barline
@@ -120,7 +120,7 @@ makeLyParser def = fullParseLy part
     -- member of the beam group.
     --
     bar :: LyParser (LyBar2 pch anno)
-    bar = Bar default_section_info <$> noteGroups 
+    bar = Bar <$> noteGroups 
 
     noteGroups :: LyParser [LyNoteGroup2 pch anno]
     noteGroups = concat <$> (whiteSpace *> many noteGroup)

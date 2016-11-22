@@ -32,8 +32,8 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = NoteGroup Pitch Duration ()
 
-fromNoteList :: SectionInfo -> [[NoteListAtom]] -> Part Pitch Duration ()
-fromNoteList ri xss = Part $ map (Bar ri) xss
+fromNoteList :: String -> SectionInfo -> [[NoteListAtom]] -> Part Pitch Duration ()
+fromNoteList name info xss = Part [Section name info $ map Bar xss]
 
 note :: Pitch -> Duration -> NoteListAtom
 note p d = Atom $ NoteElem (Note p d) () NO_TIE

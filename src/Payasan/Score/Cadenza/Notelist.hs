@@ -78,10 +78,11 @@ fromLilyPondWith_Relative pch locals =
 
 
 genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
+                    -> String
                     -> StdCadenzaPart2 p1i a1i
                     -> Doc
-genOutputAsLilyPond config = 
-    outputStep . toGenLyPart . beamingRewrite . transCadenzaToExternal
+genOutputAsLilyPond config name = 
+    outputStep . toGenLyPart . beamingRewrite . transCadenzaToExternal name
   where
     beamingRewrite      = beam_trafo config
     toGenLyPart         = out_trafo config
@@ -90,8 +91,8 @@ genOutputAsLilyPond config =
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> Pitch -> StdCadenzaPart1 anno -> String
-outputAsLilyPond_Relative infos pch = MAIN.ppRender . genOutputAsLilyPond config
+                          => ScoreInfo -> String -> Pitch -> StdCadenzaPart1 anno -> String
+outputAsLilyPond_Relative infos name pch = MAIN.ppRender . genOutputAsLilyPond config name
   where
     config  = LilyPondPipeline { beam_trafo  = noBeams
                                , out_trafo   = LY.translateToOutput_Relative pch
@@ -100,7 +101,7 @@ outputAsLilyPond_Relative infos pch = MAIN.ppRender . genOutputAsLilyPond config
     std_def = LY.LyOutputDef { LY.printPitch = PP.pitch, LY.printAnno = anno }
 
 printAsLilyPond_Relative :: Anno anno 
-                => ScoreInfo -> Pitch -> StdCadenzaPart1 anno -> IO ()
-printAsLilyPond_Relative globals pch = 
-    putStrLn . outputAsLilyPond_Relative globals pch
+                         => ScoreInfo -> String -> Pitch -> StdCadenzaPart1 anno -> IO ()
+printAsLilyPond_Relative globals name pch = 
+    putStrLn . outputAsLilyPond_Relative globals name pch
 

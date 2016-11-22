@@ -65,7 +65,7 @@ parseABCPart = runParser (fullParseABC part) () ""
 
 
 part :: ABCParser ABCPart
-part = Part <$> bars
+part = (\bs -> Part [Section "un-named" default_section_info bs]) <$> bars
 
 bars :: ABCParser [ABCBar]
 bars = sepBy bar barline
@@ -74,7 +74,7 @@ barline :: ABCParser ()
 barline = reservedOp "|"
 
 bar :: ABCParser ABCBar
-bar = Bar default_section_info <$> noteGroups 
+bar = Bar <$> noteGroups 
 
 noteGroups :: ABCParser [ABCNoteGroup]
 noteGroups = whiteSpace *> many noteGroup

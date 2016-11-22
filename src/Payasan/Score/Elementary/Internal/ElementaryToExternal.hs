@@ -32,15 +32,15 @@ import Payasan.PSC.Base.SyntaxCommon
 
 
 transElementaryToExternal :: forall pch drn anno.
-                             Part pch drn anno -> T.Part pch drn anno
-transElementaryToExternal           = partT
+                             String -> Part pch drn anno -> T.Part pch drn anno
+transElementaryToExternal name      = partT
   where
     partT :: Part pch drn anno -> T.Part pch drn anno
-    partT (Part info bs)            = T.Part $ map (barT info) bs
+    partT (Part info bs)            = T.Part [T.Section name info $ map barT bs]
 
 
-    barT :: SectionInfo -> Bar pch drn anno -> T.Bar pch drn anno
-    barT info (Bar cs)              = T.Bar info $ map noteGroupT cs
+    barT :: Bar pch drn anno -> T.Bar pch drn anno
+    barT (Bar cs)                   = T.Bar $ map noteGroupT cs
 
     -- | No beams in Elementary syntax so one-to-one
     --
@@ -63,16 +63,17 @@ transElementaryToExternal           = partT
 -- representations).
 --
 chord_transElementaryToExternal :: forall pch drn anno. 
-                                   Part [pch] drn anno
+                                   String
+                                -> Part [pch] drn anno
                                 -> T.Part pch drn anno
-chord_transElementaryToExternal     = partT
+chord_transElementaryToExternal name = partT
   where
     partT :: Part [pch] drn anno -> T.Part pch drn anno
-    partT (Part info bs)            = T.Part $ map (barT info) bs
+    partT (Part info bs)            = T.Part [T.Section name info $ map barT bs]
 
 
-    barT :: SectionInfo -> Bar [pch] drn anno -> T.Bar pch drn anno
-    barT info (Bar cs)              = T.Bar info $ map noteGroupT cs
+    barT :: Bar [pch] drn anno -> T.Bar pch drn anno
+    barT (Bar cs)                   = T.Bar $ map noteGroupT cs
 
 
     noteGroupT :: NoteGroup [pch] drn anno -> T.NoteGroup pch drn anno

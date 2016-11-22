@@ -119,59 +119,63 @@ fromLilyPondWith_Relative pch locals =
     lilyPondTranslate_Relative pch . pushSectionInfo locals
 
 
-outputAsABC :: ScoreInfo -> StaffInfo -> StdElemPart -> String
-outputAsABC infos staff = 
-    MAIN.outputAsABC infos staff . transElementaryToExternal
+outputAsABC :: ScoreInfo -> StaffInfo -> String -> StdElemPart -> String
+outputAsABC infos staff name = 
+    MAIN.outputAsABC infos staff . transElementaryToExternal name
 
-printAsABC :: ScoreInfo -> StaffInfo -> StdElemPart -> IO ()
-printAsABC infos staff = 
-    MAIN.printAsABC infos staff . transElementaryToExternal
+printAsABC :: ScoreInfo -> StaffInfo -> String -> StdElemPart -> IO ()
+printAsABC infos staff name = 
+    MAIN.printAsABC infos staff . transElementaryToExternal name
 
 
 
 genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2
+                    -> String
                     -> Part p1 Duration a1
                     -> Doc
-genOutputAsLilyPond config = 
-    MAIN.genOutputAsLilyPond config . transElementaryToExternal
+genOutputAsLilyPond config name = 
+    MAIN.genOutputAsLilyPond config . transElementaryToExternal name
 
 genOutputAsLilyPond2 :: MAIN.LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o
+                     -> String
+                     -> String
                      -> Part p1i Duration a1i
                      -> Part p2i Duration a2i
                      -> Doc
-genOutputAsLilyPond2 config ph1 ph2 = 
-    MAIN.genOutputAsLilyPond2 config (transElementaryToExternal ph1)
-                                     (transElementaryToExternal ph2)
+genOutputAsLilyPond2 config name1 name2 ph1 ph2 = 
+    MAIN.genOutputAsLilyPond2 config (transElementaryToExternal name1 ph1)
+                                     (transElementaryToExternal name2 ph2)
 
 
 
 
-outputAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPart -> String
-outputAsLilyPond_Relative infos pch = 
-    MAIN.outputAsLilyPond_Relative infos pch . transElementaryToExternal
+outputAsLilyPond_Relative :: ScoreInfo -> String -> Pitch -> StdElemPart -> String
+outputAsLilyPond_Relative infos name pch = 
+    MAIN.outputAsLilyPond_Relative infos pch . transElementaryToExternal name
 
 
-printAsLilyPond_Relative :: ScoreInfo -> Pitch -> StdElemPart -> IO ()
-printAsLilyPond_Relative infos pch = 
-    MAIN.printAsLilyPond_Relative infos pch . transElementaryToExternal
+printAsLilyPond_Relative :: ScoreInfo -> String -> Pitch -> StdElemPart -> IO ()
+printAsLilyPond_Relative infos name pch = 
+    MAIN.printAsLilyPond_Relative infos pch . transElementaryToExternal name
 
 
 
 
 genOutputAsRhythmicMarkup :: LY.MarkupOutput pch 
                           -> ScoreInfo 
+                          -> String
                           -> Part pch Duration anno
                           -> Doc
-genOutputAsRhythmicMarkup def infos = 
-    MAIN.genOutputAsRhythmicMarkup def infos . transElementaryToExternal
+genOutputAsRhythmicMarkup def infos name = 
+    MAIN.genOutputAsRhythmicMarkup def infos . transElementaryToExternal name
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdElemPart -> String
-outputAsRhythmicMarkup infos = 
-    MAIN.outputAsRhythmicMarkup infos . transElementaryToExternal
+outputAsRhythmicMarkup :: ScoreInfo -> String -> StdElemPart -> String
+outputAsRhythmicMarkup infos name = 
+    MAIN.outputAsRhythmicMarkup infos . transElementaryToExternal name
 
-printAsRhythmicMarkup :: ScoreInfo -> StdElemPart -> IO ()
-printAsRhythmicMarkup infos = 
-    MAIN.printAsRhythmicMarkup infos . transElementaryToExternal
+printAsRhythmicMarkup :: ScoreInfo -> String -> StdElemPart -> IO ()
+printAsRhythmicMarkup infos name = 
+    MAIN.printAsRhythmicMarkup infos . transElementaryToExternal name
 
 
 
@@ -181,7 +185,7 @@ ppRender = MAIN.ppRender
 
 
 writeAsMIDI :: FilePath -> StdElemPart -> IO ()
-writeAsMIDI path = MAIN.writeAsMIDI path . transElementaryToExternal
+writeAsMIDI path = MAIN.writeAsMIDI path . transElementaryToExternal "noname"
 
 
 

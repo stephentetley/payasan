@@ -51,11 +51,15 @@ makeTiedNoteStream = coalesce . linearize
 
 
 linearize :: Part pch Duration anno -> [Element pch Seconds anno]
-linearize (Part bs) = concatMap linearizeB bs
+linearize (Part ss) = concatMap linearizeS ss
 
-linearizeB :: Bar pch Duration anno -> [Element pch Seconds anno]
-linearizeB (Bar info cs) = 
-    let bpm = section_bpm info in concatMap (linearizeNG bpm) cs
+
+linearizeS :: Section pch Duration anno -> [Element pch Seconds anno]
+linearizeS (Section _ info bs) = 
+    let bpm = section_bpm info in concatMap (linearizeB bpm) bs
+
+linearizeB :: BPM -> Bar pch Duration anno -> [Element pch Seconds anno]
+linearizeB bpm (Bar cs) = concatMap (linearizeNG bpm) cs
 
 
 linearizeNG :: BPM -> NoteGroup pch Duration anno -> [Element pch Seconds anno]

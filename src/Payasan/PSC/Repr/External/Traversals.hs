@@ -50,14 +50,18 @@ genTransform elemT st0 ph =
     evalRewrite (partT ph) st0
   where
     partT :: Part p1 d1 a1 -> Mon st (Part p2 d2 a2)
-    partT (Part bs)             = Part <$> mapM barT bs
+    partT (Part ss)                 = Part <$> mapM sectionT ss
+
+    sectionT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2)
+    sectionT (Section name info bs) = 
+        Section name info <$> local info (mapM barT bs)
 
     barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
-    barT (Bar info cs)          = local info $ Bar info <$> mapM noteGroupT cs
+    barT (Bar cs)                   = Bar <$> mapM noteGroupT cs
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
-    noteGroupT (Atom e)         = Atom <$> elemT e
-    noteGroupT (Tuplet spec cs) = Tuplet spec <$> mapM noteGroupT cs
+    noteGroupT (Atom e)             = Atom <$> elemT e
+    noteGroupT (Tuplet spec cs)     = Tuplet spec <$> mapM noteGroupT cs
 
 
 --------------------------------------------------------------------------------

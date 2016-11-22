@@ -96,10 +96,10 @@ fromLilyPondWith locals = translateInput . ELEM.pushSectionInfo locals
 
 
 
-outputAsLilyPond :: ScoreInfo -> StdChordPart -> String
-outputAsLilyPond globals = 
+outputAsLilyPond :: ScoreInfo -> String -> StdChordPart -> String
+outputAsLilyPond globals name = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config
-                  . ELEM.transElementaryToExternal
+                  . ELEM.transElementaryToExternal name
                   . translateOutput
   where
     config  = MAIN.LilyPondPipeline 
@@ -109,19 +109,20 @@ outputAsLilyPond globals =
                 }
 
 
-printAsLilyPond :: ScoreInfo -> StdChordPart -> IO ()
-printAsLilyPond globals = putStrLn . outputAsLilyPond globals
+printAsLilyPond :: ScoreInfo -> String -> StdChordPart -> IO ()
+printAsLilyPond globals name = putStrLn . outputAsLilyPond globals name
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> StdChordPart -> String
-outputAsRhythmicMarkup globals = 
-    MAIN.ppRender . ELEM.genOutputAsRhythmicMarkup def globals
+outputAsRhythmicMarkup :: ScoreInfo -> String -> StdChordPart -> String
+outputAsRhythmicMarkup globals name = 
+    MAIN.ppRender . ELEM.genOutputAsRhythmicMarkup def globals name
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny_ (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: ScoreInfo -> StdChordPart -> IO ()
-printAsRhythmicMarkup globals = putStrLn . outputAsRhythmicMarkup globals
+printAsRhythmicMarkup :: ScoreInfo -> String -> StdChordPart -> IO ()
+printAsRhythmicMarkup globals name = 
+    putStrLn . outputAsRhythmicMarkup globals name
 
 
 ppRender :: Doc -> String
@@ -137,7 +138,7 @@ writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes
 -- for MIDI - notes become chords...
 
 midiTrans :: StdChordPart -> MAIN.Part Pitch Duration ()
-midiTrans = ELEM.chord_transElementaryToExternal . chordTrans
+midiTrans = ELEM.chord_transElementaryToExternal "noname" . chordTrans
 
 
 

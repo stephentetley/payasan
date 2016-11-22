@@ -33,13 +33,17 @@ import Data.Ratio
 
 
 addBeams :: Part pch Duration anno -> Part pch Duration anno
-addBeams (Part { part_bars = bs }) = Part $ map beamBar bs
+addBeams (Part { part_sections = ss }) = Part $ map beamSection ss
 
-beamBar :: Bar pch Duration anno -> Bar pch Duration anno
-beamBar (Bar info cs) = 
+beamSection :: Section pch Duration anno -> Section pch Duration anno
+beamSection (Section name info bs) = 
+    Section name info $ map (beamBar info) bs
+
+beamBar :: SectionInfo -> Bar pch Duration anno -> Bar pch Duration anno
+beamBar info (Bar cs) = 
     let mpat  = section_meter_pattern info
         segs1 = detachExtremities $ singleout $ segment mpat cs
-    in Bar info $ beamSegments segs1
+    in Bar $ beamSegments segs1
 
 
 noBeams :: Part pch Duration anno -> Part pch Duration anno

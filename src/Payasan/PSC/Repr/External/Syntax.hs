@@ -22,17 +22,20 @@ module Payasan.PSC.Repr.External.Syntax
   ( 
    
     StdPart
+  , StdSection
   , StdBar
   , StdNoteGroup
   , StdElement
   , StdNote
 
   , StdPart1
+  , StdSection1
   , StdBar1
   , StdNoteGroup1
   , StdElement1
 
   , Part(..)
+  , Section(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -44,7 +47,7 @@ module Payasan.PSC.Repr.External.Syntax
   , sizeNoteGroup
   , firstSectionInfo
 
-  , extractBarInfos
+  , extractSectionInfos
 
   ) where
 
@@ -63,12 +66,14 @@ import Data.Data
 
 
 type StdPart            = Part      Pitch Duration () 
+type StdSection         = Section   Pitch Duration ()
 type StdBar             = Bar       Pitch Duration () 
 type StdNoteGroup       = NoteGroup Pitch Duration () 
 type StdElement         = Element   Pitch Duration ()
 type StdNote            = Note      Pitch Duration
 
 type StdPart1 anno      = Part      Pitch Duration anno
+type StdSection1 anno   = Section   Pitch Duration anno
 type StdBar1 anno       = Bar       Pitch Duration anno
 type StdNoteGroup1 anno = NoteGroup Pitch Duration anno
 type StdElement1 anno   = Element   Pitch Duration anno
@@ -76,20 +81,49 @@ type StdElement1 anno   = Element   Pitch Duration anno
 
 
 
-data Part pch drn anno = Part { part_bars :: [Bar pch drn anno] }
+data Part pch drn anno = Part { part_sections :: [Section pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
+  
+-- Note - the musical structures in Payasan don't "feel" monoidal.
+-- Specifically, appending a smaller element to a larger container
+-- feels more natural than monoidal concatenation.
+-- 
+-- E.g. it seems natural to add (append) a Section to a Part, but 
+-- while we can concat Parts (the Monoid instance makes sense)
+-- doing so doesn't seem a natral way to build music - a Part 
+-- feels singular, self contained.
+--
 
 instance Monoid (Part pch drn anno) where
   mempty = Part []
   Part xs `mappend` Part ys = Part $ xs ++ ys
 
 
--- | Note Beaming is not captured in parsing.
+
+-- | Including section name gives an easily addressable scheme
+-- for extra render information.
+-- 
+-- E.g we could support MIDI rendering with a list (dictionary) 
+-- of BPM (tempo) changes for each named section. This removes
+-- the need to store BPM in the AST (extensibility is serverely
+-- hampered if we have to store all information in the AST).
+--   
+-- It would be up to the user whether names are unique - there 
+-- is value in not being strict about this (musically sections
+-- often have a fairly loose names as in section schemes like 
+-- "AAB").
 --
-data Bar pch drn anno = Bar 
-    { bar_info          :: !SectionInfo
-    , bar_groups        :: [NoteGroup pch drn anno]
+data Section pch drn anno = Section
+    { section_name      :: String
+    , section_info      :: !SectionInfo
+    , section_bars      :: [Bar pch drn anno]
     }
+  deriving (Data,Eq,Show,Typeable)
+
+-- | Change - Beaming is now captured in parsing.
+--   Change - SectionInfo promoted to (new element) Section.
+--
+data Bar pch drn anno = Bar { bar_groups :: [NoteGroup pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
 -- | Note Beaming is not captured in parsing.
@@ -134,9 +168,8 @@ data Note pch drn = Note pch drn
 pushSectionInfo :: SectionInfo 
                 -> Part pch drn anno 
                 -> Part pch drn anno
-pushSectionInfo si (Part bs) = Part $ map upd bs
-  where
-    upd bar = bar { bar_info = si }
+pushSectionInfo _ (Part {}) = 
+    error $ "pushSectionInfo - should now be redundant"
 
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RatDuration
@@ -160,7 +193,11 @@ sizeElement (Punctuation {})            = 0
 
 firstSectionInfo :: Part pch drn anno -> Maybe SectionInfo
 firstSectionInfo (Part [])    = Nothing
-firstSectionInfo (Part (b:_)) = Just $ bar_info b
+firstSectionInfo (Part (s:_)) = Just $ section_info s
 
-extractBarInfos :: Part pch drn anno -> [SectionInfo]
-extractBarInfos = map bar_info . part_bars
+extractSectionInfos :: Part pch drn anno -> [SectionInfo]
+extractSectionInfos = map section_info . part_sections
+
+
+
+

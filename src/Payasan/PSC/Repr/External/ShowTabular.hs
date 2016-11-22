@@ -39,11 +39,15 @@ mainTabular ppl ph = concatBars 2 $ oPart ppl ph
 
 
 oPart :: LeafOutputNote pch drn anno -> Part pch drn anno -> [Doc]
-oPart ppl (Part xs)             = map (oBar ppl) xs
+oPart ppl (Part xs)             = map (oSection ppl) xs
+
+
+oSection :: LeafOutputNote pch drn anno -> Section pch drn anno -> Doc
+oSection ppl (Section _ _ cs)   = vcat $ map (oBar ppl) cs
 
 
 oBar :: LeafOutputNote pch drn anno -> Bar pch drn anno -> Doc
-oBar ppl (Bar _ cs)             = oNoteGroupList ppl cs
+oBar ppl (Bar cs)               = oNoteGroupList ppl cs
 
 
 oNoteGroupList :: LeafOutputNote pch drn anno -> [NoteGroup pch drn anno] -> Doc

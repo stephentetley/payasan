@@ -103,8 +103,11 @@ oHeader infos staff locals =
   where
     key_clef = (key $ section_key locals) <+> (clef $ staff_clef staff)
 
+
+
 oABCPart :: ABCPart1 anno -> Mon Doc
 oABCPart (Part [])              = return empty
+{-
 oABCPart (Part (x:xs))          = do { d <- oBar x; step d xs }
   where
     step d []     = return $ d <+> text "|]"
@@ -115,6 +118,7 @@ oABCPart (Part (x:xs))          = do { d <- oBar x; step d xs }
                                            else (d <+> char '|' <+> d1)
                        ; step ac bs
                        }
+
 
 
 oBar :: ABCBar1 anno -> Mon Doc
@@ -132,6 +136,7 @@ oBar (Bar info cs)              =
     prefixM (Just (m,u))  = let doc = ( midtuneField 'M' (meter m) 
                                        <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
+-}
 
 oNoteGroupList :: CatOp -> [ABCNoteGroup1 anno] -> Doc
 oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs

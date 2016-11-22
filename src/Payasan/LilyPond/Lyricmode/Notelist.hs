@@ -69,9 +69,9 @@ fromLilyPondWith globals locals = inTrans globals . ELEM.pushSectionInfo locals
 -- Lyrics should not beam.
 -- Print two simultaneous interpretations.
 --
-outputAsLilyPond :: Anno anno => ScoreInfo -> LyricPart1 anno -> String
-outputAsLilyPond globals lyrics = 
-    MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
+outputAsLilyPond :: Anno anno => ScoreInfo -> String -> LyricPart1 anno -> String
+outputAsLilyPond globals name lyrics = 
+    MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 name name beats lyrics
   where
     beats           = ELEM.censorPunctuation $ ELEM.changeSkipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
@@ -83,9 +83,9 @@ outputAsLilyPond globals lyrics =
                         }
 
 
-outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> LyricPart1 anno -> String
-outputAsLilyPondDU annos globals lyrics = 
-    MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 beats lyrics
+outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> String -> LyricPart1 anno -> String
+outputAsLilyPondDU annos globals name lyrics = 
+    MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 name name beats lyrics
   where
     beats           = ELEM.censorPunctuation $ ELEM.changeSkipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
@@ -98,6 +98,6 @@ outputAsLilyPondDU annos globals lyrics =
 
 
 
-printAsLilyPond :: Anno anno => ScoreInfo -> LyricPart1 anno -> IO ()
-printAsLilyPond globals = putStrLn . outputAsLilyPond globals
+printAsLilyPond :: Anno anno => ScoreInfo -> String -> LyricPart1 anno -> IO ()
+printAsLilyPond globals name = putStrLn . outputAsLilyPond globals name
 
