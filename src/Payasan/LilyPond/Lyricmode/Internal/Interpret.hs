@@ -31,6 +31,6 @@ import Payasan.Base.Names.Pitch
 
 -- TODO - need to remove punctuation as well.
 --
-extractRhythm :: LyricPart1 anno -> Part Pitch Duration anno
+extractRhythm :: LyricSection1 anno -> Section Pitch Duration anno
 extractRhythm = mapPitch (const b_4)
 

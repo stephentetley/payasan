@@ -60,7 +60,7 @@ cadenza = QuasiQuoter
 -- Parser
 
 
-parseCadenzaNoAnno :: String -> Either ParseError (LyCadenzaPart1 ())
+parseCadenzaNoAnno :: String -> Either ParseError (LyCadenzaSection1 ())
 parseCadenzaNoAnno = parseCadenza parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
@@ -68,7 +68,7 @@ parseCadenzaNoAnno = parseCadenza parsedef
 
 parseCadenza :: P.LyParserDef pch anno
               -> String 
-              -> Either ParseError (LyCadenzaPart2 pch anno)
+              -> Either ParseError (LyCadenzaSection2 pch anno)
 parseCadenza def = runParser (makeParser def) () ""
 
 
@@ -76,8 +76,8 @@ parseCadenza def = runParser (makeParser def) () ""
 -- TODO - handle beaming... 
 
 makeParser :: forall pch anno. 
-              P.LyParserDef pch anno -> LyParser (LyCadenzaPart2 pch anno)
-makeParser def = fullParseLy part
+              P.LyParserDef pch anno -> LyParser (LyCadenzaSection2 pch anno)
+makeParser def = fullParseLy section
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
@@ -85,8 +85,8 @@ makeParser def = fullParseLy part
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    part :: LyParser (LyCadenzaPart2 pch anno)
-    part = (Part default_section_info . reconcileBeamHeads) <$> noteGroups
+    section :: LyParser (LyCadenzaSection2 pch anno)
+    section = (Section default_section_info . reconcileBeamHeads) <$> noteGroups
 
     noteGroups :: LyParser [LyCadenzaNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup

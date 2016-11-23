@@ -34,8 +34,8 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = StdElemNoteGroup
 
-fromNoteList :: SectionInfo -> [NoteListAtom] -> StdElemPart
-fromNoteList ri xs = recalcBars $ Part ri [Bar xs]
+fromNoteList :: SectionInfo -> [NoteListAtom] -> StdElemSection
+fromNoteList ri xs = recalcBars $ Section ri [Bar xs]
 
 note :: Pitch -> Duration -> NoteListAtom
 note p d = Atom $ Note p d () NO_TIE

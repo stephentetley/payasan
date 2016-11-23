@@ -26,8 +26,8 @@ import Payasan.Score.Elementary.Internal.Syntax         as ELEM
 
 import Payasan.PSC.Base.LilyPondCommon
 
-translateOutput :: ELEM.Part Chord drn anno -> ELEM.Part LyPitch drn ChordSuffix
+translateOutput :: ELEM.Section Chord drn anno -> ELEM.Section LyPitch drn ChordSuffix
 translateOutput = trafoAnnos 
 
-trafoAnnos :: ELEM.Part Chord drn anno -> ELEM.Part LyPitch drn ChordSuffix
+trafoAnnos :: ELEM.Section Chord drn anno -> ELEM.Section LyPitch drn ChordSuffix
 trafoAnnos = mapPitchAnno $ \ch _ -> (fromPitchAbs $ chord_root ch, chord_suffix ch)

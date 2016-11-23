@@ -19,7 +19,7 @@ module Payasan.LilyPond.Lyricmode.Notelist
 
     module Payasan.PSC.Shell
    
-  , LyricPart1
+  , LyricSection1
   , lyricmode
 
   , ScoreInfo(..)        -- Re-export
@@ -56,20 +56,20 @@ import Payasan.PSC.Base.SyntaxCommon
 
 
 
-fromLilyPond :: ScoreInfo -> LyLyricPart -> LyricPart1 ()
+fromLilyPond :: ScoreInfo -> LyLyricSection -> LyricSection1 ()
 fromLilyPond globals = fromLilyPondWith globals default_section_info
 
 fromLilyPondWith :: ScoreInfo 
                  -> SectionInfo 
-                 -> LyLyricPart1 anno
-                 -> LyricPart1 anno
+                 -> LyLyricSection1 anno
+                 -> LyricSection1 anno
 fromLilyPondWith globals locals = inTrans globals . ELEM.pushSectionInfo locals
 
 
 -- Lyrics should not beam.
 -- Print two simultaneous interpretations.
 --
-outputAsLilyPond :: Anno anno => ScoreInfo -> String -> LyricPart1 anno -> String
+outputAsLilyPond :: Anno anno => ScoreInfo -> String -> LyricSection1 anno -> String
 outputAsLilyPond globals name lyrics = 
     MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 name name beats lyrics
   where
@@ -83,7 +83,7 @@ outputAsLilyPond globals name lyrics =
                         }
 
 
-outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> String -> LyricPart1 anno -> String
+outputAsLilyPondDU :: AnnoDU anno -> ScoreInfo -> String -> LyricSection1 anno -> String
 outputAsLilyPondDU annos globals name lyrics = 
     MAIN.ppRender $ ELEM.genOutputAsLilyPond2 config2 name name beats lyrics
   where
@@ -98,6 +98,6 @@ outputAsLilyPondDU annos globals name lyrics =
 
 
 
-printAsLilyPond :: Anno anno => ScoreInfo -> String -> LyricPart1 anno -> IO ()
+printAsLilyPond :: Anno anno => ScoreInfo -> String -> LyricSection1 anno -> IO ()
 printAsLilyPond globals name = putStrLn . outputAsLilyPond globals name
 

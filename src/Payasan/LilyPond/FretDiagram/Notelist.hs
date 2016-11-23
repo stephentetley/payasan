@@ -60,7 +60,7 @@ import qualified Payasan.PSC.Pipeline as MAIN
 -- Maybe we should have a qq syntax anyway...
 
 
-outputAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramPart -> String
+outputAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramSection -> String
 outputAsLilyPond globals name diags = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config . chord_transElementaryToExternal name
   where
@@ -72,6 +72,6 @@ outputAsLilyPond globals name diags =
 
 
 
-printAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramPart -> IO ()
+printAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramSection -> IO ()
 printAsLilyPond info name diags = putStrLn . outputAsLilyPond info name diags
 

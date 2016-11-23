@@ -45,8 +45,8 @@ chordmode = QuasiQuoter
 
 
 
-parseChordMode :: String -> Either ParseError LyChordPart
-parseChordMode = parseLyPart parsedef
+parseChordMode :: String -> Either ParseError LyChordSection
+parseChordMode = parseLySection parsedef
   where
     parsedef = LyParserDef { pitchParser = chordRoot
                            , annoParser  = chordSuffix }

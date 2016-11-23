@@ -27,8 +27,8 @@ import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.PSC.Base.LilyPondCommon
 
-translateInput :: LyChordPart -> StdChordPart
+translateInput :: LyChordSection -> StdChordSection
 translateInput = trafoAnnos . trafoDuration
 
-trafoAnnos :: Part LyPitch drn ChordSuffix -> Part Chord drn ()
+trafoAnnos :: Section LyPitch drn ChordSuffix -> Section Chord drn ()
 trafoAnnos = mapPitchAnno $ \p a -> (Chord (toPitchAbs p) a, ())

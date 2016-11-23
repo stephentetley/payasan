@@ -50,7 +50,7 @@ lyricmode = QuasiQuoter
 
 
 
-parseLyricMode :: String -> Either ParseError LyLyricPart
+parseLyricMode :: String -> Either ParseError LyLyricSection
 parseLyricMode = runParser (makeLyricParser P.noAnno) () ""
 
 
@@ -59,11 +59,11 @@ parseLyricMode = runParser (makeLyricParser P.noAnno) () ""
 -- to code it from scratch.
 
 
-makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricPart1 anno)
-makeLyricParser pAnno = fullParseLy part
+makeLyricParser :: forall anno. LyParser anno -> LyParser (LyLyricSection1 anno)
+makeLyricParser pAnno = fullParseLy section
   where
-    part :: LyParser (LyLyricPart1 anno)
-    part = Part default_section_info <$> bars
+    section :: LyParser (LyLyricSection1 anno)
+    section = Section default_section_info <$> bars
 
     bars :: LyParser [LyLyricBar1 anno]
     bars = sepBy bar P.barline

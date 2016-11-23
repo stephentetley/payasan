@@ -45,7 +45,7 @@ import Data.Char (isSpace)
 
 abc :: QuasiQuoter
 abc = QuasiQuoter
-    { quoteExp = \s -> case parseABCPart s of
+    { quoteExp = \s -> case parseABCSection s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -59,14 +59,14 @@ abc = QuasiQuoter
 
 
 
-parseABCPart :: String -> Either ParseError ABCElemPart
-parseABCPart = runParser fullABCPart () ""
+parseABCSection :: String -> Either ParseError ABCElemSection
+parseABCSection = runParser fullABCSection () ""
 
 
 
 
-fullABCPart :: ABCParser ABCElemPart
-fullABCPart = whiteSpace *> abcPartK >>= step
+fullABCSection :: ABCParser ABCElemSection
+fullABCSection = whiteSpace *> abcSectionK >>= step
   where 
     isTrail             = all (isSpace)
     step (ans,_,ss) 
@@ -74,11 +74,11 @@ fullABCPart = whiteSpace *> abcPartK >>= step
         | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-abcPartK :: ABCParser (ABCElemPart,SourcePos,String)
-abcPartK = (,,) <$> part <*> getPosition <*> getInput
+abcSectionK :: ABCParser (ABCElemSection,SourcePos,String)
+abcSectionK = (,,) <$> section <*> getPosition <*> getInput
 
-part :: ABCParser ABCElemPart 
-part = Part default_section_info <$> bars
+section :: ABCParser ABCElemSection 
+section = Section default_section_info <$> bars
 
 bars :: ABCParser [ABCElemBar]
 bars = sepBy bar barline

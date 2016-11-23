@@ -20,7 +20,7 @@ module Payasan.Score.Elementary.Internal.LilyPondParser
 
     lilypond
   , LyParserDef (..)    -- re-export
-  , parseLyPart
+  , parseLySection
   , pitch               -- re-export
   , noAnno              -- re-export
 
@@ -60,21 +60,21 @@ lilypond = QuasiQuoter
 -- Parser
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyElemPart1 ())
-parseLilyPondNoAnno = parseLyPart parsedef
+parseLilyPondNoAnno :: String -> Either ParseError (LyElemSection1 ())
+parseLilyPondNoAnno = parseLySection parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
 
 
-parseLyPart :: P.LyParserDef pch anno
+parseLySection :: P.LyParserDef pch anno
             -> String 
-            -> Either ParseError (LyElemPart2 pch anno)
-parseLyPart def = runParser (makeLyParser def) () ""
+            -> Either ParseError (LyElemSection2 pch anno)
+parseLySection def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. 
-                P.LyParserDef pch anno -> LyParser (LyElemPart2 pch anno)
-makeLyParser def = fullParseLy part
+                P.LyParserDef pch anno -> LyParser (LyElemSection2 pch anno)
+makeLyParser def = fullParseLy section
   where
     pPitch :: LyParser pch
     pPitch = P.pitchParser def
@@ -82,8 +82,8 @@ makeLyParser def = fullParseLy part
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    part :: LyParser (LyElemPart2 pch anno)
-    part = Part default_section_info <$> bars
+    section :: LyParser (LyElemSection2 pch anno)
+    section = Section default_section_info <$> bars
 
     bars :: LyParser [LyElemBar2 pch anno]
     bars = sepBy bar P.barline

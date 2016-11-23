@@ -19,7 +19,7 @@ module Payasan.Score.Cadenza.Notelist
 
     module Payasan.PSC.Shell
    
-  , StdCadenzaPart
+  , StdCadenzaSection
   , cadenza
 
   , ScoreInfo(..)        -- Re-export
@@ -64,14 +64,14 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 fromLilyPond_Relative :: Pitch 
-                      -> LyCadenzaPart1 anno 
-                      -> StdCadenzaPart1 anno
+                      -> LyCadenzaSection1 anno 
+                      -> StdCadenzaSection1 anno
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 fromLilyPondWith_Relative :: Pitch  
                           -> SectionInfo
-                          -> LyCadenzaPart1 anno
-                          -> StdCadenzaPart1 anno
+                          -> LyCadenzaSection1 anno
+                          -> StdCadenzaSection1 anno
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushSectionInfo (locals { section_meter = Unmetered })
 
@@ -79,19 +79,19 @@ fromLilyPondWith_Relative pch locals =
 
 genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
                     -> String
-                    -> StdCadenzaPart2 p1i a1i
+                    -> StdCadenzaSection2 p1i a1i
                     -> Doc
 genOutputAsLilyPond config name = 
-    outputStep . toGenLyPart . beamingRewrite . transCadenzaToExternal name
+    outputStep . toGenLySection . beamingRewrite . transCadenzaToExternal name
   where
     beamingRewrite      = beam_trafo config
-    toGenLyPart         = out_trafo config
+    toGenLySection      = out_trafo config
     outputStep          = output_func config
 
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> String -> Pitch -> StdCadenzaPart1 anno -> String
+                          => ScoreInfo -> String -> Pitch -> StdCadenzaSection1 anno -> String
 outputAsLilyPond_Relative infos name pch = MAIN.ppRender . genOutputAsLilyPond config name
   where
     config  = LilyPondPipeline { beam_trafo  = noBeams
@@ -101,7 +101,7 @@ outputAsLilyPond_Relative infos name pch = MAIN.ppRender . genOutputAsLilyPond c
     std_def = LY.LyOutputDef { LY.printPitch = PP.pitch, LY.printAnno = anno }
 
 printAsLilyPond_Relative :: Anno anno 
-                         => ScoreInfo -> String -> Pitch -> StdCadenzaPart1 anno -> IO ()
+                         => ScoreInfo -> String -> Pitch -> StdCadenzaSection1 anno -> IO ()
 printAsLilyPond_Relative globals name pch = 
     putStrLn . outputAsLilyPond_Relative globals name pch
 

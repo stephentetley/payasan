@@ -59,29 +59,29 @@ import Payasan.Base.Diatonic
 
 -- Simple metrics
 
-barCount :: Part pch drn anno -> Int
-barCount (Part { part_bars = bs }) = length bs
+barCount :: Section pch drn anno -> Int
+barCount (Section { section_bars = bs }) = length bs
 
 
 
 
 -- histograms 
 
-pitchHisto :: Part Pitch drn anno -> Histogram Pitch
+pitchHisto :: Section Pitch drn anno -> Histogram Pitch
 pitchHisto = accumPitch (\ac p -> incr p ac) empty
 
 
-pitchNameHisto :: Part Pitch drn anno -> Histogram PitchName
+pitchNameHisto :: Section Pitch drn anno -> Histogram PitchName
 pitchNameHisto = accumPitch (\ac p -> incr (pitch_name p) ac) empty
 
 
-octaveHisto :: Part Pitch drn anno -> Histogram Int
+octaveHisto :: Section Pitch drn anno -> Histogram Int
 octaveHisto = accumPitch fn empty
   where
     fn histo p = incr (pitch_octave p) histo
 
 
-firstPitch :: Part pch drn anno -> Maybe pch
+firstPitch :: Section pch drn anno -> Maybe pch
 firstPitch = accumStop (\ac e -> fn ac e) Nothing
   where 
     fn _  (Note p _ _ _) = Stop (Just p)
@@ -89,33 +89,33 @@ firstPitch = accumStop (\ac e -> fn ac e) Nothing
 
 
 
-lastPitch :: Part pch drn anno -> Maybe pch
+lastPitch :: Section pch drn anno -> Maybe pch
 lastPitch = accumPitch fn Nothing
   where
     fn _ p = Just p
 
-lowestPitch :: Part Pitch drn anno -> Maybe Pitch
+lowestPitch :: Section Pitch drn anno -> Maybe Pitch
 lowestPitch = accumPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isLower` p0     = Just p
                    | otherwise          = Just p0
 
-highestPitch :: Part Pitch drn anno -> Maybe Pitch
+highestPitch :: Section Pitch drn anno -> Maybe Pitch
 highestPitch = accumPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isHigher` p0    = Just p
                    | otherwise          = Just p0
 
-lowestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
+lowestDiatonic :: Section Diatonic drn anno -> Maybe Diatonic
 lowestDiatonic = fmap nubAlteration . accumPitch fn Nothing
   where
     fn Nothing   s = Just s
     fn (Just s0) s = if diatonicIndex s < diatonicIndex s0 then Just s else Just s0
 
 
-highestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
+highestDiatonic :: Section Diatonic drn anno -> Maybe Diatonic
 highestDiatonic = fmap nubAlteration . accumPitch fn Nothing
   where
     fn Nothing   s = Just s
@@ -134,14 +134,14 @@ contourStep _  st        _              = (st, Blank)
 
 
 
-semitoneInterval :: Part Pitch drn anno -> TracePart Int
+semitoneInterval :: Section Pitch drn anno -> TracePart Int
 semitoneInterval = snd . intoTraceAccum (contourStep comp) Nothing
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
                      in if pnew `isLower` pold then negate sc else sc
 
 
-grossContour :: Part Pitch drn anno -> TracePart GrossContour
+grossContour :: Section Pitch drn anno -> TracePart GrossContour
 grossContour = snd . intoTraceAccum (contourStep comp) Nothing
   where
     comp pold pnew | pnew `isHigher` pold = UP
@@ -151,7 +151,7 @@ grossContour = snd . intoTraceAccum (contourStep comp) Nothing
 
 
 
-refinedContour :: Part Pitch drn anno -> TracePart RefinedContour
+refinedContour :: Section Pitch drn anno -> TracePart RefinedContour
 refinedContour = snd . intoTraceAccum (contourStep comp) Nothing
   where
     comp pold pnew 

@@ -49,12 +49,12 @@ import Payasan.Base.Scale
 
 -- | Double note lengths.
 --
-augment :: Part pch Duration anno -> Part pch Duration anno
+augment :: Section pch Duration anno -> Section pch Duration anno
 augment = mapDuration doubleDuration
 
 -- | Halve note lengths.
 --
-diminute :: Part pch Duration anno -> Part pch Duration anno
+diminute :: Section pch Duration anno -> Section pch Duration anno
 diminute = mapDuration halveDuration
 
 
@@ -63,18 +63,18 @@ diminute = mapDuration halveDuration
 -- non-scale tones.
 --
 transposeChromatic :: Interval 
-                   -> Part Pitch drn anno 
-                   -> Part Pitch drn anno
+                   -> Section Pitch drn anno 
+                   -> Section Pitch drn anno
 transposeChromatic ivl = mapPitch (.+^ ivl)
 
 
 transposeDiatonic :: DiatonicInterval 
-                  -> Part Pitch drn anno 
-                  -> Part Pitch drn anno
+                  -> Section Pitch drn anno 
+                  -> Section Pitch drn anno
 transposeDiatonic ivl ph = diatonically (mapPitch (`addDiatonicInterval` ivl)) ph
 
-retrograde :: Part pch Duration anno -> Part pch Duration anno
-retrograde (Part info gs) = Part info $ map revNG $ reverse gs
+retrograde :: Section pch Duration anno -> Section pch Duration anno
+retrograde (Section info gs) = Section info $ map revNG $ reverse gs
   where
     revNG (Atom e)          = Atom e
     revNG (Beamed cs)       = Beamed $ map revNG $ reverse cs
@@ -85,45 +85,45 @@ retrograde (Part info gs) = Part info $ map revNG $ reverse gs
 -- | Note - seems to need /scale degrees/ - taking interval with 
 -- top note and adding same interval to lowest note does not work.
 --
-invertChromatic :: Part Pitch drn anno -> Part Pitch drn anno
+invertChromatic :: Section Pitch drn anno -> Section Pitch drn anno
 invertChromatic ph = case lowestPitch ph of 
     Nothing -> ph
     Just p0 -> mapPitch (\ival -> p0 .+^ ival) $ intervalsFromTop ph
 
 
-intervalsFromTop :: Part Pitch drn anno -> Part Interval drn anno
+intervalsFromTop :: Section Pitch drn anno -> Section Interval drn anno
 intervalsFromTop ph = case highestPitch ph of
     Nothing -> mapPitch (const perfect_unison) ph         -- notelist is empty or just rests
     Just top -> mapPitch (\p -> p `intervalBetween` top) ph 
 
 
-invertDiatonic :: Part Pitch drn anno -> Part Pitch drn anno
+invertDiatonic :: Section Pitch drn anno -> Section Pitch drn anno
 invertDiatonic = diatonically invertDiatonic1
 
 
 
-invertDiatonic1 :: Part Diatonic drn anno -> Part Diatonic drn anno
+invertDiatonic1 :: Section Diatonic drn anno -> Section Diatonic drn anno
 invertDiatonic1 ph = case lowestDiatonic ph of 
     Nothing -> ph
     Just p0 -> mapPitch (\ival -> p0 `addDiatonicInterval` ival) $ diatonicsFromTop ph
 
 
 
-diatonicsFromTop :: Part Diatonic drn anno -> Part DiatonicInterval drn anno
+diatonicsFromTop :: Section Diatonic drn anno -> Section DiatonicInterval drn anno
 diatonicsFromTop ph = case highestDiatonic ph of
     Nothing -> mapPitch (const simple_unison) ph         -- notelist is empty or just rests
     Just top -> mapPitch (\p -> p `diatonicIntervalBetween` top) ph 
 
 
 
-diatonically :: (Part Diatonic drn anno -> Part Diatonic drn anno)
-             -> Part Pitch drn anno
-             -> Part Pitch drn anno
-diatonically fn = fromDiatonicPart . fn . toDiatonicPart
+diatonically :: (Section Diatonic drn anno -> Section Diatonic drn anno)
+             -> Section Pitch drn anno
+             -> Section Pitch drn anno
+diatonically fn = fromDiatonicSection . fn . toDiatonicSection
 
 
-toDiatonicPart :: Part Pitch drn anno -> Part Diatonic drn anno
-toDiatonicPart = transformP step_algo
+toDiatonicSection :: Section Pitch drn anno -> Section Diatonic drn anno
+toDiatonicSection = transformP step_algo
   where
     step_algo = CadenzaPitchAlgo { initial_stateP = ()
                               , element_trafoP = change }
@@ -138,8 +138,8 @@ toDiatonicPart = transformP step_algo
     mf pch = (\key -> toDiatonic (buildScale key) pch) <$> asks section_key
 
 
-fromDiatonicPart :: Part Diatonic drn anno -> Part Pitch drn anno
-fromDiatonicPart = transformP step_algo
+fromDiatonicSection :: Section Diatonic drn anno -> Section Pitch drn anno
+fromDiatonicSection = transformP step_algo
   where
     step_algo = CadenzaPitchAlgo { initial_stateP = ()
                               , element_trafoP = change }

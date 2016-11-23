@@ -18,7 +18,7 @@
 module Payasan.LilyPond.FretDiagram.Internal.Base
   ( 
 
-    FretDiagramPart
+    FretDiagramSection
   , FretDiagram(..)
   , Fingering(..)
   , BarreIndicator(..)
@@ -34,7 +34,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
   ) where
 
 import Payasan.PSC.Backend.LilyPond.Utils
-import Payasan.Score.Elementary.Internal.Syntax (Part)
+import Payasan.Score.Elementary.Internal.Syntax (Section)
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
@@ -46,7 +46,7 @@ import Data.Data
 import Data.List (sortBy)
 
 
-type FretDiagramPart = Part [Pitch] Duration FretDiagram
+type FretDiagramSection = Section [Pitch] Duration FretDiagram
 
 
 data FretDiagram = FretDiagram

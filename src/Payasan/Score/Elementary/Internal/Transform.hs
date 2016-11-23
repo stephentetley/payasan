@@ -48,12 +48,12 @@ import Payasan.Base.Scale
 
 -- | Double note lengths (and recalc bars).
 --
-augment :: Part pch Duration anno -> Part pch Duration anno
+augment :: Section pch Duration anno -> Section pch Duration anno
 augment = recalcBars . mapDuration doubleDuration
 
 -- | Halve note lengths (and recalc bars).
 --
-diminute :: Part pch Duration anno -> Part pch Duration anno
+diminute :: Section pch Duration anno -> Section pch Duration anno
 diminute = recalcBars . mapDuration halveDuration
 
 
@@ -61,21 +61,21 @@ diminute = recalcBars . mapDuration halveDuration
 -- non-scale tones.
 --
 transposeChromatic :: Interval 
-                   -> Part Pitch drn anno 
-                   -> Part Pitch drn anno
+                   -> Section Pitch drn anno 
+                   -> Section Pitch drn anno
 transposeChromatic ivl = transformPitch (.+^ ivl)
 
 
 transposeDiatonic :: DiatonicInterval 
-                  -> Part Pitch drn anno 
-                  -> Part Pitch drn anno
+                  -> Section Pitch drn anno 
+                  -> Section Pitch drn anno
 transposeDiatonic ivl ph = diatonically (transformPitch (`addDiatonicInterval` ivl)) ph
 
 
 -- | Reverse
 --
-retrograde :: Part pch Duration anno -> Part pch Duration anno
-retrograde (Part info bs) = Part info $ map revBar $ reverse bs
+retrograde :: Section pch Duration anno -> Section pch Duration anno
+retrograde (Section info bs) = Section info $ map revBar $ reverse bs
   where
     revBar (Bar es)         = Bar $ map revNG $ reverse es
     
@@ -87,49 +87,49 @@ retrograde (Part info bs) = Part info $ map revBar $ reverse bs
 -- | Note - seems to need /scale degrees/ - taking interval with 
 -- top note and adding same interval to lowest note does not work.
 --
-invertChromatic :: Part Pitch drn anno -> Part Pitch drn anno
+invertChromatic :: Section Pitch drn anno -> Section Pitch drn anno
 invertChromatic ph = case lowestPitch ph of 
     Nothing -> ph
     Just p0 -> transformPitch (\ival -> p0 .+^ ival) $ intervalsFromTop ph
 
 
-intervalsFromTop :: Part Pitch drn anno -> Part Interval drn anno
+intervalsFromTop :: Section Pitch drn anno -> Section Interval drn anno
 intervalsFromTop ph = case highestPitch ph of
     Nothing -> transformPitch (const perfect_unison) ph         -- notelist is empty or just rests
     Just top -> transformPitch (\p -> p `intervalBetween` top) ph 
 
 
-invertDiatonic :: Part Pitch drn anno -> Part Pitch drn anno
+invertDiatonic :: Section Pitch drn anno -> Section Pitch drn anno
 invertDiatonic = diatonically invertDiatonic1
 
 
 
-invertDiatonic1 :: Part Diatonic drn anno -> Part Diatonic drn anno
+invertDiatonic1 :: Section Diatonic drn anno -> Section Diatonic drn anno
 invertDiatonic1 ph = case lowestDiatonic ph of 
     Nothing -> ph
     Just p0 -> transformPitch (\ival -> p0 `addDiatonicInterval` ival) $ diatonicsFromTop ph
 
 
 
-diatonicsFromTop :: Part Diatonic drn anno -> Part DiatonicInterval drn anno
+diatonicsFromTop :: Section Diatonic drn anno -> Section DiatonicInterval drn anno
 diatonicsFromTop ph = case highestDiatonic ph of
     Nothing -> transformPitch (const simple_unison) ph         -- notelist is empty or just rests
     Just top -> transformPitch (\p -> p `diatonicIntervalBetween` top) ph 
 
 
 
-diatonically :: (Part Diatonic drn anno -> Part Diatonic drn anno)
-             -> Part Pitch drn anno
-             -> Part Pitch drn anno
-diatonically fn = fromDiatonicPart . fn . toDiatonicPart
+diatonically :: (Section Diatonic drn anno -> Section Diatonic drn anno)
+             -> Section Pitch drn anno
+             -> Section Pitch drn anno
+diatonically fn = fromDiatonicSection . fn . toDiatonicSection
 
 
-toDiatonicPart :: Part Pitch drn anno -> Part Diatonic drn anno
-toDiatonicPart = transformPitchCtx cxf toDiatonic
+toDiatonicSection :: Section Pitch drn anno -> Section Diatonic drn anno
+toDiatonicSection = transformPitchCtx cxf toDiatonic
   where
     cxf = buildScale . section_key
 
-fromDiatonicPart :: Part Diatonic drn anno -> Part Pitch drn anno
-fromDiatonicPart = transformPitchCtx cxf fromDiatonic
+fromDiatonicSection :: Section Diatonic drn anno -> Section Pitch drn anno
+fromDiatonicSection = transformPitchCtx cxf fromDiatonic
   where
     cxf = buildScale . section_key

@@ -33,7 +33,7 @@ import Payasan.Base.Pitch
 import Payasan.Base.Scale
 
 
-abcTranslate :: ABCElemPart -> Part Pitch Duration ()
+abcTranslate :: ABCElemSection -> Section Pitch Duration ()
 abcTranslate = transformP pch_algo . transformD drn_algo
 
 

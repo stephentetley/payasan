@@ -73,8 +73,8 @@ data Inp pch drn anno = Nil
 
 
 
-makeLoc :: Part pch drn anno -> Loc pch drn anno
-makeLoc (Part info bs)        = 
+makeLoc :: Section pch drn anno -> Loc pch drn anno
+makeLoc (Section info bs)        = 
     Loc { loc_info = info, loc_stk = stk_empty, loc_input = makeInp bs }
 
 makeInp :: [Bar pch drn anno] -> Inp pch drn anno
@@ -82,13 +82,13 @@ makeInp []                   = Nil
 makeInp (b:bs)               = Inp (makeLocBar b) bs
 
 
-fromLoc :: Loc pch drn anno -> Part pch drn anno
+fromLoc :: Loc pch drn anno -> Section pch drn anno
 fromLoc (Loc info stk Nil)          = 
-    Part { part_header = info, part_bars = unstack stk [] }
+    Section { section_info = info, section_bars = unstack stk [] }
 
 fromLoc (Loc info stk (Inp bl as))  = 
     let inps = fromLocBar bl : as
-    in Part { part_header = info, part_bars = unstack stk inps }
+    in Section { section_info = info, section_bars = unstack stk inps }
 
 
 
@@ -189,22 +189,22 @@ atLoc (Loc _ _ Nil)                     = Nothing
 atLoc (Loc _ _ (Inp bl _))              = atLocBar bl
 
 
-remaining :: Loc pch drn anno -> Part pch drn anno
+remaining :: Loc pch drn anno -> Section pch drn anno
 remaining (Loc info _ Nil)          = 
-    Part { part_header = info, part_bars = [] }
+    Section { section_info = info, section_bars = [] }
 
 remaining (Loc info _ (Inp bl as))  = 
     let inps = case remainingBar bl of { Nothing -> as; Just b -> b:as }
-    in Part { part_header = info, part_bars = inps }
+    in Section { section_info = info, section_bars = inps }
 
 
-consumed :: Loc pch drn anno -> Part pch drn anno
+consumed :: Loc pch drn anno -> Section pch drn anno
 consumed (Loc info stk Nil)          = 
-    Part { part_header = info, part_bars = unstack stk []  }
+    Section { section_info = info, section_bars = unstack stk []  }
 
 consumed (Loc info stk (Inp bl _))   = 
     let inps = case consumedBar bl of { Nothing -> []; Just b -> [b] }
-    in Part { part_header = info, part_bars = unstack stk inps }
+    in Section { section_info = info, section_bars = unstack stk inps }
 
 
 

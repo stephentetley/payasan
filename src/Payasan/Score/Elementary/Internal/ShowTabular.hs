@@ -34,14 +34,14 @@ import Payasan.PSC.Base.ShowTabularUtils
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-elemTabular :: LeafOutputNote pch drn anno -> Part pch drn anno -> Doc
-elemTabular ppl ph = concatBars 2 $ oPart ppl ph
+elemTabular :: LeafOutputNote pch drn anno -> Section pch drn anno -> Doc
+elemTabular ppl ph = concatBars 2 $ oSection ppl ph
 
 
 
 
-oPart :: LeafOutputNote pch drn anno -> Part pch drn anno -> [Doc]
-oPart ppl (Part _  xs)          = map (oBar ppl) xs
+oSection :: LeafOutputNote pch drn anno -> Section pch drn anno -> [Doc]
+oSection ppl (Section _  xs)          = map (oBar ppl) xs
 
 
 oBar :: LeafOutputNote pch drn anno -> Bar pch drn anno -> Doc

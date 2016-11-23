@@ -17,7 +17,7 @@
 
 module Payasan.Models.Lyrics.Internal.Base
   (
-    LyricsPart 
+    LyricsSection 
   , Stress(..)
   , outputAsLilyPond
   , lyrics
@@ -49,7 +49,7 @@ import Language.Haskell.TH.Quote
 
 import Data.Data
 
-type LyricsPart = ELEM.Part     LY.Syllable Duration Stress
+type LyricsSection = ELEM.Section     LY.Syllable Duration Stress
 
 
 -- | We need blank
@@ -73,7 +73,7 @@ stressUse UNSTRESSED    = above $ command "unstressed"
 stressUse BLANK         = empty
 
 
-outputAsLilyPond :: ScoreInfo -> String -> LyricsPart -> String
+outputAsLilyPond :: ScoreInfo -> String -> LyricsSection -> String
 outputAsLilyPond = LY.outputAsLilyPondDU (AnnoDU { defs = stressDefs, use = stressUse })
 
 
@@ -90,7 +90,7 @@ lyrics = QuasiQuoter
 
 
 
-parseLyrics :: String -> Either ParseError (LY.LyLyricPart1 Stress)
+parseLyrics :: String -> Either ParseError (LY.LyLyricSection1 Stress)
 parseLyrics = runParser (LY.makeLyricParser pStress) () ""
 
 

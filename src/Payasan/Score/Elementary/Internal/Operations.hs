@@ -85,11 +85,11 @@ isPunctuation _                 = False
 -- ops on phrases
 
 
-null :: Part pch drn anno -> Bool
-null (Part { part_bars = xs }) = PRE.null xs
+null :: Section pch drn anno -> Bool
+null (Section { section_bars = xs }) = PRE.null xs
 
 
-nth :: Int -> Part pch drn anno -> Maybe (Element pch drn anno)
+nth :: Int -> Section pch drn anno -> Maybe (Element pch drn anno)
 nth i _  | i < 0   = Nothing
 nth i ph           = step i $ makeLoc ph
   where
@@ -98,7 +98,7 @@ nth i ph           = step i $ makeLoc ph
 
 
 
-firstNote :: Part Pitch drn anno -> Anchor
+firstNote :: Section Pitch drn anno -> Anchor
 firstNote = step . viewl . toLinear
   where
     step Empty                  = noAnchor
@@ -106,7 +106,7 @@ firstNote = step . viewl . toLinear
     step ((_,_) :< rest)        = step $ viewl rest
 
 
-lastNote :: Part Pitch drn anno -> Anchor
+lastNote :: Section Pitch drn anno -> Anchor
 lastNote = step noAnchor . viewl . toLinear
   where
     step ac Empty                       = ac
@@ -138,14 +138,14 @@ lastNote = step noAnchor . viewl . toLinear
 
 
 
-take :: Int -> Part pch drn anno -> Part pch drn anno
+take :: Int -> Section pch drn anno -> Section pch drn anno
 take i = step i . makeLoc
   where
     step n loc | n <= 0    = consumed loc
                | otherwise = step (n-1) $ forward loc
 
 
-drop :: Int -> Part pch drn anno -> Part pch drn anno
+drop :: Int -> Section pch drn anno -> Section pch drn anno
 drop i = step i . makeLoc
   where
     step n loc | n <= 0    = remaining loc
@@ -155,14 +155,14 @@ drop i = step i . makeLoc
 
 -- | TODO - should last element be untied?
 --
-takeBars :: Int -> Part pch drn anno -> Part pch drn anno
-takeBars i (Part info bs) = Part info $ PRE.take i bs
+takeBars :: Int -> Section pch drn anno -> Section pch drn anno
+takeBars i (Section info bs) = Section info $ PRE.take i bs
 
-dropBars :: Int -> Part pch drn anno -> Part pch drn anno
-dropBars i (Part info bs) = Part info $ PRE.drop i bs
+dropBars :: Int -> Section pch drn anno -> Section pch drn anno
+dropBars i (Section info bs) = Section info $ PRE.drop i bs
 
 
-takeSize :: RatDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
+takeSize :: RatDuration -> StdElemSection2 pch anno -> StdElemSection2 pch anno
 takeSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -173,7 +173,7 @@ takeSize rd = step 0 . makeLoc
 
 
 
-dropSize :: RatDuration -> StdElemPart2 pch anno -> StdElemPart2 pch anno
+dropSize :: RatDuration -> StdElemSection2 pch anno -> StdElemSection2 pch anno
 dropSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -184,14 +184,14 @@ dropSize rd = step 0 . makeLoc
 
 
 
-extractRange :: Range -> Part pch drn anno -> Part pch drn anno
+extractRange :: Range -> Section pch drn anno -> Section pch drn anno
 extractRange (Range {range_start = p1, range_end = p2}) ph = 
     let ph1 = consumed $ gotoPosition p2 $ makeLoc ph
         ph2 = remaining $ gotoPosition p1 $ makeLoc ph1
     in ph2
 
 
-takeWhile :: (Element pch drn anno -> Bool) -> Part pch drn anno -> Part pch drn anno
+takeWhile :: (Element pch drn anno -> Bool) -> Section pch drn anno -> Section pch drn anno
 takeWhile test = step . makeLoc
   where
     step loc = case atLoc loc of 
@@ -199,7 +199,7 @@ takeWhile test = step . makeLoc
                                         else consumed loc
                     Nothing -> consumed loc
 
-dropWhile :: (Element pch drn anno -> Bool) -> Part pch drn anno -> Part pch drn anno
+dropWhile :: (Element pch drn anno -> Bool) -> Section pch drn anno -> Section pch drn anno
 dropWhile test = step . makeLoc
   where
     step loc = case atLoc loc of 
@@ -210,8 +210,8 @@ dropWhile test = step . makeLoc
 
 
 span :: (Element pch drn anno -> Bool) 
-     -> Part pch drn anno 
-     -> (Part pch drn anno, Part pch drn anno)
+     -> Section pch drn anno 
+     -> (Section pch drn anno, Section pch drn anno)
 span test = step . makeLoc
   where
     step loc = case atLoc loc of 
@@ -223,15 +223,15 @@ span test = step . makeLoc
 
 
 break :: (Element pch drn anno -> Bool) 
-      -> Part pch drn anno 
-      -> (Part pch drn anno, Part pch drn anno)
+      -> Section pch drn anno 
+      -> (Section pch drn anno, Section pch drn anno)
 break test = span (not . test)
 
 
 
 -- cf Data.List.words
 -- TODO - move from here...
-phrases :: Part pch drn anno -> [Part pch drn anno]
+phrases :: Section pch drn anno -> [Section pch drn anno]
 phrases pt = let ans = dropWhile isRestlike pt in 
              if null ans then []
                          else let (b,bs) = break isRestlike ans

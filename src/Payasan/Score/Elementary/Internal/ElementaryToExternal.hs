@@ -32,11 +32,11 @@ import Payasan.PSC.Base.SyntaxCommon
 
 
 transElementaryToExternal :: forall pch drn anno.
-                             String -> Part pch drn anno -> T.Part pch drn anno
-transElementaryToExternal name      = partT
+                             String -> Section pch drn anno -> T.Part pch drn anno
+transElementaryToExternal name      = sectionT
   where
-    partT :: Part pch drn anno -> T.Part pch drn anno
-    partT (Part info bs)            = T.Part [T.Section name info $ map barT bs]
+    sectionT :: Section pch drn anno -> T.Part pch drn anno
+    sectionT (Section info bs)      = T.Part [T.Section name info $ map barT bs]
 
 
     barT :: Bar pch drn anno -> T.Bar pch drn anno
@@ -64,12 +64,12 @@ transElementaryToExternal name      = partT
 --
 chord_transElementaryToExternal :: forall pch drn anno. 
                                    String
-                                -> Part [pch] drn anno
+                                -> Section [pch] drn anno
                                 -> T.Part pch drn anno
-chord_transElementaryToExternal name = partT
+chord_transElementaryToExternal name = sectionT
   where
-    partT :: Part [pch] drn anno -> T.Part pch drn anno
-    partT (Part info bs)            = T.Part [T.Section name info $ map barT bs]
+    sectionT :: Section [pch] drn anno -> T.Part pch drn anno
+    sectionT (Section info bs)      = T.Part [T.Section name info $ map barT bs]
 
 
     barT :: Bar [pch] drn anno -> T.Bar pch drn anno

@@ -38,7 +38,7 @@ import Payasan.Base.Duration
 import Data.Data
 
 
-recalcBars :: Part pch Duration anno -> Part pch Duration anno
+recalcBars :: Section pch Duration anno -> Section pch Duration anno
 recalcBars = remake . flatten
 
 type Notes pch anno = [NoteGroup pch Duration anno]
@@ -55,8 +55,8 @@ data NoteList pch anno = NoteList
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-flatten :: StdElemPart2 pch anno -> NoteList pch anno
-flatten (Part info bs) = 
+flatten :: StdElemSection2 pch anno -> NoteList pch anno
+flatten (Section info bs) = 
     NoteList { notelist_header = info
              , notelist_notes  = concatMap fn bs }
   where
@@ -64,14 +64,14 @@ flatten (Part info bs) =
 
 
 viaNoteList :: (SectionInfo -> Notes pch anno -> Notes pch anno) 
-            -> StdElemPart2 pch anno
-            -> StdElemPart2 pch anno
+            -> StdElemSection2 pch anno
+            -> StdElemSection2 pch anno
 viaNoteList fn = remake . f2 . flatten
   where
     f2 (NoteList info es) = NoteList info $ fn info es
 
 onNoteList :: (SectionInfo -> Notes pch anno -> ans) 
-            -> StdElemPart2 pch anno
+            -> StdElemSection2 pch anno
             -> ans
 onNoteList fn = f2 . flatten
   where
@@ -81,10 +81,10 @@ onNoteList fn = f2 . flatten
 --------------------------------------------------------------------------------
 -- Remake - notelist to 
 
-remake :: NoteList pch anno -> StdElemPart2 pch anno
+remake :: NoteList pch anno -> StdElemSection2 pch anno
 remake (NoteList info es) = 
-    Part { part_header = info 
-         , part_bars   = fn $ section_meter info }
+    Section { section_info   = info 
+            , section_bars   = fn $ section_meter info }
   where
     fn (Unmetered)  = [Bar es]
     fn (Metered t)  = map Bar $ split (barRatDuration t) es

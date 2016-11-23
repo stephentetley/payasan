@@ -26,13 +26,13 @@ import Payasan.Score.Cadenza.Internal.Syntax
 import qualified Payasan.PSC.Repr.External.Syntax as T
 
 
-transCadenzaToExternal :: String -> Part pch drn anno -> T.Part pch drn anno
-transCadenzaToExternal          = partT
+transCadenzaToExternal :: String -> Section pch drn anno -> T.Part pch drn anno
+transCadenzaToExternal          = sectionT
 
 
 
-partT ::String -> Part pch drn anno -> T.Part pch drn anno
-partT name (Part info gs)       = T.Part [T.Section name info [T.Bar $ map noteGroupT gs]]
+sectionT :: String -> Section pch drn anno -> T.Part pch drn anno
+sectionT name (Section info gs)       = T.Part [T.Section name info [T.Bar $ map noteGroupT gs]]
 
 
 

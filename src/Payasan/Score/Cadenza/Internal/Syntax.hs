@@ -18,27 +18,27 @@
 module Payasan.Score.Cadenza.Internal.Syntax
   ( 
 
-    StdCadenzaPart
+    StdCadenzaSection
   , StdCadenzaNoteGroup
   , StdCadenzaElement
 
-  , StdCadenzaPart1
+  , StdCadenzaSection1
   , StdCadenzaNoteGroup1
   , StdCadenzaElement1
 
-  , StdCadenzaPart2
+  , StdCadenzaSection2
   , StdCadenzaNoteGroup2
   , StdCadenzaElement2
 
-  , LyCadenzaPart1
+  , LyCadenzaSection1
   , LyCadenzaNoteGroup1
   , LyCadenzaElement1
 
-  , LyCadenzaPart2
+  , LyCadenzaSection2
   , LyCadenzaNoteGroup2
   , LyCadenzaElement2
 
-  , Part(..)
+  , Section(..)
   , NoteGroup(..)
   , Element(..)
 
@@ -61,24 +61,24 @@ import Data.Data
 
 
 
-type StdCadenzaPart                     = StdCadenzaPart1      ()
+type StdCadenzaSection                  = StdCadenzaSection1      ()
 type StdCadenzaNoteGroup                = StdCadenzaNoteGroup1 ()
 type StdCadenzaElement                  = StdCadenzaElement1   ()
 
 
-type StdCadenzaPart1       anno         = Part      Pitch Duration anno
+type StdCadenzaSection1    anno         = Section   Pitch Duration anno
 type StdCadenzaNoteGroup1  anno         = NoteGroup Pitch Duration anno
 type StdCadenzaElement1    anno         = Element   Pitch Duration anno
 
-type StdCadenzaPart2       pch anno     = Part      pch Duration anno
+type StdCadenzaSection2    pch anno     = Section   pch Duration anno
 type StdCadenzaNoteGroup2  pch anno     = NoteGroup pch Duration anno
 type StdCadenzaElement2    pch anno     = Element   pch Duration anno
 
-type LyCadenzaPart1        anno         = LyCadenzaPart2       LyPitch anno
+type LyCadenzaSection1     anno         = LyCadenzaSection2    LyPitch anno
 type LyCadenzaNoteGroup1   anno         = LyCadenzaNoteGroup2  LyPitch anno
 type LyCadenzaElement1     anno         = LyCadenzaElement2    LyPitch anno
 
-type LyCadenzaPart2        pch anno     = Part      pch LyNoteLength anno
+type LyCadenzaSection2     pch anno     = Section   pch LyNoteLength anno
 type LyCadenzaNoteGroup2   pch anno     = NoteGroup pch LyNoteLength anno
 type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
 
@@ -96,12 +96,12 @@ type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
 -- Parametric on duration so we can read LilyPond and decode
 -- omitted durations in a post-parsing phase.
 --
--- LocalRenderInfo is annotated at the Part level - while this
+-- LocalRenderInfo is annotated at the Section level - while this
 -- prevents concatenation it simplifies transformation.
 -- 
-data Part pch drn anno = Part 
-    { part_header       :: !SectionInfo
-    , part_groups       :: [NoteGroup pch drn anno] 
+data Section pch drn anno = Section
+    { section_info      :: !SectionInfo
+    , section_groups    :: [NoteGroup pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -138,15 +138,13 @@ data Element pch drn anno =
 
 
 pushSectionInfo :: SectionInfo 
-                -> Part pch drn anno 
-                -> Part pch drn anno
-pushSectionInfo ri (Part { part_groups = gs }) = 
-    Part { part_header = ri
-         , part_groups = gs }
+                -> Section pch drn anno 
+                -> Section pch drn anno
+pushSectionInfo info s = s { section_info = info }
 
 
-sectionInfo :: Part pch drn anno -> SectionInfo
-sectionInfo = part_header
+sectionInfo :: Section pch drn anno -> SectionInfo
+sectionInfo = section_info
 
 
 

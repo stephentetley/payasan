@@ -19,38 +19,38 @@
 module Payasan.Score.Elementary.Internal.Syntax
   ( 
 
-    StdElemPart
+    StdElemSection
   , StdElemBar
   , StdElemNoteGroup
   , StdElemElement
 
-  , StdElemPart1
+  , StdElemSection1
   , StdElemBar1
   , StdElemNoteGroup1
   , StdElemElement1
 
-  , StdElemPart2
+  , StdElemSection2
   , StdElemBar2
   , StdElemNoteGroup2
   , StdElemElement2
 
-  , LyElemPart1
+  , LyElemSection1
   , LyElemBar1
   , LyElemNoteGroup1
   , LyElemElement1
 
-  , LyElemPart2
+  , LyElemSection2
   , LyElemBar2
   , LyElemNoteGroup2
   , LyElemElement2
 
-  , ABCElemPart
+  , ABCElemSection
   , ABCElemBar
   , ABCElemNoteGroup
   , ABCElemElement
   
 
-  , Part(..)
+  , Section(..)
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
@@ -87,34 +87,34 @@ import Data.Data
 -- Syntax
 
 
-type StdElemPart                    = StdElemPart1    ()
+type StdElemSection                 = StdElemSection1    ()
 type StdElemBar                     = StdElemBar1       ()
 type StdElemNoteGroup               = StdElemNoteGroup1 ()
 type StdElemElement                 = StdElemElement1   ()
 
 
-type StdElemPart1       anno        = Part      Pitch Duration anno
+type StdElemSection1    anno        = Section   Pitch Duration anno
 type StdElemBar1        anno        = Bar       Pitch Duration anno
 type StdElemNoteGroup1  anno        = NoteGroup Pitch Duration anno
 type StdElemElement1    anno        = Element   Pitch Duration anno
 
-type StdElemPart2       pch anno    = Part      pch Duration anno
+type StdElemSection2    pch anno    = Section   pch Duration anno
 type StdElemBar2        pch anno    = Bar       pch Duration anno
 type StdElemNoteGroup2  pch anno    = NoteGroup pch Duration anno
 type StdElemElement2    pch anno    = Element   pch Duration anno
 
-type LyElemPart1        anno        = LyElemPart2       LyPitch anno
+type LyElemSection1     anno        = LyElemSection2    LyPitch anno
 type LyElemBar1         anno        = LyElemBar2        LyPitch anno
 type LyElemNoteGroup1   anno        = LyElemNoteGroup2  LyPitch anno
 type LyElemElement1     anno        = LyElemElement2    LyPitch anno
 
-type LyElemPart2        pch anno    = Part      pch LyNoteLength anno
+type LyElemSection2     pch anno    = Section   pch LyNoteLength anno
 type LyElemBar2         pch anno    = Bar       pch LyNoteLength anno
 type LyElemNoteGroup2   pch anno    = NoteGroup pch LyNoteLength anno
 type LyElemElement2     pch anno    = Element   pch LyNoteLength anno
 
 
-type ABCElemPart                    = Part      ABCPitch ABCNoteLength ()
+type ABCElemSection                 = Section   ABCPitch ABCNoteLength ()
 type ABCElemBar                     = Bar       ABCPitch ABCNoteLength ()
 type ABCElemNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
 type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
@@ -128,12 +128,12 @@ type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 -- Parametric on duration so we can read ABC and decode duration
 -- multipliers in a post-parsing phase.
 --
--- LocalRenderInfo is annotated at the Part level - while this
+-- LocalRenderInfo is annotated at the Section level - while this
 -- prevents concatenation it simplifies transformation.
 -- 
-data Part pch drn anno = Part 
-    { part_header     :: !SectionInfo
-    , part_bars       :: [Bar pch drn anno] 
+data Section pch drn anno = Section 
+    { section_info    :: !SectionInfo
+    , section_bars    :: [Bar pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -178,24 +178,22 @@ data Element pch drn anno =
 
 
 
-emptyOf :: Part pch drn anno -> Part pch drn anno
-emptyOf (Part { part_header = info }) = 
-    Part { part_header = info
-         , part_bars   = [] }
+emptyOf :: Section pch drn anno -> Section pch drn anno
+emptyOf (Section { section_info = info }) = 
+    Section { section_info = info
+            , section_bars   = [] }
 
 
 -- Push RenderInfo into bars.
 --
 pushSectionInfo :: SectionInfo 
-                -> Part pch drn anno 
-                -> Part pch drn anno
-pushSectionInfo info (Part { part_bars = bs }) = 
-    Part { part_header = info
-         , part_bars   = bs }
+                -> Section pch drn anno 
+                -> Section pch drn anno
+pushSectionInfo info s = s { section_info = info }
 
 
-sectionInfo :: Part pch drn anno -> SectionInfo
-sectionInfo = part_header
+sectionInfo :: Section pch drn anno -> SectionInfo
+sectionInfo = section_info
 
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RatDuration
@@ -238,16 +236,16 @@ data Linear pch drn anno = Linear !SectionInfo !Position [NoteGroup pch drn anno
 data View pch drn anno = Empty | (Position,Element pch drn anno) :< Linear pch drn anno
 
 
-toLinear :: Part pch drn anno -> Linear pch drn anno
-toLinear (Part info bs) = 
+toLinear :: Section pch drn anno -> Linear pch drn anno
+toLinear (Section info bs) = 
    let (xs,ys) = case bs of { [] -> ([],[])
                             ; (z:zs) -> (bar_groups z,zs) }
    in Linear info (Position 1 1) xs ys
 
 
-fromLinear :: Linear pch drn anno -> Part pch drn anno
-fromLinear (Linear info _ es bs) = Part { part_header = info
-                                        , part_bars   = Bar es : bs }
+fromLinear :: Linear pch drn anno -> Section pch drn anno
+fromLinear (Linear info _ es bs) = Section { section_info = info
+                                           , section_bars   = Bar es : bs }
 
 
 viewl :: Linear pch drn anno -> View pch drn anno

@@ -40,8 +40,8 @@ type LyricsAtom = NoteGroup Syllable Duration Stress
 
 
 
-fromLyrics :: [[LyricsAtom]] -> LyricsPart
-fromLyrics xss = Part default_section_info $ map Bar xss
+fromLyrics :: [[LyricsAtom]] -> LyricsSection
+fromLyrics xss = Section default_section_info $ map Bar xss
 
 
 

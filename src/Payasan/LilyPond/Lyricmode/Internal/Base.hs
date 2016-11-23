@@ -18,14 +18,14 @@
 module Payasan.LilyPond.Lyricmode.Internal.Base
   ( 
    
-    LyricPart1
+    LyricSection1
 
-  , LyLyricPart
+  , LyLyricSection
   , LyLyricBar
   , LyLyricNoteGroup
   , LyLyricElement
 
-  , LyLyricPart1
+  , LyLyricSection1
   , LyLyricBar1
   , LyLyricNoteGroup1
   , LyLyricElement1
@@ -48,14 +48,14 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
-type LyricPart1 anno    = ELEM.StdElemPart2 Syllable anno
+type LyricSection1 anno    = ELEM.StdElemSection2 Syllable anno
 
-type LyLyricPart        = ELEM.Part       Syllable LyNoteLength ()
+type LyLyricSection     = ELEM.Section    Syllable LyNoteLength ()
 type LyLyricBar         = ELEM.Bar        Syllable LyNoteLength ()
 type LyLyricNoteGroup   = ELEM.NoteGroup  Syllable LyNoteLength ()
 type LyLyricElement     = ELEM.Element    Syllable LyNoteLength ()
 
-type LyLyricPart1 anno          = ELEM.Part       Syllable LyNoteLength anno
+type LyLyricSection1 anno       = ELEM.Section    Syllable LyNoteLength anno
 type LyLyricBar1 anno           = ELEM.Bar        Syllable LyNoteLength anno
 type LyLyricNoteGroup1 anno     = ELEM.NoteGroup  Syllable LyNoteLength anno
 type LyLyricElement1 anno       = ELEM.Element    Syllable LyNoteLength anno
@@ -87,7 +87,7 @@ instance Pretty Syllable where
   pPrint (Syllable s)   = text s
 
 
-inTrans :: ScoreInfo -> LyLyricPart1 anno -> LyricPart1 anno
+inTrans :: ScoreInfo -> LyLyricSection1 anno -> LyricSection1 anno
 inTrans _info = trafoDuration
 
 

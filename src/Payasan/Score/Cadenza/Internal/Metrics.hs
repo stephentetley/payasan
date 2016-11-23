@@ -50,14 +50,14 @@ import Payasan.Base.Diatonic
 -- Simple metrics
 
 
-lowestPitch :: Part Pitch drn anno -> Maybe Pitch
+lowestPitch :: Section Pitch drn anno -> Maybe Pitch
 lowestPitch = foldPitch fn Nothing
   where
     fn Nothing   p                      = Just p
     fn (Just p0) p | p `isLower` p0     = Just p
                    | otherwise          = Just p0
 
-highestPitch :: Part Pitch drn anno -> Maybe Pitch
+highestPitch :: Section Pitch drn anno -> Maybe Pitch
 highestPitch = foldPitch fn Nothing
   where
     fn Nothing   p                      = Just p
@@ -65,14 +65,14 @@ highestPitch = foldPitch fn Nothing
                    | otherwise          = Just p0
 
 
-lowestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
+lowestDiatonic :: Section Diatonic drn anno -> Maybe Diatonic
 lowestDiatonic = fmap nubAlteration . foldPitch fn Nothing
   where
     fn Nothing   s = Just s
     fn (Just s0) s = if diatonicIndex s < diatonicIndex s0 then Just s else Just s0
 
 
-highestDiatonic :: Part Diatonic drn anno -> Maybe Diatonic
+highestDiatonic :: Section Diatonic drn anno -> Maybe Diatonic
 highestDiatonic = fmap nubAlteration . foldPitch fn Nothing
   where
     fn Nothing   s = Just s
@@ -103,8 +103,7 @@ contourAlgo comp = CadenzaPitchAlgo { initial_stateP = Nothing
     fn (Punctuation s)  = pure $ Punctuation s
 
 
-semitoneInterval :: forall drn anno. 
-                    Part Pitch drn anno -> Part Int drn anno
+semitoneInterval :: Section Pitch drn anno -> Section Int drn anno
 semitoneInterval = transformP (contourAlgo comp)
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
@@ -114,8 +113,7 @@ semitoneInterval = transformP (contourAlgo comp)
 
 
 
-grossContour :: forall drn anno. 
-                Part Pitch drn anno -> Part GrossContour drn anno
+grossContour :: Section Pitch drn anno -> Section GrossContour drn anno
 grossContour = transformP (contourAlgo comp)
   where
     comp pold pnew | pnew `isHigher` pold = UP
@@ -126,8 +124,7 @@ grossContour = transformP (contourAlgo comp)
 
 
 
-refinedContour :: forall drn anno. 
-                  Part Pitch drn anno -> Part RefinedContour drn anno
+refinedContour :: Section Pitch drn anno -> Section RefinedContour drn anno
 refinedContour = transformP (contourAlgo comp)
   where
     comp pold pnew 

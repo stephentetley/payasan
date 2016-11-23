@@ -41,13 +41,13 @@ import Payasan.Base.Pitch
 
 
 lilyPondTranslate_Relative :: Pitch
-                           -> LyElemPart2 LyPitch anno 
-                           -> StdElemPart1 anno
+                           -> LyElemSection2 LyPitch anno 
+                           -> StdElemSection1 anno
 lilyPondTranslate_Relative pch = trafoRelPitch pch . trafoDuration
 
 
-lilyPondTranslate_Absolute :: LyElemPart2 LyPitch anno 
-                           -> StdElemPart1 anno
+lilyPondTranslate_Absolute :: LyElemSection2 LyPitch anno 
+                           -> StdElemSection1 anno
 lilyPondTranslate_Absolute = trafoAbsPitch . trafoDuration
 
 
@@ -60,7 +60,7 @@ type AbsPMon a = Mon () a
 --------------------------------------------------------------------------------
 -- Relative Pitch translation
 
-trafoRelPitch :: Pitch -> Part LyPitch drn anno -> Part Pitch drn anno
+trafoRelPitch :: Pitch -> Section LyPitch drn anno -> Section Pitch drn anno
 trafoRelPitch p0 = transformP (rel_pch_algo p0)
 
 rel_pch_algo :: Pitch -> ElemPitchAlgo Pitch LyPitch Pitch
@@ -100,7 +100,7 @@ changePitchRel p1 =
 --------------------------------------------------------------------------------
 -- Abs Pitch translation
 
-trafoAbsPitch :: Part LyPitch drn anno -> Part Pitch drn anno
+trafoAbsPitch :: Section LyPitch drn anno -> Section Pitch drn anno
 trafoAbsPitch = transformP abs_pch_algo
 
 
@@ -128,7 +128,7 @@ changePitchAbs p1 = return $ toPitchAbs p1
 --------------------------------------------------------------------------------
 -- Duration translation
 
-trafoDuration :: Part pch LyNoteLength anno -> Part pch Duration anno
+trafoDuration :: Section pch LyNoteLength anno -> Section pch Duration anno
 trafoDuration = transformD drn_algo
 
 

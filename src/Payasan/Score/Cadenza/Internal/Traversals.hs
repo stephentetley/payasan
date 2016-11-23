@@ -71,13 +71,13 @@ genCollect :: forall st pch drn anno ac.
               (ac -> Element pch drn anno -> Mon st ac) 
            -> ac 
            -> st
-           -> Part pch drn anno 
+           -> Section pch drn anno 
            -> ac
 genCollect mf a0 st ph = evalRewrite (partC a0 ph) st
   where
 
-    partC :: ac -> Part pch drn anno -> Mon st ac
-    partC ac (Part info bs)     = local info (foldlM noteGroupC ac bs)
+    partC :: ac -> Section pch drn anno -> Mon st ac
+    partC ac (Section info bs)     = local info (foldlM noteGroupC ac bs)
 
     noteGroupC :: ac -> NoteGroup pch drn anno -> Mon st ac
     noteGroupC ac (Atom e)      = mf ac e
@@ -90,13 +90,13 @@ genCollect mf a0 st ph = evalRewrite (partC a0 ph) st
 genTransform :: forall st p1 p2 d1 d2 a1 a2. 
                 (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
-             -> Part p1 d1 a1
-             -> Part p2 d2 a2
+             -> Section p1 d1 a1
+             -> Section p2 d2 a2
 genTransform elemT st0 ph = evalRewrite (partT ph) st0
   where
 
-    partT :: Part p1 d1 a1 -> Mon st (Part p2 d2 a2) 
-    partT (Part info bs)        = local info (Part info <$> mapM noteGroupT bs)
+    partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 
+    partT (Section info bs)        = local info (Section info <$> mapM noteGroupT bs)
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
@@ -127,8 +127,8 @@ data CadenzaPitchAlgo st pch1 pch2 = CadenzaPitchAlgo
 
 transformP :: forall st p1 p2 drn anno. 
               CadenzaPitchAlgo st p1 p2 
-           -> Part p1 drn anno 
-           -> Part p2 drn anno
+           -> Section p1 drn anno 
+           -> Section p2 drn anno
 transformP (CadenzaPitchAlgo { initial_stateP = st0 
                              , element_trafoP = elemT }) = genTransform elemT st0
 
@@ -140,7 +140,7 @@ collectP :: forall st pch drn anno ac.
             (ac -> pch -> Mon st ac) 
          -> ac 
          -> st
-         -> Part pch drn anno 
+         -> Section pch drn anno 
          -> ac
 collectP mf = genCollect elementC
   where
@@ -156,13 +156,13 @@ collectP mf = genCollect elementC
 --------------------------------------------------------------------------------
 -- Transformation
 
-mapPitch :: (pch1 -> pch2) -> Part pch1 drn anno -> Part pch2 drn anno
+mapPitch :: (pch1 -> pch2) -> Section pch1 drn anno -> Section pch2 drn anno
 mapPitch fn = ctxMapPitch (\_ p -> fn p)
 
 
 ctxMapPitch :: (Key -> pch1 -> pch2) 
-            -> Part pch1 drn anno 
-            -> Part pch2 drn anno
+            -> Section pch1 drn anno 
+            -> Section pch2 drn anno
 ctxMapPitch fn = transformP algo 
   where
     algo  = CadenzaPitchAlgo { initial_stateP    = ()
@@ -176,7 +176,7 @@ ctxMapPitch fn = transformP algo
     stepE (Punctuation s)   = pure $ Punctuation s
 
 
-foldPitch :: (ac -> pch -> ac) -> ac -> Part pch drn anno -> ac
+foldPitch :: (ac -> pch -> ac) -> ac -> Section pch drn anno -> ac
 foldPitch fn a0 ph = collectP step a0 () ph
   where
     step ac p   = pure $ fn ac p
@@ -193,8 +193,8 @@ data CadenzaDurationAlgo st drn1 drn2 = CadenzaDurationAlgo
 
 transformD :: forall st pch d1 d2 anno.
               CadenzaDurationAlgo st d1 d2 
-           -> Part pch d1 anno 
-           -> Part pch d2 anno
+           -> Section pch d1 anno 
+           -> Section pch d2 anno
 transformD (CadenzaDurationAlgo { initial_stateD = st0 
                                 , element_trafoD = elemT }) = genTransform elemT st0
 
@@ -206,7 +206,7 @@ collectD :: forall st pch drn anno ac.
             (ac -> drn -> Mon st ac) 
          -> ac 
          -> st
-         -> Part pch drn anno 
+         -> Section pch drn anno 
          -> ac
 collectD mf = genCollect elementC
   where
@@ -223,7 +223,7 @@ collectD mf = genCollect elementC
 -- Note - increasing or decreasing duration would imply 
 -- recalculating bar lines.
 
-mapDuration :: (drn1 -> drn2) -> Part pch drn1 anno -> Part pch drn2 anno
+mapDuration :: (drn1 -> drn2) -> Section pch drn1 anno -> Section pch drn2 anno
 mapDuration fn = transformD algo 
   where
     algo  = CadenzaDurationAlgo { initial_stateD   = ()
@@ -236,7 +236,7 @@ mapDuration fn = transformD algo
     stepE (Punctuation s)       = pure $ Punctuation s
 
 
-foldDuration :: (ac -> drn -> ac) -> ac -> Part pch drn anno -> ac
+foldDuration :: (ac -> drn -> ac) -> ac -> Section pch drn anno -> ac
 foldDuration fn a0 ph = collectD step a0 () ph
   where
     step ac d   = pure $ fn ac d
@@ -254,8 +254,8 @@ data CadenzaAnnoAlgo st anno1 anno2 = CadenzaAnnoAlgo
 
 transformA :: forall st pch drn a1 a2.
               CadenzaAnnoAlgo st a1 a2
-           -> Part pch drn a1 
-           -> Part pch drn a2
+           -> Section pch drn a1 
+           -> Section pch drn a2
 transformA (CadenzaAnnoAlgo { initial_stateA = st0 
                             , element_trafoA = elemT }) = genTransform elemT st0
 
@@ -264,7 +264,7 @@ collectA :: forall st pch drn anno ac.
             (ac -> anno -> Mon st ac) 
          -> ac 
          -> st
-         -> Part pch drn anno 
+         -> Section pch drn anno 
          -> ac
 collectA mf = genCollect elementC
   where
@@ -280,7 +280,7 @@ collectA mf = genCollect elementC
 -- Transformation
 
 
-mapAnno :: (anno1 -> anno2) -> Part pch drn anno1 -> Part pch drn anno2
+mapAnno :: (anno1 -> anno2) -> Section pch drn anno1 -> Section pch drn anno2
 mapAnno fn = transformA algo 
   where
     algo  = CadenzaAnnoAlgo { initial_stateA   = ()
@@ -293,7 +293,7 @@ mapAnno fn = transformA algo
     stepE (Punctuation s)       = pure $ Punctuation s
 
 
-foldAnno :: (ac -> anno -> ac) -> ac -> Part pch drn anno -> ac
+foldAnno :: (ac -> anno -> ac) -> ac -> Section pch drn anno -> ac
 foldAnno fn a0 ph = collectA step a0 () ph
   where
     step ac a   = pure $ fn ac a
@@ -311,8 +311,8 @@ data CadenzaPitchAnnoAlgo st pch1 anno1 pch2 anno2 = CadenzaPitchAnnoAlgo
 
 transformPA :: forall st p1 p2 drn a1 a2.
                CadenzaPitchAnnoAlgo st p1 a1 p2 a2
-            -> Part p1 drn a1 
-            -> Part p2 drn a2
+            -> Section p1 drn a1 
+            -> Section p2 drn a2
 transformPA (CadenzaPitchAnnoAlgo { initial_statePA = st0 
                                   , element_trafoPA = elemT }) = 
     genTransform elemT st0
@@ -322,7 +322,7 @@ collectPA :: forall st pch drn anno ac.
              (ac -> pch -> anno -> Mon st ac) 
           -> ac 
           -> st
-          -> Part pch drn anno 
+          -> Section pch drn anno 
           -> ac
 collectPA mf = genCollect elementC
   where
@@ -339,7 +339,7 @@ collectPA mf = genCollect elementC
 -- Pitch Anno Transformation
 
 
-mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Part p1 drn a1 -> Part p2 drn a2
+mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Section p1 drn a1 -> Section p2 drn a2
 mapPitchAnno fn = transformPA algo 
   where
     algo  = CadenzaPitchAnnoAlgo { initial_statePA   = ()
@@ -351,7 +351,7 @@ mapPitchAnno fn = transformPA algo
     stepE (Skip d)          = pure $ Skip d
     stepE (Punctuation s)   = pure $ Punctuation s
 
-foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Part pch drn anno -> ac
+foldPitchAnno :: (ac -> pch -> anno -> ac) -> ac -> Section pch drn anno -> ac
 foldPitchAnno fn a0 ph = collectPA step a0 () ph
   where
     step ac p a   = pure $ fn ac p a
@@ -361,8 +361,8 @@ foldPitchAnno fn a0 ph = collectPA step a0 () ph
 --------------------------------------------------------------------------------
 -- Punctuation
 
-censorPunctuation :: Part pch drn anno -> Part pch drn anno
-censorPunctuation (Part info bs) = Part info $ noteGroups bs
+censorPunctuation :: Section pch drn anno -> Section pch drn anno
+censorPunctuation (Section info bs) = Section info $ noteGroups bs
   where
     noteGroups gs               = catMaybes $ map noteGroup1 gs
 
@@ -382,8 +382,8 @@ censorPunctuation (Part info bs) = Part info $ noteGroups bs
 --------------------------------------------------------------------------------
 -- Markup
 
-censorAnno :: Part pch drn anno -> Part pch drn ()
-censorAnno (Part info gs) = Part info (map noteGroup1 gs)
+censorAnno :: Section pch drn anno -> Section pch drn ()
+censorAnno (Section info gs) = Section info (map noteGroup1 gs)
   where
     noteGroup1 (Atom e)         = Atom $ changeNote e
     noteGroup1 (Beamed cs)      = Beamed $ map noteGroup1 cs
@@ -399,8 +399,8 @@ censorAnno (Part info gs) = Part info (map noteGroup1 gs)
 --------------------------------------------------------------------------------
 -- Skip to rest
 
-skipToRest :: Part pch drn anno -> Part pch drn anno
-skipToRest (Part info gs) = Part info (map noteGroup1 gs)
+skipToRest :: Section pch drn anno -> Section pch drn anno
+skipToRest (Section info gs) = Section info (map noteGroup1 gs)
   where
     noteGroup1 (Atom e)         = Atom $ changeSkip e
     noteGroup1 (Beamed xs)      = Beamed $ map noteGroup1 xs

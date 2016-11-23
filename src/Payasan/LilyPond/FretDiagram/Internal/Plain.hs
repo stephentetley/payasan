@@ -17,7 +17,7 @@
 module Payasan.LilyPond.FretDiagram.Internal.Plain
   ( 
 
-    FretDiagramPart
+    FretDiagramSection
   , NoteListAtom
   , fromNoteList
   , chord
@@ -42,10 +42,10 @@ import Payasan.Base.Scale
 type NoteListAtom = NoteGroup FretDiagram Duration ()
 
 fromNoteList :: SectionInfo -> GuitarTuning -> [[NoteListAtom]] 
-             -> FretDiagramPart
+             -> FretDiagramSection
 fromNoteList locals tuning xss = 
     mapPitchAnno (changeNote (section_key locals) tuning) $ 
-        Part locals $ map Bar xss
+        Section locals $ map Bar xss
 
 
 
