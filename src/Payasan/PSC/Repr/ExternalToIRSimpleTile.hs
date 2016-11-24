@@ -38,11 +38,11 @@ transExternalToIRSimpleTile = partT
 
 
 partT :: Part pch Seconds anno -> T.Part pch anno
-partT (Part bs)                 = 
-    error "TODO - ExternalToIRSimpleSimpleTile"
---    T.Part { T.part_bars = map barT bs }
+partT (Part ss)                 = 
+    T.Part { T.part_bars = concatMap sectionT ss }
 
-
+sectionT :: Section pch Seconds anno -> [T.Bar pch anno]
+sectionT (Section _ _ bs) = map barT bs
     
 barT :: Bar pch Seconds anno -> T.Bar pch anno
 barT (Bar gs)                   = 

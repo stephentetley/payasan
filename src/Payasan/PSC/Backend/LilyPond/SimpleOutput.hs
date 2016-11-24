@@ -205,14 +205,10 @@ lilypondNotes def prefix_locals ph =
                            }
 
     oSection :: LySection2 pch anno -> Mon Doc
-    oSection _ = error "TODO - SimpleOutput"
-
-{-
-    oBar :: LyBar2 pch anno -> Mon Doc
-    oBar (Bar locals cs)            = 
+    oSection (Section _ locals bs) =
           do { dkey     <- deltaKey locals
              ; dtime    <- deltaMetrical locals
-             ; let ans  = hsep (map oNoteGroup cs)
+             ; let ans = vsep $ map oBar bs
              ; setInfo locals
              ; mwrapT dtime $ prefixK dkey $ ans
              }
@@ -229,7 +225,11 @@ lilypondNotes def prefix_locals ph =
                                     return (time_ t $+$ d)
                    }
 
--}
+
+    -- | Bars are terminated...
+    oBar :: LyBar2 pch anno -> Doc
+    oBar (Bar cs) = hsep (map oNoteGroup cs) <+> char '|'
+
 
     oNoteGroup :: LyNoteGroup2 pch anno -> Doc
     oNoteGroup (Atom e)             = oElement e
