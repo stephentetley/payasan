@@ -18,6 +18,12 @@
 module Payasan.PSC.Repr.External.ABCParser
   (
     abc
+    
+  -- * Aliases
+  , ABCQBar
+  , ABCQNoteGroup
+  , ABCQElement
+  , ABCQNote
 
   -- * Elementary parsers
   , pitch
@@ -29,7 +35,7 @@ module Payasan.PSC.Repr.External.ABCParser
 
   ) where
 
-import Payasan.PSC.Repr.External.ABCAliases
+
 import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.PSC.Base.ABCLexer
@@ -57,57 +63,71 @@ abc = QuasiQuoter
 
 
 --------------------------------------------------------------------------------
+-- Aliases
+
+-- The aliases are for transitory types - we define them 
+-- alongside their respective parsers. 
+--
+-- Useless a user was developing an alternative parser, there
+-- should be no need to consider these aliases.
+
+
+type ABCQBar              = Bar         ABCPitch ABCNoteLength ()
+type ABCQNoteGroup        = NoteGroup   ABCPitch ABCNoteLength ()
+type ABCQElement          = Element     ABCPitch ABCNoteLength ()
+type ABCQNote             = Note        ABCPitch ABCNoteLength
+
+--------------------------------------------------------------------------------
 -- Parser
 
+parseABCPart :: String -> Either ParseError ABCQSection
+parseABCPart = runParser (fullParseABC qsection) () ""
 
-parseABCPart :: String -> Either ParseError ABCPart
-parseABCPart = runParser (fullParseABC part) () ""
 
+qsection :: ABCParser ABCQSection
+qsection = (\bs -> ABCQSection { getABCSection = bs}) <$> bars
 
-part :: ABCParser ABCPart
-part = (\bs -> Part [Section "un-named" default_section_info bs]) <$> bars
-
-bars :: ABCParser [ABCBar]
+bars :: ABCParser [ABCQBar]
 bars = sepBy bar barline
 
 barline :: ABCParser ()
 barline = reservedOp "|"
 
-bar :: ABCParser ABCBar
+bar :: ABCParser ABCQBar
 bar = Bar <$> noteGroups 
 
-noteGroups :: ABCParser [ABCNoteGroup]
+noteGroups :: ABCParser [ABCQNoteGroup]
 noteGroups = whiteSpace *> many noteGroup
 
-noteGroup :: ABCParser ABCNoteGroup
+noteGroup :: ABCParser ABCQNoteGroup
 noteGroup = tuplet <|> (Atom <$> element)
 
-element :: ABCParser ABCElement
+element :: ABCParser ABCQElement
 element = lexeme (rest <|> noteElem <|> chord <|> graces)
 
-rest :: ABCParser ABCElement
+rest :: ABCParser ABCQElement
 rest = Rest <$> (char 'z' *> noteLength)
 
-noteElem :: ABCParser ABCElement
+noteElem :: ABCParser ABCQElement
 noteElem = (\e t -> NoteElem e () t) <$> note <*> tie
 
-chord :: ABCParser ABCElement
+chord :: ABCParser ABCQElement
 chord = (\ps d t -> Chord ps d () t)
           <$> squares (many1 pitch) <*> noteLength <*> tie
 
-graces :: ABCParser ABCElement
+graces :: ABCParser ABCQElement
 graces = Graces <$> braces (many1 note)
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser ABCNoteGroup
+tuplet :: ABCParser ABCQNoteGroup
 tuplet = do 
    spec   <- tupletSpec
    notes  <- countedNoteGroups (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedNoteGroups :: Int -> ABCParser [ABCNoteGroup]
+countedNoteGroups :: Int -> ABCParser [ABCQNoteGroup]
 countedNoteGroups n 
     | n > 0       = do { e  <- noteGroup
                        ; es <- countedNoteGroups (n - elementSize e)
@@ -117,7 +137,7 @@ countedNoteGroups n
                        
     
 
-note :: ABCParser ABCNote
+note :: ABCParser ABCQNote
 note = Note <$> pitch <*> noteLength
     <?> "note"
 
@@ -216,7 +236,7 @@ tie = atie <|> notie
 -- Helpers
 
 
-elementSize :: ABCNoteGroup -> Int
+elementSize :: ABCQNoteGroup -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
 elementSize _               = 1
 

@@ -41,7 +41,14 @@ module Payasan.PSC.Repr.External.Syntax
   , Element(..)
   , Note(..)
 
+  -- * Concrete syntax fragments
+  , GenLyQSection(..)
+  , LyQSection(..)
+  , ABCQSection(..)
 
+  , specializeGenLyQSection
+  
+  
   -- * Operations
   , pushSectionInfo
   , sizeNoteGroup
@@ -52,6 +59,8 @@ module Payasan.PSC.Repr.External.Syntax
   ) where
 
 
+import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
@@ -160,7 +169,30 @@ data Element pch drn anno =
 data Note pch drn = Note pch drn
   deriving (Data,Eq,Show,Typeable)
 
+--------------------------------------------------------------------------------
+-- Quasiquote / TH fragments
 
+-- Notes
+-- LyQSection & GenLyQSection represent what is parsed
+--
+-- There is no meter / key info in parsed fragments so we omit 
+-- them. We do not attempt to synthesize them with defaults.
+
+newtype GenLyQSection pch anno = 
+    GenLyQSection { getGenLyQSection :: [Bar pch LyNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+
+newtype LyQSection anno = 
+    LyQSection { getLyQSection :: [Bar LyPitch LyNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+      
+newtype ABCQSection = 
+    ABCQSection { getABCSection :: [Bar ABCPitch ABCNoteLength ()] } 
+    deriving (Data,Eq,Show,Typeable)
+
+    
+specializeGenLyQSection :: GenLyQSection LyPitch anno -> LyQSection anno
+specializeGenLyQSection = LyQSection . getGenLyQSection
 
 --------------------------------------------------------------------------------
 -- Operations
