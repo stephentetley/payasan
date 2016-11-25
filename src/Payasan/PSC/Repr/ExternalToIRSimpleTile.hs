@@ -38,12 +38,16 @@ transExternalToIRSimpleTile = partT
 
 
 partT :: Part pch Seconds anno -> T.Part pch anno
-partT (Part ss)                 = 
-    T.Part { T.part_bars = concatMap sectionT ss }
+partT (Part ss)                 =  
+    T.Part { T.part_sections = map sectionT ss } 
 
-sectionT :: Section pch Seconds anno -> [T.Bar pch anno]
-sectionT (Section _ _ bs) = map barT bs
-    
+ 
+sectionT :: Section pch Seconds anno -> T.Section pch anno
+sectionT (Section name _ bs)    = 
+    T.Section { T.section_name = name
+              , T.section_bars = map barT bs 
+              }
+
 barT :: Bar pch Seconds anno -> T.Bar pch anno
 barT (Bar gs)                   = 
     T.Bar { T.bar_elems = concatMap noteGroupT gs }

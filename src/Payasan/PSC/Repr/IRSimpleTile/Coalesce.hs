@@ -24,9 +24,15 @@ module Payasan.PSC.Repr.IRSimpleTile.Coalesce
 import Payasan.PSC.Repr.IRSimpleTile.Syntax
 
 
--- TODO
+
 joinTies :: Part pch anno -> Part pch anno
-joinTies = id
+joinTies (Part { part_sections = ss}) = Part { part_sections = map sectionT ss }
+
+-- Note - ties can span bars (in input) but cannot span sections
+
+-- TODO
+sectionT :: Section pch anno -> Section pch anno
+sectionT = id
 
 
 -- If we want we could translate graces to notes, but conversion 

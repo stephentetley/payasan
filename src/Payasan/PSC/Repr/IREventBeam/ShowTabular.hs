@@ -39,8 +39,10 @@ showTabularIREventBeam ppl ph = concatBars 2 $ oPart ppl ph
 
 
 oPart :: LeafOutputEvent ot evt -> Part ot evt -> [Doc]
-oPart ppl (Part xs)             = map (oBar ppl) xs
+oPart ppl (Part xs)             = map (oSection ppl) xs
 
+oSection :: LeafOutputEvent ot evt -> Section ot evt -> Doc
+oSection ppl (Section { section_bars = xs }) = vcat $ map (oBar ppl) xs
 
 oBar :: LeafOutputEvent ot evt -> Bar ot evt -> Doc
 oBar ppl (Bar _ xs)             = vcat $ map (oEvent ppl) xs

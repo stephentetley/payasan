@@ -11,7 +11,8 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Eventlist syntax - for low level metrical and articulation transforms.
+-- Eventlist syntax that retains some structure (sections, bars). 
+-- Intended for low level metrical and articulation transforms.
 -- E.g. quantization.
 --
 --------------------------------------------------------------------------------
@@ -19,6 +20,7 @@
 module Payasan.PSC.Repr.IREventBeam.Syntax
   ( 
     Part(..)
+  , Section(..)
   , Bar(..)
   , Event(..)
 
@@ -33,7 +35,7 @@ import Data.Data
 --
 -- It is expected that these transformations will require some 
 -- metrical "addressing" as to when they are activated, hence 
--- we retain division into bars.
+-- we retain division into sections and bars.
 --
 
 
@@ -47,9 +49,20 @@ import Data.Data
 -- for the same length). Musically, it is the successive onsets 
 -- of marimba notes that are variable to match a rhythm.
 --
-data Part ot evt = Part { part_bars :: [Bar ot evt] }
+data Part ot evt = Part { part_sections :: [Section ot evt] }
   deriving (Data,Eq,Show,Typeable)
 
+-- | We keep section in this syntax. Having named sections is
+-- expected to allow transformations limited to a specific region.
+--
+data Section ot evt = Section
+    { section_name      :: !String
+    , section_onset     :: !ot
+    , section_bars      :: [Bar ot evt]
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+  
 data Bar ot evt = Bar
     { bar_onset         :: !ot
     , bar_events        :: [Event ot evt]

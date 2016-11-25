@@ -31,8 +31,11 @@ transIREventBeamToIREventFlat = partT
 
 
 partT :: Num ot => Part ot evt -> T.Part ot evt
-partT (Part bs)                     = 
-    T.Part { T.part_events = concat $ map barT bs }
+partT (Part ss)                     = 
+    T.Part { T.part_events = concatMap sectionT ss }
+
+sectionT :: Num ot => Section ot evt -> [T.Event ot evt]
+sectionT (Section { section_bars = ss })      = concatMap barT ss
 
 barT :: Num ot => Bar ot evt -> [T.Event ot evt]
 barT (Bar ot cs)                    = map (eventT ot) cs

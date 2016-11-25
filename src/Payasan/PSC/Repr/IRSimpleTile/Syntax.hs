@@ -22,6 +22,7 @@
 module Payasan.PSC.Repr.IRSimpleTile.Syntax
   ( 
     Part(..)
+  , Section(..)
   , Bar(..)
   , Element(..)
 
@@ -40,6 +41,9 @@ import Data.Data
 -- Design note
 -- This syntax is designed to support a simple implmentation of 
 -- joining tied notes.
+-- 
+-- Requirement - ties can span bars (must be able to coalesce 
+-- them); ties cannot span sections.
 -- 
 -- A tie is a property of a symbolic representation - it goes 
 -- some way towards the construction of arbitrary durations.
@@ -71,14 +75,25 @@ import Data.Data
 -- Remove punctuation (rendering is oblivious to punctuation).
 --
 
-data Part pch anno = Part { part_bars :: [Bar pch anno] }
+data Part pch anno = Part { part_sections :: [Section pch anno] }
   deriving (Data,Eq,Show,Typeable)
 
+-- | We keep section in this syntax. Having named sections is
+-- expected to allow transformations limited to a specific region.
+--
+data Section pch anno = Section 
+    { section_name      :: !String
+    , section_bars      :: [Bar pch anno]
+    }
+  deriving (Data,Eq,Show,Typeable)
+  
+  
 data Bar pch anno = Bar
     { bar_elems         :: [Element pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
+  
 data Element pch anno = 
       Note      Seconds pch   anno Tie
     | Rest      Seconds

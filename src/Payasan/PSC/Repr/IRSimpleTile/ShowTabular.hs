@@ -38,10 +38,14 @@ import Text.PrettyPrint.HughesPJClass                -- package: pretty
 showTabularIRSimpleTile :: LeafOutputNote pch Seconds anno  -> Part pch anno -> Doc
 showTabularIRSimpleTile ppl ph = concatBars 2 $ oPart ppl ph
 
-
+-- TODO - we can generate better output indicating section 
+-- delimiting etc.
+--
 oPart :: LeafOutputNote pch Seconds anno -> Part pch anno -> [Doc]
-oPart ppl (Part xs)             = map (oBar ppl) xs
+oPart ppl (Part xs)             = map (oSection ppl) xs
 
+oSection :: LeafOutputNote pch Seconds anno -> Section pch anno -> Doc
+oSection ppl (Section { section_bars = xs }) = vcat $ map (oBar ppl) xs
 
 oBar :: LeafOutputNote pch Seconds anno  -> Bar pch anno -> Doc
 oBar ppl (Bar xs)               = vcat $ map (oElement ppl) xs
