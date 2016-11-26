@@ -39,12 +39,12 @@ fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Part LyPitch LyNoteLength Fre
 fretDiagramOutput globals diags ph = 
         header
     $+$ defs defuse
-    $+$ phraseBlock notes
+    $+$ phraseBlock (getLilyPondNoteListD notes)
   where
     defuse          = diagramDU diags
     header          = scoreHeader globals
     locals1         = maybe default_section_info id $ firstSectionInfo ph
-    notes           = lilypondNotes fret_def locals1 ph
+    notes           = lilypondNoteList fret_def locals1 ph
 
     fret_def        :: LyOutputDef LyPitch FretDiagram
     fret_def        = LyOutputDef { printPitch = pitch

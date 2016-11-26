@@ -18,7 +18,12 @@
 module Payasan.PSC.Base.SyntaxCommon
   ( 
 
-    ScoreInfo(..)
+  
+    LilyPondNoteListD(..)
+  , ABCNoteListD(..)
+  
+  
+  , ScoreInfo(..)
   , StaffInfo(..)
   , Clef(..)
 
@@ -57,6 +62,17 @@ import Text.PrettyPrint.HughesPJ hiding (Mode)               -- package: pretty
 import Data.Data
 import Data.Ratio
 
+
+-- | Note list fragment for LilyPond.
+-- This should represent the final output of a score pipeline 
+-- and it is expected to be plugged into a "hole" in score 
+-- template.
+--
+newtype LilyPondNoteListD = LilyPondNoteListD { getLilyPondNoteListD :: Doc }
+
+-- | Notelist fragment for ABC.
+--
+newtype ABCNoteListD = ABCNoteListD { getABCNoteListD :: Doc }
 
 
 

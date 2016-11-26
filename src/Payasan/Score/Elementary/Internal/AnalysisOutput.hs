@@ -23,9 +23,9 @@ module Payasan.Score.Elementary.Internal.AnalysisOutput
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.PSC.Repr.External.LilyPondAliases
 import Payasan.PSC.Repr.External.Syntax
 
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 
@@ -41,15 +41,17 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 --
 analysisScore :: LyOutputDef pch anno 
               -> ScoreInfo 
-              -> LyPart2 pch anno -> Doc
+              -> Part pch LyNoteLength anno -> Doc
 analysisScore def infos ph =
-        header $+$ score_ (analysis_layout $+$ lilypondNotes def local1 ph)
+    header $+$ score_ (analysis_layout $+$ (getLilyPondNoteListD notes))
   where
     header          = scoreHeader infos
     local1          = maybe default_section_info id $ firstSectionInfo ph
-
+    notes           = lilypondNoteList def local1 ph
 
 analysis_layout :: Doc
 analysis_layout = layout_ $ context_ body
   where
     body = voice_ $+$ consists_ "Horizontal_bracket_engraver"
+    
+    

@@ -21,9 +21,9 @@ module Payasan.PSC.Backend.ABC.Output
 
 import Payasan.PSC.Backend.ABC.Utils
 
-import Payasan.PSC.Repr.External.ABCAliases
 import Payasan.PSC.Repr.External.Syntax
 
+import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -82,8 +82,17 @@ deltaKey (SectionInfo { section_key = k1 }) =
 
 --------------------------------------------------------------------------------
 
+-- ABC can handle annotations - it simply ignores them.
 
-abcOutput :: ScoreInfo -> StaffInfo -> ABCPart1 anno -> Doc
+type GenABCPart anno            = Part        ABCPitch ABCNoteLength anno
+type GenABCSection anno         = Section     ABCPitch ABCNoteLength anno
+type GenABCBar anno             = Bar         ABCPitch ABCNoteLength anno
+type GenABCNoteGroup anno       = NoteGroup   ABCPitch ABCNoteLength anno
+type GenABCElement anno         = Element     ABCPitch ABCNoteLength anno
+
+
+
+abcOutput :: ScoreInfo -> StaffInfo -> GenABCPart anno -> Doc
 abcOutput infos staff ph = header $+$ body
   where
     first_info  = maybe default_section_info id $ firstSectionInfo ph
@@ -103,17 +112,18 @@ oHeader infos staff locals =
   where
     key_clef = (key $ section_key locals) <+> (clef $ staff_clef staff)
 
+-- TODO
+-- We can park some of this complexity in better pretty-print 
+-- combinators rather than mix in all the logic here.
 
-
-oABCPart :: ABCPart1 anno -> Mon Doc
+oABCPart :: GenABCPart anno -> Mon Doc
 oABCPart (Part [])              = return empty
-{-
-oABCPart (Part (x:xs))          = do { d <- oBar x; step d xs }
+oABCPart (Part (x:xs))          = do { d <- oSection x; step d xs }
   where
     step d []     = return $ d <+> text "|]"
     step d (b:bs) = do { i <- lineLen
                        ; if i > 4 then resetLineLen else incrLineLen
-                       ; d1 <- oBar b 
+                       ; d1 <- oSection b 
                        ; let ac = if i > 4 then (d <+> char '|' $+$ d1) 
                                            else (d <+> char '|' <+> d1)
                        ; step ac bs
@@ -121,11 +131,11 @@ oABCPart (Part (x:xs))          = do { d <- oBar x; step d xs }
 
 
 
-oBar :: ABCBar1 anno -> Mon Doc
-oBar (Bar info cs)              = 
+oSection :: GenABCSection anno -> Mon Doc
+oSection (Section _ info cs)              = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
-       ; let ans = oNoteGroupList (<+>) cs
+       ; let ans = vcat $ map oBar cs           -- TODO wrong we want better control of number of bars per line
        ; setInfo info
        ; return $ prefixM dmeter $ prefixK dkey $ ans
        }
@@ -136,12 +146,14 @@ oBar (Bar info cs)              =
     prefixM (Just (m,u))  = let doc = ( midtuneField 'M' (meter m) 
                                        <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
--}
 
-oNoteGroupList :: CatOp -> [ABCNoteGroup1 anno] -> Doc
+oBar :: GenABCBar anno -> Doc
+oBar (Bar cs) = oNoteGroupList (<+>) cs
+
+oNoteGroupList :: CatOp -> [GenABCNoteGroup anno] -> Doc
 oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
 
-oNoteGroup :: CatOp -> ABCNoteGroup1 anno -> Doc
+oNoteGroup :: CatOp -> GenABCNoteGroup anno -> Doc
 oNoteGroup op (Atom e)          = oElement op e
 oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
@@ -151,7 +163,7 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 --
 -- Skip is treated as a spacer.
 --
-oElement :: CatOp -> ABCElement1 anno -> Doc
+oElement :: CatOp -> GenABCElement anno -> Doc
 oElement op (NoteElem n _ t)    = tied op (note n) t
 oElement _  (Rest d)            = rest d 
 oElement _  (Spacer d)          = spacer d 

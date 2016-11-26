@@ -19,10 +19,8 @@ module Payasan.PSC.Pipeline
 
     EXT.StdPart         -- * re-export
   
-  , ABC.ABCPart         -- * re-export
   , ABC.abc             -- * re-export
 
-  , LY.LyPart1          -- * re-export
   , LY.lilypond        
 
   , ScoreInfo(..)
@@ -90,7 +88,6 @@ import qualified Payasan.PSC.Backend.MIDI.OutTrans              as MIDI
 import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as MIDI
 
 
-import qualified Payasan.PSC.Repr.External.ABCAliases         as ABC
 import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC
 import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
 
@@ -100,7 +97,6 @@ import qualified Payasan.PSC.Backend.ABC.Output               as ABCOut
 
 import qualified Payasan.PSC.Repr.External.LilyPondInTrans    as LY
 import qualified Payasan.PSC.Repr.External.LilyPondParser     as LY
-import qualified Payasan.PSC.Repr.External.LilyPondAliases    as LY
 
 import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LYOut
 import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LYOut
@@ -108,6 +104,8 @@ import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LYOut
 import qualified Payasan.PSC.Backend.LilyPond.Utils           as LYOut
 
 
+import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Repr.External.ShowLinear
 import Payasan.PSC.Repr.External.ShowTabular
@@ -169,15 +167,15 @@ debug f a = tell (f a) >> return a
 
 transExternalToIRBeam = id
 
-fromABC :: ABC.ABCPart -> EXT.StdPart
+fromABC :: EXT.Part ABCPitch ABCNoteLength () -> EXT.StdPart
 fromABC = fromABCWith default_section_info
 
-fromABCWith :: SectionInfo -> ABC.ABCPart -> EXT.StdPart
+fromABCWith :: SectionInfo -> EXT.Part ABCPitch ABCNoteLength () -> EXT.StdPart
 fromABCWith locals = 
     ABC.translateFromInput . EXT.pushSectionInfo locals
 
 
-fromABCWithIO :: SectionInfo -> ABC.ABCPart -> IO EXT.StdPart
+fromABCWithIO :: SectionInfo -> EXT.Part ABCPitch ABCNoteLength () -> IO EXT.StdPart
 fromABCWithIO locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
   where
@@ -188,18 +186,18 @@ fromABCWithIO locals ph =
 
 
 
-fromLilyPond_Relative :: Pitch -> LY.LyPart1 () -> EXT.StdPart 
+fromLilyPond_Relative :: Pitch -> EXT.Part LyPitch LyNoteLength () -> EXT.StdPart 
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
 
-fromLilyPondWith_Relative :: Pitch -> SectionInfo -> LY.LyPart1 () -> EXT.StdPart
+fromLilyPondWith_Relative :: Pitch -> SectionInfo -> EXT.Part LyPitch LyNoteLength () -> EXT.StdPart
 fromLilyPondWith_Relative pch locals = 
     LY.translateFromInput_Relative pch . EXT.pushSectionInfo locals
 
 
 fromLilyPondWithIO_Relative :: Pitch
                             -> SectionInfo 
-                            -> LY.LyPart1 () 
+                            -> EXT.Part LyPitch LyNoteLength () 
                             -> IO EXT.StdPart
 fromLilyPondWithIO_Relative pch locals ph = 
     let (out,a) = runW body in do { putStrLn (ppRender out); return a }
@@ -230,8 +228,8 @@ printAsABC infos staff = putStrLn . outputAsABC infos staff
 --
 data LilyPondPipeline p1i a1i p1o a1o = LilyPondPipeline
     { beam_trafo    :: EXT.Part p1i Duration a1i -> EXT.Part p1i Duration a1i
-    , out_trafo     :: EXT.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
-    , output_func   :: LY.LyPart2 p1o a1o -> Doc
+    , out_trafo     :: EXT.Part p1i Duration a1i -> EXT.Part p1o LyNoteLength a1o
+    , output_func   :: EXT.Part p1o LyNoteLength a1o -> Doc
     }
 
 
@@ -250,10 +248,10 @@ genOutputAsLilyPond config =
 
 data LilyPondPipeline2 p1i a1i p2i a2i p1o a1o p2o a2o  = LilyPondPipeline2
     { pipe2_beam_trafo1   :: EXT.Part p1i Duration a1i -> EXT.Part p1i Duration a1i
-    , pipe2_out_trafo1    :: EXT.Part p1i Duration a1i -> LY.LyPart2 p1o a1o
+    , pipe2_out_trafo1    :: EXT.Part p1i Duration a1i -> EXT.Part p1o LyNoteLength a1o
     , pipe2_beam_trafo2   :: EXT.Part p2i Duration a2i -> EXT.Part p2i Duration a2i
-    , pipe2_out_trafo2    :: EXT.Part p2i Duration a2i -> LY.LyPart2 p2o a2o
-    , pipe2_output_func   :: LY.LyPart2 p1o a1o -> LY.LyPart2 p2o a2o -> Doc
+    , pipe2_out_trafo2    :: EXT.Part p2i Duration a2i -> EXT.Part p2o LyNoteLength a2o
+    , pipe2_output_func   :: EXT.Part p1o LyNoteLength a1o -> EXT.Part p2o LyNoteLength a2o -> Doc
     }
 
 

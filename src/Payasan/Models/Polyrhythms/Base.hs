@@ -29,7 +29,6 @@ import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.PSC.Repr.External.LilyPondAliases
 import Payasan.PSC.Repr.External.AddBeams
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
@@ -153,11 +152,11 @@ oPartHeader staff locals =
 polyVoice_Relative :: LyOutputDef pch anno 
                    -> Pitch
                    -> SectionInfo
-                   -> LyPart2 pch anno -> Doc
+                   -> Part pch LyNoteLength anno -> Doc
 polyVoice_Relative def pch locals ph = 
-    block (Just $ relative_ pch) notes
+    block (Just $ relative_ pch) (getLilyPondNoteListD notes)
   where
-    notes           = lilypondNotes def locals ph
+    notes           = lilypondNoteList def locals ph
 
 
 
@@ -191,15 +190,15 @@ timbalesStyle globals ph1 ph2 =
 
 
 phraseDef :: Anno anno
-          => String -> SectionInfo -> LyPart2 DrumPitch anno -> Doc
+          => String -> SectionInfo -> Part DrumPitch LyNoteLength anno -> Doc
 phraseDef name locals ph = 
     definition name $ polyVoice_Drum locals ph
 
 
 polyVoice_Drum :: Anno anno
-               => SectionInfo -> LyPart2 DrumPitch anno -> Doc
+               => SectionInfo -> Part DrumPitch LyNoteLength anno -> Doc
 polyVoice_Drum locals ph = 
-    block (Just $ drummode_) notes
+    block (Just $ drummode_) (getLilyPondNoteListD notes)
   where
-    notes           = lilypondNotes def locals ph
+    notes           = lilypondNoteList def locals ph
     def             = LyOutputDef { printPitch = pPrint, printAnno = anno }

@@ -23,7 +23,6 @@ module Payasan.PSC.Backend.ABC.OutTrans
 
 import Payasan.PSC.Base.ABCCommon
 
-import Payasan.PSC.Repr.External.ABCAliases
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
@@ -39,7 +38,7 @@ import Payasan.Base.Scale
 
 
 
-translateToOutput :: Part Pitch Duration anno -> ABCPart1 anno
+translateToOutput :: Part Pitch Duration anno -> Part ABCPitch ABCNoteLength anno
 translateToOutput = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a

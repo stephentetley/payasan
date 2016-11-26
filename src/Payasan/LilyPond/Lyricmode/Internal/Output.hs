@@ -82,7 +82,8 @@ rhythmVoice annof ph = newVoiceDefn "rhythm" <+> anonBlock body
                       
 
 lyricsVoice :: EXT.Part Syllable LyNoteLength a -> Doc
-lyricsVoice ph = block (Just prefix) (overrides $+$ notes)
+lyricsVoice ph = 
+    block (Just prefix) (overrides $+$ getLilyPondNoteListD notes)
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
     locals1     = maybe default_section_info id $ EXT.firstSectionInfo ph
@@ -90,6 +91,6 @@ lyricsVoice ph = block (Just prefix) (overrides $+$ notes)
                        , override_ "Lyrics.LyricSpace.minimum-distance = #1.4"
                        , set_ "associatedVoice = #\"rhythm\""
                        ]         
-    notes       = lilypondNotes lyric_def locals1 ph
+    notes       = lilypondNoteList lyric_def locals1 ph
     lyric_def   = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
 

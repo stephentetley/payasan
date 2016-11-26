@@ -28,15 +28,15 @@ module Payasan.PSC.Backend.LilyPond.SimpleOutput
   , scoreHeader
   , phraseHeader
 
-  , lilypondNotes
+  , lilypondNoteList
 
   ) where
 
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.PSC.Repr.External.LilyPondAliases
 import Payasan.PSC.Repr.External.Syntax
 
+import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.RewriteMonad
 
@@ -103,7 +103,7 @@ data LyOutputDef pch anno = LyOutputDef
 simpleScore_Relative :: LyOutputDef pch anno 
                      -> ScoreInfo 
                      -> Pitch
-                     -> LyPart2 pch anno -> Doc
+                     -> Part pch LyNoteLength anno -> Doc
 simpleScore_Relative def infos pch ph = 
         header 
     $+$ anonBlock (simpleVoice_Relative def pch ph)
@@ -112,7 +112,7 @@ simpleScore_Relative def infos pch ph =
 
 simpleScore_Absolute :: LyOutputDef pch anno 
                      -> ScoreInfo 
-                     -> LyPart2 pch anno -> Doc
+                     -> Part pch LyNoteLength anno -> Doc
 simpleScore_Absolute def infos ph = 
         header 
     $+$ anonBlock (simpleVoice_Absolute def ph)
@@ -148,23 +148,23 @@ phraseHeader locals = case section_meter locals of
 -- 
 simpleVoice_Relative :: LyOutputDef pch anno 
                      -> Pitch
-                     -> LyPart2 pch anno -> Doc
+                     -> Part pch LyNoteLength anno -> Doc
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = lilypondNotes def local1 ph
+    notes           = getLilyPondNoteListD $ lilypondNoteList def local1 ph
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
-                     -> LyPart2 pch anno -> Doc
+                     -> Part pch LyNoteLength anno -> Doc
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = lilypondNotes def local1 ph
+    notes           = getLilyPondNoteListD $ lilypondNoteList def local1 ph
 
 
 
@@ -175,17 +175,17 @@ simpleVoice_Absolute def ph =
 -- Should allow different pch (standard, drum note, etc.)
 -- to be printed. 
 --
-lilypondNotes :: forall pch anno. 
-                 LyOutputDef pch anno 
-              -> SectionInfo 
-              -> LyPart2 pch anno 
-              -> Doc
-lilypondNotes def prefix_locals ph = 
+lilypondNoteList :: forall pch anno. 
+                    LyOutputDef pch anno 
+                 -> SectionInfo 
+                 -> Part pch LyNoteLength anno
+                 -> LilyPondNoteListD
+lilypondNoteList def prefix_locals ph = 
     evalRewrite (final =<< oLyPart ph) (stateZero prefix_locals)
   where
     final d = do { od <- getTerminator
-                 ; case od of Nothing -> return d
-                              Just d1 -> return (d $+$ d1)
+                 ; case od of Nothing -> return $ LilyPondNoteListD d
+                              Just d1 -> return $ LilyPondNoteListD (d $+$ d1)
                  }
 
     pPitch :: pch -> Doc
@@ -194,7 +194,7 @@ lilypondNotes def prefix_locals ph =
     pAnno  :: anno -> Doc
     pAnno  = printAnno def
 
-    oLyPart :: LyPart2 pch anno -> Mon Doc
+    oLyPart :: Part pch LyNoteLength anno -> Mon Doc
     oLyPart (Part [])               = return empty
     oLyPart (Part (x:xs))           = do { d <- oSection x; step d xs }
       where
@@ -204,7 +204,7 @@ lilypondNotes def prefix_locals ph =
                            ; step ac ss
                            }
 
-    oSection :: LySection2 pch anno -> Mon Doc
+    oSection :: Section pch LyNoteLength anno -> Mon Doc
     oSection (Section _ locals bs) =
           do { dkey     <- deltaKey locals
              ; dtime    <- deltaMetrical locals
@@ -227,16 +227,16 @@ lilypondNotes def prefix_locals ph =
 
 
     -- | Bars are terminated...
-    oBar :: LyBar2 pch anno -> Doc
+    oBar :: Bar pch LyNoteLength anno -> Doc
     oBar (Bar cs) = hsep (map oNoteGroup cs) <+> char '|'
 
 
-    oNoteGroup :: LyNoteGroup2 pch anno -> Doc
+    oNoteGroup :: NoteGroup pch LyNoteLength anno -> Doc
     oNoteGroup (Atom e)             = oElement e
     oNoteGroup (Beamed cs)          = beamForm $ map oNoteGroup cs
     oNoteGroup (Tuplet spec cs)     = tupletForm spec (map oNoteGroup cs)
 
-    oElement :: LyElement2 pch anno -> Doc
+    oElement :: Element pch LyNoteLength anno -> Doc
     oElement (NoteElem n a t)       = oNote n <> pAnno a <> tie t
 
     oElement (Rest d)               = rest d 
@@ -249,6 +249,6 @@ lilypondNotes def prefix_locals ph =
     oElement (Punctuation s)        = text s
 
 
-    oNote :: LyNote2 pch anno -> Doc
+    oNote :: Note pch LyNoteLength -> Doc
     oNote (Note p d)               = pPitch p <> noteLength d
 

@@ -32,10 +32,10 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 drumsOutput :: ScoreInfo -> LyDrumPart -> Doc
 drumsOutput globals beampart = 
         header
-    $+$ drumsBlock notes
+    $+$ drumsBlock (getLilyPondNoteListD notes)
   where
     header          = scoreHeader globals
-    notes           = lilypondNotes drum_def default_section_info beampart
+    notes           = lilypondNoteList drum_def default_section_info beampart
     drum_def        = LyOutputDef { printPitch = text . shortName
                                   , printAnno  = ppAccent }
 

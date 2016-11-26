@@ -31,7 +31,6 @@ import Payasan.PSC.Backend.LilyPond.OutTrans
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
 
-import Payasan.PSC.Repr.External.LilyPondAliases
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
@@ -97,7 +96,7 @@ elementP mo elt = case elt of
 
 rhythmicMarkupScore :: LyOutputDef pch anno 
                     -> ScoreInfo 
-                    -> LyPart2 pch anno -> Doc
+                    -> Part pch LyNoteLength anno -> Doc
 rhythmicMarkupScore def infos ph =
         header $+$ simultaneous1 (rhythmicMarkupVoice def ph)
   where
@@ -105,13 +104,14 @@ rhythmicMarkupScore def infos ph =
 
 
 rhythmicMarkupVoice :: LyOutputDef pch anno 
-                    -> LyPart2 pch anno -> Doc
+                    -> Part pch LyNoteLength anno-> Doc
 rhythmicMarkupVoice def ph = 
-    block (Just newRhythmicStaff_) (absolute_ $+$ notes_header $+$ notes)
+    block (Just newRhythmicStaff_) 
+          (absolute_ $+$ notes_header $+$ (getLilyPondNoteListD notes))
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = oPartHeader local1
-    notes           = lilypondNotes def local1 ph
+    notes           = lilypondNoteList def local1 ph
 
 
 
