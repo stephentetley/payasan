@@ -108,6 +108,8 @@ library
     Payasan.PSC.Base.ShowLinearUtils,
     Payasan.PSC.Base.ShowTabularUtils,
     Payasan.PSC.Base.SyntaxCommon,
+    Payasan.PSC.Base.Utils,
+    Payasan.PSC.CompilerMonad,
     Payasan.PSC.Pipeline,
     Payasan.PSC.Repr.External.AddBeams,
     Payasan.PSC.Repr.External.ABCInTrans,

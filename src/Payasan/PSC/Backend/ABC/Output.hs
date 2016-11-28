@@ -26,6 +26,7 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
+import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Basis
 import Payasan.Base.Scale
@@ -35,27 +36,14 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 type CatOp = Doc -> Doc -> Doc
 
--- Generating output should be stateful so we can insert a 
--- newline every four lines.
 
 type Mon a = Rewrite State a
 
-data State = State { bar_column :: !Int
-                   , prev_info  :: !SectionInfo
-                   }
+data State = State { prev_info  :: !SectionInfo }
 
 stateZero :: SectionInfo -> State
-stateZero info = State { bar_column = 0
-                       , prev_info  = info }
+stateZero info = State { prev_info  = info }
 
-lineLen :: Mon Int
-lineLen = gets bar_column
-
-resetLineLen :: Mon ()
-resetLineLen = puts (\s -> s { bar_column = 0 })
-
-incrLineLen :: Mon ()
-incrLineLen = puts (\s -> s { bar_column = 1 + bar_column s })
 
 
 setInfo :: SectionInfo -> Mon () 
@@ -112,30 +100,25 @@ oHeader infos staff locals =
   where
     key_clef = (key $ section_key locals) <+> (clef $ staff_clef staff)
 
--- TODO
--- We can park some of this complexity in better pretty-print 
--- combinators rather than mix in all the logic here.
+
 
 oABCPart :: GenABCPart anno -> Mon Doc
-oABCPart (Part [])              = return empty
-oABCPart (Part (x:xs))          = do { d <- oSection x; step d xs }
+oABCPart (Part xs) = do { i <- return 4; step i xs }    -- TODO: line len hardcoded
   where
-    step d []     = return $ d <+> text "|]"
-    step d (b:bs) = do { i <- lineLen
-                       ; if i > 4 then resetLineLen else incrLineLen
-                       ; d1 <- oSection b 
-                       ; let ac = if i > 4 then (d <+> char '|' $+$ d1) 
-                                           else (d <+> char '|' <+> d1)
-                       ; step ac bs
-                       }
+    step _    []       = return empty
+    step cols [s]      = oSection cols (text "|]") s
+    step cols (s:ss)   = do { d1 <- oSection cols (char '|') s
+                            ; ds <- step cols ss
+                            ; return (d1 $+$ ds)
+                            }
 
 
 
-oSection :: GenABCSection anno -> Mon Doc
-oSection (Section _ info cs)              = 
+oSection :: Int -> Doc -> GenABCSection anno -> Mon Doc
+oSection cols end (Section _ info cs)  = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
-       ; let ans = vcat $ map oBar cs           -- TODO wrong we want better control of number of bars per line
+       ; let ans = ppSection cols end $ map oBar cs 
        ; setInfo info
        ; return $ prefixM dmeter $ prefixK dkey $ ans
        }
@@ -144,7 +127,7 @@ oSection (Section _ info cs)              =
     prefixK (Just k)      = (midtuneField 'K' (key k) <+>)
     prefixM Nothing       = (empty <>)
     prefixM (Just (m,u))  = let doc = ( midtuneField 'M' (meter m) 
-                                       <> midtuneField 'L' (unitNoteLength u))
+                                       <+> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
 
 oBar :: GenABCBar anno -> Doc
@@ -176,3 +159,13 @@ oElement _  (Punctuation {})    = empty
 tied :: CatOp -> Doc -> Tie -> Doc
 tied _  d NO_TIE = d
 tied op d TIE    = d `op` char '-'
+
+-- Allows different terminator:
+--
+-- '|' for end of section, "|]" for end of part.
+--
+ppSection :: Int -> Doc -> [Doc] -> Doc
+ppSection cols end bars = 
+    ppTable cols (<+>) $ punctuateSepEnd (char '|') end bars
+    
+    

@@ -11,20 +11,14 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Hughes lists...
---
--- None of the code in this module should be exposed to clients.
+-- Utility code 
 -- 
 --------------------------------------------------------------------------------
 
 module Payasan.Base.Utils
   ( 
     
-    ParsecParser
-  , ParsecLexer
-  , fullInputParse
-
-  , divModS1
+    divModS1
   , divS1
   , modS1
 
@@ -43,32 +37,6 @@ module Payasan.Base.Utils
   )  where
 
 
-import Text.Parsec                              -- package: parsec
-import Text.Parsec.Token
-
-import Control.Monad.Identity
-import Data.Char (isSpace)
-
-
-type ParsecParser a        = ParsecT String () Identity a
-type ParsecLexer           = GenTokenParser String () Identity
-
-
-
-fullInputParse :: forall a. ParsecParser () -> ParsecParser a -> ParsecParser a
-fullInputParse white p = white *> parseK >>= step
-  where 
-    isTrail             = all (isSpace)
-    step (ans,_,ss) 
-        | isTrail ss    = return ans
-        | otherwise     = fail $ "parseFail - remaining input: " ++ ss
-
-
-    parseK :: ParsecParser (a, SourcePos, String)
-    parseK = (,,) <$> p <*> getPosition <*> getInput
-
-
-
 
 divModS1 :: Integral a => a -> a -> (a,a)
 divModS1 x y = let (d,m0) = (x-1) `divMod` y in (d,m0+1)
@@ -82,6 +50,7 @@ modS1 x y = let m0 = (x-1) `mod` y in m0+1
 
 --------------------------------------------------------------------------------
 -- Hughes list
+-- Should be obsolete...
 
 
 type H a = [a] -> [a]

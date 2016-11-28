@@ -31,7 +31,7 @@ module Payasan.PSC.Base.LilyPondLexer
   ) where
 
 
-import Payasan.Base.Utils
+import Payasan.PSC.Base.Utils
 
 import Text.Parsec.Language                           -- package: parsec
 import qualified Text.Parsec.Token as P
