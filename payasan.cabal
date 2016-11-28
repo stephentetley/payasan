@@ -51,7 +51,6 @@ library
     Payasan.Base.Pitch,
     Payasan.Base.Scale,
     Payasan.Base.Utils,
-    Payasan.Base.Z12,
     Payasan.LilyPond.Chordmode.Notelist,
     Payasan.LilyPond.Chordmode.Internal.Base,
     Payasan.LilyPond.Chordmode.Internal.Interpret,

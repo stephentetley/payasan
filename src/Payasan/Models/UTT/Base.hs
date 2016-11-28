@@ -47,7 +47,7 @@ module Payasan.Models.UTT.Base
   ) where
 
 
-import Payasan.Base.Z12
+import Payasan.Base.Utils
 
 -- Mode is Z2 so it could have Num, AdditiveGroup... instances
 
