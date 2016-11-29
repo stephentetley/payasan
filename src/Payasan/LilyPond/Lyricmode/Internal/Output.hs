@@ -83,7 +83,7 @@ rhythmVoice annof ph = newVoiceDefn "rhythm" <+> anonBlock body
 
 lyricsVoice :: EXT.Part Syllable LyNoteLength a -> Doc
 lyricsVoice ph = 
-    block (Just prefix) (overrides $+$ getLilyPondNoteListD notes)
+    block (Just prefix) (overrides $+$ getLyNoteListDoc notes)
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
     locals1     = maybe default_section_info id $ EXT.firstSectionInfo ph

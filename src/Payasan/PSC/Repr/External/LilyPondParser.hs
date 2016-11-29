@@ -35,7 +35,7 @@ module Payasan.PSC.Repr.External.LilyPondParser
   -- * Parsers
     
   , LyParserDef (..)
-  , parseLyQSection
+  , parseLySectionQuote
   , makeLyParser
   
   
@@ -118,17 +118,18 @@ data LyParserDef pch anno = LyParserDef
     }
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyQSection ())
-parseLilyPondNoAnno = fmap (fmap specializeGenLyQSection) $ parseLyQSection parsedef
+parseLilyPondNoAnno :: String -> Either ParseError (LySectionQuote ())
+parseLilyPondNoAnno = 
+    fmap (fmap specializeGenLySectionQuote) $ parseLySectionQuote parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
     
     
 
-parseLyQSection :: LyParserDef pch anno
-                -> String 
-                -> Either ParseError (GenLyQSection pch anno)
-parseLyQSection def = runParser (makeLyParser def) () ""
+parseLySectionQuote :: LyParserDef pch anno
+                    -> String 
+                    -> Either ParseError (GenLySectionQuote pch anno)
+parseLySectionQuote def = runParser (makeLyParser def) () ""
 
 
 
@@ -138,7 +139,7 @@ parseLyQSection def = runParser (makeLyParser def) () ""
 -- Note that some pipelines may lose original beaming and 
 -- try to resynthesize it.
 --
-makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (GenLyQSection pch anno)
+makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (GenLySectionQuote pch anno)
 makeLyParser def = fullParseLy qsection
   where
     pPitch :: LyParser pch
@@ -147,8 +148,8 @@ makeLyParser def = fullParseLy qsection
     pAnno  :: LyParser anno
     pAnno  = annoParser def
     
-    qsection :: LyParser (GenLyQSection pch anno)
-    qsection = (\bs -> GenLyQSection { getGenLyQSection = bs }) <$> bars
+    qsection :: LyParser (GenLySectionQuote pch anno)
+    qsection = (\bs -> GenLySectionQuote { getGenLySectionQuote = bs }) <$> bars
 
     bars :: LyParser [GenLyQBar pch anno]
     bars = sepBy bar barline

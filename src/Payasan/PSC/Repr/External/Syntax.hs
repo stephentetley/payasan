@@ -42,12 +42,15 @@ module Payasan.PSC.Repr.External.Syntax
   , Note(..)
 
   -- * Concrete syntax fragments
-  , GenLyQSection(..)
-  , LyQSection(..)
-  , ABCQSection(..)
+  , GenLySectionQuote(..)
+  , LySectionQuote(..)
+  , ABCSectionQuote(..)
 
-  , specializeGenLyQSection
+  , specializeGenLySectionQuote
   
+  , GenLyPartOut
+  , LyPartOut
+  , ABCPartOut
   
   -- * Operations
   , pushSectionInfo
@@ -173,26 +176,44 @@ data Note pch drn = Note pch drn
 -- Quasiquote / TH fragments
 
 -- Notes
--- LyQSection & GenLyQSection represent what is parsed
+-- LySectionQuote & GenLySectionQuote represent what is parsed
 --
 -- There is no meter / key info in parsed fragments so we omit 
 -- them. We do not attempt to synthesize them with defaults.
 
-newtype GenLyQSection pch anno = 
-    GenLyQSection { getGenLyQSection :: [Bar pch LyNoteLength anno] } 
+newtype GenLySectionQuote pch anno = 
+    GenLySectionQuote { getGenLySectionQuote :: [Bar pch LyNoteLength anno] } 
     deriving (Data,Eq,Show,Typeable)
 
-newtype LyQSection anno = 
-    LyQSection { getLyQSection :: [Bar LyPitch LyNoteLength anno] } 
+newtype LySectionQuote anno = 
+    LySectionQuote { getLySectionQuote :: [Bar LyPitch LyNoteLength anno] } 
     deriving (Data,Eq,Show,Typeable)
       
-newtype ABCQSection = 
-    ABCQSection { getABCSection :: [Bar ABCPitch ABCNoteLength ()] } 
+newtype ABCSectionQuote = 
+    ABCSectionQuote { getABCSection :: [Bar ABCPitch ABCNoteLength ()] } 
     deriving (Data,Eq,Show,Typeable)
 
     
-specializeGenLyQSection :: GenLyQSection LyPitch anno -> LyQSection anno
-specializeGenLyQSection = LyQSection . getGenLyQSection
+specializeGenLySectionQuote :: GenLySectionQuote LyPitch anno 
+                            -> LySectionQuote anno
+specializeGenLySectionQuote = LySectionQuote . getGenLySectionQuote
+
+
+-- These defs need not go in this module. 
+--
+-- For extensibility (clients should be able to define their own 
+-- backends) specific backend code could be outside the 
+-- Payasan.PSC.Repr.External namespace. However LilyPond and ABC 
+-- are so fundamental that it is harmless to define them here.
+--
+
+
+type GenLyPartOut pch anno      = Part pch LyNoteLength anno
+
+type LyPartOut anno             = Part LyPitch LyNoteLength anno
+
+type ABCPartOut anno            = Part ABCPitch ABCNoteLength anno
+
 
 --------------------------------------------------------------------------------
 -- Operations

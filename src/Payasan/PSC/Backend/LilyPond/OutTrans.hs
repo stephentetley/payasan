@@ -37,19 +37,19 @@ import Payasan.Base.Pitch
 
 translateToOutput_Relative :: Pitch
                            -> Part Pitch Duration anno 
-                           -> Part LyPitch LyNoteLength anno
+                           -> LyPartOut anno
 translateToOutput_Relative pch = 
     transformP (rel_pch_algo pch) . transformD drn_algo
 
 
 translateToOutput_Absolute :: Part Pitch Duration anno 
-                           -> Part LyPitch LyNoteLength anno
+                           -> LyPartOut anno
 translateToOutput_Absolute = 
     transformP abs_pch_algo . transformD drn_algo
 
 
 translateToOutput_DurationOnly :: Part pch Duration anno 
-                               -> Part pch LyNoteLength anno
+                               -> GenLyPartOut pch anno
 translateToOutput_DurationOnly = transformD drn_algo
 
 type DMon    a      = Mon Duration a

@@ -154,7 +154,7 @@ polyVoice_Relative :: LyOutputDef pch anno
                    -> SectionInfo
                    -> Part pch LyNoteLength anno -> Doc
 polyVoice_Relative def pch locals ph = 
-    block (Just $ relative_ pch) (getLilyPondNoteListD notes)
+    block (Just $ relative_ pch) (getLyNoteListDoc notes)
   where
     notes           = lilypondNoteList def locals ph
 
@@ -198,7 +198,7 @@ phraseDef name locals ph =
 polyVoice_Drum :: Anno anno
                => SectionInfo -> Part DrumPitch LyNoteLength anno -> Doc
 polyVoice_Drum locals ph = 
-    block (Just $ drummode_) (getLilyPondNoteListD notes)
+    block (Just $ drummode_) (getLyNoteListDoc notes)
   where
     notes           = lilypondNoteList def locals ph
     def             = LyOutputDef { printPitch = pPrint, printAnno = anno }

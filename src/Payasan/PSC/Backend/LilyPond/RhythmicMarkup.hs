@@ -50,7 +50,7 @@ data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Doc }
 
 translateToRhythmicMarkup :: MarkupOutput pch
                           -> Part pch Duration anno 
-                          -> Part LyPitch LyNoteLength Doc
+                          -> LyPartOut Doc
 translateToRhythmicMarkup mo = 
     transformPA (markup_algo mo) . translateToOutput_DurationOnly
 
@@ -104,10 +104,10 @@ rhythmicMarkupScore def infos ph =
 
 
 rhythmicMarkupVoice :: LyOutputDef pch anno 
-                    -> Part pch LyNoteLength anno-> Doc
+                    -> Part pch LyNoteLength anno -> Doc
 rhythmicMarkupVoice def ph = 
     block (Just newRhythmicStaff_) 
-          (absolute_ $+$ notes_header $+$ (getLilyPondNoteListD notes))
+          (absolute_ $+$ notes_header $+$ (getLyNoteListDoc notes))
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = oPartHeader local1

@@ -72,15 +72,15 @@ deltaKey (SectionInfo { section_key = k1 }) =
 
 -- ABC can handle annotations - it simply ignores them.
 
-type GenABCPart anno            = Part        ABCPitch ABCNoteLength anno
-type GenABCSection anno         = Section     ABCPitch ABCNoteLength anno
-type GenABCBar anno             = Bar         ABCPitch ABCNoteLength anno
-type GenABCNoteGroup anno       = NoteGroup   ABCPitch ABCNoteLength anno
-type GenABCElement anno         = Element     ABCPitch ABCNoteLength anno
+
+type ABCSectionOut anno         = Section     ABCPitch ABCNoteLength anno
+type ABCBarOut anno             = Bar         ABCPitch ABCNoteLength anno
+type ABCNoteGroupOut anno       = NoteGroup   ABCPitch ABCNoteLength anno
+type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 
 
 
-abcOutput :: ScoreInfo -> StaffInfo -> GenABCPart anno -> Doc
+abcOutput :: ScoreInfo -> StaffInfo -> ABCPartOut anno -> Doc
 abcOutput infos staff ph = header $+$ body
   where
     first_info  = maybe default_section_info id $ firstSectionInfo ph
@@ -102,7 +102,7 @@ oHeader infos staff locals =
 
 
 
-oABCPart :: GenABCPart anno -> Mon Doc
+oABCPart :: ABCPartOut anno -> Mon Doc
 oABCPart (Part xs) = do { i <- return 4; step i xs }    -- TODO: line len hardcoded
   where
     step _    []       = return empty
@@ -118,7 +118,7 @@ oABCPart (Part xs) = do { i <- return 4; step i xs }    -- TODO: line len hardco
 -- 
 -- TODO - midtune fields need improving for clarity.
 --
-oSection :: Int -> Doc -> GenABCSection anno -> Mon Doc
+oSection :: Int -> Doc -> ABCSectionOut anno -> Mon Doc
 oSection cols end (Section _ info cs)  = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
@@ -134,13 +134,13 @@ oSection cols end (Section _ info cs)  =
                                        <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
 
-oBar :: GenABCBar anno -> Doc
+oBar :: ABCBarOut anno -> Doc
 oBar (Bar cs) = oNoteGroupList (<+>) cs
 
-oNoteGroupList :: CatOp -> [GenABCNoteGroup anno] -> Doc
+oNoteGroupList :: CatOp -> [ABCNoteGroupOut anno] -> Doc
 oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
 
-oNoteGroup :: CatOp -> GenABCNoteGroup anno -> Doc
+oNoteGroup :: CatOp -> ABCNoteGroupOut anno -> Doc
 oNoteGroup op (Atom e)          = oElement op e
 oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
 oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
@@ -150,7 +150,7 @@ oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
 --
 -- Skip is treated as a spacer.
 --
-oElement :: CatOp -> GenABCElement anno -> Doc
+oElement :: CatOp -> ABCElementOut anno -> Doc
 oElement op (NoteElem n _ t)    = tied op (note n) t
 oElement _  (Rest d)            = rest d 
 oElement _  (Spacer d)          = spacer d 

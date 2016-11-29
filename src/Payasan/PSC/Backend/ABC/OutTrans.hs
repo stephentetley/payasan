@@ -17,7 +17,7 @@
 
 module Payasan.PSC.Backend.ABC.OutTrans
   (
-    translateToOutput
+    translateToABCPartOut
   ) where
 
 
@@ -36,10 +36,8 @@ import Payasan.Base.Scale
 
 
 
-
-
-translateToOutput :: Part Pitch Duration anno -> Part ABCPitch ABCNoteLength anno
-translateToOutput = transformP pch_algo . transformD drn_algo
+translateToABCPartOut :: Part Pitch Duration anno -> ABCPartOut anno
+translateToABCPartOut = transformP pch_algo . transformD drn_algo
 
 type PTMon a = Mon () a
 type DTMon a = Mon UnitNoteLength a

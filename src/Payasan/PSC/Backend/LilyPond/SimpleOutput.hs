@@ -104,7 +104,7 @@ data LyOutputDef pch anno = LyOutputDef
 simpleScore_Relative :: LyOutputDef pch anno 
                      -> ScoreInfo 
                      -> Pitch
-                     -> Part pch LyNoteLength anno -> Doc
+                     -> GenLyPartOut pch anno -> Doc
 simpleScore_Relative def infos pch ph = 
         header 
     $+$ anonBlock (simpleVoice_Relative def pch ph)
@@ -113,7 +113,7 @@ simpleScore_Relative def infos pch ph =
 
 simpleScore_Absolute :: LyOutputDef pch anno 
                      -> ScoreInfo 
-                     -> Part pch LyNoteLength anno -> Doc
+                     -> GenLyPartOut pch anno -> Doc
 simpleScore_Absolute def infos ph = 
         header 
     $+$ anonBlock (simpleVoice_Absolute def ph)
@@ -149,23 +149,23 @@ phraseHeader locals = case section_meter locals of
 -- 
 simpleVoice_Relative :: LyOutputDef pch anno 
                      -> Pitch
-                     -> Part pch LyNoteLength anno -> Doc
+                     -> GenLyPartOut pch anno -> Doc
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = getLilyPondNoteListD $ lilypondNoteList def local1 ph
+    notes           = getLyNoteListDoc $ lilypondNoteList def local1 ph
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
-                     -> Part pch LyNoteLength anno -> Doc
+                     -> GenLyPartOut pch anno -> Doc
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
     local1          = maybe default_section_info id $ firstSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = getLilyPondNoteListD $ lilypondNoteList def local1 ph
+    notes           = getLyNoteListDoc $ lilypondNoteList def local1 ph
 
 
 
@@ -179,14 +179,14 @@ simpleVoice_Absolute def ph =
 lilypondNoteList :: forall pch anno. 
                     LyOutputDef pch anno 
                  -> SectionInfo 
-                 -> Part pch LyNoteLength anno
-                 -> LilyPondNoteListD
+                 -> GenLyPartOut pch anno
+                 -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
     evalRewrite (final =<< oLyPart ph) (stateZero prefix_locals)
   where
     final d = do { od <- getTerminator
-                 ; case od of Nothing -> return $ LilyPondNoteListD d
-                              Just d1 -> return $ LilyPondNoteListD (d $+$ d1)
+                 ; case od of Nothing -> return $ LyNoteListDoc d
+                              Just d1 -> return $ LyNoteListDoc (d $+$ d1)
                  }
 
     pPitch :: pch -> Doc

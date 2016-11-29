@@ -80,12 +80,12 @@ type ABCQNote             = Note        ABCPitch ABCNoteLength
 --------------------------------------------------------------------------------
 -- Parser
 
-parseABCPart :: String -> Either ParseError ABCQSection
+parseABCPart :: String -> Either ParseError ABCSectionQuote
 parseABCPart = runParser (fullParseABC qsection) () ""
 
 
-qsection :: ABCParser ABCQSection
-qsection = (\bs -> ABCQSection { getABCSection = bs}) <$> bars
+qsection :: ABCParser ABCSectionQuote
+qsection = (\bs -> ABCSectionQuote { getABCSection = bs}) <$> bars
 
 bars :: ABCParser [ABCQBar]
 bars = sepBy bar barline

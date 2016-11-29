@@ -212,7 +212,7 @@ fromLilyPondWithIO_Relative pch locals ph =
 outputAsABC :: ScoreInfo -> StaffInfo -> EXT.StdPart1 anno -> String
 outputAsABC infos staff = 
     ppRender . ABCOut.abcOutput infos staff
-             . ABCOut.translateToOutput
+             . ABCOut.translateToABCPartOut
              . addBeams 
              . transExternalToIRBeam
 

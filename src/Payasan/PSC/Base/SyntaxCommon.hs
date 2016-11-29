@@ -19,8 +19,8 @@ module Payasan.PSC.Base.SyntaxCommon
   ( 
 
   
-    LilyPondNoteListD(..)
-  , ABCNoteListD(..)
+    LyNoteListDoc(..)
+  , ABCNoteListDoc(..)
   
   
   , ScoreInfo(..)
@@ -68,12 +68,15 @@ import Data.Ratio
 -- and it is expected to be plugged into a "hole" in score 
 -- template.
 --
-newtype LilyPondNoteListD = LilyPondNoteListD { getLilyPondNoteListD :: Doc }
+newtype LyNoteListDoc = LyNoteListDoc { getLyNoteListDoc :: Doc }
 
 -- | Notelist fragment for ABC.
 --
-newtype ABCNoteListD = ABCNoteListD { getABCNoteListD :: Doc }
+newtype ABCNoteListDoc = ABCNoteListDoc { getABCNoteListDoc :: Doc }
 
+
+--------------------------------------------------------------------------------
+-- Score syntax elements
 
 
 -- | Note - don\'t store LilyPond Absolute / Relative pitch
