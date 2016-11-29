@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -32,10 +31,8 @@ module Payasan.PSC.Backend.Csound.Base
 
 
 
-import Payasan.Base.AltPitch
 import Payasan.Base.Basis
 
-import Data.Data
 import Data.Fixed
 import Data.Function (on)
 import qualified Data.IntMap            as IM

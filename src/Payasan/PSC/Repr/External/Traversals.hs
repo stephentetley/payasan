@@ -19,6 +19,10 @@
 module Payasan.PSC.Repr.External.Traversals
   (
     Mon 
+  , genTransform
+  , genTransformSection
+  , genTransformBars
+  
   , liftElementTrafo
 
   , BeamPitchAlgo(..)
@@ -41,28 +45,49 @@ import Payasan.PSC.Base.RewriteMonad
 type Mon st a = Rewrite st a
 
 
-genTransform :: forall st p1 p2 d1 d2 a1 a2. 
-                (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
+genTransform :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
              -> Part p1 d1 a1
              -> Part p2 d2 a2
-genTransform elemT st0 ph = 
-    evalRewrite (partT ph) st0
-  where
-    partT :: Part p1 d1 a1 -> Mon st (Part p2 d2 a2)
-    partT (Part ss)                 = Part <$> mapM sectionT ss
+genTransform elemT st0 ph = evalRewrite (partT elemT ph) st0
 
-    sectionT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2)
-    sectionT (Section name info bs) = 
-        Section name info <$> local info (mapM barT bs)
+genTransformSection :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
+                    -> st
+                    -> Section p1 d1 a1
+                    -> Section p2 d2 a2
+genTransformSection elemT st0 se = evalRewrite (sectionT elemT se) st0
 
-    barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
-    barT (Bar cs)                   = Bar <$> mapM noteGroupT cs
 
-    noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
-    noteGroupT (Atom e)             = Atom <$> elemT e
-    noteGroupT (Beamed cs)          = Beamed <$> mapM noteGroupT cs
-    noteGroupT (Tuplet spec cs)     = Tuplet spec <$> mapM noteGroupT cs
+genTransformBars :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
+                 -> st
+                 -> [Bar p1 d1 a1]
+                 -> [Bar p2 d2 a2]
+genTransformBars elemT st0 bs = evalRewrite (mapM (barT elemT) bs) st0
+  
+
+
+partT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
+      -> Part p1 d1 a1 -> Mon st (Part p2 d2 a2)
+partT elemT (Part ss)               = Part <$> mapM (sectionT elemT) ss
+
+
+sectionT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
+         -> Section p1 d1 a1 
+         -> Mon st (Section p2 d2 a2)
+sectionT elemT (Section name info bs) = 
+    Section name info <$> local info (mapM (barT elemT) bs)
+
+
+barT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
+     -> Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
+barT elemT (Bar cs)                 = Bar <$> mapM (noteGroupT elemT) cs
+
+
+noteGroupT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
+          -> NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
+noteGroupT elemT (Atom e)           = Atom <$> elemT e
+noteGroupT elemT (Beamed cs)        = Beamed <$> mapM (noteGroupT elemT) cs
+noteGroupT elemT (Tuplet spec cs)   = Tuplet spec <$> mapM (noteGroupT elemT) cs
 
 
 --------------------------------------------------------------------------------

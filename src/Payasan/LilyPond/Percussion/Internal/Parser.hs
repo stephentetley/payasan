@@ -24,7 +24,6 @@ module Payasan.LilyPond.Percussion.Internal.Parser
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.PSC.Base.LilyPondCommon (LyNoteLength)
 import Payasan.PSC.Base.LilyPondLexer
 import Payasan.PSC.Repr.External.LilyPondParser
 import Payasan.PSC.Repr.External.Syntax

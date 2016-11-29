@@ -26,7 +26,7 @@ module Payasan.PSC.Backend.Csound.Output
   ) where
 
 import Payasan.PSC.Backend.Csound.Base ( Value(..), ColumnFormat(..)
-                                       , ColumnSpecs(..), InstNumber
+                                       , ColumnSpecs, InstNumber
                                        , columnSpecs
                                        )
 import Payasan.PSC.Backend.Csound.IStmt

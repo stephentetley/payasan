@@ -19,7 +19,8 @@
 
 module Payasan.PSC.Repr.External.ABCInTrans
   (
-    translateFromInput
+    unquoteABC
+  , translateFromInput
   ) where
 
 import Payasan.PSC.Base.ABCCommon
@@ -35,24 +36,51 @@ import Payasan.Base.Pitch
 import Payasan.Base.Scale
 
 
+type PTMon a = Mon () a
+type DTMon a = Mon UnitNoteLength a
+
+
+unquoteABC :: String -> SectionInfo -> ABCSectionQuote -> Section Pitch Duration ()
+unquoteABC name info (ABCSectionQuote bs) =
+    let unl = section_unit_note_len info
+        bars = translateDuration unl $ translatePitch bs
+    in Section { section_name      = name
+               , section_info      = info
+               , section_bars      = bars
+               }
+
+-- | DEPRECATED - input should be translated from ABCSectionQuote
 translateFromInput :: Part ABCPitch ABCNoteLength anno 
                    -> Part Pitch Duration anno
 translateFromInput = transformP pch_algo . transformD drn_algo
 
-type PTMon a = Mon () a
-type DTMon a = Mon UnitNoteLength a
 
 --------------------------------------------------------------------------------
 -- Pitch translation
 
 
+-- | DEPRECATED
 pch_algo :: BeamPitchAlgo () ABCPitch Pitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
     }
 
+-- | DEPRECATED
+drn_algo :: BeamDurationAlgo UnitNoteLength ABCNoteLength Duration
+drn_algo = BeamDurationAlgo
+    { initial_stateD    = UNIT_NOTE_8
+    , element_trafoD    = elementD
+    }
 
+--------------------------------------------------------------------------------
+-- Pitch translation
+
+translatePitch :: [Bar ABCPitch drn anno] 
+               -> [Bar Pitch drn anno]
+translatePitch = genTransformBars elementP () 
+
+   
 
 elementP :: Element ABCPitch drn anno -> PTMon (Element Pitch drn anno)
 elementP (NoteElem e a t)       = (\e1 -> NoteElem e1 a t)  <$> noteP e
@@ -83,11 +111,11 @@ transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: BeamDurationAlgo UnitNoteLength ABCNoteLength Duration
-drn_algo = BeamDurationAlgo
-    { initial_stateD    = UNIT_NOTE_8
-    , element_trafoD    = elementD
-    }
+
+translateDuration :: UnitNoteLength 
+                  -> [Bar pch ABCNoteLength anno] 
+                  -> [Bar pch Duration anno]
+translateDuration unl = genTransformBars elementD unl 
 
 
 elementD :: Element pch ABCNoteLength anno -> DTMon (Element pch Duration anno)
