@@ -35,9 +35,10 @@ module Payasan.PSC.Backend.MIDI.PrimitiveSyntax
   ) where
 
 
+import Payasan.PSC.Base.Utils
+
 import Payasan.Base.AltPitch
 import Payasan.Base.Basis (Seconds)
-import Payasan.Base.Utils
 
 import Data.Function ( on )
 

@@ -29,18 +29,6 @@ module Payasan.Base.Utils
   , Modulo12(..)
 
 
-  -- * Hughes list
-  , H
-  , emptyH
-  , appendH
-  , consH
-  , snocH
-  , wrapH
-  , replicateH
-  , toListH
-  , fromListH
-
-
   )  where
 
 
@@ -101,35 +89,3 @@ instance Modulo12 Integer where
   fromZ12 (Z12 i) = fromIntegral i
   toZ12 i = Z12 $ fromIntegral $ mod i 12
 
-
---------------------------------------------------------------------------------
--- Hughes list
--- Should be obsolete, but currently needed by MIDI output...
-
-
-type H a = [a] -> [a]
-
-emptyH :: H a 
-emptyH = id
-
-appendH :: H a -> H a -> H a
-appendH f g = f . g
-
-wrapH :: a -> H a 
-wrapH a = (a:)
-
-consH :: a -> H a -> H a
-consH a f = (a:) . f
-
-snocH :: H a -> a -> H a
-snocH f a = f . (a:)
-
-replicateH :: Int -> a -> H a
-replicateH i a = fromListH $ replicate i a
-
-
-toListH :: H a -> [a]
-toListH f = f $ []
-
-fromListH :: [a] -> H a
-fromListH xs = (xs++)

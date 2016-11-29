@@ -61,6 +61,7 @@ genTransform elemT st0 ph =
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)             = Atom <$> elemT e
+    noteGroupT (Beamed cs)          = Beamed <$> mapM noteGroupT cs
     noteGroupT (Tuplet spec cs)     = Tuplet spec <$> mapM noteGroupT cs
 
 

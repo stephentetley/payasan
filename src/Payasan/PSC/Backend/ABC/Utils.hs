@@ -18,9 +18,7 @@ module Payasan.PSC.Backend.ABC.Utils
   ( 
 
   -- * Output
-    vsep
-  , sepList
-  , field
+    field
   , midtuneField
 
   , tupletSpec
@@ -56,16 +54,6 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
 --------------------------------------------------------------------------------
 -- Pretty printing helpers
-
-vsep :: [Doc] -> Doc
-vsep = sepList ($+$)
-
-sepList :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
-sepList _  [] = empty
-sepList op (x:xs) = step x xs
-  where
-    step ac []     = ac
-    step ac (d:ds) = step (ac `op` d) ds
 
 
 field :: Char -> Doc -> Doc

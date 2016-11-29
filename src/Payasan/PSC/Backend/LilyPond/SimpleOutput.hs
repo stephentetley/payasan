@@ -39,6 +39,7 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Basis
 import Payasan.Base.Pitch

@@ -28,11 +28,6 @@ module Payasan.PSC.Backend.LilyPond.Utils
   , teeny_
 
   -- * pretty printers 
-  , ($?+$)
-
-  , vsep
-  , withString
-
   , command
   , value
   , quotedText
@@ -138,23 +133,6 @@ teeny_ d        = command "teeny" <+> d
 --------------------------------------------------------------------------------
 -- Pretty printing helpers
 
-
-vsep :: [Doc] -> Doc
-vsep []     = empty
-vsep [d]    = d
-vsep (d:ds) = d $+$ vsep ds
-
-withString :: String -> (String -> Doc) -> Doc
-withString ss f = if null ss then empty else f ss
-
-
-
-
-infixl 5 $?+$ 
-
-($?+$) :: Maybe Doc -> Doc -> Doc
-($?+$) (Nothing) d2 = d2
-($?+$) (Just d1) d2 = d1 $+$ d2
 
 
 

@@ -47,9 +47,9 @@ import Numeric ( showFFloat )
 
 
 
-firstInst :: Part ot ScoEvent -> Maybe Int
-firstInst (Part (e:_)) = Just $ inst_num $ event_body e
-firstInst _            = Nothing
+-- firstInst :: Part ot ScoEvent -> Maybe Int
+-- firstInst (Part (e:_)) = Just $ inst_num $ event_body e
+-- firstInst _            = Nothing
 
 renderScore :: ColumnSpecs -> Part Seconds ScoEvent -> Doc 
 renderScore specs p1 = 

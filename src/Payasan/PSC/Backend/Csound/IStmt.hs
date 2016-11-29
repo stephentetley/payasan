@@ -29,12 +29,11 @@ module Payasan.PSC.Backend.Csound.IStmt
   ) where
 
 import Payasan.PSC.Backend.Csound.Base ( InstNumber, Value(..), ellipsisEq )
+import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Basis
-import Payasan.Base.Utils
 
 
-import Data.Fixed
 import Data.Function ( on )
 
 

@@ -25,10 +25,10 @@ module Payasan.PSC.Backend.MIDI.Output
   ) where
 
 import Payasan.PSC.Backend.MIDI.PrimitiveSyntax
+import Payasan.PSC.Base.Utils
 
 import Payasan.Base.AltPitch (MidiPitch(..), getMidiPitch)
 import Payasan.Base.Basis (Seconds)
-import Payasan.Base.Utils
 
 import qualified ZMidi.Core as Z                -- packahe: zmidi-core
 

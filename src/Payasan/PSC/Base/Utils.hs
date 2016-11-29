@@ -18,13 +18,30 @@
 module Payasan.PSC.Base.Utils
   ( 
     
+  -- * Parsing
     ParsecParser
   , ParsecLexer
   , fullInputParse
 
+  -- * Pretty printing
+  , vsep
+  , sepList
+  , withString
+  , ($?+$)
   , punctuateSepEnd
   , ppTable
 
+    -- * Hughes list
+  , H
+  , emptyH
+  , appendH
+  , consH
+  , snocH
+  , wrapH
+  , replicateH
+  , toListH
+  , fromListH
+  
   )  where
 
 
@@ -36,6 +53,9 @@ import Text.PrettyPrint.HughesPJ                -- package: pretty
 import Control.Monad.Identity
 import Data.Char (isSpace)
 
+
+--------------------------------------------------------------------------------
+-- Parsing
 
 type ParsecParser a        = ParsecT String () Identity a
 type ParsecLexer           = GenTokenParser String () Identity
@@ -60,6 +80,36 @@ fullInputParse white p = white *> parseK >>= step
     parseK :: ParsecParser (a, SourcePos, String)
     parseK = (,,) <$> p <*> getPosition <*> getInput
 
+    
+    
+--------------------------------------------------------------------------------
+-- Pretty printing
+
+    
+vsep :: [Doc] -> Doc
+vsep = sepList ($+$)
+
+sepList :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
+sepList _  [] = empty
+sepList op (x:xs) = step x xs
+  where
+    step ac []     = ac
+    step ac (d:ds) = step (ac `op` d) ds
+    
+
+    
+
+withString :: String -> (String -> Doc) -> Doc
+withString ss f = if null ss then empty else f ss
+
+
+
+
+infixl 5 $?+$ 
+
+($?+$) :: Maybe Doc -> Doc -> Doc
+($?+$) (Nothing) d2 = d2
+($?+$) (Just d1) d2 = d1 $+$ d2
 
     
 -- | Special case pretty printer, probably only useful for 
@@ -92,4 +142,34 @@ ppTable cols hop (x:xs) = vcat $ go 1 x xs
     go _ ac []                  = [ac]
     
     
-    
+--------------------------------------------------------------------------------
+-- Hughes list
+-- Should be obsolete, but currently needed by MIDI output...
+
+
+type H a = [a] -> [a]
+
+emptyH :: H a 
+emptyH = id
+
+appendH :: H a -> H a -> H a
+appendH f g = f . g
+
+wrapH :: a -> H a 
+wrapH a = (a:)
+
+consH :: a -> H a -> H a
+consH a f = (a:) . f
+
+snocH :: H a -> a -> H a
+snocH f a = f . (a:)
+
+replicateH :: Int -> a -> H a
+replicateH i a = fromListH $ replicate i a
+
+
+toListH :: H a -> [a]
+toListH f = f $ []
+
+fromListH :: [a] -> H a
+fromListH xs = (xs++)

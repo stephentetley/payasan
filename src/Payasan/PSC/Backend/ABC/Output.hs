@@ -113,7 +113,11 @@ oABCPart (Part xs) = do { i <- return 4; step i xs }    -- TODO: line len hardco
                             }
 
 
-
+-- | Midtune fields are printed in square brackets so they don't
+-- need a separator (is this true?).
+-- 
+-- TODO - midtune fields need improving for clarity.
+--
 oSection :: Int -> Doc -> GenABCSection anno -> Mon Doc
 oSection cols end (Section _ info cs)  = 
     do { dkey    <- deltaKey info
@@ -127,7 +131,7 @@ oSection cols end (Section _ info cs)  =
     prefixK (Just k)      = (midtuneField 'K' (key k) <+>)
     prefixM Nothing       = (empty <>)
     prefixM (Just (m,u))  = let doc = ( midtuneField 'M' (meter m) 
-                                       <+> midtuneField 'L' (unitNoteLength u))
+                                       <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
 
 oBar :: GenABCBar anno -> Doc
