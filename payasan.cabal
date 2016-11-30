@@ -36,8 +36,6 @@ library
                       zmidi-core
   exposed-modules:
     Payasan.Base.AltPitch,
-    Payasan.Base.AnalysisCommon,
-    Payasan.Base.AnalysisTrace,
     Payasan.Base.Basis,
     Payasan.Base.Duration,
     Payasan.Base.Names.Chord,
@@ -131,6 +129,8 @@ library
     Payasan.PSC.Repr.IRSimpleTile.Syntax,
     Payasan.PSC.Repr.IRSimpleTile.ShowTabular,
     Payasan.PSC.Shell,
+    Payasan.Score.Analysis.Common,
+    Payasan.Score.Analysis.Trace,
     Payasan.Score.Cadenza.Notelist,
     Payasan.Score.Cadenza.Internal.CadenzaToExternal,
     Payasan.Score.Cadenza.Internal.InTrans,

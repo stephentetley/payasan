@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Base.AnalysisCommon
+-- Module      :  Payasan.Score.Analysis.Common
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Base.AnalysisCommon
+module Payasan.Score.Analysis.Common
   (
 
     Anchor

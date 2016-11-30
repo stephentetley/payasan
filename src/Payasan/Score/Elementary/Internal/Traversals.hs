@@ -107,11 +107,12 @@ module Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.Score.Elementary.Internal.Syntax
 
+import Payasan.Score.Analysis.Common
+import Payasan.Score.Analysis.Trace
+
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.AnalysisCommon
-import Payasan.Base.AnalysisTrace
 import Payasan.Base.Scale
 
 import Data.Bifunctor

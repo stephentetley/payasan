@@ -51,7 +51,7 @@ module Payasan.Score.Elementary.Internal.Operations
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Zipper
 
-import Payasan.Base.AnalysisCommon
+import Payasan.Score.Analysis.Common
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

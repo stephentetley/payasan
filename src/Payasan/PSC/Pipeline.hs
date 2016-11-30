@@ -165,6 +165,7 @@ debug f a = tell (f a) >> return a
 --------------------------------------------------------------------------------
 -- 
 
+transExternalToIRBeam :: a -> a
 transExternalToIRBeam = id
 
 fromABC :: EXT.Part ABCPitch ABCNoteLength () -> EXT.StdPart

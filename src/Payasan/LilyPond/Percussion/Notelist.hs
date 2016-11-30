@@ -82,6 +82,7 @@ import qualified Payasan.PSC.Pipeline                           as MAIN
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 -- TODO - remove at some point
+transExternalToIRBeam :: a -> a
 transExternalToIRBeam = id
 
 fromLilyPond :: LyDrumPart -> StdDrumPart

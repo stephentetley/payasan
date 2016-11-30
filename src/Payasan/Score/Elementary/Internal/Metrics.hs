@@ -46,8 +46,8 @@ module Payasan.Score.Elementary.Internal.Metrics
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
-import Payasan.Base.AnalysisCommon
-import Payasan.Base.AnalysisTrace
+import Payasan.Score.Analysis.Common
+import Payasan.Score.Analysis.Trace
 import Payasan.Base.Basis
 import Payasan.Base.Pitch
 import Payasan.Base.Diatonic

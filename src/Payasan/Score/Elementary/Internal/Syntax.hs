@@ -73,11 +73,12 @@ module Payasan.Score.Elementary.Internal.Syntax
 
   ) where
 
+import Payasan.Score.Analysis.Common
+
 import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
-import Payasan.Base.AnalysisCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
