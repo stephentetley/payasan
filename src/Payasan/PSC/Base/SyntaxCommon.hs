@@ -110,6 +110,11 @@ data StaffInfo = StaffInfo
   deriving (Data,Eq,Show,Typeable)
 
 
+  
+-- | Note - if we never introspect on Clef except to print in 
+-- ABC or LilyPond there is only minor safety to be gained by 
+-- an enum rather a String. A String would be user-extensible...
+--
 data Clef = TREBLE | BASS
   deriving (Data,Eq,Show,Typeable)
 

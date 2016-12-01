@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -30,7 +31,14 @@ module Payasan.PSC.CompilerMonad
   , localUE
   , askUE
   , asksUE
-   
+ 
+ 
+  , payasan_TEMP_DIR_VARIABLE
+  , TempDirLoc(..)
+  , default_temp_dir_location
+  
+  , getTempDirectory
+  
   , getEnvCM
   , localWorkingDirectory
   , localWorkingDirectory_byEnv
@@ -44,6 +52,8 @@ module Payasan.PSC.CompilerMonad
 import Control.Monad.IO.Class
 import Control.Exception ( try )
 
+
+import Data.Data
 
 import System.Directory
 import System.Environment
@@ -127,6 +137,11 @@ throwErr :: ErrMsg -> CM ue a
 throwErr msg = CM $ \_ _ -> return (Left msg)
 
 
+-- | @guard@ might be the wrong name
+guard :: CM ue a -> (ErrMsg -> CM ue a) -> CM ue a
+guard ma handler = CM $ \q r -> getCM ma q r >>= \a -> case a of
+    Left err  -> getCM (handler err) q r
+    Right ans -> return $ Right ans
 
 instance MonadIO (CM ue) where
   liftIO ma = CM $ \_ _ -> ma >>= \a -> return (Right a)
@@ -141,6 +156,51 @@ runCM ue ma =
        }
 
 
+--------------------------------------------------------------------------------
+-- Working with temp files
+
+-- A "compiler" might want to run a shell command to invoke 
+-- lilypond or abcm2ps and generate a pdf or PostScript file 
+-- as the final result (the abc or ly file will be considered
+-- a temp). Therefore working with temp files is one of the 
+-- services the CompilerMonad should provide help with.
+
+
+-- | Environment variable pointing to the temp dir.
+-- 
+-- > PAYASAN_TEMP_DIR
+--
+-- Obviously a user can set the variable (or even change
+-- it's name to something else in compilers that use it).
+--
+payasan_TEMP_DIR_VARIABLE :: String
+payasan_TEMP_DIR_VARIABLE = "PAYASAN_TEMP_DIR"
+
+
+data TempDirLoc = EnvVarPointer  !String
+                | NamedDirectory !FilePath
+  deriving (Data,Eq,Show,Typeable)
+
+  
+default_temp_dir_location :: TempDirLoc
+default_temp_dir_location = EnvVarPointer payasan_TEMP_DIR_VARIABLE
+  
+
+-- | TODO - should print a failure warning, before defaulting to cwd.
+--
+getTempDirectory :: TempDirLoc -> CM ue FilePath
+getTempDirectory loc = 
+    guard (step1 loc) (\_ -> liftIO getCurrentDirectory)
+  where
+    step1 (EnvVarPointer name)  = getEnvCM name >>= getDir
+    step1 (NamedDirectory path) = getDir path
+       
+    getDir dir  = do { ans <- liftIO $ doesDirectoryExist dir
+                     ; if ans then return dir
+                              else throwErr $ "Directory does not exist: " ++ dir
+                     }
+ 
+  
        
 -- | CM version of @getEnv@.
 --
@@ -154,6 +214,8 @@ getEnvCM name = CM $ \_ _ ->
     fn (Left _)  = Left $ "Could not deref environment variable: " ++ name
     fn (Right a) = Right a
     
+
+
 -- Probably need a version of try (bracket/handle...)
 
 localWorkingDirectory :: FilePath -> CM ue a -> CM ue a

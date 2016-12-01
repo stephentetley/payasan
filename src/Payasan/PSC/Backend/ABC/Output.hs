@@ -79,38 +79,46 @@ type ABCNoteGroupOut anno       = NoteGroup   ABCPitch ABCNoteLength anno
 type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 
 
-
-abcOutput :: ScoreInfo -> StaffInfo -> ABCPartOut anno -> Doc
-abcOutput infos staff ph = header $+$ body
+-- | Note that line count for ABC output is "sketchy" - we might 
+-- expect users to hand-edit formatting for final printing if  
+-- bars do not fit nicely in 3s or 4s (no need to add advanced 
+-- capabilities to PSC).
+-- 
+abcOutput :: String -> Clef -> Int -> ABCPartOut anno -> Doc
+abcOutput title clefname cols ph = header $+$ body
   where
     first_info  = maybe default_section_info id $ firstSectionInfo ph
-    header      = oHeader infos staff first_info
-    body        = evalRewrite (oABCPart ph) (stateZero first_info)
+    header      = oHeader title clefname first_info
+    body        = evalRewrite (oABCPart cols ph) (stateZero first_info)
 
+    
 -- | Note X field must be first K field should be last -
 -- see abcplus manual page 11.
+-- 
+-- At some point we should lift this function into the user API
+-- so it can be customized...
 --
-oHeader :: ScoreInfo -> StaffInfo -> SectionInfo -> Doc
-oHeader infos staff locals = 
+oHeader :: String -> Clef -> SectionInfo -> Doc
+oHeader title clefname locals = 
         field 'X' (int 1)
-    $+$ field 'T' (text   $ score_title infos)
+    $+$ field 'T' (text title)
     $+$ field 'M' (meter  $ section_meter locals)
     $+$ field 'L' (unitNoteLength $ section_unit_note_len locals)
     $+$ field 'K' key_clef 
   where
-    key_clef = (key $ section_key locals) <+> (clef $ staff_clef staff)
+    key_clef = (key $ section_key locals) <+> (clef clefname)
 
 
 
-oABCPart :: ABCPartOut anno -> Mon Doc
-oABCPart (Part xs) = do { i <- return 4; step i xs }    -- TODO: line len hardcoded
+oABCPart :: Int -> ABCPartOut anno -> Mon Doc
+oABCPart cols (Part xs) = step xs
   where
-    step _    []       = return empty
-    step cols [s]      = oSection cols (text "|]") s
-    step cols (s:ss)   = do { d1 <- oSection cols (char '|') s
-                            ; ds <- step cols ss
-                            ; return (d1 $+$ ds)
-                            }
+    step []       = return empty
+    step [s]      = oSection cols (text "|]") s
+    step (s:ss)   = do { d1 <- oSection cols (char '|') s
+                       ; ds <- step ss
+                       ; return (d1 $+$ ds)
+                       }
 
 
 -- | Midtune fields are printed in square brackets so they don't
