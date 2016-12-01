@@ -24,8 +24,17 @@ module Payasan.PSC.ABC.Compile
 
 
 import Payasan.PSC.CompilerMonad
-import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.PSC.Backend.ABC.Output
+import Payasan.PSC.Backend.ABC.OutTrans
+import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
+import Payasan.PSC.Repr.External.Syntax
+
+
+import Text.PrettyPrint.HughesPJ                -- package: pretty
+
+import Control.Monad
 import Control.Monad.IO.Class
 import Data.Data
 import System.FilePath
@@ -45,17 +54,23 @@ type ABCCompile a = CM ABCEnv a
 -- isn't a simple "clef field".
 --
 data ABCEnv = ABCEnv 
-    { abc_clef          :: !Clef
-    , abc_cwd_loc       :: !TempDirLoc
-    , abc_outfile_name  :: !String
+    { abc_tune_title            :: String
+    , abc_clef                  :: !Clef
+    , abc_cwd_loc               :: !TempDirLoc
+    , abc_outfile_name          :: !String
+    , abc_bars_per_line         :: !Int
+    , abc_recalc_beams          :: !Bool
     }
   deriving (Data,Eq,Show,Typeable)
   
 env_zero :: ABCEnv
 env_zero = ABCEnv 
-    { abc_clef = TREBLE
-    , abc_cwd_loc = default_temp_dir_location
-    , abc_outfile_name = "abc_output.abc"
+    { abc_tune_title            = "Tune 1"
+    , abc_clef                  = TREBLE
+    , abc_cwd_loc               = default_temp_dir_location
+    , abc_outfile_name          = "abc_output.abc"
+    , abc_bars_per_line         = 4
+    , abc_recalc_beams          = False    -- default should really be True once we ahve bits in place again
     }    
     
 {-
@@ -74,6 +89,38 @@ outputAsABC infos staff =
              . transExternalToIRBeam
              
 -}             
+
+
+-- | Do we want to recalc beams (probably...)
+
+compilePartToNoteList :: StdPart1 anno -> ABCCompile ABCNoteListDoc
+compilePartToNoteList p = do 
+    { let info = maybe (error "not Just - compilePartToNoteList") id (firstSectionInfo p)
+    ; p1 <- rebeam p 
+    ; p2 <- normalize p1
+    ; let p3 = evalRewrite (makeABCNoteListDoc 4 p2) (stateZero info)
+    ; return p3
+    }
+  where
+    normalize = return . translateToABCPartOut
+    rebeam s = do { ans <- asksUE abc_recalc_beams
+                  ; if ans then (addBeams <=< delBeams) s else return s 
+                  }
+    -- TEMP
+    addBeams = return 
+    delBeams = return
+
+    
+assembleOutput :: SectionInfo -> ABCNoteListDoc -> ABCCompile Doc
+assembleOutput info notes = do 
+    { (title, clef) <- tuneConfig
+    ; return $ assembleABC (makeHeader title clef info) notes
+    }
+  where
+    tuneConfig = (,) <$> asksUE abc_tune_title <*> asksUE abc_clef 
+                      
+                      
+
     
 -- | ABC has already been rendered to String.
 --

@@ -16,7 +16,15 @@
 
 module Payasan.PSC.Backend.ABC.Output
   ( 
-    abcOutput
+    
+    ABCHeader
+  , makeHeader
+  , makeABCNoteListDoc
+  , assembleABC
+  
+  -- OLD (DEPRECATED)
+  , abcOutput
+  , stateZero
   ) where
 
 import Payasan.PSC.Backend.ABC.Utils
@@ -79,37 +87,60 @@ type ABCNoteGroupOut anno       = NoteGroup   ABCPitch ABCNoteLength anno
 type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 
 
--- | Note that line count for ABC output is "sketchy" - we might 
--- expect users to hand-edit formatting for final printing if  
--- bars do not fit nicely in 3s or 4s (no need to add advanced 
--- capabilities to PSC).
--- 
+-- Maybe Doc fragments should use a common (phantom) type?
+-- This would prevent a proliferation of slightly differently 
+-- named wrappers / unwrappers, but allow some type 
+-- differentiation (safety) in APIs.
+--
+newtype ABCHeader = ABCHeader { getHeader :: Doc }
+
+
+-- | Note that line count for ABC output is "sketchy" - we 
+-- might expect users to hand-edit formatting for final printing 
+-- if bars do not fit nicely in 3s or 4s (no need to add 
+-- advanced capabilities to PSC).
+--
+-- TODO - we are really doing "document assembly" here (rather 
+-- than "document generation"). This function is now deprecated, 
+-- its successor is @assembleABC@.
+--
+-- "Document assembly" is so simple that it would not need to 
+-- be run in a monad.
+--
 abcOutput :: String -> Clef -> Int -> ABCPartOut anno -> Doc
 abcOutput title clefname cols ph = header $+$ body
   where
     first_info  = maybe default_section_info id $ firstSectionInfo ph
-    header      = oHeader title clefname first_info
+    header      = getHeader $ makeHeader title clefname first_info
     body        = evalRewrite (oABCPart cols ph) (stateZero first_info)
 
+ 
+assembleABC :: ABCHeader -> ABCNoteListDoc -> Doc
+assembleABC header body = getHeader header $+$ getABCNoteListDoc body
+    
     
 -- | Note X field must be first K field should be last -
 -- see abcplus manual page 11.
 -- 
--- At some point we should lift this function into the user API
--- so it can be customized...
+-- At some point we should allow this function to be customized...
 --
-oHeader :: String -> Clef -> SectionInfo -> Doc
-oHeader title clefname locals = 
-        field 'X' (int 1)
-    $+$ field 'T' (text title)
-    $+$ field 'M' (meter  $ section_meter locals)
-    $+$ field 'L' (unitNoteLength $ section_unit_note_len locals)
-    $+$ field 'K' key_clef 
+makeHeader :: String -> Clef -> SectionInfo -> ABCHeader
+makeHeader title clefname locals = 
+    ABCHeader $ vcat $
+       [ field 'X' (int 1)
+       , field 'T' (text title)
+       , field 'M' (meter  $ section_meter locals)
+       , field 'L' (unitNoteLength $ section_unit_note_len locals)
+       , field 'K' key_clef 
+       ]
   where
     key_clef = (key $ section_key locals) <+> (clef clefname)
 
 
-
+-- TODO - this should become part of the public API generating
+-- an ABCNoteListDoc. @abcOutput@ should be reduced to 
+-- @abcAssemble@.
+-- 
 oABCPart :: Int -> ABCPartOut anno -> Mon Doc
 oABCPart cols (Part xs) = step xs
   where
@@ -119,6 +150,12 @@ oABCPart cols (Part xs) = step xs
                        ; ds <- step ss
                        ; return (d1 $+$ ds)
                        }
+
+-- Quick wrapper to expose oABCPart.
+-- Replace oABCPart once we've made abcOutput redundant.
+--
+makeABCNoteListDoc :: Int -> ABCPartOut anno -> Mon ABCNoteListDoc
+makeABCNoteListDoc cols = fmap ABCNoteListDoc . oABCPart cols
 
 
 -- | Midtune fields are printed in square brackets so they don't
