@@ -21,7 +21,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Output
 
 import Payasan.LilyPond.FretDiagram.Internal.Base
 
-import Payasan.PSC.Repr.External.Syntax (Part, firstSectionInfo)  -- TODO
+import Payasan.PSC.Repr.External.Syntax (Part, initialSectionInfo)  -- TODO
 
 import Payasan.PSC.Backend.LilyPond.SimpleOutput
 import Payasan.PSC.Backend.LilyPond.Utils
@@ -43,7 +43,7 @@ fretDiagramOutput globals diags ph =
   where
     defuse          = diagramDU diags
     header          = scoreHeader globals
-    locals1         = maybe default_section_info id $ firstSectionInfo ph
+    locals1         = initialSectionInfo ph
     notes           = lilypondNoteList fret_def locals1 ph
 
     fret_def        :: LyOutputDef LyPitch FretDiagram

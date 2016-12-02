@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.ABC.OutTrans
+-- Module      :  Payasan.PSC.ABC.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.ABC.OutTrans
+module Payasan.PSC.ABC.OutTrans
   (
     translateToABCPartOut
   ) where

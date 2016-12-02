@@ -32,6 +32,7 @@ module Payasan.PSC.CompilerMonad
   , askUE
   , asksUE
  
+  , rewrite
  
   , payasan_TEMP_DIR_VARIABLE
   , TempDirLoc(..)
@@ -48,6 +49,7 @@ module Payasan.PSC.CompilerMonad
   ) where
 
 
+import Payasan.PSC.Base.RewriteMonad
 
 import Control.Monad.IO.Class
 import Control.Exception ( try )
@@ -154,6 +156,13 @@ runCM ue ma =
     do { ce <- zero_CMEnv
        ; getCM ma ce ue
        }
+
+
+--------------------------------------------------------------------------------
+-- Run rewrites
+
+rewrite :: Rewrite env st a -> env -> st -> CM ue a
+rewrite ma env st = CM $ \_ _ -> return (evalRewrite ma env st)
 
 
 --------------------------------------------------------------------------------

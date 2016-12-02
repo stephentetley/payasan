@@ -109,7 +109,7 @@ rhythmicMarkupVoice def ph =
     block (Just newRhythmicStaff_) 
           (absolute_ $+$ notes_header $+$ (getLyNoteListDoc notes))
   where
-    local1          = maybe default_section_info id $ firstSectionInfo ph
+    local1          = initialSectionInfo ph
     notes_header    = oPartHeader local1
     notes           = lilypondNoteList def local1 ph
 

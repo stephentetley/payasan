@@ -38,7 +38,7 @@ chordmodeOutput globals ph =
     $+$ chordmodeBlock (getLyNoteListDoc notes)
   where
     header          = scoreHeader globals
-    local1          = maybe default_section_info id $ EXT.firstSectionInfo ph
+    local1          = EXT.initialSectionInfo ph
     notes           = lilypondNoteList chord_def local1 ph
     chord_def       = LyOutputDef { printPitch = pitch
                                   , printAnno  = oChordSuffix }

@@ -48,7 +48,7 @@ import Payasan.Base.Scale
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
-type Mon a = Rewrite State a
+type Mon a = Rewrite () State a
 
 data State = State 
     { prev_info         :: !SectionInfo
@@ -153,7 +153,7 @@ simpleVoice_Relative :: LyOutputDef pch anno
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
-    local1          = maybe default_section_info id $ firstSectionInfo ph
+    local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
     notes           = getLyNoteListDoc $ lilypondNoteList def local1 ph
 
@@ -163,11 +163,16 @@ simpleVoice_Absolute :: LyOutputDef pch anno
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
-    local1          = maybe default_section_info id $ firstSectionInfo ph
+    local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
     notes           = getLyNoteListDoc $ lilypondNoteList def local1 ph
 
 
+
+
+fromRight :: Either z a -> a
+fromRight (Right a) = a
+fromRight _         = error "fromRight is really bad, to be removed soon."
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -182,7 +187,7 @@ lilypondNoteList :: forall pch anno.
                  -> GenLyPartOut pch anno
                  -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
-    evalRewrite (final =<< oLyPart ph) (stateZero prefix_locals)
+    fromRight $ evalRewrite (final =<< oLyPart ph) () (stateZero prefix_locals)
   where
     final d = do { od <- getTerminator
                  ; case od of Nothing -> return $ LyNoteListDoc d

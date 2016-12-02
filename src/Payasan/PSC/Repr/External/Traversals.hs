@@ -40,29 +40,35 @@ module Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Base.SyntaxCommon
 
 
-type Mon st a = Rewrite st a
+type Mon st a = Rewrite SectionInfo st a
 
+fromRight :: Either z a -> a
+fromRight _ = error "fromRight"
 
 genTransform :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
              -> Part p1 d1 a1
              -> Part p2 d2 a2
-genTransform elemT st0 ph = evalRewrite (partT elemT ph) st0
+genTransform elemT st0 ph = 
+    fromRight $ evalRewrite (partT elemT ph) default_section_info st0
 
 genTransformSection :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
                     -> st
                     -> Section p1 d1 a1
                     -> Section p2 d2 a2
-genTransformSection elemT st0 se = evalRewrite (sectionT elemT se) st0
+genTransformSection elemT st0 se = 
+    fromRight $ evalRewrite (sectionT elemT se) default_section_info st0
 
 
 genTransformBars :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
                  -> st
                  -> [Bar p1 d1 a1]
                  -> [Bar p2 d2 a2]
-genTransformBars elemT st0 bs = evalRewrite (mapM (barT elemT) bs) st0
+genTransformBars elemT st0 bs = 
+    fromRight $ evalRewrite (mapM (barT elemT) bs) default_section_info st0
   
 
 

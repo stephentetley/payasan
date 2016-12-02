@@ -25,8 +25,8 @@ module Payasan.PSC.ABC.Compile
 
 import Payasan.PSC.CompilerMonad
 
-import Payasan.PSC.Backend.ABC.Output
-import Payasan.PSC.Backend.ABC.OutTrans
+import Payasan.PSC.ABC.Output
+import Payasan.PSC.ABC.OutTrans
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Repr.External.Syntax
@@ -95,10 +95,10 @@ outputAsABC infos staff =
 
 compilePartToNoteList :: StdPart1 anno -> ABCCompile ABCNoteListDoc
 compilePartToNoteList p = do 
-    { let info = maybe (error "not Just - compilePartToNoteList") id (firstSectionInfo p)
-    ; p1 <- rebeam p 
+    { p1 <- rebeam p 
     ; p2 <- normalize p1
-    ; let p3 = evalRewrite (makeABCNoteListDoc 4 p2) (stateZero info)
+    ; let info = initialSectionInfo p
+    ; p3 <- rewrite (makeABCNoteListDoc 4 p2) () (stateZero info)
     ; return p3
     }
   where

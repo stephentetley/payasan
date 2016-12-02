@@ -42,8 +42,8 @@ module Payasan.PSC.Pipeline
   , fromLilyPondWith_Relative
   , fromLilyPondWithIO_Relative  -- temp ?
   
-  , outputAsABC
-  , printAsABC
+--  , outputAsABC
+--  , printAsABC
 
   , LilyPondPipeline(..)
   , genOutputAsLilyPond
@@ -91,8 +91,6 @@ import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as MIDI
 import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC
 import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
 
-import qualified Payasan.PSC.Backend.ABC.OutTrans             as ABCOut
-import qualified Payasan.PSC.Backend.ABC.Output               as ABCOut
 
 
 import qualified Payasan.PSC.Repr.External.LilyPondInTrans    as LY
@@ -209,7 +207,7 @@ fromLilyPondWithIO_Relative pch locals ph =
               }
 
 
-
+{-
 outputAsABC :: ScoreInfo -> StaffInfo -> EXT.StdPart1 anno -> String
 outputAsABC infos staff = 
     ppRender . ABCOut.abcOutput (score_title infos) (staff_clef staff) 4
@@ -219,7 +217,7 @@ outputAsABC infos staff =
 
 printAsABC :: ScoreInfo -> StaffInfo -> EXT.StdPart1 anno -> IO ()
 printAsABC infos staff = putStrLn . outputAsABC infos staff
-
+-}
 
 -- | This can capture both full score output and just notelist 
 -- output by supplying the appropriate output function.

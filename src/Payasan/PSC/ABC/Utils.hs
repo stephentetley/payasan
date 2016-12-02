@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.ABC.Utils
+-- Module      :  Payasan.PSC.ABC.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.ABC.Utils
+module Payasan.PSC.ABC.Utils
   ( 
 
   -- * Output

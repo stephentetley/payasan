@@ -62,8 +62,11 @@ import Payasan.Base.Scale
 import Data.Foldable (foldlM)
 import Data.Maybe
 
-type Mon st a = Rewrite st a
+type Mon st a = Rewrite SectionInfo st a
 
+
+fromRight :: Either z a -> a
+fromRight _ = error "fromRight TODO"
 
 -- | Do not expose this as it is too general / complex.
 --
@@ -73,7 +76,8 @@ genCollect :: forall st pch drn anno ac.
            -> st
            -> Section pch drn anno 
            -> ac
-genCollect mf a0 st ph = evalRewrite (partC a0 ph) st
+genCollect mf a0 st ph = 
+    fromRight $ evalRewrite (partC a0 ph) default_section_info st
   where
 
     partC :: ac -> Section pch drn anno -> Mon st ac
@@ -92,7 +96,8 @@ genTransform :: forall st p1 p2 d1 d2 a1 a2.
              -> st
              -> Section p1 d1 a1
              -> Section p2 d2 a2
-genTransform elemT st0 ph = evalRewrite (partT ph) st0
+genTransform elemT st0 ph = 
+    fromRight $ evalRewrite (partT ph) default_section_info st0
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 

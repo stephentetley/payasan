@@ -44,11 +44,14 @@ import Payasan.Base.Duration
 --
 
 
-type Mon a = Rewrite Seconds a
+type Mon a = Rewrite () Seconds a
 
+
+fromRight :: Either z a -> a
+fromRight _ = error "fromRight MIDI bad"
 
 translateToMIDI :: T.TrackData -> Part T.MidiPitch Duration anno -> T.Track
-translateToMIDI td ph = T.Track $ evalRewrite (partT td ph) 0
+translateToMIDI td ph = T.Track $ fromRight $ evalRewrite (partT td ph) () 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.

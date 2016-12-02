@@ -17,7 +17,8 @@
 module Payasan.PSC.Base.RewriteMonad
   ( 
 
-    Rewrite
+    RewriteError
+  , Rewrite
   , evalRewrite
 
   , get
@@ -27,57 +28,67 @@ module Payasan.PSC.Base.RewriteMonad
   , ask
   , asks
   , local
-
+  , throwError
+  
   )  where
 
-import Payasan.PSC.Base.SyntaxCommon
 
 --------------------------------------------------------------------------------
 
+type RewriteError = String
+
 
 -- | Rewrite monad - Reader+State.
-newtype Rewrite st a = Rewrite { 
-    getRewrite :: SectionInfo -> st -> (st, a) }
+newtype Rewrite env st a = Rewrite { 
+    getRewrite :: env -> st -> Either RewriteError (st, a) }
 
-instance Functor (Rewrite st) where
+instance Functor (Rewrite env st) where
   fmap f ma = Rewrite $ \r1 s -> 
-                let (s1,a) = getRewrite ma r1 s in (s1, f a)
+                getRewrite ma r1 s >>= \(s1,a) -> return (s1, f a)
 
-instance Applicative (Rewrite st) where
-  pure a    = Rewrite $ \_  s -> (s,a)
+instance Applicative (Rewrite env st) where
+  pure a    = Rewrite $ \_  s -> return (s,a)
   mf <*> ma = Rewrite $ \r1 s -> 
-                let (s1,f) = getRewrite mf r1 s
-                    (s2,a) = getRewrite ma r1 s1
-                in (s2, f a)
+                getRewrite mf r1 s >>= \(s1,f) ->
+                getRewrite ma r1 s1 >>= \(s2,a) ->
+                return (s2, f a)
 
-instance Monad (Rewrite st) where
+instance Monad (Rewrite env st) where
   return    = pure
   ma >>= k  = Rewrite $ \r1 s -> 
-                let (s1,a) = getRewrite ma r1 s in getRewrite (k a) r1 s1
+                getRewrite ma r1 s >>= \(s1,a) -> getRewrite (k a) r1 s1
+                
+
+-- TODO - is an Alternative instance useful?
  
-evalRewrite :: Rewrite st a -> st -> a
-evalRewrite ma s = 
-    let (_,a) = getRewrite ma default_section_info s in a
+evalRewrite :: Rewrite env st a -> env -> st -> Either RewriteError a
+evalRewrite ma r s = fmap snd $ getRewrite ma r s
 
 
-get :: Rewrite st st
-get = Rewrite $ \_ s -> (s,s)
+get :: Rewrite env st st
+get = Rewrite $ \_ s -> return (s,s)
 
-gets :: (st -> a) -> Rewrite st a
-gets f = Rewrite $ \_ s -> (s,f s)
+gets :: (st -> a) -> Rewrite env st a
+gets f = Rewrite $ \_ s -> return (s,f s)
 
-put :: st -> Rewrite st ()
-put s = Rewrite $ \_ _ -> (s,())
+put :: st -> Rewrite env st ()
+put s = Rewrite $ \_ _ -> return (s,())
 
-puts :: (st -> st) -> Rewrite st ()
-puts f = Rewrite $ \_ s -> (f s,())
+puts :: (st -> st) -> Rewrite env st ()
+puts f = Rewrite $ \_ s -> return (f s,())
 
 
-ask :: Rewrite st SectionInfo
-ask = Rewrite $ \r s -> (s,r)
+ask :: Rewrite env st env
+ask = Rewrite $ \r s -> return (s,r)
 
-asks :: (SectionInfo -> a) -> Rewrite st a
-asks f = Rewrite $ \r s -> (s,f r)
+asks :: (env -> a) -> Rewrite env st a
+asks f = Rewrite $ \r s -> return (s,f r)
 
-local :: SectionInfo -> Rewrite st a -> Rewrite st a
+local :: env -> Rewrite env st a -> Rewrite env st a
 local r ma = Rewrite $ \_ s -> getRewrite ma r s
+
+throwError :: RewriteError -> Rewrite env st a
+throwError msg = Rewrite $ \_ _ -> Left msg
+
+
+

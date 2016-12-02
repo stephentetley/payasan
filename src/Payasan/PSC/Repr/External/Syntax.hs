@@ -55,7 +55,7 @@ module Payasan.PSC.Repr.External.Syntax
   -- * Operations
   , pushSectionInfo
   , sizeNoteGroup
-  , firstSectionInfo
+  , initialSectionInfo
 
   , extractSectionInfos
 
@@ -243,10 +243,17 @@ sizeElement (Graces {})                 = 0
 sizeElement (Punctuation {})            = 0
 
 
+-- | Returns default section info (4/4 time, C major) if the 
+-- Part has no Sections.
+-- 
+-- Pragmatically this is okay, SectionInfo has reasonable
+-- defaults and we want to avoid Maybe proliferations in e.g 
+-- rewrite traversals.
+--
+initialSectionInfo :: Part pch drn anno -> SectionInfo
+initialSectionInfo (Part [])    = default_section_info
+initialSectionInfo (Part (s:_)) = section_info s
 
-firstSectionInfo :: Part pch drn anno -> Maybe SectionInfo
-firstSectionInfo (Part [])    = Nothing
-firstSectionInfo (Part (s:_)) = Just $ section_info s
 
 extractSectionInfos :: Part pch drn anno -> [SectionInfo]
 extractSectionInfos = map section_info . part_sections

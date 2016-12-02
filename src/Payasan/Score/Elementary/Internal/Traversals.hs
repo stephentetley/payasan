@@ -498,8 +498,11 @@ transformPitchIx f = transformIx (\ix -> trafoPch (f ix))
 --------------------------------------------------------------------------------
 -- Trafos below /feel/ old...
 
-type Mon st a = Rewrite st a
+type Mon st a = Rewrite SectionInfo st a
 
+fromRight :: Either z a -> a
+fromRight (Right a) = a
+fromRight _         = error "fromRight is really bad, to be removed soon."
 
 
 -- | Do not expose this as it is too general / complex.
@@ -510,7 +513,8 @@ genCollect :: forall st pch drn anno ac.
            -> st
            -> Section pch drn anno 
            -> ac
-genCollect mf a0 st ph = evalRewrite (partC a0 ph) st
+genCollect mf a0 st ph = 
+    fromRight $ evalRewrite (partC a0 ph) (section_info ph) st  -- | TODO fromRight
   where
     partC :: ac -> Section pch drn anno -> Mon st ac
     partC ac (Section info bs)     = local info (foldlM barC ac bs)
@@ -531,7 +535,7 @@ genTransform :: forall st p1 p2 d1 d2 a1 a2.
              -> Section p1 d1 a1
              -> Section p2 d2 a2
 genTransform elemT st0 ph = 
-    evalRewrite (partT ph) st0
+    fromRight $ evalRewrite (partT ph) (section_info ph) st0   -- | TODO fromRight
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 

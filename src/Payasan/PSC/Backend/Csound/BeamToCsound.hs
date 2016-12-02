@@ -44,11 +44,15 @@ makeGenIStmt :: (CpsPitch -> anno -> Seconds -> Seconds -> IStmt) -> GenIStmt an
 makeGenIStmt = GenIStmt
 
 
-type Mon a = Rewrite Seconds a
+type Mon a = Rewrite () Seconds a
+
+
+fromRight :: Either z a -> a
+fromRight _ = error "fromRight awful"
 
 
 translateToCsound :: GenIStmt anno -> Part CpsPitch Duration anno -> [IStmt]
-translateToCsound gf ph = evalRewrite (partT gf ph) 0
+translateToCsound gf ph = fromRight $ evalRewrite (partT gf ph) () 0
 
 
 -- Work in seconds rather than MIDI ticks at this stage.

@@ -44,8 +44,8 @@ module Payasan.Score.Elementary.Notelist
   , fromLilyPond_Relative
   , fromLilyPondWith_Relative
 
-  , outputAsABC
-  , printAsABC
+--  , outputAsABC
+--  , printAsABC
 
   , MAIN.LilyPondPipeline(..)
   , MAIN.LilyPondPipeline2(..)
@@ -118,7 +118,7 @@ fromLilyPondWith_Relative :: Pitch
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushSectionInfo locals
 
-
+{-
 outputAsABC :: ScoreInfo -> StaffInfo -> String -> StdElemSection -> String
 outputAsABC infos staff name = 
     MAIN.outputAsABC infos staff . transElementaryToExternal name
@@ -126,7 +126,7 @@ outputAsABC infos staff name =
 printAsABC :: ScoreInfo -> StaffInfo -> String -> StdElemSection -> IO ()
 printAsABC infos staff name = 
     MAIN.printAsABC infos staff . transElementaryToExternal name
-
+-}
 
 
 genOutputAsLilyPond :: MAIN.LilyPondPipeline p1 a1 p2 a2

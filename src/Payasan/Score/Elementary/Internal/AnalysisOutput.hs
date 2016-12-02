@@ -46,7 +46,7 @@ analysisScore def infos ph =
     header $+$ score_ (analysis_layout $+$ (getLyNoteListDoc notes))
   where
     header          = scoreHeader infos
-    local1          = maybe default_section_info id $ firstSectionInfo ph
+    local1          = initialSectionInfo ph
     notes           = lilypondNoteList def local1 ph
 
 analysis_layout :: Doc

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.ABC.Output
+-- Module      :  Payasan.PSC.ABC.Output
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.ABC.Output
+module Payasan.PSC.ABC.Output
   ( 
     
     ABCHeader
@@ -22,12 +22,10 @@ module Payasan.PSC.Backend.ABC.Output
   , makeABCNoteListDoc
   , assembleABC
   
-  -- OLD (DEPRECATED)
-  , abcOutput
   , stateZero
   ) where
 
-import Payasan.PSC.Backend.ABC.Utils
+import Payasan.PSC.ABC.Utils
 
 import Payasan.PSC.Repr.External.Syntax
 
@@ -45,7 +43,7 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 type CatOp = Doc -> Doc -> Doc
 
 
-type Mon a = Rewrite State a
+type Mon a = Rewrite () State a
 
 data State = State { prev_info  :: !SectionInfo }
 
@@ -95,26 +93,11 @@ type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 newtype ABCHeader = ABCHeader { getHeader :: Doc }
 
 
--- | Note that line count for ABC output is "sketchy" - we 
--- might expect users to hand-edit formatting for final printing 
--- if bars do not fit nicely in 3s or 4s (no need to add 
--- advanced capabilities to PSC).
---
--- TODO - we are really doing "document assembly" here (rather 
--- than "document generation"). This function is now deprecated, 
--- its successor is @assembleABC@.
---
--- "Document assembly" is so simple that it would not need to 
--- be run in a monad.
---
-abcOutput :: String -> Clef -> Int -> ABCPartOut anno -> Doc
-abcOutput title clefname cols ph = header $+$ body
-  where
-    first_info  = maybe default_section_info id $ firstSectionInfo ph
-    header      = getHeader $ makeHeader title clefname first_info
-    body        = evalRewrite (oABCPart cols ph) (stateZero first_info)
 
- 
+
+-- | "Document assembly" is so simple that it does not need to 
+-- run in a monad.
+--
 assembleABC :: ABCHeader -> ABCNoteListDoc -> Doc
 assembleABC header body = getHeader header $+$ getABCNoteListDoc body
     
@@ -137,12 +120,13 @@ makeHeader title clefname locals =
     key_clef = (key $ section_key locals) <+> (clef clefname)
 
 
--- TODO - this should become part of the public API generating
--- an ABCNoteListDoc. @abcOutput@ should be reduced to 
--- @abcAssemble@.
--- 
-oABCPart :: Int -> ABCPartOut anno -> Mon Doc
-oABCPart cols (Part xs) = step xs
+-- | Note that line count for ABC output is "sketchy" - we 
+-- might expect users to hand-edit formatting for final printing 
+-- if bars do not fit nicely in 3s or 4s (no need to add 
+-- advanced capabilities to PSC).
+--
+makeABCNoteListDoc :: Int -> ABCPartOut anno -> Mon ABCNoteListDoc
+makeABCNoteListDoc cols (Part xs) = fmap ABCNoteListDoc $ step xs
   where
     step []       = return empty
     step [s]      = oSection cols (text "|]") s
@@ -151,20 +135,13 @@ oABCPart cols (Part xs) = step xs
                        ; return (d1 $+$ ds)
                        }
 
--- Quick wrapper to expose oABCPart.
--- Replace oABCPart once we've made abcOutput redundant.
---
-makeABCNoteListDoc :: Int -> ABCPartOut anno -> Mon ABCNoteListDoc
-makeABCNoteListDoc cols = fmap ABCNoteListDoc . oABCPart cols
-
-
 -- | Midtune fields are printed in square brackets so they don't
 -- need a separator (is this true?).
 -- 
 -- TODO - midtune fields need improving for clarity.
 --
 oSection :: Int -> Doc -> ABCSectionOut anno -> Mon Doc
-oSection cols end (Section _ info cs)  = 
+oSection cols end (Section _ info cs) = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
        ; let ans = ppSection cols end $ map oBar cs 
