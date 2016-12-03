@@ -19,7 +19,9 @@ module Payasan.PSC.ABC.Compile
   ( 
     
     ABCCompile
-  
+
+  , compile
+
   ) where
 
 
@@ -29,6 +31,7 @@ import Payasan.PSC.ABC.Output
 import Payasan.PSC.ABC.OutTrans
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
+import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.External.Syntax
 
 
@@ -89,6 +92,19 @@ outputAsABC infos staff =
              . transExternalToIRBeam
              
 -}             
+
+compile :: StdPart1 anno -> IO ()
+compile part = runCM env_zero (compile1 part) >>= \ans -> case ans of
+    Left err -> putStrLn err
+    Right _ -> return ()
+
+compile1 :: StdPart1 anno -> ABCCompile ()
+compile1 part = do 
+    { let info = initialSectionInfo part
+    ; notes <- compilePartToNoteList part
+    ; abc <- assembleOutput info notes
+    ; writeABCFile (ppRender abc)
+    }
 
 
 -- | Do we want to recalc beams (probably...)

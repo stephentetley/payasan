@@ -3,23 +3,34 @@
 
 module Demo01 where
 
-import Payasan.PSC.Backend.ABC.Output (abcOutput) -- temp
-import Payasan.PSC.Pipeline
+import Payasan.PSC.ABC.Compile
 
-import Payasan.PSC.Repr.ExternalToIRBeam
+import Payasan.PSC.Repr.External.ABCInTrans
+import Payasan.PSC.Repr.External.ABCParser
+import Payasan.PSC.Repr.External.Syntax
+
+import Payasan.PSC.Base.SyntaxCommon
 
 
 
-phrase01 :: StdPart
-phrase01 = fromABC $ [abc| [cg] G2 E2 C/2 | c |]
+
+s01 :: ABCSectionQuote
+s01 = [abc| [cg] G2 E2 C/2 | c |]
 
 locals :: SectionInfo
 locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
 
+section01 :: StdSection
+section01 = unquoteABC "Phrase1" locals s01
+
+
+
 
 demo01 :: IO ()
-demo01 = printAsABC default_score_info default_staff_info phrase01
+demo01 = compile (Part { part_sections = [section01] })
 
+
+{-
 demo01a :: IO ()
 demo01a = writeAsMIDI "out/phrase1.mid" phrase01
 
@@ -50,3 +61,5 @@ test01 = printAsABC default_score_info default_staff_info testPh
 testMiddleC :: StdPart
 testMiddleC = fromABCWith locals $ 
     [abc| C |]
+
+-}

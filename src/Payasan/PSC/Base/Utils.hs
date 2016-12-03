@@ -24,6 +24,7 @@ module Payasan.PSC.Base.Utils
   , fullInputParse
 
   -- * Pretty printing
+  , ppRender
   , vsep
   , sepList
   , withString
@@ -84,6 +85,10 @@ fullInputParse white p = white *> parseK >>= step
     
 --------------------------------------------------------------------------------
 -- Pretty printing
+
+
+ppRender :: Doc -> String
+ppRender = renderStyle (style {lineLength=500})
 
     
 vsep :: [Doc] -> Doc
