@@ -21,8 +21,9 @@ module Payasan.LilyPond.Chordmode.Internal.Output
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 
-import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Utils
+import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
+
 import qualified Payasan.PSC.Repr.External.Syntax    as EXT
 
 import Payasan.PSC.Base.SyntaxCommon

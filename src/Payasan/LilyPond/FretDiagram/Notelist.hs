@@ -45,7 +45,7 @@ import Payasan.LilyPond.FretDiagram.Internal.Parser
 import Payasan.LilyPond.FretDiagram.Internal.Plain
 
 import Payasan.PSC.Repr.External.AddBeams
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans      as LY
+import qualified Payasan.PSC.LilyPond.OutTrans      as LY
 import Payasan.Score.Elementary.Internal.ElementaryToExternal
 
 

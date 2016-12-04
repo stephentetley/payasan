@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.LilyPond.OutTrans
+-- Module      :  Payasan.PSC.LilyPond.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.LilyPond.OutTrans
+module Payasan.PSC.LilyPond.OutTrans
   (
     translateToOutput_Relative
   , translateToOutput_Absolute

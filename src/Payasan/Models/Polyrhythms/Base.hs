@@ -25,9 +25,9 @@ module Payasan.Models.Polyrhythms.Base
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
-import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Utils
+import qualified Payasan.PSC.LilyPond.OutTrans        as LY
+import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Repr.External.AddBeams
 import Payasan.PSC.Repr.External.Syntax

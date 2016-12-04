@@ -87,7 +87,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Transform
 import Payasan.Score.Elementary.Internal.Traversals
 
-import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LY
+import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as LY
 
 import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )
 import Payasan.PSC.Shell

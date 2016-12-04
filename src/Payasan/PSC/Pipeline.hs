@@ -96,10 +96,10 @@ import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
 import qualified Payasan.PSC.Repr.External.LilyPondInTrans    as LY
 import qualified Payasan.PSC.Repr.External.LilyPondParser     as LY
 
-import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as LYOut
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LYOut
-import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LYOut
-import qualified Payasan.PSC.Backend.LilyPond.Utils           as LYOut
+import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as LYOut
+import qualified Payasan.PSC.LilyPond.OutTrans        as LYOut
+import qualified Payasan.PSC.LilyPond.SimpleOutput    as LYOut
+import qualified Payasan.PSC.LilyPond.Utils           as LYOut
 
 
 import Payasan.PSC.Base.ABCCommon

@@ -74,9 +74,9 @@ import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )
 import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
-import qualified Payasan.PSC.Backend.LilyPond.RhythmicMarkup  as RHY
-import Payasan.PSC.Backend.LilyPond.Utils
+import qualified Payasan.PSC.LilyPond.OutTrans        as LY
+import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as RHY
+import Payasan.PSC.LilyPond.Utils
 
 import qualified Payasan.PSC.Pipeline                       as MAIN
 import Payasan.Base.Duration

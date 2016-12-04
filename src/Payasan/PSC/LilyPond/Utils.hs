@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.LilyPond.Utils
+-- Module      :  Payasan.PSC.LilyPond.Utils
 -- Copyright   :  (c) Stephen Tetley 2015
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.LilyPond.Utils
+module Payasan.PSC.LilyPond.Utils
   ( 
 
   -- * Markup

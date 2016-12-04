@@ -46,9 +46,9 @@ import Payasan.Score.Cadenza.Internal.Parser
 import Payasan.Score.Cadenza.Internal.Syntax
 
 
-import qualified Payasan.PSC.Backend.LilyPond.OutTrans        as LY
-import qualified Payasan.PSC.Backend.LilyPond.SimpleOutput    as LY
-import qualified Payasan.PSC.Backend.LilyPond.Utils           as PP
+import qualified Payasan.PSC.LilyPond.OutTrans        as LY
+import qualified Payasan.PSC.LilyPond.SimpleOutput    as LY
+import qualified Payasan.PSC.LilyPond.Utils           as PP
 
 import Payasan.PSC.Repr.External.AddBeams (noBeams)
 import Payasan.PSC.Pipeline (LilyPondPipeline(..))

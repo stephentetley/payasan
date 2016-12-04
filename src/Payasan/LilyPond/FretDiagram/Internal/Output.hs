@@ -23,8 +23,8 @@ import Payasan.LilyPond.FretDiagram.Internal.Base
 
 import Payasan.PSC.Repr.External.Syntax (Part, initialSectionInfo)  -- TODO
 
-import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Utils
+import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon

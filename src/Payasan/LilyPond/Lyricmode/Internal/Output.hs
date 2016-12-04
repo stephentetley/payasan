@@ -28,8 +28,8 @@ import Payasan.LilyPond.Lyricmode.Internal.Base
 
 import qualified Payasan.PSC.Repr.External.Syntax as EXT
 
-import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Utils
+import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon

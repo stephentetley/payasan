@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.LilyPond.RhythmicMarkup
+-- Module      :  Payasan.PSC.LilyPond.RhythmicMarkup
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.LilyPond.RhythmicMarkup
+module Payasan.PSC.LilyPond.RhythmicMarkup
   (
     MarkupOutput(..)
   , translateToRhythmicMarkup
@@ -27,9 +27,9 @@ module Payasan.PSC.Backend.LilyPond.RhythmicMarkup
   ) where
 
 
-import Payasan.PSC.Backend.LilyPond.OutTrans
-import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Utils
+import Payasan.PSC.LilyPond.OutTrans
+import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals

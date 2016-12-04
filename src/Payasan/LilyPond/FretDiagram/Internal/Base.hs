@@ -33,7 +33,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
   ) where
 
-import Payasan.PSC.Backend.LilyPond.Utils
+import Payasan.PSC.LilyPond.Utils
 import Payasan.Score.Elementary.Internal.Syntax (Section)
 
 import Payasan.Base.Duration

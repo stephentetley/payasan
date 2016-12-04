@@ -20,8 +20,8 @@ module Payasan.Score.Elementary.Internal.AnalysisOutput
   ) where
 
 
-import Payasan.PSC.Backend.LilyPond.SimpleOutput
-import Payasan.PSC.Backend.LilyPond.Utils
+import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Repr.External.Syntax
 
