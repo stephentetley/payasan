@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.MIDI.BeamToMIDI
+-- Module      :  Payasan.PSC.MIDI.BeamToMIDI
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -14,15 +14,15 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.MIDI.BeamToMIDI
+module Payasan.PSC.MIDI.BeamToMIDI
   ( 
 
     translateToMIDI
 
   ) where
 
-import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as T
-import qualified Payasan.Base.AltPitch                          as T
+import qualified Payasan.PSC.MIDI.PrimitiveSyntax       as T
+import qualified Payasan.Base.AltPitch                  as T
 
 import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Repr.External.Syntax

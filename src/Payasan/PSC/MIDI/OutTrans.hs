@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.OutTrans
+-- Module      :  Payasan.PSC.MIDI.OutTrans
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -10,17 +10,15 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Pitch to CpsPitch.
+-- Convert Pitch to MidiPitch and Duration to RDuration.
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.OutTrans
+module Payasan.PSC.MIDI.OutTrans
   ( 
-    translateToCsoundP
+    translateToMidiP
   ) where
 
-
-import Payasan.PSC.Backend.Csound.Syntax
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
@@ -29,8 +27,12 @@ import Payasan.Base.AltPitch
 import Payasan.Base.Pitch
 
 
-translateToCsoundP :: Part Pitch drn anno -> Part CpsPitch drn anno
-translateToCsoundP = transformP pch_algo
+translateToMidiP :: Part Pitch drn anno -> Part MidiPitch drn anno
+translateToMidiP = transformP pch_algo
+
+
+-- No need for a Duration translation. This is done together with
+-- coalescing ties.
 
 
 
@@ -38,23 +40,24 @@ translateToCsoundP = transformP pch_algo
 -- Pitch translation
 
 
-pch_algo :: BeamPitchAlgo () Pitch CpsPitch
+pch_algo :: BeamPitchAlgo () Pitch MidiPitch
 pch_algo = BeamPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = liftElementTrafo elementP
     }
 
 
-elementP :: Element Pitch drn anno -> Element CpsPitch drn anno
+elementP :: Element Pitch drn anno -> Element MidiPitch drn anno
 elementP (NoteElem e a t)       = NoteElem (noteP e) a t
 elementP (Rest d)               = Rest d
 elementP (Spacer d)             = Spacer d
 elementP (Skip d)               = Skip d
-elementP (Chord ps d a t)       = Chord (map pitchToCpsPitch ps) d a t
+elementP (Chord ps d a t)       = Chord (map pitchToMidiPitch ps) d a t
 elementP (Graces ns)            = Graces $ map noteP ns
 elementP (Punctuation s)        = Punctuation s
 
 
-noteP :: Note Pitch drn -> Note CpsPitch drn
-noteP (Note pch drn)            = Note (pitchToCpsPitch pch) drn
+noteP :: Note Pitch drn -> Note MidiPitch drn
+noteP (Note pch drn)            = Note (pitchToMidiPitch pch) drn
+
 

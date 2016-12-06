@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.MIDI.PrimitiveSyntax
+-- Module      :  Payasan.PSC.MIDI.PrimitiveSyntax
 -- Copyright   :  (c) Stephen Tetley 2014-2016
 -- License     :  BSD3
 --
@@ -17,7 +17,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.MIDI.PrimitiveSyntax
+module Payasan.PSC.MIDI.PrimitiveSyntax
   ( 
 
   -- * syntax

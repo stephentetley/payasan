@@ -77,15 +77,15 @@ module Payasan.PSC.Pipeline
 
 -- Note - temporary imports
 -- Csound imports should not be accessed by Payasan.Base
-import Payasan.PSC.Backend.Csound.Base
-import Payasan.PSC.Backend.Csound.BeamToCsound
-import Payasan.PSC.Backend.Csound.Output
-import qualified Payasan.PSC.Backend.Csound.OutTrans            as CS
+import Payasan.PSC.Csound.Base
+import Payasan.PSC.Csound.BeamToCsound
+import Payasan.PSC.Csound.Output
+import qualified Payasan.PSC.Csound.OutTrans            as CS
 
-import qualified Payasan.PSC.Backend.MIDI.BeamToMIDI            as MIDI
-import qualified Payasan.PSC.Backend.MIDI.Output                as MIDI
-import qualified Payasan.PSC.Backend.MIDI.OutTrans              as MIDI
-import qualified Payasan.PSC.Backend.MIDI.PrimitiveSyntax       as MIDI
+import qualified Payasan.PSC.MIDI.BeamToMIDI            as MIDI
+import qualified Payasan.PSC.MIDI.Output                as MIDI
+import qualified Payasan.PSC.MIDI.OutTrans              as MIDI
+import qualified Payasan.PSC.MIDI.PrimitiveSyntax       as MIDI
 
 
 import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC

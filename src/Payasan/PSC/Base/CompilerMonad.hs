@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.CompilerMonad
+-- Module      :  Payasan.PSC.Base.CompilerMonad
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.CompilerMonad
+module Payasan.PSC.Base.CompilerMonad
   ( 
     
     CM

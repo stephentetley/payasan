@@ -25,11 +25,10 @@ module Payasan.PSC.ABC.Compile
   ) where
 
 
-import Payasan.PSC.CompilerMonad
-
 import Payasan.PSC.ABC.Output
 import Payasan.PSC.ABC.OutTrans
-import Payasan.PSC.Base.RewriteMonad
+
+import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.External.Syntax

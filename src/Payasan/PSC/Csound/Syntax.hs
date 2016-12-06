@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.Syntax
+-- Module      :  Payasan.PSC.Csound.Syntax
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -19,7 +19,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.Syntax
+module Payasan.PSC.Csound.Syntax
   ( 
 
     CsoundNoteStream
@@ -31,7 +31,7 @@ module Payasan.PSC.Backend.Csound.Syntax
 
   ) where
 
-import Payasan.PSC.Backend.Csound.Base
+import Payasan.PSC.Csound.Base
 
 import Payasan.PSC.Repr.External.Syntax
 

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.IStmt
+-- Module      :  Payasan.PSC.Csound.IStmt
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.IStmt
+module Payasan.PSC.Csound.IStmt
   ( 
     IStmt(..)
   , IStmtList
@@ -28,7 +28,7 @@ module Payasan.PSC.Backend.Csound.IStmt
   , compareIStmt
   ) where
 
-import Payasan.PSC.Backend.Csound.Base ( InstNumber, Value(..), ellipsisEq )
+import Payasan.PSC.Csound.Base ( InstNumber, Value(..), ellipsisEq )
 import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Basis

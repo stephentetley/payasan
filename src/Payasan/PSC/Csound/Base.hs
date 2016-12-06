@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.Base
+-- Module      :  Payasan.PSC.Csound.Base
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.Base
+module Payasan.PSC.Csound.Base
   ( 
     InstNumber
   , ColumnSpecs

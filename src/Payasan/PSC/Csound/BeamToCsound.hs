@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Backend.Csound.BeamToCsound
+-- Module      :  Payasan.PSC.Csound.BeamToCsound
 -- Copyright   :  (c) Stephen Tetley 2015-2016
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Backend.Csound.BeamToCsound
+module Payasan.PSC.Csound.BeamToCsound
   ( 
 
     GenIStmt
@@ -25,8 +25,8 @@ module Payasan.PSC.Backend.Csound.BeamToCsound
 
   ) where
 
-import Payasan.PSC.Backend.Csound.IStmt
-import Payasan.PSC.Backend.Csound.Syntax
+import Payasan.PSC.Csound.IStmt
+import Payasan.PSC.Csound.Syntax
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.TiedNoteStream
 
