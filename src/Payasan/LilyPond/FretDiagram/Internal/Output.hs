@@ -39,7 +39,7 @@ fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Part LyPitch LyNoteLength Fre
 fretDiagramOutput globals diags ph = 
         header
     $+$ defs defuse
-    $+$ phraseBlock (getLyNoteListDoc notes)
+    $+$ phraseBlock (extractDoc notes)
   where
     defuse          = diagramDU diags
     header          = scoreHeader globals

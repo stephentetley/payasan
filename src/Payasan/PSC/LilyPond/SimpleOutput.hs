@@ -156,7 +156,7 @@ simpleVoice_Relative def pch ph =
   where
     local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = getLyNoteListDoc $ lilypondNoteList def local1 ph
+    notes           = extractDoc $ lilypondNoteList def local1 ph
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
@@ -166,7 +166,7 @@ simpleVoice_Absolute def ph =
   where
     local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = getLyNoteListDoc $ lilypondNoteList def local1 ph
+    notes           = extractDoc $ lilypondNoteList def local1 ph
 
 
 
@@ -193,8 +193,8 @@ lilypondNoteList def prefix_locals ph =
     fromRight $ evalRewrite (final =<< oLyPart ph) () (stateZero prefix_locals)
   where
     final d = do { od <- getTerminator
-                 ; case od of Nothing -> return $ LyNoteListDoc d
-                              Just d1 -> return $ LyNoteListDoc (d $+$ d1)
+                 ; case od of Nothing -> return $ TyDoc d
+                              Just d1 -> return $ TyDoc (d $+$ d1)
                  }
 
     pPitch :: pch -> Doc

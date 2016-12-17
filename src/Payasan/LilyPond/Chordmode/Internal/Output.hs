@@ -36,7 +36,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 chordmodeOutput :: ScoreInfo -> OutChordPart -> Doc
 chordmodeOutput globals ph = 
         header
-    $+$ chordmodeBlock (getLyNoteListDoc notes)
+    $+$ chordmodeBlock (extractDoc notes)
   where
     header          = scoreHeader globals
     local1          = EXT.initialSectionInfo ph

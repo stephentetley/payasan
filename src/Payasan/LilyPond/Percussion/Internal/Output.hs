@@ -33,7 +33,7 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 drumsOutput :: ScoreInfo -> LyDrumPart -> Doc
 drumsOutput globals beampart = 
         header
-    $+$ drumsBlock (getLyNoteListDoc notes)
+    $+$ drumsBlock (extractDoc notes)
   where
     header          = scoreHeader globals
     notes           = lilypondNoteList drum_def default_section_info beampart

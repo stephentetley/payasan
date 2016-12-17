@@ -43,7 +43,7 @@ analysisScore :: LyOutputDef pch anno
               -> ScoreInfo 
               -> Part pch LyNoteLength anno -> Doc
 analysisScore def infos ph =
-    header $+$ score_ (analysis_layout $+$ (getLyNoteListDoc notes))
+    header $+$ score_ (analysis_layout $+$ (extractDoc notes))
   where
     header          = scoreHeader infos
     local1          = initialSectionInfo ph

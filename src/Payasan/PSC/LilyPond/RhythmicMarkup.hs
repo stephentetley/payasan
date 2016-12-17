@@ -107,7 +107,7 @@ rhythmicMarkupVoice :: LyOutputDef pch anno
                     -> Part pch LyNoteLength anno -> Doc
 rhythmicMarkupVoice def ph = 
     block (Just newRhythmicStaff_) 
-          (absolute_ $+$ notes_header $+$ (getLyNoteListDoc notes))
+          (absolute_ $+$ notes_header $+$ (extractDoc notes))
   where
     local1          = initialSectionInfo ph
     notes_header    = oPartHeader local1

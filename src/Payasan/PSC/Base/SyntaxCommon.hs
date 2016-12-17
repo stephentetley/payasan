@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -18,9 +19,9 @@
 module Payasan.PSC.Base.SyntaxCommon
   ( 
 
-  
-    LyNoteListDoc(..)
-  , ABCNoteListDoc(..)
+    TyDoc(..)
+  , LyNoteListDoc
+  , ABCNoteListDoc
   
   
   , ScoreInfo(..)
@@ -62,17 +63,27 @@ import Text.PrettyPrint.HughesPJ hiding (Mode)               -- package: pretty
 import Data.Data
 import Data.Ratio
 
+data TyDoc a = TyDoc { extractDoc :: Doc }
+
+
 
 -- | Note list fragment for LilyPond.
 -- This should represent the final output of a score pipeline 
 -- and it is expected to be plugged into a "hole" in score 
 -- template.
 --
-newtype LyNoteListDoc = LyNoteListDoc { getLyNoteListDoc :: Doc }
+data LyNoteListDoc_ 
+
+type LyNoteListDoc = TyDoc LyNoteListDoc_ 
+
+
 
 -- | Notelist fragment for ABC.
 --
-newtype ABCNoteListDoc = ABCNoteListDoc { getABCNoteListDoc :: Doc }
+
+data ABCNoteListDoc_
+
+type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 
 
 --------------------------------------------------------------------------------

@@ -99,7 +99,7 @@ newtype ABCHeader = ABCHeader { getHeader :: Doc }
 -- run in a monad.
 --
 assembleABC :: ABCHeader -> ABCNoteListDoc -> Doc
-assembleABC header body = getHeader header $+$ getABCNoteListDoc body
+assembleABC header body = getHeader header $+$ extractDoc body
     
     
 -- | Note X field must be first K field should be last -
@@ -126,7 +126,7 @@ makeHeader title clefname locals =
 -- advanced capabilities to PSC).
 --
 makeABCNoteListDoc :: Int -> ABCPartOut anno -> Mon ABCNoteListDoc
-makeABCNoteListDoc cols (Part xs) = fmap ABCNoteListDoc $ step xs
+makeABCNoteListDoc cols (Part xs) = fmap TyDoc $ step xs
   where
     step []       = return empty
     step [s]      = oSection cols (text "|]") s
