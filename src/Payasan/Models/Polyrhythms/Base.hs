@@ -54,9 +54,9 @@ outputAsLilyPond globals staff p1 ph1 p2 ph2 =
   where
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
-                        , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Relative p1
+                        , MAIN.pipe2_out_trafo1    = LY.translateToLyPartOut_Relative p1
                         , MAIN.pipe2_beam_trafo2   = addBeams
-                        , MAIN.pipe2_out_trafo2    = LY.translateToOutput_Relative p2
+                        , MAIN.pipe2_out_trafo2    = LY.translateToLyPartOut_Relative p2
                         , MAIN.pipe2_output_func   = polyrhythmScore globals staff p1 p2
                         }
 
@@ -82,7 +82,7 @@ timbalesTrafo :: DrumPitch
               -> Part pch Duration a 
               -> Part DrumPitch LyNoteLength a
 timbalesTrafo pch = 
-    transformP (drumnote_algo pch) . LY.translateToOutput_DurationOnly
+    transformP (drumnote_algo pch) . LY.translateToLyPartOut_DurationOnly
 
 
 

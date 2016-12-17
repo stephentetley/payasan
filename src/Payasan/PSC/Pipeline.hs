@@ -277,7 +277,7 @@ outputAsLilyPond_Relative :: Anno anno
 outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
-                               , out_trafo   = LYOut.translateToOutput_Relative pch
+                               , out_trafo   = LYOut.translateToLyPartOut_Relative pch
                                , output_func = LYOut.simpleScore_Relative std_def infos pch
                                }
     std_def = LYOut.LyOutputDef { LYOut.printPitch = LYOut.pitch
@@ -297,7 +297,7 @@ genOutputAsRhythmicMarkup :: LYOut.MarkupOutput pch
                           -> EXT.Part pch Duration anno 
                           -> Doc
 genOutputAsRhythmicMarkup def infos = 
-    LYOut.rhythmicMarkupScore ppDef infos . LYOut.translateToRhythmicMarkup def
+    LYOut.rhythmicMarkupScore ppDef infos . LYOut.translateToLyPartOut_RhythmicMarkup def
                                           . addBeams 
                                           . transExternalToIRBeam
   where

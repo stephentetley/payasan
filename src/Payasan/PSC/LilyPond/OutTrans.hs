@@ -17,9 +17,9 @@
 
 module Payasan.PSC.LilyPond.OutTrans
   (
-    translateToOutput_Relative
-  , translateToOutput_Absolute
-  , translateToOutput_DurationOnly
+    translateToLyPartOut_Relative
+  , translateToLyPartOut_Absolute
+  , translateToLyPartOut_DurationOnly
   ) where
 
 
@@ -35,22 +35,22 @@ import Payasan.Base.Pitch
 
 
 
-translateToOutput_Relative :: Pitch
-                           -> Part Pitch Duration anno 
-                           -> LyPartOut anno
-translateToOutput_Relative pch = 
+translateToLyPartOut_Relative :: Pitch
+                              -> Part Pitch Duration anno 
+                              -> LyPartOut anno
+translateToLyPartOut_Relative pch = 
     transformP (rel_pch_algo pch) . transformD drn_algo
 
 
-translateToOutput_Absolute :: Part Pitch Duration anno 
-                           -> LyPartOut anno
-translateToOutput_Absolute = 
+translateToLyPartOut_Absolute :: Part Pitch Duration anno 
+                              -> LyPartOut anno
+translateToLyPartOut_Absolute = 
     transformP abs_pch_algo . transformD drn_algo
 
 
-translateToOutput_DurationOnly :: Part pch Duration anno 
-                               -> GenLyPartOut pch anno
-translateToOutput_DurationOnly = transformD drn_algo
+translateToLyPartOut_DurationOnly :: Part pch Duration anno 
+                                  -> GenLyPartOut pch anno
+translateToLyPartOut_DurationOnly = transformD drn_algo
 
 type DMon    a      = Mon Duration a
 type RelPMon a      = Mon Pitch a

@@ -19,7 +19,7 @@
 module Payasan.PSC.LilyPond.RhythmicMarkup
   (
     MarkupOutput(..)
-  , translateToRhythmicMarkup
+  , translateToLyPartOut_RhythmicMarkup
 
   , rhythmicMarkupScore
   , rhythmicMarkupVoice
@@ -48,11 +48,11 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Doc }
 
 
-translateToRhythmicMarkup :: MarkupOutput pch
-                          -> Part pch Duration anno 
-                          -> LyPartOut Doc
-translateToRhythmicMarkup mo = 
-    transformPA (markup_algo mo) . translateToOutput_DurationOnly
+translateToLyPartOut_RhythmicMarkup :: MarkupOutput pch
+                                    -> Part pch Duration anno 
+                                    -> LyPartOut Doc
+translateToLyPartOut_RhythmicMarkup mo = 
+    transformPA (markup_algo mo) . translateToLyPartOut_DurationOnly
 
 
 

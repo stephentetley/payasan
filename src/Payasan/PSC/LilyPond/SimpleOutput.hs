@@ -19,6 +19,7 @@ module Payasan.PSC.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
 
+  , stateZero
   , simpleScore_Relative
   , simpleScore_Absolute
 
@@ -175,6 +176,8 @@ fromRight (Right a) = a
 fromRight _         = error "fromRight is really bad, to be removed soon."
 
 
+-- makeLyNoteListDoc :: 
+
 -- | Pitch should be \"context free\" at this point.
 --
 -- Design note - we only want to write this once.
@@ -210,6 +213,8 @@ lilypondNoteList def prefix_locals ph =
                            ; step ac ss
                            }
 
+    -- Note - delta key implies standard pitch 
+    -- (i.e. not drum notes, neume names, etc...)
     oSection :: Section pch LyNoteLength anno -> Mon Doc
     oSection (Section _ locals bs) =
           do { dkey     <- deltaKey locals

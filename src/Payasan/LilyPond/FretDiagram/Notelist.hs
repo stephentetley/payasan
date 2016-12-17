@@ -66,7 +66,7 @@ outputAsLilyPond globals name diags =
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams
-                , MAIN.out_trafo   = LY.translateToOutput_Absolute
+                , MAIN.out_trafo   = LY.translateToLyPartOut_Absolute
                 , MAIN.output_func = fretDiagramOutput globals diags
                 }
 

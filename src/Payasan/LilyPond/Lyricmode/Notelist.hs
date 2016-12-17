@@ -76,9 +76,9 @@ outputAsLilyPond globals name lyrics =
     beats           = ELEM.censorPunctuation $ ELEM.changeSkipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
-                        , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Absolute
+                        , MAIN.pipe2_out_trafo1    = LY.translateToLyPartOut_Absolute
                         , MAIN.pipe2_beam_trafo2   = noBeams
-                        , MAIN.pipe2_out_trafo2    = LY.translateToOutput_DurationOnly
+                        , MAIN.pipe2_out_trafo2    = LY.translateToLyPartOut_DurationOnly
                         , MAIN.pipe2_output_func   = lyricsScore globals
                         }
 
@@ -90,9 +90,9 @@ outputAsLilyPondDU annos globals name lyrics =
     beats           = ELEM.censorPunctuation $ ELEM.changeSkipToRest $ extractRhythm lyrics
     config2         = MAIN.LilyPondPipeline2
                         { MAIN.pipe2_beam_trafo1   = addBeams
-                        , MAIN.pipe2_out_trafo1    = LY.translateToOutput_Absolute
+                        , MAIN.pipe2_out_trafo1    = LY.translateToLyPartOut_Absolute
                         , MAIN.pipe2_beam_trafo2   = noBeams
-                        , MAIN.pipe2_out_trafo2    = LY.translateToOutput_DurationOnly
+                        , MAIN.pipe2_out_trafo2    = LY.translateToLyPartOut_DurationOnly
                         , MAIN.pipe2_output_func   = lyricsScoreDU annos globals
                         }
 

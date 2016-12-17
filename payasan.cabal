@@ -104,6 +104,7 @@ library
     Payasan.PSC.Csound.OutTrans,
     Payasan.PSC.Csound.RenderScore,
     Payasan.PSC.Csound.Syntax,
+    Payasan.PSC.LilyPond.Compile,
     Payasan.PSC.LilyPond.OutTrans,
     Payasan.PSC.LilyPond.RhythmicMarkup,
     Payasan.PSC.LilyPond.SimpleOutput,

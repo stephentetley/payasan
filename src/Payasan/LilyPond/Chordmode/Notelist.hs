@@ -104,7 +104,7 @@ outputAsLilyPond globals name =
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams
-                , MAIN.out_trafo   = LY.translateToOutput_DurationOnly
+                , MAIN.out_trafo   = LY.translateToLyPartOut_DurationOnly
                 , MAIN.output_func = chordmodeOutput globals 
                 }
 

@@ -95,7 +95,7 @@ outputAsLilyPond_Relative :: Anno anno
 outputAsLilyPond_Relative infos name pch = MAIN.ppRender . genOutputAsLilyPond config name
   where
     config  = LilyPondPipeline { beam_trafo  = noBeams
-                               , out_trafo   = LY.translateToOutput_Relative pch
+                               , out_trafo   = LY.translateToLyPartOut_Relative pch
                                , output_func = LY.simpleScore_Relative std_def infos pch
                                }
     std_def = LY.LyOutputDef { LY.printPitch = PP.pitch, LY.printAnno = anno }

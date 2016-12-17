@@ -101,7 +101,7 @@ outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = BEAM.addBeams
-                , MAIN.out_trafo   = LYOut.translateToOutput_DurationOnly
+                , MAIN.out_trafo   = LYOut.translateToLyPartOut_DurationOnly
                 , MAIN.output_func = drumsOutput globals 
                 }
 

@@ -56,7 +56,7 @@ type ABCCompile a = CM ABCEnv a
 -- isn't a simple "clef field".
 --
 data ABCEnv = ABCEnv 
-    { abc_tune_title            :: String
+    { abc_tune_title            :: !String
     , abc_clef                  :: !Clef
     , abc_cwd_loc               :: !TempDirLoc
     , abc_outfile_name          :: !String
