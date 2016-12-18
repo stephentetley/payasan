@@ -29,6 +29,7 @@ module Payasan.PSC.LilyPond.SimpleOutput
   , scoreHeader
   , phraseHeader
 
+  , makeLyNoteListDoc
   , lilypondNoteList
 
   ) where
@@ -176,7 +177,21 @@ fromRight (Right a) = a
 fromRight _         = error "fromRight is really bad, to be removed soon."
 
 
--- makeLyNoteListDoc :: 
+-- TODO working towards an API that provides a (simple) "makeDoc"...
+--
+makeLyNoteListDoc :: forall pch anno. 
+                     LyOutputDef pch anno 
+                  -> SectionInfo 
+                  -> GenLyPartOut pch anno
+                  -> Mon LyNoteListDoc
+makeLyNoteListDoc def info ph = 
+    final =<< oLyPart def ph
+  where
+    final d = do { od <- getTerminator
+                 ; case od of Nothing -> return $ TyDoc d
+                              Just d1 -> return $ TyDoc (d $+$ d1)
+                 }
+
 
 -- | Pitch should be \"context free\" at this point.
 --
@@ -184,82 +199,88 @@ fromRight _         = error "fromRight is really bad, to be removed soon."
 -- Should allow different pch (standard, drum note, etc.)
 -- to be printed. 
 --
-lilypondNoteList :: forall pch anno. 
-                    LyOutputDef pch anno 
+lilypondNoteList :: LyOutputDef pch anno 
                  -> SectionInfo 
                  -> GenLyPartOut pch anno
                  -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
-    fromRight $ evalRewrite (final =<< oLyPart ph) () (stateZero prefix_locals)
+    fromRight $ evalRewrite (final =<< oLyPart def ph) () (stateZero prefix_locals)
   where
     final d = do { od <- getTerminator
                  ; case od of Nothing -> return $ TyDoc d
                               Just d1 -> return $ TyDoc (d $+$ d1)
                  }
 
-    pPitch :: pch -> Doc
-    pPitch = printPitch def
+ --   pPitch :: pch -> Doc
+ --   pPitch = printPitch def
 
-    pAnno  :: anno -> Doc
-    pAnno  = printAnno def
+ --   pAnno  :: anno -> Doc
+ --   pAnno  = printAnno def
 
-    oLyPart :: Part pch LyNoteLength anno -> Mon Doc
-    oLyPart (Part [])               = return empty
-    oLyPart (Part (x:xs))           = do { d <- oSection x; step d xs }
-      where
-        step d []     = return d
-        step d (s:ss) = do { d1    <- oSection s
-                           ; let ac = d <+> char '|' $+$ d1
-                           ; step ac ss
-                           }
+oLyPart :: LyOutputDef pch anno -> Part pch LyNoteLength anno -> Mon Doc
+oLyPart _   (Part [])           = return empty
+oLyPart def (Part (x:xs))       = do { d <- oSection def x; step d xs }
+  where
+    step d []     = return d
+    step d (s:ss) = do { d1    <- oSection def s
+                       ; let ac = d <+> char '|' $+$ d1
+                       ; step ac ss
+                       }
 
-    -- Note - delta key implies standard pitch 
-    -- (i.e. not drum notes, neume names, etc...)
-    oSection :: Section pch LyNoteLength anno -> Mon Doc
-    oSection (Section _ locals bs) =
-          do { dkey     <- deltaKey locals
-             ; dtime    <- deltaMetrical locals
-             ; let ans = vsep $ map oBar bs
-             ; setInfo locals
-             ; mwrapT dtime $ prefixK dkey $ ans
-             }
-        where
-          prefixK (Nothing) d   = d
-          prefixK (Just k)  d   = key_ k $+$ d
-          mwrapT (Nothing)  d   = return d
-          mwrapT (Just m)   d   = 
-                do { d0 <- getTerminator
-                   ; case m of  
-                       Unmetered -> setTerminator (Just cadenzaOff_) >>
-                                    return (d0 $?+$ cadenzaOn_ $+$ d)
-                       Metered t -> setTerminator Nothing >> 
-                                    return (time_ t $+$ d)
-                   }
-
-
-    -- | Bars are terminated...
-    oBar :: Bar pch LyNoteLength anno -> Doc
-    oBar (Bar cs) = hsep (map oNoteGroup cs) <+> char '|'
+-- Note - delta key implies standard pitch 
+-- (i.e. not drum notes, neume names, etc...)
+oSection :: LyOutputDef pch anno -> Section pch LyNoteLength anno -> Mon Doc
+oSection def (Section _ locals bs) =
+    do { dkey     <- deltaKey locals
+       ; dtime    <- deltaMetrical locals
+       ; let ans = vsep $ map (oBar def) bs
+       ; setInfo locals
+       ; mwrapT dtime $ prefixK dkey $ ans
+       }
+  where
+    prefixK (Nothing) d   = d
+    prefixK (Just k)  d   = key_ k $+$ d
+    mwrapT (Nothing)  d   = return d
+    mwrapT (Just m)   d   = 
+        do { d0 <- getTerminator
+           ; case m of  
+               Unmetered -> setTerminator (Just cadenzaOff_) >>
+                            return (d0 $?+$ cadenzaOn_ $+$ d)
+               Metered t -> setTerminator Nothing >> 
+                            return (time_ t $+$ d)
+           }
 
 
-    oNoteGroup :: NoteGroup pch LyNoteLength anno -> Doc
-    oNoteGroup (Atom e)             = oElement e
-    oNoteGroup (Beamed cs)          = beamForm $ map oNoteGroup cs
-    oNoteGroup (Tuplet spec cs)     = tupletForm spec (map oNoteGroup cs)
+-- | Bars are terminated...
+oBar :: LyOutputDef pch anno -> Bar pch LyNoteLength anno -> Doc
+oBar def (Bar cs) = hsep (map (oNoteGroup def) cs) <+> char '|'
 
-    oElement :: Element pch LyNoteLength anno -> Doc
-    oElement (NoteElem n a t)       = oNote n <> pAnno a <> tie t
 
-    oElement (Rest d)               = rest d 
-    oElement (Spacer d)             = spacer d 
-    oElement (Skip d)               = skip d 
-    oElement (Chord ps d a t)       = 
+oNoteGroup :: LyOutputDef pch anno -> NoteGroup pch LyNoteLength anno -> Doc
+oNoteGroup def grp              = fn grp
+  where
+    fn (Atom e)                 = oElement def e
+    fn (Beamed cs)              = beamForm $ map fn cs
+    fn (Tuplet spec cs)         = tupletForm spec (map fn cs)
+
+oElement :: LyOutputDef pch anno -> Element pch LyNoteLength anno -> Doc
+oElement def e                  = fn e
+   where
+     pPitch                     = printPitch def
+     pAnno                      = printAnno def
+     fn (NoteElem n a t)        = oNote def n <> pAnno a <> tie t
+     fn (Rest d)                = rest d 
+     fn (Spacer d)              = spacer d 
+     fn (Skip d)                = skip d 
+     fn (Chord ps d a t)        = 
         chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t
 
-    oElement (Graces ns)            = graceForm (map oNote ns)
-    oElement (Punctuation s)        = text s
+     fn (Graces ns)            = graceForm $ map (oNote def) ns
+     fn (Punctuation s)        = text s
 
 
-    oNote :: Note pch LyNoteLength -> Doc
-    oNote (Note p d)               = pPitch p <> noteLength d
+oNote :: LyOutputDef pch anno -> Note pch LyNoteLength -> Doc
+oNote def (Note p d)            = pPitch p <> noteLength d
+   where
+     pPitch = printPitch def
 
