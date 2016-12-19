@@ -84,6 +84,7 @@ module Payasan.PSC.LilyPond.Utils
   , startGroup_
   , stopGroup_
 
+  , bar_
 
   , tie
   , rest
@@ -337,7 +338,8 @@ stopGroup_      :: Doc
 stopGroup_      = command "stopGroup"
 
 
-
+bar_            :: String -> Doc
+bar_ ss         = command "bar" <+> doubleQuotes (text ss)
 
 
 tie :: Tie -> Doc

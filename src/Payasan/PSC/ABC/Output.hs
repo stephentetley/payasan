@@ -186,6 +186,16 @@ tied :: CatOp -> Doc -> Tie -> Doc
 tied _  d NO_TIE = d
 tied op d TIE    = d `op` char '-'
 
+
+
+
+-- (Somewhat) general combinator to pretty print sections.
+-- It is general in the sense that everything has already been
+-- turned into a Doc. Maybe we need a naming convention for this 
+-- type of combinator.
+
+
+
 -- Allows different terminator:
 --
 -- '|' for end of section, "|]" for end of part.

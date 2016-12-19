@@ -233,7 +233,7 @@ oSection :: LyOutputDef pch anno -> Section pch LyNoteLength anno -> Mon Doc
 oSection def (Section _ locals bs) =
     do { dkey     <- deltaKey locals
        ; dtime    <- deltaMetrical locals
-       ; let ans = vsep $ map (oBar def) bs
+       ; let ans = ppSection (bar_ "\\") $ map (oBar def) bs
        ; setInfo locals
        ; mwrapT dtime $ prefixK dkey $ ans
        }
@@ -284,3 +284,11 @@ oNote def (Note p d)            = pPitch p <> noteLength d
    where
      pPitch = printPitch def
 
+
+
+ppSection :: Doc -> [Doc] -> Doc
+ppSection end bars = fn bars
+  where
+    fn []       = empty
+    fn [b]      = b <+> end
+    fn (b:bs)   = b <+> char '|' $+$ fn bs
