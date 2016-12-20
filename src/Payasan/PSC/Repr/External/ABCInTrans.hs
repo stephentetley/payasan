@@ -28,7 +28,6 @@ import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
-import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
@@ -42,8 +41,7 @@ type DTMon a = Mon UnitNoteLength a
 
 unquoteABC :: String -> SectionInfo -> ABCSectionQuote -> Section Pitch Duration ()
 unquoteABC name info (ABCSectionQuote bs) =
-    let unl = section_unit_note_len info
-        bars = translateDuration unl $ translatePitch bs
+    let bars = translateDuration info $ translatePitch info bs
     in Section { section_name      = name
                , section_info      = info
                , section_bars      = bars
@@ -76,9 +74,10 @@ drn_algo = BeamDurationAlgo
 --------------------------------------------------------------------------------
 -- Pitch translation
 
-translatePitch :: [Bar ABCPitch drn anno] 
+translatePitch :: SectionInfo 
+               -> [Bar ABCPitch drn anno] 
                -> [Bar Pitch drn anno]
-translatePitch = genTransformBars elementP () 
+translatePitch info = genTransformBars elementP info () 
 
    
 
@@ -112,10 +111,11 @@ transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
 -- Translate duration
 
 
-translateDuration :: UnitNoteLength 
+translateDuration :: SectionInfo 
                   -> [Bar pch ABCNoteLength anno] 
                   -> [Bar pch Duration anno]
-translateDuration unl = genTransformBars elementD unl 
+translateDuration info = 
+    genTransformBars elementD info (section_unit_note_len info)
 
 
 elementD :: Element pch ABCNoteLength anno -> DTMon (Element pch Duration anno)

@@ -26,7 +26,6 @@ import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
-import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration

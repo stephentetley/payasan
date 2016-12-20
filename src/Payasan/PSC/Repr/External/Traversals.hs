@@ -22,6 +22,7 @@ module Payasan.PSC.Repr.External.Traversals
   , genTransform
   , genTransformSection
   , genTransformBars
+  , asks
   
   , liftElementTrafo
 
@@ -39,61 +40,119 @@ module Payasan.PSC.Repr.External.Traversals
 
 
 import Payasan.PSC.Repr.External.Syntax
-import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 
-type Mon st a = Rewrite SectionInfo st a
-
-fromRight :: Either z a -> a
-fromRight _ = error "fromRight"
 
 genTransform :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
              -> Part p1 d1 a1
              -> Part p2 d2 a2
-genTransform elemT st0 ph = 
-    fromRight $ evalRewrite (partT elemT ph) default_section_info st0
+genTransform elemT st ph = evalTravM st (partT elemT ph)
 
 genTransformSection :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
                     -> st
                     -> Section p1 d1 a1
                     -> Section p2 d2 a2
-genTransformSection elemT st0 se = 
-    fromRight $ evalRewrite (sectionT elemT se) default_section_info st0
+genTransformSection elemT st se = evalTravM st (sectionT elemT se)
 
 
 genTransformBars :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
-                 -> st
+                 -> SectionInfo
+                 -> st 
                  -> [Bar p1 d1 a1]
                  -> [Bar p2 d2 a2]
-genTransformBars elemT st0 bs = 
-    fromRight $ evalRewrite (mapM (barT elemT) bs) default_section_info st0
+genTransformBars elemT info st bs = 
+    evalTravM st (withSectionInfo info (mapM (barT elemT) bs))
   
 
+--
+-- TODO - Rewrite Monad is not the right basis for these 
+-- traversals. 
+--
+-- They are essentially maps (elementary, shape preserving, 
+-- non-failing)
+--
+-- State is necessary.
+--
+-- SectionInfo should be accessible.
+-- 
 
-partT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
-      -> Part p1 d1 a1 -> Mon st (Part p2 d2 a2)
+data TravM st a = TravM { getTravM :: st -> (st,a) }
+data ElemM st a = ElemM { getElemM  :: SectionInfo -> st -> (st,a) }
+
+type Mon st a = ElemM st a
+
+instance Functor (TravM st) where
+  fmap f ma = TravM $ \st -> let (s1,a) = getTravM ma st in (s1, f a)
+
+instance Functor (ElemM st) where
+  fmap f ma = ElemM $ \r st -> let (s1,a) = getElemM ma r st in (s1, f a)
+
+instance Applicative (TravM st) where
+  pure a    = TravM $ \st -> (st,a)
+  mf <*> ma = TravM $ \st -> 
+                let (s1,f) = getTravM mf st
+                    (s2,a) = getTravM ma s1
+                in (s2, f a)
+
+
+instance Applicative (ElemM st) where
+  pure a    = ElemM $ \_ st -> (st,a)
+  mf <*> ma = ElemM $ \r st -> 
+                let (s1,f) = getElemM mf r st
+                    (s2,a) = getElemM ma r s1
+                in (s2, f a)
+
+
+
+instance Monad (TravM st) where
+  return    = pure
+  ma >>= k  = TravM $ \st -> 
+                let (s1,a) = getTravM ma st in getTravM (k a) s1
+
+instance Monad (ElemM st) where
+  return    = pure
+  ma >>= k  = ElemM $ \r st -> 
+                let (s1,a) = getElemM ma r st in getElemM (k a) r s1
+
+evalTravM :: st -> TravM st a -> a
+evalTravM st ma = let (_,a) = getTravM ma st in a
+
+
+withSectionInfo :: SectionInfo -> ElemM st a -> TravM st a
+withSectionInfo info ma = TravM $ \st -> getElemM ma info st
+
+asks :: (SectionInfo -> a) -> Mon st a
+asks proj = ElemM $ \r st -> (st, proj r)
+
+
+partT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2)) 
+       -> Part p1 d1 a1 -> TravM st (Part p2 d2 a2)
 partT elemT (Part ss)               = Part <$> mapM (sectionT elemT) ss
 
 
-sectionT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
+sectionT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2)) 
          -> Section p1 d1 a1 
-         -> Mon st (Section p2 d2 a2)
+         -> TravM st (Section p2 d2 a2)
 sectionT elemT (Section name info bs) = 
-    Section name info <$> local info (mapM (barT elemT) bs)
+    Section name info <$> withSectionInfo info (mapM (barT elemT) bs)
 
 
-barT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
-     -> Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
+barT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2)) 
+     -> Bar p1 d1 a1 -> ElemM st (Bar p2 d2 a2)
 barT elemT (Bar cs)                 = Bar <$> mapM (noteGroupT elemT) cs
 
 
-noteGroupT :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2)) 
-          -> NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
+noteGroupT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2)) 
+           -> NoteGroup p1 d1 a1 -> ElemM st (NoteGroup p2 d2 a2)
 noteGroupT elemT (Atom e)           = Atom <$> elemT e
 noteGroupT elemT (Beamed cs)        = Beamed <$> mapM (noteGroupT elemT) cs
 noteGroupT elemT (Tuplet spec cs)   = Tuplet spec <$> mapM (noteGroupT elemT) cs
+
+
+--------------------------------------------------------------------------------
+-- 
 
 
 --------------------------------------------------------------------------------

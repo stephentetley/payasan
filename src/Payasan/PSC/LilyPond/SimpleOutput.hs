@@ -52,14 +52,22 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 type Mon a = Rewrite () State a
 
+-- Meter pattern (SectionInfo) is irrelevant at this stage.
+-- Only care about Key and Meter
+
 data State = State 
-    { prev_info         :: !SectionInfo
+    { prev_key          :: !Key
+    , prev_meter        :: !Meter
     , opt_terminator    :: Maybe Doc 
     }
 
+
+
+
 stateZero :: SectionInfo -> State
 stateZero info = 
-    State { prev_info  = info
+    State { prev_key       = section_key info
+          , prev_meter     = section_meter info
           , opt_terminator = case section_meter info of 
                                Unmetered -> Just cadenzaOff_ 
                                _ -> Nothing 
@@ -67,7 +75,7 @@ stateZero info =
 
 
 setInfo :: SectionInfo -> Mon () 
-setInfo info = puts (\s -> s { prev_info = info })
+setInfo info = puts (\s -> s { prev_key = section_key info, prev_meter = section_meter info })
 
 getTerminator :: Mon (Maybe Doc)
 getTerminator = gets opt_terminator
@@ -78,19 +86,19 @@ setTerminator optd = puts (\s -> s { opt_terminator = optd })
 
 deltaMetrical :: SectionInfo -> Mon (Maybe Meter)
 deltaMetrical (SectionInfo { section_meter = m1 }) = 
-    fn <$> gets prev_info
+    fn <$> gets prev_meter
   where
     fn prev 
-        | section_meter prev == m1 = Nothing
-        | otherwise             = Just m1
+        | prev == m1    = Nothing
+        | otherwise     = Just m1
 
 deltaKey :: SectionInfo -> Mon (Maybe Key)
 deltaKey (SectionInfo { section_key = k1 }) = 
-    fn <$> gets prev_info
+    fn <$> gets prev_key
   where
     fn prev 
-        | section_key prev == k1 = Nothing
-        | otherwise           = Just k1
+        | prev == k1    = Nothing
+        | otherwise     = Just k1
 
 
 --------------------------------------------------------------------------------
@@ -229,6 +237,11 @@ oLyPart def (Part (x:xs))       = do { d <- oSection def x; step d xs }
 
 -- Note - delta key implies standard pitch 
 -- (i.e. not drum notes, neume names, etc...)
+--
+-- TODO - Maybe it is best to print Sections as (almost) 
+-- independent entities, i.e. print key and meter within braces - 
+-- delta-ing things is adding unpleasant complexity.
+-- 
 oSection :: LyOutputDef pch anno -> Section pch LyNoteLength anno -> Mon Doc
 oSection def (Section _ locals bs) =
     do { dkey     <- deltaKey locals
