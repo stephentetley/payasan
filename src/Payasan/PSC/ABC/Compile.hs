@@ -20,7 +20,10 @@ module Payasan.PSC.ABC.Compile
     
     ABCCompile
 
+  , prompt
   , compile
+
+  , workingFileName
 
   ) where
 
@@ -92,10 +95,9 @@ outputAsABC infos staff =
              
 -}             
 
+
 compile :: StdPart1 anno -> IO ()
-compile part = runCM env_zero (compile1 part) >>= \ans -> case ans of
-    Left err -> putStrLn err
-    Right _ -> return ()
+compile part = prompt env_zero (compile1 part) >> return ()
 
 compile1 :: StdPart1 anno -> ABCCompile ()
 compile1 part = do 
@@ -141,10 +143,17 @@ assembleOutput info notes = do
 --
 writeABCFile :: String -> ABCCompile ()
 writeABCFile abc = 
-    do { root <- getTempDirectory =<< asksUE abc_cwd_loc
-       ; name <- asksUE abc_outfile_name
-       ; let outfile = root </> name
+    do { outfile <- workingFileName
        ; liftIO $ writeFile outfile abc
        ; return ()
        }
        
+
+workingFileName :: ABCCompile String
+workingFileName = 
+    do { root <- getTempDirectory =<< asksUE abc_cwd_loc
+       ; name <- asksUE abc_outfile_name
+       ; let outfile = root </> name
+       ; return outfile
+       }
+

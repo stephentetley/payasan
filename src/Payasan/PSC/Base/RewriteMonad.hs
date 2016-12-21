@@ -24,7 +24,7 @@ module Payasan.PSC.Base.RewriteMonad
   , get
   , gets
   , put
-  , puts
+  , modify
   , ask
   , asks
   , local
@@ -32,11 +32,25 @@ module Payasan.PSC.Base.RewriteMonad
   
   )  where
 
+import Control.Monad.Except
+import Control.Monad.Identity
+import Control.Monad.Reader
+import Control.Monad.State
+
 
 --------------------------------------------------------------------------------
 
 type RewriteError = String
 
+
+-- newtype Rewrite env st a = Rewrite { getRewrite :: 
+
+
+-- Rewrite: Reader + State + Except
+--
+type Rewrite env st = ReaderT env (StateT st (ExceptT RewriteError Identity))
+
+{-
 
 -- | Rewrite monad - Reader+State.
 newtype Rewrite env st a = Rewrite { 
@@ -57,38 +71,11 @@ instance Monad (Rewrite env st) where
   return    = pure
   ma >>= k  = Rewrite $ \r1 s -> 
                 getRewrite ma r1 s >>= \(s1,a) -> getRewrite (k a) r1 s1
-                
+-}                
 
 -- TODO - is an Alternative instance useful?
  
 evalRewrite :: Rewrite env st a -> env -> st -> Either RewriteError a
-evalRewrite ma r s = fmap snd $ getRewrite ma r s
-
-
-get :: Rewrite env st st
-get = Rewrite $ \_ s -> return (s,s)
-
-gets :: (st -> a) -> Rewrite env st a
-gets f = Rewrite $ \_ s -> return (s,f s)
-
-put :: st -> Rewrite env st ()
-put s = Rewrite $ \_ _ -> return (s,())
-
-puts :: (st -> st) -> Rewrite env st ()
-puts f = Rewrite $ \_ s -> return (f s,())
-
-
-ask :: Rewrite env st env
-ask = Rewrite $ \r s -> return (s,r)
-
-asks :: (env -> a) -> Rewrite env st a
-asks f = Rewrite $ \r s -> return (s,f r)
-
-local :: env -> Rewrite env st a -> Rewrite env st a
-local r ma = Rewrite $ \_ s -> getRewrite ma r s
-
-throwError :: RewriteError -> Rewrite env st a
-throwError msg = Rewrite $ \_ _ -> Left msg
-
-
+evalRewrite ma r s = runIdentity (runExceptT (evalStateT (runReaderT ma r) s))
+    
 

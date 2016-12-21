@@ -75,13 +75,13 @@ stateZero info =
 
 
 setInfo :: SectionInfo -> Mon () 
-setInfo info = puts (\s -> s { prev_key = section_key info, prev_meter = section_meter info })
+setInfo info = modify (\s -> s { prev_key = section_key info, prev_meter = section_meter info })
 
 getTerminator :: Mon (Maybe Doc)
 getTerminator = gets opt_terminator
 
 setTerminator :: Maybe Doc -> Mon ()
-setTerminator optd = puts (\s -> s { opt_terminator = optd })
+setTerminator optd = modify (\s -> s { opt_terminator = optd })
 
 
 deltaMetrical :: SectionInfo -> Mon (Maybe Meter)

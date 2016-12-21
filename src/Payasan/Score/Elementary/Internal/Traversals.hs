@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable         #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -517,7 +518,7 @@ genCollect mf a0 st ph =
     fromRight $ evalRewrite (partC a0 ph) (section_info ph) st  -- | TODO fromRight
   where
     partC :: ac -> Section pch drn anno -> Mon st ac
-    partC ac (Section info bs)     = local info (foldlM barC ac bs)
+    partC ac (Section info bs)     = local (const info) (foldlM barC ac bs)
 
     barC :: ac -> Bar pch drn anno -> Mon st ac
     barC ac (Bar cs)            = foldlM noteGroupC ac cs
@@ -539,7 +540,7 @@ genTransform elemT st0 ph =
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 
-    partT (Section info bs)        = local info (Section info <$> mapM barT bs)
+    partT (Section info bs)        = local (const info) (Section info <$> mapM barT bs)
 
     barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
     barT (Bar cs)               = Bar <$> mapM noteGroupT cs

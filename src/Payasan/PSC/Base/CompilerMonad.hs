@@ -23,6 +23,7 @@ module Payasan.PSC.Base.CompilerMonad
   , ErrMsg
   
   , runCM
+  , prompt
   
   , localCE
   , askCE
@@ -156,6 +157,11 @@ runCM ue ma =
     do { ce <- zero_CMEnv
        ; getCM ma ce ue
        }
+
+prompt :: ue -> CM ue a -> IO a
+prompt ue ma = runCM ue ma >>= \ans -> case ans of
+    Left err -> error err
+    Right a -> return a
 
 
 --------------------------------------------------------------------------------

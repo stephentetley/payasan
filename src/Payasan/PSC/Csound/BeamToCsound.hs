@@ -62,7 +62,7 @@ translateToCsound gf ph = fromRight $ evalRewrite (partT gf ph) () 0
 
 
 advanceOnset :: Seconds -> Mon ()
-advanceOnset d = puts (\s -> s+d)
+advanceOnset d = modify (\s -> s+d)
 
 onset :: Mon Seconds
 onset = get

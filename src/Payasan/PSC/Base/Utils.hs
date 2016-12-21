@@ -51,7 +51,7 @@ import Text.Parsec.Token
 
 import Text.PrettyPrint.HughesPJ                -- package: pretty
 
-import Control.Monad.Identity
+import Control.Monad.Identity                   -- package: mtl
 import Data.Char (isSpace)
 
 

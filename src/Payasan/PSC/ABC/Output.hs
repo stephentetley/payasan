@@ -53,7 +53,7 @@ stateZero info = State { prev_info  = info }
 
 
 setInfo :: SectionInfo -> Mon () 
-setInfo info = puts (\s -> s { prev_info = info })
+setInfo info = modify (\s -> s { prev_info = info })
 
 
 deltaMetrical :: SectionInfo -> Mon (Maybe (Meter,UnitNoteLength))

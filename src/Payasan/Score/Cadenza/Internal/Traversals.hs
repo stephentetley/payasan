@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ genCollect mf a0 st ph =
   where
 
     partC :: ac -> Section pch drn anno -> Mon st ac
-    partC ac (Section info bs)     = local info (foldlM noteGroupC ac bs)
+    partC ac (Section info bs)     = local (const info) (foldlM noteGroupC ac bs)
 
     noteGroupC :: ac -> NoteGroup pch drn anno -> Mon st ac
     noteGroupC ac (Atom e)      = mf ac e
@@ -101,7 +102,7 @@ genTransform elemT st0 ph =
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 
-    partT (Section info bs)        = local info (Section info <$> mapM noteGroupT bs)
+    partT (Section info bs)        = local (const info) (Section info <$> mapM noteGroupT bs)
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
