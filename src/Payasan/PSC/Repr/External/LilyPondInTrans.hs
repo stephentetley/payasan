@@ -31,7 +31,6 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 
@@ -45,7 +44,7 @@ type AbsPMon a      = Mon () a
 
 unquoteLyRelative :: String -> SectionInfo -> Pitch -> LySectionQuote anno -> Section Pitch Duration anno
 unquoteLyRelative name info rpitch (LySectionQuote bs) =
-    let bars = translateDuration $ translatePitchRelative rpitch bs
+    let bars = translateDuration info $ translatePitchRelative info rpitch bs
     in Section { section_name      = name
                , section_info      = info
                , section_bars      = bars
@@ -53,7 +52,7 @@ unquoteLyRelative name info rpitch (LySectionQuote bs) =
                
 unquoteLyAbsolute :: String -> SectionInfo -> LySectionQuote anno -> Section Pitch Duration anno
 unquoteLyAbsolute name info (LySectionQuote bs) =
-    let bars = translateDuration $ translatePitchAbsolute bs
+    let bars = translateDuration info $ translatePitchAbsolute info bs
     in Section { section_name      = name
                , section_info      = info
                , section_bars      = bars
@@ -61,7 +60,7 @@ unquoteLyAbsolute name info (LySectionQuote bs) =
 
 unquoteGenLy :: String -> SectionInfo -> GenLySectionQuote pch anno -> Section pch Duration anno
 unquoteGenLy name info (GenLySectionQuote bs) =
-    let bars = translateDuration bs
+    let bars = translateDuration info bs
     in Section { section_name      = name
                , section_info      = info
                , section_bars      = bars
@@ -119,10 +118,12 @@ drn_algo = BeamDurationAlgo
 -- Relative Pitch translation
 
     
-translatePitchRelative :: Pitch 
+translatePitchRelative :: SectionInfo 
+                       -> Pitch 
                        -> [Bar LyPitch drn anno] 
                        -> [Bar Pitch drn anno]
-translatePitchRelative rpitch = genTransformBars relElementP rpitch 
+translatePitchRelative info rpitch = 
+    genTransformBars relElementP info rpitch 
 
 previousPitch :: RelPMon Pitch
 previousPitch = get
@@ -162,8 +163,11 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 
-translatePitchAbsolute :: [Bar LyPitch drn anno] -> [Bar Pitch drn anno]
-translatePitchAbsolute = genTransformBars absElementP () 
+translatePitchAbsolute :: SectionInfo 
+                       -> [Bar LyPitch drn anno] 
+                       -> [Bar Pitch drn anno]
+translatePitchAbsolute info = 
+    genTransformBars absElementP info () 
 
 
 absElementP :: Element LyPitch drn anno -> AbsPMon (Element Pitch drn anno)
@@ -191,8 +195,8 @@ changePitchAbs p1 = return $ toPitchAbs p1
 --------------------------------------------------------------------------------
 -- Duration translation
 
-translateDuration :: [Bar pch LyNoteLength anno] -> [Bar pch Duration anno]
-translateDuration = genTransformBars elementD  d_quarter
+translateDuration :: SectionInfo -> [Bar pch LyNoteLength anno] -> [Bar pch Duration anno]
+translateDuration info = genTransformBars elementD info d_quarter
 
 previousDuration :: DMon Duration
 previousDuration = get

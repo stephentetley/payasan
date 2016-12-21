@@ -23,6 +23,8 @@ module Payasan.PSC.Repr.External.Traversals
   , genTransformSection
   , genTransformBars
   , asks
+  , get
+  , put
   
   , liftElementTrafo
 
@@ -127,6 +129,15 @@ asks :: (SectionInfo -> a) -> Mon st a
 asks proj = ElemM $ \r st -> (st, proj r)
 
 
+get :: Mon st st
+get = ElemM $ \_ st -> (st,st)
+
+
+put :: st -> Mon st ()
+put st = ElemM $ \_ _ -> (st,())
+
+
+
 partT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2)) 
        -> Part p1 d1 a1 -> TravM st (Part p2 d2 a2)
 partT elemT (Part ss)               = Part <$> mapM (sectionT elemT) ss
@@ -151,8 +162,6 @@ noteGroupT elemT (Beamed cs)        = Beamed <$> mapM (noteGroupT elemT) cs
 noteGroupT elemT (Tuplet spec cs)   = Tuplet spec <$> mapM (noteGroupT elemT) cs
 
 
---------------------------------------------------------------------------------
--- 
 
 
 --------------------------------------------------------------------------------

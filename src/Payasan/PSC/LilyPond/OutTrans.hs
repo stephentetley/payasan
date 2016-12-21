@@ -28,7 +28,6 @@ import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
-import Payasan.PSC.Base.RewriteMonad
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
