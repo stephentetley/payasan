@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# OPTIONS -Wall #-}
 
@@ -18,6 +19,9 @@
 module Payasan.PSC.LilyPond.SimpleOutput
   ( 
     LyOutputDef(..)
+
+  , LyHeader
+  , makeSimpleHeader
 
   , stateZero
   , simpleScore_Relative
@@ -58,7 +62,6 @@ type Mon a = Rewrite () State a
 data State = State 
     { prev_key          :: !Key
     , prev_meter        :: !Meter
-    , opt_terminator    :: Maybe Doc 
     }
 
 
@@ -68,29 +71,24 @@ stateZero :: SectionInfo -> State
 stateZero info = 
     State { prev_key       = section_key info
           , prev_meter     = section_meter info
-          , opt_terminator = case section_meter info of 
-                               Unmetered -> Just cadenzaOff_ 
-                               _ -> Nothing 
           }
 
 
 setInfo :: SectionInfo -> Mon () 
-setInfo info = modify (\s -> s { prev_key = section_key info, prev_meter = section_meter info })
-
-getTerminator :: Mon (Maybe Doc)
-getTerminator = gets opt_terminator
-
-setTerminator :: Maybe Doc -> Mon ()
-setTerminator optd = modify (\s -> s { opt_terminator = optd })
+setInfo info = modify (\s -> s { prev_key = section_key info
+                               , prev_meter = section_meter info })
 
 
+-- | Always returns Unmetered even if prev was Unmetered
 deltaMetrical :: SectionInfo -> Mon (Maybe Meter)
 deltaMetrical (SectionInfo { section_meter = m1 }) = 
     fn <$> gets prev_meter
   where
     fn prev 
-        | prev == m1    = Nothing
-        | otherwise     = Just m1
+        | prev == m1 && m1 /= Unmetered   = Nothing
+        | otherwise                       = Just m1
+
+
 
 deltaKey :: SectionInfo -> Mon (Maybe Key)
 deltaKey (SectionInfo { section_key = k1 }) = 
@@ -101,6 +99,19 @@ deltaKey (SectionInfo { section_key = k1 }) =
         | otherwise     = Just k1
 
 
+deltaKeySig :: SectionInfo -> Mon (Maybe Doc)
+deltaKeySig info = fmap key_ <$> deltaKey info
+
+
+-- Should only coalesce proper time signatures not cadenzas
+
+deltaTimeSig :: SectionInfo -> Mon (Maybe Doc, Maybe Doc)
+deltaTimeSig info = fn <$> deltaMetrical info
+  where
+    fn Nothing             = (Nothing, Nothing)
+    fn (Just (Unmetered))  = (Just cadenzaOn_, Just cadenzaOff_)
+    fn (Just (Metered t))  = (Just $ time_ t, Nothing)
+
 --------------------------------------------------------------------------------
 
 
@@ -109,7 +120,21 @@ data LyOutputDef pch anno = LyOutputDef
     , printAnno     :: anno -> Doc
     }
 
+data LyHeader_
+type LyHeader = TyDoc LyHeader_
 
+makeSimpleHeader :: String -> String -> LyHeader
+makeSimpleHeader vstring name = 
+    TyDoc $ version_ vstring $+$ header
+  where
+    header  = withString name $ \ss ->
+                 block (Just $ command "header") (title ss)
+
+
+
+assembleSimpleLy :: LyHeader -> LyNoteListDoc -> Doc
+assembleSimpleLy header body = extractDoc header $+$ extractDoc body
+    
 
 simpleScore_Relative :: LyOutputDef pch anno 
                      -> ScoreInfo 
@@ -192,13 +217,7 @@ makeLyNoteListDoc :: forall pch anno.
                   -> SectionInfo 
                   -> GenLyPartOut pch anno
                   -> Mon LyNoteListDoc
-makeLyNoteListDoc def info ph = 
-    final =<< oLyPart def ph
-  where
-    final d = do { od <- getTerminator
-                 ; case od of Nothing -> return $ TyDoc d
-                              Just d1 -> return $ TyDoc (d $+$ d1)
-                 }
+makeLyNoteListDoc def info ph = TyDoc <$> oLyPart def ph
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -212,12 +231,7 @@ lilypondNoteList :: LyOutputDef pch anno
                  -> GenLyPartOut pch anno
                  -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
-    fromRight $ evalRewrite (final =<< oLyPart def ph) () (stateZero prefix_locals)
-  where
-    final d = do { od <- getTerminator
-                 ; case od of Nothing -> return $ TyDoc d
-                              Just d1 -> return $ TyDoc (d $+$ d1)
-                 }
+    fromRight $ evalRewrite (TyDoc <$> oLyPart def ph) () (stateZero prefix_locals)
 
  --   pPitch :: pch -> Doc
  --   pPitch = printPitch def
@@ -238,35 +252,21 @@ oLyPart def (Part (x:xs))       = do { d <- oSection def x; step d xs }
 -- Note - delta key implies standard pitch 
 -- (i.e. not drum notes, neume names, etc...)
 --
--- TODO - Maybe it is best to print Sections as (almost) 
--- independent entities, i.e. print key and meter within braces - 
--- delta-ing things is adding unpleasant complexity.
+-- Should print section name first in a comment...
 -- 
 oSection :: LyOutputDef pch anno -> Section pch LyNoteLength anno -> Mon Doc
 oSection def (Section _ locals bs) =
-    do { dkey     <- deltaKey locals
-       ; dtime    <- deltaMetrical locals
+    do { dkeysig               <- deltaKeySig locals
+       ; (dtime,dtimestop)     <- deltaTimeSig locals
        ; let ans = ppSection (bar_ "\\") $ map (oBar def) bs
        ; setInfo locals
-       ; mwrapT dtime $ prefixK dkey $ ans
+       ; return (dtime ?+$ dkeysig ?+$ (ans $+? dtimestop))
        }
-  where
-    prefixK (Nothing) d   = d
-    prefixK (Just k)  d   = key_ k $+$ d
-    mwrapT (Nothing)  d   = return d
-    mwrapT (Just m)   d   = 
-        do { d0 <- getTerminator
-           ; case m of  
-               Unmetered -> setTerminator (Just cadenzaOff_) >>
-                            return (d0 $?+$ cadenzaOn_ $+$ d)
-               Metered t -> setTerminator Nothing >> 
-                            return (time_ t $+$ d)
-           }
 
 
--- | Bars are terminated...
+-- | Bars are not terminated...
 oBar :: LyOutputDef pch anno -> Bar pch LyNoteLength anno -> Doc
-oBar def (Bar cs) = hsep (map (oNoteGroup def) cs) <+> char '|'
+oBar def (Bar cs) = hsep (map (oNoteGroup def) cs)
 
 
 oNoteGroup :: LyOutputDef pch anno -> NoteGroup pch LyNoteLength anno -> Doc

@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -37,11 +36,9 @@ import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.External.Syntax
 
 
-import Text.PrettyPrint.HughesPJ                -- package: pretty
 
 import Control.Monad
 import Control.Monad.IO.Class
-import Data.Data
 import System.FilePath
 
 
@@ -66,7 +63,6 @@ data ABCEnv = ABCEnv
     , abc_bars_per_line         :: !Int
     , abc_recalc_beams          :: !Bool
     }
-  deriving (Data,Eq,Show,Typeable)
   
 env_zero :: ABCEnv
 env_zero = ABCEnv 
@@ -78,32 +74,20 @@ env_zero = ABCEnv
     , abc_recalc_beams          = False    -- default should really be True once we ahve bits in place again
     }    
     
-{-
-
--- This is the existing "compileABC" function from Payasan.PSC.Pipeline
---
--- We want to re-write it to run in the CompilerMonad so it can 
--- use the CompilerMonad's services (logging, errors, ...)
---
-
-outputAsABC :: ScoreInfo -> StaffInfo -> EXT.StdPart1 anno -> String
-outputAsABC infos staff = 
-    ppRender . ABCOut.abcOutput infos staff
-             . ABCOut.translateToABCPartOut
-             . addBeams 
-             . transExternalToIRBeam
-             
--}             
 
 
 compile :: StdPart1 anno -> IO ()
 compile part = prompt env_zero (compile1 part) >> return ()
 
+
+-- Note - initial section info can fallback to sensible defaults 
+-- for an empty score
 compile1 :: StdPart1 anno -> ABCCompile ()
 compile1 part = do 
     { let info = initialSectionInfo part
-    ; notes <- compilePartToNoteList part
-    ; abc <- assembleOutput info notes
+    ; header <- makeHeader1 info
+    ; notes  <- compilePartToNoteList part
+    ; let abc = assembleABC header notes 
     ; writeABCFile (ppRender abc)
     }
 
@@ -127,15 +111,12 @@ compilePartToNoteList p = do
     addBeams = return 
     delBeams = return
 
-    
-assembleOutput :: SectionInfo -> ABCNoteListDoc -> ABCCompile Doc
-assembleOutput info notes = do 
-    { (title, clef) <- tuneConfig
-    ; return $ assembleABC (makeHeader title clef info) notes
-    }
-  where
-    tuneConfig = (,) <$> asksUE abc_tune_title <*> asksUE abc_clef 
-                      
+
+makeHeader1 :: SectionInfo -> ABCCompile ABCHeader
+makeHeader1 info = 
+    (\title clef -> makeHeader title clef info) 
+        <$> asksUE abc_tune_title <*> asksUE abc_clef 
+
                       
 
     

@@ -72,16 +72,23 @@ type ErrMsg = String
 -- e.g. debug level.
 --
 data CMEnv = CMEnv 
-    { cm_working_directory      :: !String }
-
+    { cm_working_directory      :: !FilePath
+    , cm_outfile_name           :: !String
+    }
     
     
 zero_CMEnv :: IO CMEnv
 zero_CMEnv = 
     do { cwd <- getCurrentDirectory
-       ; return $ CMEnv { cm_working_directory = cwd }
+       ; return $ CMEnv { cm_working_directory = cwd
+                        , cm_outfile_name      = "temp.out"
+                        }
        }
 
+
+-- Note Parsec uses a smaller dictionary to make a bigger one.
+-- We could do likewise to get working directory from an env var 
+-- or FilePath.
 
        
   

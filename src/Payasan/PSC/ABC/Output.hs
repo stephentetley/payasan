@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -90,7 +91,13 @@ type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 -- named wrappers / unwrappers, but allow some type 
 -- differentiation (safety) in APIs.
 --
-newtype ABCHeader = ABCHeader { getHeader :: Doc }
+
+
+data ABCHeader_ 
+
+type ABCHeader = TyDoc ABCHeader_ 
+
+
 
 
 
@@ -99,8 +106,8 @@ newtype ABCHeader = ABCHeader { getHeader :: Doc }
 -- run in a monad.
 --
 assembleABC :: ABCHeader -> ABCNoteListDoc -> Doc
-assembleABC header body = getHeader header $+$ extractDoc body
-    
+assembleABC header body = extractDoc header $+$ extractDoc body
+
     
 -- | Note X field must be first K field should be last -
 -- see abcplus manual page 11.
@@ -109,7 +116,7 @@ assembleABC header body = getHeader header $+$ extractDoc body
 --
 makeHeader :: String -> Clef -> SectionInfo -> ABCHeader
 makeHeader title clefname locals = 
-    ABCHeader $ vcat $
+    TyDoc $ vcat $
        [ field 'X' (int 1)
        , field 'T' (text title)
        , field 'M' (meter  $ section_meter locals)

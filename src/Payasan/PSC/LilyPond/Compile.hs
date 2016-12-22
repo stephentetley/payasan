@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -39,11 +38,20 @@ import Text.PrettyPrint.HughesPJ                -- package: pretty
 
 import Control.Monad
 import Control.Monad.IO.Class
-import Data.Data
+
 import System.FilePath
 
 
 type LyCompile a = CM LyEnv a
+
+
+-- TO CONSIDER
+-- There is not much variation (in form) between this and the 
+-- ABC compiler. Can the structure of _compilation_ go in the 
+-- compiler monad?
+-- Or will Csound and MIDI be too different?
+
+
 
 
 -- Note - there is a lot of user variation that a LilyPond 
@@ -55,17 +63,18 @@ type LyCompile a = CM LyEnv a
 -- at all...
 --
 data LyEnv = LyEnv 
-    { ly_tune_title             :: !String   -- TODO over determining...
+    { ly_version_number         :: !String
+    , ly_tune_title             :: !String   -- TODO over determining of header...
     , ly_clef                   :: !Clef     -- ditto
     , ly_cwd_loc                :: !TempDirLoc
     , ly_outfile_name           :: !String
     , ly_recalc_beams           :: !Bool
     }
-  deriving (Data,Eq,Show,Typeable)
   
 env_zero :: LyEnv
 env_zero = LyEnv 
-    { ly_tune_title             = "Tune 1"
+    { ly_version_number         = "2.18.2"
+    , ly_tune_title             = "Tune 1"
     , ly_clef                   = TREBLE
     , ly_cwd_loc                = default_temp_dir_location
     , ly_outfile_name           = "output.ly"

@@ -105,12 +105,15 @@ type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 -- property.
 --
 
-
+-- | DEPRECATED - move to ABC and LilyPond _compilers_.
 data ScoreInfo = ScoreInfo
     { score_title               :: !String
     , score_ly_version          :: !String
     }
   deriving (Data,Eq,Show,Typeable)
+
+
+
 
 -- | TODO - are there any more fields to add to this?
 -- If not we should just use Clef.

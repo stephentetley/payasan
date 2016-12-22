@@ -28,7 +28,8 @@ module Payasan.PSC.Base.Utils
   , vsep
   , sepList
   , withString
-  , ($?+$)
+  , (?+$)
+  , ($+?)
   , punctuateSepEnd
   , ppTable
 
@@ -110,11 +111,17 @@ withString ss f = if null ss then empty else f ss
 
 
 
-infixl 5 $?+$ 
+infixr 5 ?+$ 
 
-($?+$) :: Maybe Doc -> Doc -> Doc
-($?+$) (Nothing) d2 = d2
-($?+$) (Just d1) d2 = d1 $+$ d2
+(?+$) :: Maybe Doc -> Doc -> Doc
+(?+$) (Nothing) d2 = d2
+(?+$) (Just d1) d2 = d1 $+$ d2
+
+infixr 5 $+? 
+($+?) :: Doc -> Maybe Doc -> Doc
+($+?) d1 (Nothing) = d1
+($+?) d1 (Just d2) = d1 $+$ d2
+
 
     
 -- | Special case pretty printer, probably only useful for 

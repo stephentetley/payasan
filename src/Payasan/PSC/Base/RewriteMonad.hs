@@ -50,28 +50,6 @@ type RewriteError = String
 --
 type Rewrite env st = ReaderT env (StateT st (ExceptT RewriteError Identity))
 
-{-
-
--- | Rewrite monad - Reader+State.
-newtype Rewrite env st a = Rewrite { 
-    getRewrite :: env -> st -> Either RewriteError (st, a) }
-
-instance Functor (Rewrite env st) where
-  fmap f ma = Rewrite $ \r1 s -> 
-                getRewrite ma r1 s >>= \(s1,a) -> return (s1, f a)
-
-instance Applicative (Rewrite env st) where
-  pure a    = Rewrite $ \_  s -> return (s,a)
-  mf <*> ma = Rewrite $ \r1 s -> 
-                getRewrite mf r1 s >>= \(s1,f) ->
-                getRewrite ma r1 s1 >>= \(s2,a) ->
-                return (s2, f a)
-
-instance Monad (Rewrite env st) where
-  return    = pure
-  ma >>= k  = Rewrite $ \r1 s -> 
-                getRewrite ma r1 s >>= \(s1,a) -> getRewrite (k a) r1 s1
--}                
 
 -- TODO - is an Alternative instance useful?
  
