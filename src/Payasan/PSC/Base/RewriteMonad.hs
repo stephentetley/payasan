@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Rewrite Monad
+-- Rewrite Monad - DEPRECATED
 -- 
 --------------------------------------------------------------------------------
 

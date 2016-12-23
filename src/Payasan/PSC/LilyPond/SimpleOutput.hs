@@ -21,7 +21,9 @@ module Payasan.PSC.LilyPond.SimpleOutput
     LyOutputDef(..)
 
   , LyHeader
-  , makeSimpleHeader
+  , makeHeader
+
+  , assembleLy
 
   , stateZero
   , simpleScore_Relative
@@ -125,8 +127,8 @@ data LyOutputDef pch anno = LyOutputDef
 data LyHeader_
 type LyHeader = TyDoc LyHeader_
 
-makeSimpleHeader :: String -> String -> LyHeader
-makeSimpleHeader vstring name = 
+makeHeader :: String -> String -> LyHeader
+makeHeader vstring name = 
     TyDoc $ version_ vstring $+$ header
   where
     header  = withString name $ \ss ->
@@ -134,8 +136,8 @@ makeSimpleHeader vstring name =
 
 
 
-assembleSimpleLy :: LyHeader -> LyNoteListDoc -> Doc
-assembleSimpleLy header body = extractDoc header $+$ extractDoc body
+assembleLy :: LyHeader -> LyNoteListDoc -> Doc
+assembleLy header body = extractDoc header $+$ extractDoc body
     
 
 simpleScore_Relative :: LyOutputDef pch anno 
@@ -213,9 +215,11 @@ simpleVoice_Absolute def ph =
 --
 makeLyNoteListDoc :: forall pch anno. 
                      LyOutputDef pch anno 
+                  -> SectionInfo
                   -> GenLyPartOut pch anno
-                  -> Mon LyNoteListDoc
-makeLyNoteListDoc def ph = TyDoc <$> oLyPart def ph
+                  -> LyNoteListDoc
+makeLyNoteListDoc def info ph =
+    evalState (TyDoc <$> oLyPart def ph) (stateZero info)
 
 
 -- | Pitch should be \"context free\" at this point.

@@ -26,6 +26,7 @@ module Payasan.PSC.LilyPond.Compile
 
 import Payasan.PSC.LilyPond.OutTrans
 import Payasan.PSC.LilyPond.SimpleOutput
+import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
@@ -34,7 +35,7 @@ import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.Base.Pitch ( middle_c )
 
-import Text.PrettyPrint.HughesPJ                -- package: pretty
+import Text.PrettyPrint.HughesPJ               -- package: pretty
 
 import Control.Monad
 import Control.Monad.IO.Class
@@ -83,12 +84,12 @@ env_zero = LyEnv
     
 
 
-compile :: StdPart1 anno -> IO ()
+compile :: Anno anno => StdPart1 anno -> IO ()
 compile part = runCM env_zero (compile1 part) >>= \ans -> case ans of
     Left err -> putStrLn err
     Right _ -> return ()
 
-compile1 :: StdPart1 anno -> LyCompile ()
+compile1 :: Anno anno => StdPart1 anno -> LyCompile ()
 compile1 part = do 
     { let info = initialSectionInfo part
     ; notes <- compilePartToNoteList part
@@ -99,15 +100,17 @@ compile1 part = do
 
 -- | Do we want to recalc beams (probably...)
 
-compilePartToNoteList :: StdPart1 anno -> LyCompile LyNoteListDoc
+compilePartToNoteList :: Anno anno 
+                      => StdPart1 anno -> LyCompile LyNoteListDoc
 compilePartToNoteList p = do 
     { p1 <- rebeam p 
     ; p2 <- normalize p1
     ; let info = initialSectionInfo p
-    ; p3 <- error "TODO" -- rewrite (makeLyNoteListDoc p2) () (stateZero info)
+    ; p3 <- return $ makeLyNoteListDoc def info p2
     ; return p3
     }
   where
+    def = LyOutputDef { printPitch = pitch, printAnno = anno }
     normalize = return . translateToLyPartOut_Relative middle_c
     rebeam s = do { ans <- asksUE ly_recalc_beams
                   ; if ans then (addBeams <=< delBeams) s else return s 
@@ -120,7 +123,7 @@ compilePartToNoteList p = do
 assembleOutput :: SectionInfo -> LyNoteListDoc -> LyCompile Doc
 assembleOutput info notes = do 
     { (title, clef) <- tuneConfig
-    ; return $ error "TODO" -- assembleLy (makeHeader title clef info) notes
+    ; return $ assembleLy (makeHeader "2.18.6" title) notes
     }
   where
     tuneConfig = (,) <$> asksUE ly_tune_title <*> asksUE ly_clef 
