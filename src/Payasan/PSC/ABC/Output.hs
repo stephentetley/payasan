@@ -23,7 +23,6 @@ module Payasan.PSC.ABC.Output
   , makeABCNoteListDoc
   , assembleABC
   
-  , stateZero
   ) where
 
 import Payasan.PSC.ABC.Utils
@@ -31,7 +30,6 @@ import Payasan.PSC.ABC.Utils
 import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.PSC.Base.ABCCommon
-import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 
@@ -40,27 +38,21 @@ import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
+import Control.Monad.State
 
 type CatOp = Doc -> Doc -> Doc
 
 
-type Mon a = Rewrite () State a
-
-data State = State { prev_info  :: !SectionInfo }
-
-stateZero :: SectionInfo -> State
-stateZero info = State { prev_info  = info }
+type Mon a = State SectionInfo a
 
 
 
-setInfo :: SectionInfo -> Mon () 
-setInfo info = modify (\s -> s { prev_info = info })
 
 
 deltaMetrical :: SectionInfo -> Mon (Maybe (Meter,UnitNoteLength))
 deltaMetrical (SectionInfo { section_meter = m1
                            , section_unit_note_len = u1 }) = 
-    fn <$> gets prev_info
+    fn <$> get
   where
     fn prev 
         | section_meter prev == m1 && section_unit_note_len prev == u1 = Nothing
@@ -68,7 +60,7 @@ deltaMetrical (SectionInfo { section_meter = m1
 
 deltaKey :: SectionInfo -> Mon (Maybe Key)
 deltaKey (SectionInfo { section_key = k1 }) = 
-    fn <$> gets prev_info
+    fn <$> get
   where
     fn prev 
         | section_key prev == k1 = Nothing
@@ -132,8 +124,9 @@ makeHeader title clefname locals =
 -- if bars do not fit nicely in 3s or 4s (no need to add 
 -- advanced capabilities to PSC).
 --
-makeABCNoteListDoc :: Int -> ABCPartOut anno -> Mon ABCNoteListDoc
-makeABCNoteListDoc cols (Part xs) = fmap TyDoc $ step xs
+makeABCNoteListDoc :: Int -> SectionInfo -> ABCPartOut anno -> ABCNoteListDoc
+makeABCNoteListDoc cols info (Part xs) = 
+    evalState (TyDoc <$> step xs) info
   where
     step []       = return empty
     step [s]      = oSection cols (text "|]") s
@@ -152,7 +145,7 @@ oSection cols end (Section _ info cs) =
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
        ; let ans = ppSection cols end $ map oBar cs 
-       ; setInfo info
+       ; put info
        ; return $ prefixM dmeter $ prefixK dkey $ ans
        }
   where

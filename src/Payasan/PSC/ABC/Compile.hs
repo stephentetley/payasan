@@ -99,7 +99,7 @@ compilePartToNoteList p = do
     { p1 <- rebeam p 
     ; p2 <- normalize p1
     ; let info = initialSectionInfo p
-    ; p3 <- rewrite (makeABCNoteListDoc 4 p2) () (stateZero info)
+    ; p3 <- return $ makeABCNoteListDoc 4 info p2
     ; return p3
     }
   where

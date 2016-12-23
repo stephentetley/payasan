@@ -44,7 +44,6 @@ import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
-import Payasan.PSC.Base.RewriteMonad
 import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Basis
@@ -53,13 +52,16 @@ import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
+import Control.Monad.State
 
-type Mon a = Rewrite () State a
+
+-- TODO Shouldn't use Rewrite...
+type Mon a = State St a
 
 -- Meter pattern (SectionInfo) is irrelevant at this stage.
 -- Only care about Key and Meter
 
-data State = State 
+data St = St 
     { prev_key          :: !Key
     , prev_meter        :: !Meter
     }
@@ -67,11 +69,11 @@ data State = State
 
 
 
-stateZero :: SectionInfo -> State
+stateZero :: SectionInfo -> St
 stateZero info = 
-    State { prev_key       = section_key info
-          , prev_meter     = section_meter info
-          }
+    St { prev_key       = section_key info
+       , prev_meter     = section_meter info
+       }
 
 
 setInfo :: SectionInfo -> Mon () 
@@ -205,19 +207,15 @@ simpleVoice_Absolute def ph =
 
 
 
-fromRight :: Either z a -> a
-fromRight (Right a) = a
-fromRight _         = error "fromRight is really bad, to be removed soon."
 
 
 -- TODO working towards an API that provides a (simple) "makeDoc"...
 --
 makeLyNoteListDoc :: forall pch anno. 
                      LyOutputDef pch anno 
-                  -> SectionInfo 
                   -> GenLyPartOut pch anno
                   -> Mon LyNoteListDoc
-makeLyNoteListDoc def info ph = TyDoc <$> oLyPart def ph
+makeLyNoteListDoc def ph = TyDoc <$> oLyPart def ph
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -231,13 +229,9 @@ lilypondNoteList :: LyOutputDef pch anno
                  -> GenLyPartOut pch anno
                  -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
-    fromRight $ evalRewrite (TyDoc <$> oLyPart def ph) () (stateZero prefix_locals)
+    evalState (TyDoc <$> oLyPart def ph) (stateZero prefix_locals)
 
- --   pPitch :: pch -> Doc
- --   pPitch = printPitch def
 
- --   pAnno  :: anno -> Doc
- --   pAnno  = printAnno def
 
 oLyPart :: LyOutputDef pch anno -> Part pch LyNoteLength anno -> Mon Doc
 oLyPart _   (Part [])           = return empty
@@ -245,7 +239,7 @@ oLyPart def (Part (x:xs))       = do { d <- oSection def x; step d xs }
   where
     step d []     = return d
     step d (s:ss) = do { d1    <- oSection def s
-                       ; let ac = d <+> char '|' $+$ d1
+                       ; let ac = d $+$ d1
                        ; step ac ss
                        }
 
