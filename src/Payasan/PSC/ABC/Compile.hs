@@ -45,6 +45,7 @@ import System.FilePath
 data CompilerDef = CompilerDef
     { pathto_working_dir     :: !String
     , outfile_name           :: !String
+    , title                  :: !String
     , clef                   :: !Clef
     , bars_per_line          :: !Int
     , recalc_beams           :: !Bool
@@ -56,12 +57,14 @@ emptyDef :: CompilerDef
 emptyDef = CompilerDef
     { pathto_working_dir        = ""
     , outfile_name              = "abcoutput.abc"
+    , title                     = "Tune 1"
     , clef                      = TREBLE
     , bars_per_line             = 4
     , recalc_beams              = True
     }
 
-type ABCCompile a = CM ABCEnv a
+
+type ABCCompile a = CM () a
 
 
 -- Note - there is very little user variation that Payasan 
@@ -71,23 +74,9 @@ type ABCCompile a = CM ABCEnv a
 -- ABC output is very regimented.
 
 
--- | Note - clef output for abc is part of the 'K' key field, there
+-- Note - clef output for abc is part of the 'K' key field, there
 -- isn't a simple "clef field".
 --
-data ABCEnv = ABCEnv 
-    { abc_tune_title            :: !String
-    , abc_clef                  :: !Clef
-    , abc_bars_per_line         :: !Int
-    , abc_recalc_beams          :: !Bool
-    }
-  
-env_zero :: ABCEnv
-env_zero = ABCEnv 
-    { abc_tune_title            = "Tune 1"
-    , abc_clef                  = TREBLE
-    , abc_bars_per_line         = 4
-    , abc_recalc_beams          = False    -- default should really be True once we ahve bits in place again
-    }    
     
 data Compiler = Compiler
    { compile :: forall anno. StdPart1 anno -> IO ()
@@ -95,11 +84,9 @@ data Compiler = Compiler
 
 makeCompiler :: CompilerDef -> Compiler
 makeCompiler env = 
-    Compiler { compile = \part -> prompt env_zero (compile1 env part)  >> return ()
+    Compiler { compile = \part -> prompt () (compile1 env part)  >> return ()
              }
 
--- compile :: StdPart1 anno -> IO ()
--- compile part = prompt env_zero (compile1 part) >> return ()
 
 
 -- Note - initial section info can fallback to sensible defaults 
@@ -107,8 +94,8 @@ makeCompiler env =
 compile1 :: CompilerDef -> StdPart1 anno -> ABCCompile ()
 compile1 def part = do 
     { let info = initialSectionInfo part
-    ; header <- makeHeader1 info
-    ; notes  <- compilePartToNoteList part
+    ; let header = makeHeader1 def info
+    ; notes  <- compilePartToNoteList1 def part
     ; let abc = assembleABC header notes 
     ; writeABCFile1 def (ppRender abc)
     }
@@ -116,8 +103,8 @@ compile1 def part = do
 
 -- | Do we want to recalc beams (probably...)
 
-compilePartToNoteList :: StdPart1 anno -> ABCCompile ABCNoteListDoc
-compilePartToNoteList p = do 
+compilePartToNoteList1 :: CompilerDef -> StdPart1 anno -> ABCCompile ABCNoteListDoc
+compilePartToNoteList1 def p = do 
     { p1 <- rebeam p 
     ; p2 <- normalize p1
     ; let info = initialSectionInfo p
@@ -126,18 +113,16 @@ compilePartToNoteList p = do
     }
   where
     normalize = return . translateToABCPartOut
-    rebeam s = do { ans <- asksUE abc_recalc_beams
-                  ; if ans then (addBeams <=< delBeams) s else return s 
-                  }
+    rebeam s = if recalc_beams def then (addBeams <=< delBeams) s else return s 
+                 
     -- TEMP
     addBeams = return 
     delBeams = return
 
 
-makeHeader1 :: SectionInfo -> ABCCompile ABCHeader
-makeHeader1 info = 
-    (\title clef -> makeHeader title clef info) 
-        <$> asksUE abc_tune_title <*> asksUE abc_clef 
+makeHeader1 :: CompilerDef -> SectionInfo -> ABCHeader
+makeHeader1 def info = 
+    makeHeader (title def) (clef def) info
 
                       
 
