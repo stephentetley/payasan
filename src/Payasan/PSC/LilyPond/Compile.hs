@@ -17,9 +17,11 @@
 module Payasan.PSC.LilyPond.Compile
   ( 
     
-    LyCompile
+    CompilerDef(..)       
+  , emptyDef
 
-  , compile
+  , Compiler(..)
+  , makeCompiler
 
   ) where
 
@@ -43,8 +45,6 @@ import Control.Monad.IO.Class
 import System.FilePath
 
 
-type LyCompile a = CM LyEnv a
-
 
 -- TO CONSIDER
 -- There is not much variation (in form) between this and the 
@@ -63,80 +63,89 @@ type LyCompile a = CM LyEnv a
 -- | Note - a user might not want to print clef and title 
 -- at all...
 --
-data LyEnv = LyEnv 
-    { ly_version_number         :: !String
-    , ly_tune_title             :: !String   -- TODO over determining of header...
-    , ly_clef                   :: !Clef     -- ditto
-    , ly_outfile_name           :: !String
-    , ly_recalc_beams           :: !Bool
+data CompilerDef = CompilerDef
+    { pathto_working_dir        :: !FilePath
+    , ly_version_number         :: !String
+    , tune_title                :: !String   -- TODO over determining of header...
+    , clef                      :: !Clef     -- ditto
+    , outfile_name              :: !String
+    , recalc_beams              :: !Bool
     }
   
-env_zero :: LyEnv
-env_zero = LyEnv 
-    { ly_version_number         = "2.18.2"
-    , ly_tune_title             = "Tune 1"
-    , ly_clef                   = TREBLE
-    , ly_outfile_name           = "output.ly"
-    , ly_recalc_beams           = False    -- default should really be True once we have bits in place again
+emptyDef :: CompilerDef
+emptyDef = CompilerDef
+    { pathto_working_dir        = ""
+    , ly_version_number         = "2.18.2"
+    , tune_title                = "Tune 1"
+    , clef                      = TREBLE
+    , outfile_name              = "output.ly"
+    , recalc_beams              = False    -- default should really be True once we have bits in place again
     }    
     
 
+data Compiler anno = Compiler
+   { compile :: StdPart1 anno -> IO ()
+   }
 
-compile :: Anno anno => StdPart1 anno -> IO ()
-compile part = runCM env_zero (compile1 part) >>= \ans -> case ans of
-    Left err -> putStrLn err
-    Right _ -> return ()
+makeCompiler :: Anno anno => CompilerDef -> Compiler anno
+makeCompiler env = 
+    Compiler { compile = \part -> prompt () (compile1 env part)  >> return ()
+             }
 
-compile1 :: Anno anno => StdPart1 anno -> LyCompile ()
-compile1 part = do 
+type LyCompile a = CM () a
+
+
+
+compile1 :: Anno anno => CompilerDef -> StdPart1 anno -> LyCompile ()
+compile1 def part = do 
     { let info = initialSectionInfo part
-    ; notes <- compilePartToNoteList part
-    ; ly <- assembleOutput info notes
-    ; writeLyFile (ppRender ly)
+    ; notes <- compilePartToNoteList1 def part
+    ; ly <- return $ assembleOutput1 def notes
+    ; writeLyFile1 def (ppRender ly)
     }
 
 
 -- | Do we want to recalc beams (probably...)
 
-compilePartToNoteList :: Anno anno 
-                      => StdPart1 anno -> LyCompile LyNoteListDoc
-compilePartToNoteList p = do 
+compilePartToNoteList1 :: Anno anno 
+                       => CompilerDef -> StdPart1 anno -> LyCompile LyNoteListDoc
+compilePartToNoteList1 def p = do 
     { p1 <- rebeam p 
     ; p2 <- normalize p1
     ; let info = initialSectionInfo p
-    ; p3 <- return $ makeLyNoteListDoc def info p2
+    ; p3 <- return $ makeLyNoteListDoc outDef info p2
     ; return p3
     }
   where
-    def = LyOutputDef { printPitch = pitch, printAnno = anno }
+    outDef = LyOutputDef { printPitch = pitch, printAnno = anno }
     normalize = return . translateToLyPartOut_Relative middle_c
-    rebeam s = do { ans <- asksUE ly_recalc_beams
-                  ; if ans then (addBeams <=< delBeams) s else return s 
-                  }
+    rebeam s = if (recalc_beams def) then (addBeams <=< delBeams) s else return s 
+                  
     -- TEMP
     addBeams = return 
     delBeams = return
 
     
-assembleOutput :: SectionInfo -> LyNoteListDoc -> LyCompile Doc
-assembleOutput info notes = do 
-    { (title, clef) <- tuneConfig
-    ; return $ assembleLy (makeHeader "2.18.6" title) notes
-    }
-  where
-    tuneConfig = (,) <$> asksUE ly_tune_title <*> asksUE ly_clef 
+assembleOutput1 :: CompilerDef -> LyNoteListDoc -> Doc
+assembleOutput1 def notes = do 
+    assembleLy (makeHeader (ly_version_number def) (tune_title def)) notes
                       
                       
 
     
 -- | Ly has already been rendered to String.
 --
-writeLyFile :: String -> LyCompile ()
-writeLyFile abc = 
-    do { root <- getWorkingDirectory
-       ; name <- asksUE ly_outfile_name
-       ; let outfile = root </> name
-       ; liftIO $ writeFile outfile abc
+writeLyFile1 :: CompilerDef -> String -> LyCompile ()
+writeLyFile1 def ly = 
+    do { outfile <- workingFileName1 def
+       ; liftIO $ writeFile outfile ly
        ; return ()
        }
-       
+
+workingFileName1 :: CompilerDef -> LyCompile String
+workingFileName1 def = 
+    do { root <- getWorkingDirectory 
+       ; let name = outfile_name def
+       ; let outfile = root </> name
+       ; return outfile
+       }
