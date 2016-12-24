@@ -3,7 +3,7 @@
 
 module Demo01 where
 
-import Payasan.PSC.ABC.Compile
+import qualified Payasan.PSC.ABC.Compile as ABC
 
 import Payasan.PSC.Repr.External.ABCInTrans
 import Payasan.PSC.Repr.External.ABCParser
@@ -12,6 +12,15 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 
 
+abc_compiler ::ABC.Compiler
+abc_compiler = ABC.makeCompiler def
+  where 
+    def = ABC.emptyDef { ABC.pathto_working_dir     = "PAYASAN_TEMP_DIR"
+                       , ABC.outfile_name           = "abc_output.abc"
+                       }
+
+compileABC :: StdPart -> IO ()
+compileABC = ABC.compile abc_compiler
 
 
 s01 :: ABCSectionQuote
@@ -27,7 +36,7 @@ section01 = unquoteABC "Phrase1" locals s01
 
 
 demo01 :: IO ()
-demo01 = compile (Part { part_sections = [section01] })
+demo01 = compileABC (Part { part_sections = [section01] })
 
 
 {-

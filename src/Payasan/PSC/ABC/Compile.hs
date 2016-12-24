@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes                 #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -16,13 +17,11 @@
 
 module Payasan.PSC.ABC.Compile
   ( 
-    
-    ABCCompile
 
-  , prompt
-  , compile
-
-  , workingFileName
+    CompilerDef(..)       
+  , emptyDef
+  , Compiler(..)
+  , makeCompiler
 
   ) where
 
@@ -41,6 +40,26 @@ import Control.Monad
 import Control.Monad.IO.Class
 import System.FilePath
 
+-- Public env exposed to users...
+
+data CompilerDef = CompilerDef
+    { pathto_working_dir     :: !String
+    , outfile_name           :: !String
+    , clef                   :: !Clef
+    , bars_per_line          :: !Int
+    , recalc_beams           :: !Bool
+    }
+
+
+
+emptyDef :: CompilerDef
+emptyDef = CompilerDef
+    { pathto_working_dir        = ""
+    , outfile_name              = "abcoutput.abc"
+    , clef                      = TREBLE
+    , bars_per_line             = 4
+    , recalc_beams              = True
+    }
 
 type ABCCompile a = CM ABCEnv a
 
@@ -58,8 +77,6 @@ type ABCCompile a = CM ABCEnv a
 data ABCEnv = ABCEnv 
     { abc_tune_title            :: !String
     , abc_clef                  :: !Clef
-    , abc_cwd_loc               :: !TempDirLoc
-    , abc_outfile_name          :: !String
     , abc_bars_per_line         :: !Int
     , abc_recalc_beams          :: !Bool
     }
@@ -68,27 +85,32 @@ env_zero :: ABCEnv
 env_zero = ABCEnv 
     { abc_tune_title            = "Tune 1"
     , abc_clef                  = TREBLE
-    , abc_cwd_loc               = default_temp_dir_location
-    , abc_outfile_name          = "abc_output.abc"
     , abc_bars_per_line         = 4
     , abc_recalc_beams          = False    -- default should really be True once we ahve bits in place again
     }    
     
+data Compiler = Compiler
+   { compile :: forall anno. StdPart1 anno -> IO ()
+   }
 
+makeCompiler :: CompilerDef -> Compiler
+makeCompiler env = 
+    Compiler { compile = \part -> prompt env_zero (compile1 env part)  >> return ()
+             }
 
-compile :: StdPart1 anno -> IO ()
-compile part = prompt env_zero (compile1 part) >> return ()
+-- compile :: StdPart1 anno -> IO ()
+-- compile part = prompt env_zero (compile1 part) >> return ()
 
 
 -- Note - initial section info can fallback to sensible defaults 
 -- for an empty score
-compile1 :: StdPart1 anno -> ABCCompile ()
-compile1 part = do 
+compile1 :: CompilerDef -> StdPart1 anno -> ABCCompile ()
+compile1 def part = do 
     { let info = initialSectionInfo part
     ; header <- makeHeader1 info
     ; notes  <- compilePartToNoteList part
     ; let abc = assembleABC header notes 
-    ; writeABCFile (ppRender abc)
+    ; writeABCFile1 def (ppRender abc)
     }
 
 
@@ -122,18 +144,18 @@ makeHeader1 info =
     
 -- | ABC has already been rendered to String.
 --
-writeABCFile :: String -> ABCCompile ()
-writeABCFile abc = 
-    do { outfile <- workingFileName
+writeABCFile1 :: CompilerDef -> String -> ABCCompile ()
+writeABCFile1 def abc = 
+    do { outfile <- workingFileName1 def
        ; liftIO $ writeFile outfile abc
        ; return ()
        }
        
 
-workingFileName :: ABCCompile String
-workingFileName = 
-    do { root <- getTempDirectory =<< asksUE abc_cwd_loc
-       ; name <- asksUE abc_outfile_name
+workingFileName1 :: CompilerDef -> ABCCompile String
+workingFileName1 def = 
+    do { root <- getWorkingDirectory 
+       ; let name = outfile_name def
        ; let outfile = root </> name
        ; return outfile
        }

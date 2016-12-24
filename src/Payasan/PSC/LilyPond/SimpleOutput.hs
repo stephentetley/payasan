@@ -213,8 +213,7 @@ simpleVoice_Absolute def ph =
 
 -- TODO working towards an API that provides a (simple) "makeDoc"...
 --
-makeLyNoteListDoc :: forall pch anno. 
-                     LyOutputDef pch anno 
+makeLyNoteListDoc :: LyOutputDef pch anno 
                   -> SectionInfo
                   -> GenLyPartOut pch anno
                   -> LyNoteListDoc

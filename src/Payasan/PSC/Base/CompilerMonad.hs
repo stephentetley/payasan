@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -32,18 +32,14 @@ module Payasan.PSC.Base.CompilerMonad
   , localUE
   , askUE
   , asksUE
+
+  , throwErr
+  , guard
+
  
   , rewrite
  
-  , payasan_TEMP_DIR_VARIABLE
-  , TempDirLoc(..)
-  , default_temp_dir_location
-  
-  , getTempDirectory
-  
-  , getEnvCM
-  , localWorkingDirectory
-  , localWorkingDirectory_byEnv
+  , getWorkingDirectory
   
   , printWorkingDirectory
   
@@ -52,12 +48,9 @@ module Payasan.PSC.Base.CompilerMonad
 
 import Payasan.PSC.Base.RewriteMonad
 
+
 import Control.Monad.IO.Class
-import Control.Exception ( try )
-
-
-import Data.Data
-
+import Control.Exception ( catch, SomeException )
 import System.Directory
 import System.Environment
 
@@ -72,18 +65,17 @@ type ErrMsg = String
 -- e.g. debug level.
 --
 data CMEnv = CMEnv 
-    { cm_working_directory      :: !FilePath
+    { cm_pathto_working_dir     :: Either String FilePath
     , cm_outfile_name           :: !String
     }
     
     
-zero_CMEnv :: IO CMEnv
-zero_CMEnv = 
-    do { cwd <- getCurrentDirectory
-       ; return $ CMEnv { cm_working_directory = cwd
-                        , cm_outfile_name      = "temp.out"
-                        }
-       }
+zero_env :: CMEnv
+zero_env = 
+    CMEnv { cm_pathto_working_dir   = Left "NO_ENV_VAR_SET"
+          , cm_outfile_name         = "temp.out"
+          }
+      
 
 
 -- Note Parsec uses a smaller dictionary to make a bigger one.
@@ -161,7 +153,7 @@ instance MonadIO (CM ue) where
 
 runCM :: ue -> CM ue a -> IO (Either ErrMsg a)
 runCM ue ma = 
-    do { ce <- zero_CMEnv
+    do { let ce = zero_env
        ; getCM ma ce ue
        }
 
@@ -188,77 +180,44 @@ rewrite ma env st = CM $ \_ _ -> return (evalRewrite ma env st)
 -- services the CompilerMonad should provide help with.
 
 
--- | Environment variable pointing to the temp dir.
--- 
--- > PAYASAN_TEMP_DIR
---
--- Obviously a user can set the variable (or even change
--- it's name to something else in compilers that use it).
---
-payasan_TEMP_DIR_VARIABLE :: String
-payasan_TEMP_DIR_VARIABLE = "PAYASAN_TEMP_DIR"
 
 
-data TempDirLoc = EnvVarPointer  !String
-                | NamedDirectory !FilePath
-  deriving (Data,Eq,Show,Typeable)
 
-  
-default_temp_dir_location :: TempDirLoc
-default_temp_dir_location = EnvVarPointer payasan_TEMP_DIR_VARIABLE
-  
+-- Too much faff just to work with a temp file...
 
--- | TODO - should print a failure warning, before defaulting to cwd.
---
-getTempDirectory :: TempDirLoc -> CM ue FilePath
-getTempDirectory loc = 
-    guard (step1 loc) (\_ -> liftIO getCurrentDirectory)
+getWorkingDirectory :: CM ue FilePath
+getWorkingDirectory = 
+    asksCE cm_pathto_working_dir >>= \ans -> liftIO (getWorkingDirectory1 ans)
+
+getWorkingDirectory1 :: (Either String FilePath) -> IO FilePath
+getWorkingDirectory1 loc = 
+    catch (step1 loc) (\(_ :: SomeException) -> getCurrentDirectory)
   where
-    step1 (EnvVarPointer name)  = getEnvCM name >>= getDir
-    step1 (NamedDirectory path) = getDir path
+    step1 :: (Either String FilePath) -> IO FilePath
+    step1 (Left name)  = getEnv name >>= getDir
+    step1 (Right path) = getDir path
        
-    getDir dir  = do { ans <- liftIO $ doesDirectoryExist dir
+    getDir dir  = do { ans <- doesDirectoryExist dir
                      ; if ans then return dir
-                              else throwErr $ "Directory does not exist: " ++ dir
+                              else error $ "Directory does not exist: " ++ dir
                      }
  
-  
-       
--- | CM version of @getEnv@.
---
--- Variable lookup failure is caught in the CM monad.
---
-getEnvCM :: String -> CM ue String
-getEnvCM name = CM $ \_ _ -> 
-    do { a <- try (getEnv name); return (fn a) }
-  where
-    fn :: Either IOError String -> Either ErrMsg String
-    fn (Left _)  = Left $ "Could not deref environment variable: " ++ name
-    fn (Right a) = Right a
-    
 
-
--- Probably need a version of try (bracket/handle...)
-
-localWorkingDirectory :: FilePath -> CM ue a -> CM ue a
-localWorkingDirectory loc ma = 
-    do { ans <- liftIO $ doesDirectoryExist loc
-       ; if ans then localCE (\s -> s { cm_working_directory = loc }) ma
-                else throwErr $ "Directory does not exist: " ++ loc
-       }
-       
-       
-localWorkingDirectory_byEnv :: String -> CM ue a -> CM ue a
-localWorkingDirectory_byEnv name ma = 
-    do { loc <- getEnvCM name
-       ; ans <- liftIO $ doesDirectoryExist loc
-       ; if ans then localCE (\s -> s { cm_working_directory = loc }) ma
-                else throwErr $ "Directory does not exist: " ++ loc
-       }
     
 printWorkingDirectory :: CM ue ()
 printWorkingDirectory = 
-    asksCE cm_working_directory >>= \cwd -> liftIO (putStrLn cwd)
+    getWorkingDirectory >>= \cwd -> liftIO (putStrLn cwd)
+
+
+{-
+workingFileName :: CM ue FilePath
+workingFileName = 
+    do { root <- getTempDirectory =<< asksUE abc_cwd_loc
+       ; name <- asksUE abc_outfile_name
+       ; let outfile = root </> name
+       ; return outfile
+       }
+-}
 
     
 -- Functions prefixed with print should always print to stdout

@@ -232,10 +232,10 @@ context_        = block (Just $ command "context")
 
 
 version_ :: String -> Doc
-version_ ss = command "version" <+> doubleQuotes (text ss)
+version_ ss = command "version" <+> (doubleQuotes $ text ss)
 
 title :: String -> Doc
-title ss = definition "title" (text ss)
+title ss = definition "title" (doubleQuotes $ text ss)
 
 relative_ :: P.Pitch -> Doc
 relative_ pch = command "relative" <+> pitch (fromPitchAbs pch)

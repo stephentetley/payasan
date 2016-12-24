@@ -67,7 +67,6 @@ data LyEnv = LyEnv
     { ly_version_number         :: !String
     , ly_tune_title             :: !String   -- TODO over determining of header...
     , ly_clef                   :: !Clef     -- ditto
-    , ly_cwd_loc                :: !TempDirLoc
     , ly_outfile_name           :: !String
     , ly_recalc_beams           :: !Bool
     }
@@ -77,7 +76,6 @@ env_zero = LyEnv
     { ly_version_number         = "2.18.2"
     , ly_tune_title             = "Tune 1"
     , ly_clef                   = TREBLE
-    , ly_cwd_loc                = default_temp_dir_location
     , ly_outfile_name           = "output.ly"
     , ly_recalc_beams           = False    -- default should really be True once we have bits in place again
     }    
@@ -135,7 +133,7 @@ assembleOutput info notes = do
 --
 writeLyFile :: String -> LyCompile ()
 writeLyFile abc = 
-    do { root <- getTempDirectory =<< asksUE ly_cwd_loc
+    do { root <- getWorkingDirectory
        ; name <- asksUE ly_outfile_name
        ; let outfile = root </> name
        ; liftIO $ writeFile outfile abc
