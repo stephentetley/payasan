@@ -65,7 +65,7 @@ emptyDef = CompilerDef
     }
 
 
-type ABCCompile a = CM () a
+type ABCCompile a = CM a
 
 
 -- Note - there is very little user variation that Payasan 
@@ -85,7 +85,7 @@ data Compiler = Compiler
 
 makeCompiler :: CompilerDef -> Compiler
 makeCompiler env = 
-    Compiler { compile = \part -> prompt () (compile1 env part)  >> return ()
+    Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
              }
 
 
@@ -140,7 +140,7 @@ writeABCFile1 def abc =
 
 workingFileName1 :: CompilerDef -> ABCCompile String
 workingFileName1 def = 
-    do { root <- getWorkingDirectory 
+    do { root <- getWorkingDirectory1 (Right $ pathto_working_dir def)
        ; let name = outfile_name def
        ; let outfile = root </> name
        ; return outfile

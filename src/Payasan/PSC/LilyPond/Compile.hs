@@ -89,17 +89,16 @@ data Compiler anno = Compiler
 
 makeCompiler :: Anno anno => CompilerDef -> Compiler anno
 makeCompiler env = 
-    Compiler { compile = \part -> prompt () (compile1 env part)  >> return ()
+    Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
              }
 
-type LyCompile a = CM () a
+type LyCompile a = CM a
 
 
 
 compile1 :: Anno anno => CompilerDef -> StdPart1 anno -> LyCompile ()
 compile1 def part = do 
-    { let info = initialSectionInfo part
-    ; notes <- compilePartToNoteList1 def part
+    { notes <- compilePartToNoteList1 def part
     ; ly <- return $ assembleOutput1 def notes
     ; writeLyFile1 def (ppRender ly)
     }
@@ -144,7 +143,7 @@ writeLyFile1 def ly =
 
 workingFileName1 :: CompilerDef -> LyCompile String
 workingFileName1 def = 
-    do { root <- getWorkingDirectory 
+    do { root <- getWorkingDirectory1 (Right $ pathto_working_dir def) 
        ; let name = outfile_name def
        ; let outfile = root </> name
        ; return outfile
