@@ -95,7 +95,7 @@ library
     Payasan.PSC.Base.Utils,
     Payasan.PSC.Csound.Base,
     Payasan.PSC.Csound.BeamToCsound,
---    Payasan.PSC.Csound.Compile,
+    Payasan.PSC.Csound.Compile,
     Payasan.PSC.Csound.IStmt,
     Payasan.PSC.Csound.Output,
     Payasan.PSC.Csound.OutTrans,
