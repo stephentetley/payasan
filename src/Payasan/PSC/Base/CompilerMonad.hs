@@ -31,13 +31,17 @@ module Payasan.PSC.Base.CompilerMonad
  
   , rewrite
  
-  , getWorkingDirectory1
-  
+  , getWorkingDirectory
+  , readFileCM  
+
   ) where
 
 
 import Payasan.PSC.Base.RewriteMonad
 
+
+import qualified Data.Text              as TEXT
+import qualified Data.Text.IO           as TEXT
 
 import Control.Monad.IO.Class
 import Control.Exception ( catch, SomeException )
@@ -134,8 +138,8 @@ rewrite ma env st = CM $ return (evalRewrite ma env st)
 -- Too much faff just to work with a temp file...
 
 
-getWorkingDirectory1 :: (Either String FilePath) -> CM FilePath
-getWorkingDirectory1 loc = 
+getWorkingDirectory :: (Either String FilePath) -> CM FilePath
+getWorkingDirectory loc = 
     liftIO $ catch (step1 loc) (\(_ :: SomeException) -> getCurrentDirectory)
   where
     step1 :: (Either String FilePath) -> IO FilePath
@@ -148,3 +152,9 @@ getWorkingDirectory1 loc =
                      }
  
 
+readFileCM :: FilePath -> CM TEXT.Text
+readFileCM loc = 
+    do { ans <- liftIO $ doesFileExist loc
+       ; if ans then liftIO $ TEXT.readFile loc
+                else throwErr $ "File does not exist: " ++ loc
+       }

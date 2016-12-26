@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.IRSimpleTileToIREventBeam
+-- Module      :  Payasan.PSC.Repr.IREventBeam.FromIRSimpleTile
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -14,10 +14,10 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.IRSimpleTileToIREventBeam
+module Payasan.PSC.Repr.IREventBeam.FromIRSimpleTile
   ( 
     MakeEventDef(..)
-  , transIRSimpleTileToIREventBeam
+  , fromIRSimpleTile
 
   ) where
 
@@ -39,10 +39,10 @@ data MakeEventDef pch anno evt = MakeEventDef
     }
     
 
-transIRSimpleTileToIREventBeam :: MakeEventDef pch anno evt 
-                               -> Part pch anno
-                               -> T.Part Seconds evt
-transIRSimpleTileToIREventBeam = partT
+fromIRSimpleTile :: MakeEventDef pch anno evt 
+                 -> Part pch anno 
+                 -> T.Part Seconds evt
+fromIRSimpleTile = partT
 
 -- Notes
 -- Although IRSimpleTile is a tiled representation there is a 
@@ -57,21 +57,21 @@ transIRSimpleTileToIREventBeam = partT
 partT :: MakeEventDef pch anno evt -> Part pch anno -> T.Part Seconds evt
 partT mkE part = 
     let onsets = barOnsets part
-        bars1  = barT mkE $ part_bars $ joinTies part
-    in Part { part_bars = annotateOnsets onsets bars1 }
+        bars1  = error "TODO" {- barT mkE $ part_bars $ joinTies part -}
+    in T.Part { T.part_sections = error "TODO" {- annotateOnsets onsets bars1 -} }
     
 
 barOnsets :: Part pch anno -> [Seconds]
-barOnsets (Part xs) = step 0 xs
+barOnsets (Part xs) = error "TODO" {- step1 0 xs -}
   where
     -- onset is produced at the start of a bar 
     -- Both empty and one are recursion terminators
     -- (empty is only reached if we had no bars in the first place)
     step1 ac []     = []
     step1 ac [b]    = ac
-    step1 ac (b:bs) = ac : step (ac + barD b) bs
+--    step1 ac (b:bs) = ac : step1 (ac + barD b) bs
 
-    barD (Bar es) = sum $ map elementLength es
+--    barD (Bar es) = sum $ map elementLength es
 
 
 -- | List should be same length so we can trust zipWith not to 
@@ -89,8 +89,8 @@ annotateOnsets = zipWith (\ot b -> b { T.bar_onset = ot })
 barT :: MakeEventDef pch anno evt 
      -> Bar pch anno 
      -> T.Bar Seconds evt
-barT mkE (Bar _ gs)                  =
-    let (dt,eventss) = List.mapAccumL (noteGroupT mkE) 0 gs
+barT mkE (Bar gs)                  =
+    let (dt,eventss) = List.mapAccumL (elementT mkE) 0 gs
     in T.Bar { T.bar_onset = 0, T.bar_events = concat eventss }
            
 
@@ -105,7 +105,7 @@ barT mkE (Bar _ gs)                  =
 --
 elementT :: MakeEventDef pch anno evt
          -> Onset 
-         -> Element pch Seconds anno 
+         -> Element pch anno 
          -> (Onset, [T.Event Seconds evt])
 elementT mkE ot (Note drn pch anno _)             = 
     let evt  = makeEvent1 mkE ot pch drn anno

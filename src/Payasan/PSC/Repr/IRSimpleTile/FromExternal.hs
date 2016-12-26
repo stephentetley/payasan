@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.ExternalToIRSimpleTile
+-- Module      :  Payasan.PSC.Repr.IRSimpleTile.FromExternal
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -17,9 +17,9 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.ExternalToIRSimpleTile
+module Payasan.PSC.Repr.IRSimpleTile.FromExternal
   ( 
-    transExternalToIRSimpleTile
+    fromExternal
   ) where
 
 
@@ -31,9 +31,8 @@ import Payasan.Base.Basis (Seconds)
 
     
 
-transExternalToIRSimpleTile :: Part pch Seconds anno 
-                            -> T.Part pch anno
-transExternalToIRSimpleTile = partT
+fromExternal :: Part pch Seconds anno -> T.Part pch anno
+fromExternal = partT
 
 
 

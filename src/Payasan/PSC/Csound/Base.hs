@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -16,7 +17,10 @@
 
 module Payasan.PSC.Csound.Base
   ( 
-    InstNumber
+
+    CsdEventListDoc
+
+  , InstNumber
   , ColumnSpecs
   , ColumnFormat(..)
   , columnSpecs
@@ -30,12 +34,16 @@ module Payasan.PSC.Csound.Base
   ) where
 
 
-
+import Payasan.PSC.Base.SyntaxCommon (TyDoc)
 import Payasan.Base.Basis
 
 import Data.Fixed
 import Data.Function (on)
 import qualified Data.IntMap            as IM
+
+
+data CsdEventList_
+type CsdEventListDoc = TyDoc CsdEventList_
 
 
 --------------------------------------------------------------------------------

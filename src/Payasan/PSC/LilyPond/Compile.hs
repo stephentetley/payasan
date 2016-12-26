@@ -143,7 +143,7 @@ writeLyFile1 def ly =
 
 workingFileName1 :: CompilerDef -> LyCompile String
 workingFileName1 def = 
-    do { root <- getWorkingDirectory1 (Right $ pathto_working_dir def) 
+    do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
        ; let name = outfile_name def
        ; let outfile = root </> name
        ; return outfile
