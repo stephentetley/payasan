@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.IREventBeam.Syntax
+-- Module      :  Payasan.PSC.Repr.IREventBar.Syntax
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -13,11 +13,11 @@
 --
 -- Eventlist syntax that retains some structure (sections, bars). 
 -- Intended for low level metrical and articulation transforms.
--- E.g. quantization.
+-- E.g. de-quantization / rubato.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.IREventBeam.Syntax
+module Payasan.PSC.Repr.IREventBar.Syntax
   ( 
     Part(..)
   , Section(..)

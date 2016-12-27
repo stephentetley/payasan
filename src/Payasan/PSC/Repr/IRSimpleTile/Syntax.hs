@@ -117,3 +117,6 @@ elementLengthAbsolute (Rest d)          = d
 elementLengthAbsolute (Chord d _ _ _)   = d
 elementLengthAbsolute (Graces xs)       = sum $ map fst xs
 
+
+
+-- Extract onsets 

@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.IREventBeam.FromIRSimpleTile
+-- Module      :  Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.IREventBeam.FromIRSimpleTile
+module Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
   ( 
     MakeEventDef(..)
   , fromIRSimpleTile
@@ -25,7 +25,7 @@ module Payasan.PSC.Repr.IREventBeam.FromIRSimpleTile
 
 import Payasan.PSC.Repr.IRSimpleTile.Syntax
 import Payasan.PSC.Repr.IRSimpleTile.Coalesce
-import qualified Payasan.PSC.Repr.IREventBeam.Syntax as T
+import qualified Payasan.PSC.Repr.IREventBar.Syntax as T
 
 import Payasan.Base.Basis (Seconds)
 
@@ -34,7 +34,7 @@ import qualified Data.List as List
 type Onset = Seconds
 
 data MakeEventDef pch anno evt = MakeEventDef
-    { makeEvent :: pch -> Seconds -> anno -> evt 
+    { makeEvent   :: pch -> Seconds -> anno -> evt 
     , graceNoAnno :: anno
     }
     
@@ -56,12 +56,18 @@ fromIRSimpleTile = partT
 --
 partT :: MakeEventDef pch anno evt -> Part pch anno -> T.Part Seconds evt
 partT mkE part = 
-    let onsets = barOnsets part
+    let onsets = error "TODO" -- barOnsets part
         bars1  = error "TODO" {- barT mkE $ part_bars $ joinTies part -}
     in T.Part { T.part_sections = error "TODO" {- annotateOnsets onsets bars1 -} }
-    
 
-barOnsets :: Part pch anno -> [Seconds]
+{-
+-- Move this to IRSimpleTile.Syntax...
+
+sectionOnsets :: Part pch anno -> [Seconds]
+sectionOnsets = error "TODO"
+
+
+barOnsets :: Section pch anno -> [Seconds]
 barOnsets (Part xs) = error "TODO" {- step1 0 xs -}
   where
     -- onset is produced at the start of a bar 
@@ -80,7 +86,7 @@ barOnsets (Part xs) = error "TODO" {- step1 0 xs -}
 annotateOnsets :: [Seconds] -> [T.Bar Seconds evt] -> [T.Bar Seconds evt]
 annotateOnsets = zipWith (\ot b -> b { T.bar_onset = ot })
   
-
+-}
     
 
     

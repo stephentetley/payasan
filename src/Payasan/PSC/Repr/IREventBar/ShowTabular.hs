@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.IREventBeam.ShowTabular
+-- Module      :  Payasan.PSC.Repr.IREventBar.ShowTabular
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -18,14 +18,14 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.IREventBeam.ShowTabular
+module Payasan.PSC.Repr.IREventBar.ShowTabular
   ( 
 
     showTabularIREventBeam
     
   ) where
 
-import Payasan.PSC.Repr.IREventBeam.Syntax
+import Payasan.PSC.Repr.IREventBar.Syntax
 
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Base.ShowTabularUtils

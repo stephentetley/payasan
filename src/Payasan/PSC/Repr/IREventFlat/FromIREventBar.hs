@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.IREventFlat.FromIREventBeam
+-- Module      :  Payasan.PSC.Repr.IREventFlat.FromIREventBar
 -- Copyright   :  (c) Stephen Tetley 2016
 -- License     :  BSD3
 --
@@ -10,24 +10,24 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Translate IREventBeam to IREventFlat.
+-- Translate IREventBar to IREventFlat.
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.IREventFlat.FromIREventBeam
+module Payasan.PSC.Repr.IREventFlat.FromIREventBar
   ( 
-    fromIREventBeam
+    fromIREventBar
   ) where
 
-import Payasan.PSC.Repr.IREventBeam.Syntax
+import Payasan.PSC.Repr.IREventBar.Syntax
 import qualified Payasan.PSC.Repr.IREventFlat.Syntax as T
 
 
 -- NOTE - there is no obligation to fix the type of Onset to
 -- Seconds, although it is unlikely to be anything else. 
 
-fromIREventBeam :: Num ot => Part ot evt -> T.Part ot evt
-fromIREventBeam = partT
+fromIREventBar :: Num ot => Part ot evt -> T.Part ot evt
+fromIREventBar = partT
 
 
 partT :: Num ot => Part ot evt -> T.Part ot evt
