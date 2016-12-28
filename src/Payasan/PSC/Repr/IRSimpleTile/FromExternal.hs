@@ -39,7 +39,7 @@ fromExternal = partT
 
 
 partT :: Part pch Seconds anno -> T.Part pch anno
-partT (Part ss)                 =  
+partT (Part { part_sections = ss })             =  
     T.Part { T.part_sections = snd $ mapAccumL sectionA 0 ss } 
 
 
@@ -49,7 +49,8 @@ partT (Part ss)                 =
 -- rather than prefixes.
 -- 
 sectionA :: Seconds -> Section pch Seconds anno -> (Seconds, T.Section pch anno)
-sectionA ot (Section name _ bs)    = (ot+drn,section1)
+sectionA ot (Section { section_name = name
+                     , section_bars = bs  })    = (ot+drn,section1)
   where 
      bars     = snd $ mapAccumL barA (Acc NO_TIE ot) bs 
      drn      = sum $ map T.barDuration bars
@@ -62,7 +63,7 @@ data Acc = Acc !Tie !Seconds
 
 
 barA :: Acc -> Bar pch Seconds anno -> (Acc, T.Bar pch anno)
-barA (Acc t ot) (Bar gs)            = (Acc t1 (ot + drn), bar1)
+barA (Acc t ot) (Bar { bar_groups = gs })       = (Acc t1 (ot + drn), bar1)
   where
     (t1,ess)     = mapAccumL noteGroupA t gs
     elems        = concat ess

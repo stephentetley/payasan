@@ -24,7 +24,7 @@ module Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
 
 
 import Payasan.PSC.Repr.IRSimpleTile.Syntax
-import Payasan.PSC.Repr.IRSimpleTile.Coalesce
+-- import Payasan.PSC.Repr.IRSimpleTile.Coalesce
 import qualified Payasan.PSC.Repr.IREventBar.Syntax as T
 
 import Payasan.Base.Basis (Seconds)
@@ -55,12 +55,18 @@ fromIRSimpleTile = partT
 -- | Note - we find onsets before we join ties.
 --
 partT :: MakeEventDef pch anno evt -> Part pch anno -> T.Part Seconds evt
-partT mkE part = 
-    let onsets = error "TODO" -- barOnsets part
-        bars1  = error "TODO" {- barT mkE $ part_bars $ joinTies part -}
-    in T.Part { T.part_sections = error "TODO" {- annotateOnsets onsets bars1 -} }
+partT def (Part { part_sections = ss }) = 
+    T.Part { T.part_sections = map (sectionT def) ss }
 
-{-
+
+sectionT :: MakeEventDef pch anno evt -> Section pch anno -> T.Section Seconds evt
+sectionT def (Section { section_name  = name
+                      , section_onset = ot
+                      , section_bars  = bs }) =
+    T.Section { T.section_name  = name
+              , T.section_onset = ot
+              , T.section_bars  = map (barT def) bs 
+              }
 
   
 
@@ -70,10 +76,12 @@ partT mkE part =
 barT :: MakeEventDef pch anno evt 
      -> Bar pch anno 
      -> T.Bar Seconds evt
-barT mkE (Bar gs)                  =
-    let (dt,eventss) = List.mapAccumL (elementT mkE) 0 gs
-    in T.Bar { T.bar_onset = 0, T.bar_events = concat eventss }
-           
+barT def (Bar { bar_onset = ot
+              , bar_elems = es })   =
+    T.Bar { T.bar_onset  = ot
+          , T.bar_events = concat $ snd $ List.mapAccumL (elementT def) 0 es
+          }
+        
 
 
 
@@ -88,22 +96,26 @@ elementT :: MakeEventDef pch anno evt
          -> Onset 
          -> Element pch anno 
          -> (Onset, [T.Event Seconds evt])
-elementT mkE ot (Note drn pch anno _)             = 
+
+elementT mkE ot (Note drn pch anno)             = 
     let evt  = makeEvent1 mkE ot pch drn anno
     in (ot + drn,[evt])
 
-elementT _   ot (Rest drn)                        = (ot + drn,[])
+elementT _   ot (Rest drn)                      = (ot + drn,[])
     
-elementT mkE ot (Chord drn ps anno _)             = 
+elementT mkE ot (Chord drn ps anno)             = 
     let evts = map (\p -> makeEvent1 mkE ot p drn anno) ps
     in (ot + drn,evts)
 
-elementT mkE ot (Graces ns)                       = 
+elementT mkE ot (Graces ns)                     = 
     let anno = graceNoAnno mkE
         step = \ons (drn,pch) -> 
                  let evt = makeEvent1 mkE ons pch drn anno
                  in (ons + drn, evt)
     in List.mapAccumL step ot ns
+
+elementT _   ot (TiedCont drn)                  = (ot + drn,[])
+
 
     
 -- | Make an event. Chords, graces and note all generate events 
@@ -119,4 +131,3 @@ makeEvent1 mkE ot pch drn anno =
             , T.event_body  = (makeEvent mkE) pch drn anno }
       
 
--}
