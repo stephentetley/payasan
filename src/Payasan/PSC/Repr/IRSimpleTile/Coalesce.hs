@@ -24,7 +24,8 @@ module Payasan.PSC.Repr.IRSimpleTile.Coalesce
 import Payasan.PSC.Repr.IRSimpleTile.Syntax
 
 
-
+-- | Joining ties is shape changing.
+--
 joinTies :: Part pch anno -> Part pch anno
 joinTies (Part { part_sections = ss}) = Part { part_sections = map sectionT ss }
 

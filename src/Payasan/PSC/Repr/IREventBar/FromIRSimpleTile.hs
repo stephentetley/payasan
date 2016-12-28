@@ -61,33 +61,8 @@ partT mkE part =
     in T.Part { T.part_sections = error "TODO" {- annotateOnsets onsets bars1 -} }
 
 {-
--- Move this to IRSimpleTile.Syntax...
 
-sectionOnsets :: Part pch anno -> [Seconds]
-sectionOnsets = error "TODO"
-
-
-barOnsets :: Section pch anno -> [Seconds]
-barOnsets (Part xs) = error "TODO" {- step1 0 xs -}
-  where
-    -- onset is produced at the start of a bar 
-    -- Both empty and one are recursion terminators
-    -- (empty is only reached if we had no bars in the first place)
-    step1 ac []     = []
-    step1 ac [b]    = ac
---    step1 ac (b:bs) = ac : step1 (ac + barD b) bs
-
---    barD (Bar es) = sum $ map elementLength es
-
-
--- | List should be same length so we can trust zipWith not to 
--- truncate.
---
-annotateOnsets :: [Seconds] -> [T.Bar Seconds evt] -> [T.Bar Seconds evt]
-annotateOnsets = zipWith (\ot b -> b { T.bar_onset = ot })
   
--}
-    
 
     
 -- | At the point of generating a Bar we don't know the bar_onset.
@@ -143,3 +118,5 @@ makeEvent1 mkE ot pch drn anno =
     T.Event { T.event_onset = ot
             , T.event_body  = (makeEvent mkE) pch drn anno }
       
+
+-}

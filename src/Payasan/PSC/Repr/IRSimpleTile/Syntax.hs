@@ -27,12 +27,13 @@ module Payasan.PSC.Repr.IRSimpleTile.Syntax
   , Element(..)
 
   , elementLengthSymbolic
+  , barDuration
   , elementDuration
   
   ) where
 
 
-import Payasan.PSC.Base.SyntaxCommon
+-- import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Basis
 
 
@@ -75,47 +76,64 @@ import Data.Data
 -- Remove punctuation (rendering is oblivious to punctuation).
 --
 
-data Part pch anno = Part { part_sections :: [Section pch anno] }
+data Part pch anno = Part 
+    { part_sections :: [Section pch anno] 
+    }
   deriving (Data,Eq,Show,Typeable)
+
+-- TODO - should we cache onsets in the syntax?
+-- This ought to alleviate some of the problems with ordering 
+-- steps of the outward transformation.
+
 
 -- | We keep section in this syntax. Having named sections is
 -- expected to allow transformations limited to a specific region.
 --
 data Section pch anno = Section 
     { section_name      :: !String
+    , section_onset     :: !Seconds
     , section_bars      :: [Bar pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
   
   
 data Bar pch anno = Bar
-    { bar_elems         :: [Element pch anno]
+    { bar_onset         :: !Seconds
+    , bar_elems         :: [Element pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
-  
+-- Note - ties cannot be seen by an elementary traversal (e.g. map), 
+-- you have to look at the rest of input to see if a note is tied.  
 data Element pch anno = 
-      Note      Seconds pch   anno Tie
+      Note      Seconds pch   anno
     | Rest      Seconds
-    | Chord     Seconds [pch] anno Tie
+    | Chord     Seconds [pch] anno
     | Graces    [(Seconds,pch)]
+    | TiedCont  Seconds
   deriving (Data,Eq,Show,Typeable)
 
   
   
 -- | Note - graces have zero length.  
 elementLengthSymbolic :: Element pch anno -> Seconds
-elementLengthSymbolic (Note d _ _ _)    = d
-elementLengthSymbolic (Rest d)          = d
-elementLengthSymbolic (Chord d _ _ _)   = d
-elementLengthSymbolic (Graces {})       = 0
+elementLengthSymbolic (Note d _ _)  = d
+elementLengthSymbolic (Rest d)      = d
+elementLengthSymbolic (Chord d _ _) = d
+elementLengthSymbolic (Graces {})   = 0
+elementLengthSymbolic (TiedCont d)  = d
+
+
+barDuration :: Bar pch anno -> Seconds
+barDuration (Bar { bar_elems = bs }) = sum $ map elementDuration bs
 
 -- | Note - graces have a combined length.  
 --
 elementDuration :: Element pch anno -> Seconds
-elementDuration (Note d _ _ _)    = d
-elementDuration (Rest d)          = d
-elementDuration (Chord d _ _ _)   = d
-elementDuration (Graces xs)       = sum $ map fst xs
+elementDuration (Note d _ _)    = d
+elementDuration (Rest d)        = d
+elementDuration (Chord d _ _)   = d
+elementDuration (Graces xs)     = sum $ map fst xs
+elementDuration (TiedCont d)    = d
 
 

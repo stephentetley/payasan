@@ -48,16 +48,17 @@ oSection :: LeafOutputNote pch Seconds anno -> Section pch anno -> Doc
 oSection ppl (Section { section_bars = xs }) = vcat $ map (oBar ppl) xs
 
 oBar :: LeafOutputNote pch Seconds anno  -> Bar pch anno -> Doc
-oBar ppl (Bar xs)               = vcat $ map (oElement ppl) xs
+oBar ppl (Bar { bar_elems = es } )           = vcat $ map (oElement ppl) es
 
 
 
 oElement :: LeafOutputNote pch Seconds anno  -> Element pch anno -> Doc
 oElement ppl elt = case elt of
-    Note d p _ _        -> oNote ppl p d
+    Note d p _          -> oNote ppl p d
     Rest d              -> rest <++> ppD d 
-    Chord d ps _ _      -> oPitches ppl ps <+> ppD d 
+    Chord d ps _        -> oPitches ppl ps <+> ppD d 
     Graces xs           -> vcat $ map (\(d,p) -> oNote ppl p d) xs
+    TiedCont d          -> char 'K' <++> ppD d 
   where
     ppD = pp_duration ppl
 
