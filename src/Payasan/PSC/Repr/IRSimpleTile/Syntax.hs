@@ -27,7 +27,7 @@ module Payasan.PSC.Repr.IRSimpleTile.Syntax
   , Element(..)
 
   , elementLengthSymbolic
-  , elementLengthAbsolute
+  , elementDuration
   
   ) where
 
@@ -111,12 +111,11 @@ elementLengthSymbolic (Chord d _ _ _)   = d
 elementLengthSymbolic (Graces {})       = 0
 
 -- | Note - graces have a combined length.  
-elementLengthAbsolute :: Element pch anno -> Seconds
-elementLengthAbsolute (Note d _ _ _)    = d
-elementLengthAbsolute (Rest d)          = d
-elementLengthAbsolute (Chord d _ _ _)   = d
-elementLengthAbsolute (Graces xs)       = sum $ map fst xs
+--
+elementDuration :: Element pch anno -> Seconds
+elementDuration (Note d _ _ _)    = d
+elementDuration (Rest d)          = d
+elementDuration (Chord d _ _ _)   = d
+elementDuration (Graces xs)       = sum $ map fst xs
 
 
-
--- Extract onsets 
