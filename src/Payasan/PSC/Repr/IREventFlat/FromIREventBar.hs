@@ -32,10 +32,14 @@ fromIREventBar = partT
 
 partT :: Num ot => Part ot evt -> T.Part ot evt
 partT (Part ss)                     = 
-    T.Part { T.part_events = concatMap sectionT ss }
+    T.Part { T.part_sections = map sectionT ss }
 
-sectionT :: Num ot => Section ot evt -> [T.Event ot evt]
-sectionT (Section { section_bars = ss })      = concatMap barT ss
+sectionT :: Num ot => Section ot evt -> T.Section ot evt
+sectionT (Section { section_name = name
+                  , section_bars = bs   })  = 
+    T.Section { T.section_name = name
+              , T.section_events = concatMap barT bs
+              }
 
 barT :: Num ot => Bar ot evt -> [T.Event ot evt]
 barT (Bar ot cs)                    = map (eventT ot) cs
