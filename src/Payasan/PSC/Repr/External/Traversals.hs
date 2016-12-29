@@ -52,11 +52,14 @@ genTransform :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> Part p2 d2 a2
 genTransform elemT st ph = evalTravM st (partT elemT ph)
 
+
+
 genTransformSection :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
                     -> st
                     -> Section p1 d1 a1
                     -> Section p2 d2 a2
 genTransformSection elemT st se = evalTravM st (sectionT elemT se)
+
 
 
 genTransformBars :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))

@@ -23,8 +23,8 @@ module Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
 
 
 
-import Payasan.PSC.Repr.IRSimpleTile.Syntax
 -- import Payasan.PSC.Repr.IRSimpleTile.Coalesce
+import Payasan.PSC.Repr.IRSimpleTile.Syntax
 import qualified Payasan.PSC.Repr.IREventBar.Syntax as T
 
 import Payasan.Base.Basis (Seconds)
