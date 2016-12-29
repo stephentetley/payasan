@@ -39,15 +39,16 @@ showTabularIREventFlat ppl ph = concatBars 2 $ oPart ppl ph
 
 
 oPart :: LeafOutputEvent ot evt -> Part ot evt -> [Doc]
-oPart ppl (Part xs)             = map (oEvent ppl) xs
+oPart def (Part xs)             = concat $ map (oSection def) xs
 
-
+oSection :: LeafOutputEvent ot evt -> Section ot evt -> [Doc]
+oSection def (Section { section_events = es })  = map (oEvent def) es
 
 oEvent :: LeafOutputEvent ot evt -> Event ot evt -> Doc
-oEvent ppl (Event ot e)        = ppO ot <++> ppE e
+oEvent def (Event ot e)        = ppO ot <++> ppE e
   where
-    ppO = pp_onset ppl
-    ppE = pp_event ppl
+    ppO = pp_onset def
+    ppE = pp_event def
 
 
 

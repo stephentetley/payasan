@@ -20,6 +20,8 @@ module Payasan.PSC.Csound.Base
 
     CsdEventListDoc
 
+  , comment 
+
   , InstNumber
   , ColumnSpecs
   , ColumnFormat(..)
@@ -37,6 +39,9 @@ module Payasan.PSC.Csound.Base
 import Payasan.PSC.Base.SyntaxCommon (TyDoc)
 import Payasan.Base.Basis
 
+import Text.PrettyPrint.HughesPJ ( Doc, text )  -- package: pretty
+
+
 import Data.Fixed
 import Data.Function (on)
 import qualified Data.IntMap            as IM
@@ -45,6 +50,9 @@ import qualified Data.IntMap            as IM
 data CsdEventList_
 type CsdEventListDoc = TyDoc CsdEventList_
 
+
+comment :: String -> Doc
+comment ss = text $ "; " ++ ss
 
 --------------------------------------------------------------------------------
 -- Column formatting
