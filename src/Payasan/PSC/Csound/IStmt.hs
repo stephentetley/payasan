@@ -44,9 +44,9 @@ import Data.Function ( on )
 -- Design note - this is an intrinsic representation - start and duration
 -- are inside the @event@ rather than wrapped listitem.
 data IStmt = IStmt 
-    { inst_num      :: InstNumber
-    , istart        :: Seconds
-    , iduration     :: Seconds
+    { inst_num      :: !InstNumber
+    , onset         :: !Seconds
+    , duration      :: !Seconds
     , ivalues       :: [Value]
     }
   deriving (Eq,Show)
@@ -67,7 +67,7 @@ sameInst = on (==) inst_num
 -- | Sort by instrument, then start time.
 compareIStmt :: IStmt -> IStmt -> Ordering
 compareIStmt i1 i2 = case (compare `on` inst_num) i1 i2 of     
-    EQ -> (compare `on` istart) i1 i2
+    EQ -> (compare `on` onset) i1 i2
     c  -> c
 
 

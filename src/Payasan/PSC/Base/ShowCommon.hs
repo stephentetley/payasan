@@ -38,6 +38,7 @@ module Payasan.PSC.Base.ShowCommon
 import qualified Payasan.PSC.Base.ABCCommon as ABC
 import qualified Payasan.PSC.Base.LilyPondCommon as LY
 
+import Payasan.Base.Basis
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
@@ -51,9 +52,10 @@ data LeafOutputNote pch drn anno = LeafOutputNote
     , pp_anno           :: anno -> Doc
     }
 
-data LeafOutputEvent ot evt = LeafOutputEvent
-    { pp_onset          :: ot -> Doc
-    , pp_event          :: evt -> Doc
+data LeafOutputEvent pch time anno = LeafOutputEvent
+    { pp_onset          :: time -> Doc
+    , pp_event          :: pch -> time -> anno -> Doc
+    , pp_event_grace    :: pch -> time -> Doc
     }
 
 std_ly_output :: LeafOutputNote LY.LyPitch LY.LyNoteLength ()

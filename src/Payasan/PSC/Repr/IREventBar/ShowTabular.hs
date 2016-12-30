@@ -30,30 +30,32 @@ import Payasan.PSC.Repr.IREventBar.Syntax
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Base.ShowTabularUtils
 
+import Payasan.Base.Basis
 
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-showTabularIREventBeam :: LeafOutputEvent ot evt -> Part ot evt -> Doc
-showTabularIREventBeam ppl ph = concatBars 2 $ oPart ppl ph
+showTabularIREventBeam :: LeafOutputEvent pch Seconds anno -> Part pch anno -> Doc
+showTabularIREventBeam def ph = concatBars 2 $ oPart def ph
 
 
-oPart :: LeafOutputEvent ot evt -> Part ot evt -> [Doc]
-oPart ppl (Part xs)             = map (oSection ppl) xs
+oPart :: LeafOutputEvent pch Seconds anno -> Part pch anno -> [Doc]
+oPart def (Part xs)             = map (oSection def) xs
 
-oSection :: LeafOutputEvent ot evt -> Section ot evt -> Doc
-oSection ppl (Section { section_bars = xs }) = vcat $ map (oBar ppl) xs
+oSection :: LeafOutputEvent pch Seconds anno -> Section pch anno -> Doc
+oSection def (Section { section_bars = xs }) = vcat $ map (oBar def) xs
 
-oBar :: LeafOutputEvent ot evt -> Bar ot evt -> Doc
-oBar ppl (Bar _ xs)             = vcat $ map (oEvent ppl) xs
+oBar :: LeafOutputEvent pch Seconds anno -> Bar pch anno -> Doc
+oBar def (Bar _ xs)             = vcat $ map (oEvent def) xs
 
 
 
-oEvent :: LeafOutputEvent ot evt -> Event ot evt -> Doc
-oEvent ppl (Event ot e)        = ppO ot <++> ppE e
+oEvent :: LeafOutputEvent pch Seconds anno -> Event pch anno -> Doc
+oEvent def (Event ot body)        = ppO ot <++> oEventBody def body
   where
-    ppO = pp_onset ppl
-    ppE = pp_event ppl
+    ppO = pp_onset def
 
 
-
+oEventBody :: LeafOutputEvent pch Seconds anno -> EventBody pch anno -> Doc
+oEventBody def (Event1 pch drn anno)    = (pp_event def) pch drn anno
+oEventBody def (EventGrace pch drn)     = (pp_event_grace def) pch drn

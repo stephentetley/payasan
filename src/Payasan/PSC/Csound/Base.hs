@@ -1,4 +1,3 @@
-{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -18,11 +17,8 @@
 module Payasan.PSC.Csound.Base
   ( 
 
-    CsdEventListDoc
 
-  , comment 
-
-  , InstNumber
+    InstNumber
   , ColumnSpecs
   , ColumnFormat(..)
   , columnSpecs
@@ -47,12 +43,7 @@ import Data.Function (on)
 import qualified Data.IntMap            as IM
 
 
-data CsdEventList_
-type CsdEventListDoc = TyDoc CsdEventList_
 
-
-comment :: String -> Doc
-comment ss = text $ "; " ++ ss
 
 --------------------------------------------------------------------------------
 -- Column formatting
@@ -84,7 +75,7 @@ columnSpecs = IM.fromList
 -- pitch).
 --
 data ScoEvent = ScoEvent
-    { inst_num      :: Int
+    { inst_num          :: Int
     , event_duration    :: Seconds
     , event_params      :: [Value]
     }
@@ -98,13 +89,11 @@ sameInst = on (==) inst_num
 --------------------------------------------------------------------------------
 -- Value
 
--- | High level value with booleans (i.e. Higher level than Csound 
--- which has no booleans).
+-- | Value with booleans - slightly higher level than Csound 
+-- which has no booleans.
 -- 
 -- This represents the value in an i- or f-statement in a Csound 
 -- score.
--- 
--- TODO - this could be improved, there seems 
 -- 
 data Value = VStr       !String
            | VInt       !Int
@@ -113,6 +102,11 @@ data Value = VStr       !String
            | VCpsPitch  !Milli
   deriving (Eq,Show)
   
+
+
+-- REVISED THINKING 
+-- Printing ellipses in scores is not a great feature
+-- for the complexity it adds to PSC...
 
 -- | Don\'t ellide negative values or Strings...
 

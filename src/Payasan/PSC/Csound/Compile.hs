@@ -28,6 +28,7 @@ module Payasan.PSC.Csound.Compile
 
 
 import Payasan.PSC.Csound.Base
+import Payasan.PSC.Csound.OutputNew
 
 import Payasan.PSC.Repr.External.OutTransSeconds
 import Payasan.PSC.Repr.External.Syntax
@@ -97,7 +98,7 @@ compile1 def part = do
 -- MakeEventDef pch anno evt 
 compilePartToEventList1 :: CompilerDef -> StdPart1 anno -> CsdCompile CsdEventListDoc
 compilePartToEventList1 def p = 
-    let ast1 = fromIREventBar $ fromIRSimpleTile undefined $ fromExternal $ transDurationToSeconds p
+    let ast1 = fromIREventBar $ fromIRSimpleTile $ fromExternal $ transDurationToSeconds p
     in error "TODO"
 
 

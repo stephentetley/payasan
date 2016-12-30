@@ -25,7 +25,7 @@ module Payasan.PSC.Csound.BeamToCsound
 
   ) where
 
-import Payasan.PSC.Csound.IStmt
+import Payasan.PSC.Csound.IStmt hiding ( onset )
 import Payasan.PSC.Csound.Syntax
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.TiedNoteStream
