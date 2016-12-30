@@ -117,6 +117,7 @@ library
     Payasan.PSC.Repr.External.ABCParser,
     Payasan.PSC.Repr.External.LilyPondInTrans,
     Payasan.PSC.Repr.External.LilyPondParser,
+    Payasan.PSC.Repr.External.OutTransSeconds,
     Payasan.PSC.Repr.External.Plain,
     Payasan.PSC.Repr.External.ShowLinear,
     Payasan.PSC.Repr.External.ShowTabular,

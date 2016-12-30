@@ -29,10 +29,17 @@ module Payasan.PSC.Csound.Compile
 
 import Payasan.PSC.Csound.Base
 
+import Payasan.PSC.Repr.External.OutTransSeconds
+import Payasan.PSC.Repr.External.Syntax
+import Payasan.PSC.Repr.IRSimpleTile.FromExternal
+import Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
+import Payasan.PSC.Repr.IREventFlat.FromIREventBar
+
+
+
 import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
-import Payasan.PSC.Repr.External.Syntax
 
 
 
@@ -87,9 +94,11 @@ compile1 def part = do
     }
 
 
-
+-- MakeEventDef pch anno evt 
 compilePartToEventList1 :: CompilerDef -> StdPart1 anno -> CsdCompile CsdEventListDoc
-compilePartToEventList1 def p = error "TODO"
+compilePartToEventList1 def p = 
+    let ast1 = fromIREventBar $ fromIRSimpleTile undefined $ fromExternal $ transDurationToSeconds p
+    in error "TODO"
 
 
 -- This is monadic...

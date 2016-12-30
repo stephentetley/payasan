@@ -34,8 +34,8 @@ import qualified Data.List as List
 type Onset = Seconds
 
 data MakeEventDef pch anno evt = MakeEventDef
-    { makeEvent   :: pch -> Seconds -> anno -> evt 
-    , graceNoAnno :: anno
+    { makeEvent         :: pch -> Seconds -> anno -> evt 
+    , makeEventGrace    :: pch -> Seconds -> evt 
     }
     
 
@@ -97,20 +97,19 @@ elementT :: MakeEventDef pch anno evt
          -> Element pch anno 
          -> (Onset, [T.Event Seconds evt])
 
-elementT mkE ot (Note drn pch anno)             = 
-    let evt  = makeEvent1 mkE ot pch drn anno
+elementT def ot (Note drn pch anno)             = 
+    let evt  = makeEvent1 def ot pch drn anno
     in (ot + drn,[evt])
 
 elementT _   ot (Rest drn)                      = (ot + drn,[])
     
-elementT mkE ot (Chord drn ps anno)             = 
-    let evts = map (\p -> makeEvent1 mkE ot p drn anno) ps
+elementT def ot (Chord drn ps anno)             = 
+    let evts = map (\p -> makeEvent1 def ot p drn anno) ps
     in (ot + drn,evts)
 
-elementT mkE ot (Graces ns)                     = 
-    let anno = graceNoAnno mkE
-        step = \ons (drn,pch) -> 
-                 let evt = makeEvent1 mkE ons pch drn anno
+elementT def ot (Graces ns)                     = 
+    let step = \ons (drn,pch) -> 
+                 let evt = makeEventGrace1 def ons pch drn 
                  in (ons + drn, evt)
     in List.mapAccumL step ot ns
 
@@ -118,16 +117,28 @@ elementT _   ot (TiedCont drn)                  = (ot + drn,[])
 
 
     
--- | Make an event. Chords, graces and note all generate events 
--- in the same way.
+-- | Make an event. Chords and notes generate events in the same
+-- way.
+--
 makeEvent1 :: MakeEventDef pch anno evt 
            -> Onset 
            -> pch 
            -> Seconds 
            -> anno 
            -> T.Event Seconds evt
-makeEvent1 mkE ot pch drn anno = 
+makeEvent1 def ot pch drn anno = 
     T.Event { T.event_onset = ot
-            , T.event_body  = (makeEvent mkE) pch drn anno }
+            , T.event_body  = (makeEvent def) pch drn anno }
+
+-- | Grace has no anno. 
+--
+makeEventGrace1 :: MakeEventDef pch anno evt 
+                -> Onset 
+                -> pch 
+                -> Seconds
+                -> T.Event Seconds evt
+makeEventGrace1 def ot pch drn = 
+    T.Event { T.event_onset = ot
+            , T.event_body  = (makeEventGrace def) pch drn }
       
 

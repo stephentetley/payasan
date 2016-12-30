@@ -69,6 +69,9 @@ data Bar ot evt = Bar
     }
   deriving (Data,Eq,Show,Typeable)
 
+
+
+
 -- TODO - ideally duration should be abstract and not visible to 
 -- users. What ramifications does this have for Csound / MIDI 
 -- renderers? And when must we perform translations from Seconds
@@ -78,6 +81,13 @@ data Bar ot evt = Bar
 -- a note. Potentially only type classes / method dictionaries 
 -- can implement this if event is abstract.
 --
+-- REVISED THINKING - having an opaque _blob_ for event
+-- is not in keeping with PSCs other representations.
+-- Maybe it would be better to have Event of (pch * drn * anno)
+-- and a GraceEvent (pch * drn). Which is interpreted on the 
+-- final step (i.e. transformed into Csound i-statement or MIDI).
+--
+
 data Event ot evt = Event
     { event_onset       :: !ot
     , event_body        :: !evt
