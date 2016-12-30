@@ -16,8 +16,8 @@
 
 module Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
   ( 
-    MakeEventDef(..)
-  , fromIRSimpleTile
+    
+    fromIRSimpleTile
 
   ) where
 
@@ -33,39 +33,24 @@ import qualified Data.List as List
 
 type Onset = Seconds
 
-data MakeEventDef pch anno evt = MakeEventDef
-    { makeEvent         :: pch -> Seconds -> anno -> evt 
-    , makeEventGrace    :: pch -> Seconds -> evt 
-    }
     
 
-fromIRSimpleTile :: MakeEventDef pch anno evt 
-                 -> Part pch anno 
-                 -> T.Part Seconds evt
+fromIRSimpleTile :: Part pch anno -> T.Part pch anno
 fromIRSimpleTile = partT
 
--- Notes
--- Although IRSimpleTile is a tiled representation there is a 
--- subtlety that bars are "mis-shaped" (actually mis-sized) 
--- after joining tied notes together.
--- To get "true" bar durations (and thus onsets) we have to look 
--- at IRSimpleTile before we have perfromed tie-joining.
 
-  
--- | Note - we find onsets before we join ties.
---
-partT :: MakeEventDef pch anno evt -> Part pch anno -> T.Part Seconds evt
-partT def (Part { part_sections = ss }) = 
-    T.Part { T.part_sections = map (sectionT def) ss }
+partT :: Part pch anno -> T.Part pch anno
+partT (Part { part_sections = ss }) = 
+    T.Part { T.part_sections = map sectionT ss }
 
 
-sectionT :: MakeEventDef pch anno evt -> Section pch anno -> T.Section Seconds evt
-sectionT def (Section { section_name  = name
-                      , section_onset = ot
-                      , section_bars  = bs }) =
+sectionT :: Section pch anno -> T.Section pch anno
+sectionT (Section { section_name  = name
+                  , section_onset = ot
+                  , section_bars  = bs }) =
     T.Section { T.section_name  = name
               , T.section_onset = ot
-              , T.section_bars  = map (barT def) bs 
+              , T.section_bars  = map barT bs 
               }
 
   
@@ -73,13 +58,11 @@ sectionT def (Section { section_name  = name
     
 -- | At the point of generating a Bar we don't know the bar_onset.
 --
-barT :: MakeEventDef pch anno evt 
-     -> Bar pch anno 
-     -> T.Bar Seconds evt
-barT def (Bar { bar_onset = ot
-              , bar_elems = es })   =
+barT :: Bar pch anno -> T.Bar pch anno
+barT (Bar { bar_onset = ot
+          , bar_elems = es })   =
     T.Bar { T.bar_onset  = ot
-          , T.bar_events = concat $ snd $ List.mapAccumL (elementT def) 0 es
+          , T.bar_events = concat $ snd $ List.mapAccumL elementA 0 es
           }
         
 
@@ -92,53 +75,48 @@ barT def (Bar { bar_onset = ot
 -- of the bar.
 -- They are not absolute times.
 --
-elementT :: MakeEventDef pch anno evt
-         -> Onset 
-         -> Element pch anno 
-         -> (Onset, [T.Event Seconds evt])
+elementA :: Onset -> Element pch anno -> (Onset, [T.Event pch anno])
 
-elementT def ot (Note drn pch anno)             = 
-    let evt  = makeEvent1 def ot pch drn anno
+elementA ot (Note drn pch anno)             = 
+    let evt  = makeEvent ot pch drn anno
     in (ot + drn,[evt])
 
-elementT _   ot (Rest drn)                      = (ot + drn,[])
+elementA ot (Rest drn)                      = (ot + drn,[])
     
-elementT def ot (Chord drn ps anno)             = 
-    let evts = map (\p -> makeEvent1 def ot p drn anno) ps
+elementA ot (Chord drn ps anno)             = 
+    let evts = map (\p -> makeEvent ot p drn anno) ps
     in (ot + drn,evts)
 
-elementT def ot (Graces ns)                     = 
+elementA ot (Graces ns)                     = 
     let step = \ons (drn,pch) -> 
-                 let evt = makeEventGrace1 def ons pch drn 
+                 let evt = makeEventGrace ons pch drn 
                  in (ons + drn, evt)
     in List.mapAccumL step ot ns
 
-elementT _   ot (TiedCont drn)                  = (ot + drn,[])
+elementA ot (TiedCont drn)                  = (ot + drn,[])
 
 
     
 -- | Make an event. Chords and notes generate events in the same
 -- way.
 --
-makeEvent1 :: MakeEventDef pch anno evt 
-           -> Onset 
+makeEvent :: Onset 
            -> pch 
            -> Seconds 
            -> anno 
-           -> T.Event Seconds evt
-makeEvent1 def ot pch drn anno = 
+           -> T.Event pch anno
+makeEvent ot pch drn anno = 
     T.Event { T.event_onset = ot
-            , T.event_body  = (makeEvent def) pch drn anno }
+            , T.event_body  = T.Event1 pch drn anno }
 
 -- | Grace has no anno. 
 --
-makeEventGrace1 :: MakeEventDef pch anno evt 
-                -> Onset 
-                -> pch 
-                -> Seconds
-                -> T.Event Seconds evt
-makeEventGrace1 def ot pch drn = 
+makeEventGrace :: Onset 
+               -> pch 
+               -> Seconds
+               -> T.Event pch anno
+makeEventGrace ot pch drn = 
     T.Event { T.event_onset = ot
-            , T.event_body  = (makeEventGrace def) pch drn }
+            , T.event_body  = T.EventGrace pch drn }
       
 

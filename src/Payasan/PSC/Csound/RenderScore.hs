@@ -43,7 +43,9 @@ import qualified Text.PrettyPrint.HughesPJ as P
 import qualified Data.IntMap    as IM
 import qualified Data.List      as List
 import Numeric ( showFFloat )
- 
+
+
+-- NOT COMPILING - need to pass a dictionary to make Csound events.
 
 {-
 -- | Assume part is a single instrument.

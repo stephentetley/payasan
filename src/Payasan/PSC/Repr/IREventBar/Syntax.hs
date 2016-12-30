@@ -23,8 +23,11 @@ module Payasan.PSC.Repr.IREventBar.Syntax
   , Section(..)
   , Bar(..)
   , Event(..)
+  , EventBody(..)
 
   ) where
+
+import Payasan.Base.Basis
 
 import Data.Data
 
@@ -39,58 +42,45 @@ import Data.Data
 --
 
 
--- This representation should support onset changing 
--- transformations, but disallow duration changing 
--- transformation, hence duration is hidden in the event body. 
+-- REVISED - It is likely we can fix duration/onset in this 
+-- representation to seconds...
 --
--- Duration for an event does not match metrical length of a 
--- note in a score. For an event, duration might be e.g. a 
--- fixed length for all notes (e.g. marimba notes that all decay 
--- for the same length). Musically, it is the successive onsets 
--- of marimba notes that are variable to match a rhythm.
---
-data Part ot evt = Part { part_sections :: [Section ot evt] }
+data Part pch anno = Part { part_sections :: [Section pch anno] }
   deriving (Data,Eq,Show,Typeable)
 
--- | We keep section in this syntax. Having named sections is
--- expected to allow transformations limited to a specific region.
+
+-- | We keep section in this syntax. 
+-- Having named sections could be helpful to make the generated 
+-- Csound readable.
 --
-data Section ot evt = Section
+data Section pch anno = Section
     { section_name      :: !String
-    , section_onset     :: !ot
-    , section_bars      :: [Bar ot evt]
+    , section_onset     :: !Seconds
+    , section_bars      :: [Bar pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
   
-data Bar ot evt = Bar
-    { bar_onset         :: !ot
-    , bar_events        :: [Event ot evt]
+data Bar pch anno = Bar
+    { bar_onset         :: !Seconds
+    , bar_events        :: [Event pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
 
 
 
--- TODO - ideally duration should be abstract and not visible to 
--- users. What ramifications does this have for Csound / MIDI 
--- renderers? And when must we perform translations from Seconds
--- (e.g. to MIDI ticks) if they are needed?
---
--- Also what mechanisms are there to alter e.g. the amplitude of 
--- a note. Potentially only type classes / method dictionaries 
--- can implement this if event is abstract.
---
--- REVISED THINKING - having an opaque _blob_ for event
--- is not in keeping with PSCs other representations.
--- Maybe it would be better to have Event of (pch * drn * anno)
--- and a GraceEvent (pch * drn). Which is interpreted on the 
--- final step (i.e. transformed into Csound i-statement or MIDI).
---
+-- | Distinguish between normal events and graces
+-- (the later cannot be accented).
 
-data Event ot evt = Event
-    { event_onset       :: !ot
-    , event_body        :: !evt
+data Event pch anno = Event 
+    { event_onset       :: !Seconds
+    , event_body        :: EventBody pch anno
     }
+  deriving (Data,Eq,Show,Typeable)
+
+
+data EventBody pch anno = Event1 pch !Seconds anno
+                        | EventGrace pch !Seconds
   deriving (Data,Eq,Show,Typeable)
 

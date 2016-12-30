@@ -14,6 +14,8 @@
 -- Flat eventlist syntax (no metrical division into bars, but 
 -- sections remain - helpful to track in output).
 --
+-- Time (duration and onset) is parametric again.
+--
 -- Intended as the final intermediate representation before 
 -- rendering to an audio format - e.g. Csound or MIDI.
 --
@@ -24,9 +26,9 @@ module Payasan.PSC.Repr.IREventFlat.Syntax
     Part(..)
   , Section(..)
   , Event(..)
-
+  , EventBody(..)
   , sortByOnset
-  , groupByEventBody
+
   ) where
 
 import Data.List
@@ -43,28 +45,32 @@ import Data.Data
 -- inspected by the rendering dictionary, which will know the
 -- concrete instantiation of the event_body.
 
-data Part ot evt = Part 
-    { part_sections     :: [Section ot evt] 
+data Part pch time anno = Part 
+    { part_sections     :: [Section pch time anno] 
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Section ot evt = Section
+data Section pch time anno = Section
     { section_name      :: !String
-    , section_events    :: [Event ot evt]
+    , section_events    :: [Event pch time anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Event ot evt = Event
-    { event_onset      :: ot
-    , event_body       :: evt
+data Event pch time anno = Event
+    { event_onset      :: time
+    , event_body       :: EventBody pch time anno
     }
   deriving (Data,Eq,Show,Typeable)
 
+
+data EventBody pch time anno = Event1 pch time anno
+                             | EventGrace pch time
+  deriving (Data,Eq,Show,Typeable)
 
   
-sortByOnset :: Ord ot => Part ot evt -> Part ot evt
+sortByOnset :: Ord time => Part pch time anno -> Part pch time anno
 sortByOnset p@(Part { part_sections = ss }) = 
     p { part_sections = map sortSection ss }
   where
@@ -72,15 +78,3 @@ sortByOnset p@(Part { part_sections = ss }) =
         s { section_events = sortBy cmp es }
 
     cmp (Event ot1 _) (Event ot2 _) = compare ot1 ot2
-
-groupByEventBody :: (evt -> evt -> Bool) -> Part ot evt -> [Part ot evt]
-groupByEventBody _ _ = error "TO BE REPLACED..."
-
-{-
--- | Note this is intentionally oblivious to onset time.    
-groupByEventBody :: (evt -> evt -> Bool) -> Part ot evt -> [Part ot evt]
-groupByEventBody evF (Part es) = map Part $ groupBy fn es
-  where
-    fn (Event _ e1) (Event _ e2) = evF e1 e2
--}    
-    
