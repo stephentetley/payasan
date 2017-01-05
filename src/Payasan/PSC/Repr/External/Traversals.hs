@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Repr.External.Traversals
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -44,13 +44,37 @@ module Payasan.PSC.Repr.External.Traversals
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 
+import Control.Monad.Reader                     -- package: mtl
+import Control.Monad.State
+
+
+  
+ 
+--
+-- These traversals are essentially maps (elementary, shape 
+-- preserving, non-failing)
+--
+-- State is necessary.
+--
+-- SectionInfo should be accessible.
+-- 
+
+-- data TravM st a = TravM { getTravM :: st -> (st,a) }
+type TravM st a = State st a
+type ElemM st a = ReaderT SectionInfo (State st) a
+
+
+type Mon st a = ElemM st a
+
+
 
 
 genTransform :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
              -> st
              -> Part p1 d1 a1
              -> Part p2 d2 a2
-genTransform elemT st ph = evalTravM st (partT elemT ph)
+genTransform elemT st ph = evalState (partT elemT ph) st
+
 
 
 
@@ -58,7 +82,8 @@ genTransformSection :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
                     -> st
                     -> Section p1 d1 a1
                     -> Section p2 d2 a2
-genTransformSection elemT st se = evalTravM st (sectionT elemT se)
+genTransformSection elemT st se = evalState (sectionT elemT se) st
+
 
 
 
@@ -68,76 +93,8 @@ genTransformBars :: (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
                  -> [Bar p1 d1 a1]
                  -> [Bar p2 d2 a2]
 genTransformBars elemT info st bs = 
-    evalTravM st (withSectionInfo info (mapM (barT elemT) bs))
-  
+    evalState (runReaderT (mapM (barT elemT) bs) info) st
 
---
--- TODO - Rewrite Monad is not the right basis for these 
--- traversals. 
---
--- They are essentially maps (elementary, shape preserving, 
--- non-failing)
---
--- State is necessary.
---
--- SectionInfo should be accessible.
--- 
-
-data TravM st a = TravM { getTravM :: st -> (st,a) }
-data ElemM st a = ElemM { getElemM  :: SectionInfo -> st -> (st,a) }
-
-type Mon st a = ElemM st a
-
-instance Functor (TravM st) where
-  fmap f ma = TravM $ \st -> let (s1,a) = getTravM ma st in (s1, f a)
-
-instance Functor (ElemM st) where
-  fmap f ma = ElemM $ \r st -> let (s1,a) = getElemM ma r st in (s1, f a)
-
-instance Applicative (TravM st) where
-  pure a    = TravM $ \st -> (st,a)
-  mf <*> ma = TravM $ \st -> 
-                let (s1,f) = getTravM mf st
-                    (s2,a) = getTravM ma s1
-                in (s2, f a)
-
-
-instance Applicative (ElemM st) where
-  pure a    = ElemM $ \_ st -> (st,a)
-  mf <*> ma = ElemM $ \r st -> 
-                let (s1,f) = getElemM mf r st
-                    (s2,a) = getElemM ma r s1
-                in (s2, f a)
-
-
-
-instance Monad (TravM st) where
-  return    = pure
-  ma >>= k  = TravM $ \st -> 
-                let (s1,a) = getTravM ma st in getTravM (k a) s1
-
-instance Monad (ElemM st) where
-  return    = pure
-  ma >>= k  = ElemM $ \r st -> 
-                let (s1,a) = getElemM ma r st in getElemM (k a) r s1
-
-evalTravM :: st -> TravM st a -> a
-evalTravM st ma = let (_,a) = getTravM ma st in a
-
-
-withSectionInfo :: SectionInfo -> ElemM st a -> TravM st a
-withSectionInfo info ma = TravM $ \st -> getElemM ma info st
-
-asks :: (SectionInfo -> a) -> Mon st a
-asks proj = ElemM $ \r st -> (st, proj r)
-
-
-get :: Mon st st
-get = ElemM $ \_ st -> (st,st)
-
-
-put :: st -> Mon st ()
-put st = ElemM $ \_ _ -> (st,())
 
 
 
@@ -150,7 +107,7 @@ sectionT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2))
          -> Section p1 d1 a1 
          -> TravM st (Section p2 d2 a2)
 sectionT elemT (Section name info bs) = 
-    Section name info <$> withSectionInfo info (mapM (barT elemT) bs)
+    Section name info <$> runReaderT (mapM (barT elemT) bs) info
 
 
 barT :: (Element p1 d1 a1 -> ElemM st (Element p2 d2 a2)) 
@@ -172,7 +129,7 @@ noteGroupT elemT (Tuplet spec cs)   = Tuplet spec <$> mapM (noteGroupT elemT) cs
 
 liftElementTrafo :: (Element p1 d1 a1 -> Element p2 d2 a2) 
                  -> Element p1 d1 a1 
-                 -> Mon () (Element p2 d2 a2)
+                 -> Mon st (Element p2 d2 a2)
 liftElementTrafo f = \e -> return (f e)
 
 --------------------------------------------------------------------------------
@@ -231,3 +188,4 @@ transformPA :: forall st p1 p2 drn a1 a2.
 transformPA (BeamPitchAnnoAlgo { initial_statePA = st0 
                                , element_trafoPA = elemT }) = 
     genTransform elemT st0
+

@@ -1,9 +1,10 @@
+{-# LANGUAGE FlexibleContexts           #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Repr.External.OutTransSeconds
--- Copyright   :  (c) Stephen Tetley 2016
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
