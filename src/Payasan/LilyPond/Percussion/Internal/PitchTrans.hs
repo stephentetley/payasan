@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.PitchTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -39,8 +39,8 @@ type PTMon   a      = Mon () a
 -- Pitch translation
 
 
-pch_algo :: BeamPitchAlgo () DrumPitch MidiPitch
-pch_algo = BeamPitchAlgo
+pch_algo :: ExtPitchAlgo () DrumPitch MidiPitch
+pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
     }

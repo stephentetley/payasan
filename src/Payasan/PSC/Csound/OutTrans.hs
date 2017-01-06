@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Csound.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -38,8 +38,8 @@ translateToCsoundP = transformP pch_algo
 -- Pitch translation
 
 
-pch_algo :: BeamPitchAlgo () Pitch CpsPitch
-pch_algo = BeamPitchAlgo
+pch_algo :: ExtPitchAlgo () Pitch CpsPitch
+pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = liftElementTrafo elementP
     }

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.MIDI.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -40,8 +40,8 @@ translateToMidiP = transformP pch_algo
 -- Pitch translation
 
 
-pch_algo :: BeamPitchAlgo () Pitch MidiPitch
-pch_algo = BeamPitchAlgo
+pch_algo :: ExtPitchAlgo () Pitch MidiPitch
+pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = liftElementTrafo elementP
     }

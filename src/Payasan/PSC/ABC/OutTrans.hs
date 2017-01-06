@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.ABC.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -48,8 +48,8 @@ type DTMon a = Mon UnitNoteLength a
 -- TODO - This should be aware of keysig changes...
 
 
-pch_algo :: BeamPitchAlgo () Pitch ABCPitch
-pch_algo = BeamPitchAlgo
+pch_algo :: ExtPitchAlgo () Pitch ABCPitch
+pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
     }
@@ -79,8 +79,8 @@ transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asks section_key
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: BeamDurationAlgo UnitNoteLength Duration ABCNoteLength
-drn_algo = BeamDurationAlgo
+drn_algo :: ExtDurationAlgo UnitNoteLength Duration ABCNoteLength
+drn_algo = ExtDurationAlgo
     { initial_stateD    = UNIT_NOTE_8
     , element_trafoD    = elementD
     }

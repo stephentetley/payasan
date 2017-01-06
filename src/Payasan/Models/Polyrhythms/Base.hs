@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Models.Polyrhythms.Base
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  Stephen Tetley <stephen.tetley@gmail.com>
@@ -86,8 +86,8 @@ timbalesTrafo pch =
 
 
 
-drumnote_algo :: DrumPitch -> BeamPitchAlgo () pch DrumPitch
-drumnote_algo pch = BeamPitchAlgo
+drumnote_algo :: DrumPitch -> ExtPitchAlgo () pch DrumPitch
+drumnote_algo pch = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = liftElementTrafo $ elementP pch
     }

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Repr.External.ABCInTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -58,15 +58,15 @@ translateFromInput = transformP pch_algo . transformD drn_algo
 
 
 -- | DEPRECATED
-pch_algo :: BeamPitchAlgo () ABCPitch Pitch
-pch_algo = BeamPitchAlgo
+pch_algo :: ExtPitchAlgo () ABCPitch Pitch
+pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = elementP
     }
 
 -- | DEPRECATED
-drn_algo :: BeamDurationAlgo UnitNoteLength ABCNoteLength Duration
-drn_algo = BeamDurationAlgo
+drn_algo :: ExtDurationAlgo UnitNoteLength ABCNoteLength Duration
+drn_algo = ExtDurationAlgo
     { initial_stateD    = UNIT_NOTE_8
     , element_trafoD    = elementD
     }

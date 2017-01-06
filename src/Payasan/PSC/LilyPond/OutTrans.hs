@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.LilyPond.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -59,8 +59,8 @@ type AbsPMon a      = Mon () a
 --------------------------------------------------------------------------------
 -- Relative Pitch translation
 
-rel_pch_algo :: Pitch -> BeamPitchAlgo Pitch Pitch LyPitch
-rel_pch_algo start = BeamPitchAlgo
+rel_pch_algo :: Pitch -> ExtPitchAlgo Pitch Pitch LyPitch
+rel_pch_algo start = ExtPitchAlgo
     { initial_stateP    = start
     , element_trafoP    = relElementP
     }
@@ -101,8 +101,8 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 
-abs_pch_algo :: BeamPitchAlgo () Pitch LyPitch
-abs_pch_algo = BeamPitchAlgo
+abs_pch_algo :: ExtPitchAlgo () Pitch LyPitch
+abs_pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = absElementP
     }
@@ -135,8 +135,8 @@ changePitchAbs p1 = return $ fromPitchAbs p1
 -- We always want the first duration to print in the output,
 -- so the initial state is 0 which should never match.
 --
-drn_algo :: BeamDurationAlgo Duration Duration LyNoteLength
-drn_algo = BeamDurationAlgo
+drn_algo :: ExtDurationAlgo Duration Duration LyNoteLength
+drn_algo = ExtDurationAlgo
     { initial_stateD    = d_zero        
     , element_trafoD    = elementD
     }

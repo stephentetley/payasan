@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.LilyPond.RhythmicMarkup
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -60,8 +60,8 @@ translateToLyPartOut_RhythmicMarkup mo =
 --------------------------------------------------------------------------------
 -- Pitch to markup translation
 
-markup_algo :: MarkupOutput pch -> BeamPitchAnnoAlgo () pch anno LyPitch Doc
-markup_algo mo = BeamPitchAnnoAlgo
+markup_algo :: MarkupOutput pch -> ExtPitchAnnoAlgo () pch anno LyPitch Doc
+markup_algo mo = ExtPitchAnnoAlgo
     { initial_statePA   = ()
     , element_trafoPA   = liftElementTrafo $ elementP mo
     }

@@ -28,13 +28,13 @@ module Payasan.PSC.Repr.External.Traversals
   
   , liftElementTrafo
 
-  , BeamPitchAlgo(..)
+  , ExtPitchAlgo(..)
   , transformP
 
-  , BeamDurationAlgo(..)
+  , ExtDurationAlgo(..)
   , transformD
 
-  , BeamPitchAnnoAlgo(..)
+  , ExtPitchAnnoAlgo(..)
   , transformPA
 
   ) where
@@ -135,7 +135,7 @@ liftElementTrafo f = \e -> return (f e)
 --------------------------------------------------------------------------------
 -- Duration
 
-data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo 
+data ExtPitchAlgo st pch1 pch2 = ExtPitchAlgo 
     { initial_stateP :: st
     , element_trafoP :: forall drn anno. 
                         Element pch1 drn anno -> Mon st (Element pch2 drn anno)
@@ -143,10 +143,10 @@ data BeamPitchAlgo st pch1 pch2 = BeamPitchAlgo
 
 
 transformP :: forall st p1 p2 drn anno.
-              BeamPitchAlgo st p1 p2 
+              ExtPitchAlgo st p1 p2 
            -> Part p1 drn anno 
            -> Part p2 drn anno
-transformP (BeamPitchAlgo { initial_stateP = st0 
+transformP (ExtPitchAlgo { initial_stateP = st0 
                           , element_trafoP = elemT }) = 
     genTransform elemT st0
 
@@ -154,7 +154,7 @@ transformP (BeamPitchAlgo { initial_stateP = st0
 --------------------------------------------------------------------------------
 -- Duration
 
-data BeamDurationAlgo st drn1 drn2 = BeamDurationAlgo 
+data ExtDurationAlgo st drn1 drn2 = ExtDurationAlgo 
     { initial_stateD :: st
     , element_trafoD :: forall pch anno. 
                         Element pch drn1 anno -> Mon st (Element pch drn2 anno)
@@ -162,18 +162,18 @@ data BeamDurationAlgo st drn1 drn2 = BeamDurationAlgo
 
 
 transformD :: forall st pch d1 d2 anno.
-              BeamDurationAlgo st d1 d2 
+              ExtDurationAlgo st d1 d2 
            -> Part pch d1 anno 
            -> Part pch d2 anno
-transformD (BeamDurationAlgo { initial_stateD = st0 
-                             , element_trafoD = elemT }) = 
+transformD (ExtDurationAlgo { initial_stateD = st0 
+                            , element_trafoD = elemT }) = 
     genTransform elemT st0
 
 
 --------------------------------------------------------------------------------
 -- Duration
 
-data BeamPitchAnnoAlgo st pch1 anno1 pch2 anno2 = BeamPitchAnnoAlgo 
+data ExtPitchAnnoAlgo st pch1 anno1 pch2 anno2 = ExtPitchAnnoAlgo 
     { initial_statePA :: st
     , element_trafoPA :: 
              forall drn. 
@@ -182,10 +182,10 @@ data BeamPitchAnnoAlgo st pch1 anno1 pch2 anno2 = BeamPitchAnnoAlgo
 
 
 transformPA :: forall st p1 p2 drn a1 a2.
-               BeamPitchAnnoAlgo st p1 a1 p2 a2
+               ExtPitchAnnoAlgo st p1 a1 p2 a2
             -> Part p1 drn a1 
             -> Part p2 drn a2
-transformPA (BeamPitchAnnoAlgo { initial_statePA = st0 
+transformPA (ExtPitchAnnoAlgo { initial_statePA = st0 
                                , element_trafoPA = elemT }) = 
     genTransform elemT st0
 

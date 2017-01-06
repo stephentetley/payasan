@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Repr.External.LilyPondInTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -90,22 +90,22 @@ translateFromInput_DurationOnly = transformD drn_algo
 
 
 -- | DEPRECATED
-rel_pch_algo :: Pitch -> BeamPitchAlgo Pitch LyPitch Pitch
-rel_pch_algo start = BeamPitchAlgo
+rel_pch_algo :: Pitch -> ExtPitchAlgo Pitch LyPitch Pitch
+rel_pch_algo start = ExtPitchAlgo
     { initial_stateP    = start
     , element_trafoP    = relElementP
     }
 
 -- | DEPRECATED
-abs_pch_algo :: BeamPitchAlgo () LyPitch Pitch
-abs_pch_algo = BeamPitchAlgo
+abs_pch_algo :: ExtPitchAlgo () LyPitch Pitch
+abs_pch_algo = ExtPitchAlgo
     { initial_stateP    = ()
     , element_trafoP    = absElementP
     }
 
 -- | DEPRECATED
-drn_algo :: BeamDurationAlgo Duration LyNoteLength Duration 
-drn_algo = BeamDurationAlgo
+drn_algo :: ExtDurationAlgo Duration LyNoteLength Duration 
+drn_algo = ExtDurationAlgo
     { initial_stateD    = d_quarter
     , element_trafoD    = elementD
     }
