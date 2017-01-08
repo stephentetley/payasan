@@ -58,7 +58,7 @@ makeCsdEventListDoc specs p =
 -- firstInst _            = Nothing
 
 
-renderScore :: ColumnSpecs -> Part pch Seconds anno -> Doc 
+renderScore :: ColumnSpecs -> Part Seconds pch Seconds anno -> Doc 
 renderScore specs p1 = error "OLD" -- renderPart1 specs p1
      
 {-

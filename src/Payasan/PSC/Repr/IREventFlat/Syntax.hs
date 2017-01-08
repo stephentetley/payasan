@@ -26,7 +26,6 @@ module Payasan.PSC.Repr.IREventFlat.Syntax
     Part(..)
   , Section(..)
   , Event(..)
-  , EventBody(..)
   , sortByOnset
 
   ) where
@@ -41,40 +40,40 @@ import Data.Data
 -- Interpretion of the onset time is left to the processing 
 -- function - it could represent absolute times or delta times.
 --
--- Duration is hidden (think sustenueto), but it will be 
--- inspected by the rendering dictionary, which will know the
--- concrete instantiation of the event_body.
+-- Onset, pitch and duration are expected to be changed to other 
+-- units (e.g. Seconds to MidiTicks) but not otherwise 
+-- manipulated.
+--
 
-data Part pch time anno = Part 
-    { part_sections     :: [Section pch time anno] 
+data Part onset pch drn anno = Part 
+    { part_sections     :: [Section onset pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Section pch time anno = Section
+data Section onset pch drn anno = Section
     { section_name      :: !String
-    , section_events    :: [Event pch time anno]
+    , section_events    :: [Event onset pch drn anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Event pch time anno = Event
-    { event_onset      :: time
-    , event_body       :: EventBody pch time anno
-    }
-  deriving (Data,Eq,Show,Typeable)
-
-
-data EventBody pch time anno = Event1 pch time anno
-                             | EventGrace pch time
+data Event onset pch drn anno =
+      Event onset pch drn anno
+    | Grace onset pch drn
   deriving (Data,Eq,Show,Typeable)
 
   
-sortByOnset :: Ord time => Part pch time anno -> Part pch time anno
+sortByOnset :: Ord onset => Part onset pch drn anno -> Part onset pch drn anno
 sortByOnset p@(Part { part_sections = ss }) = 
     p { part_sections = map sortSection ss }
   where
     sortSection s@(Section {section_events = es}) = 
         s { section_events = sortBy cmp es }
 
-    cmp (Event ot1 _) (Event ot2 _) = compare ot1 ot2
+    cmp e1 e2 = compare (getOnset e1) (getOnset e2)
+
+
+getOnset :: Event onset pch drn anno -> onset
+getOnset (Event ot _ _ _)       = ot
+getOnset (Grace ot _ _)         = ot

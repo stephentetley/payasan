@@ -43,15 +43,15 @@ data CsdOutputDef pch anno = CsdOutputDef
     }
 
 
-makeCsdEventListDoc :: CsdOutputDef pch anno -> Part pch Seconds anno -> CsdEventListDoc
+makeCsdEventListDoc :: CsdOutputDef pch anno -> Part Seconds pch Seconds anno -> CsdEventListDoc
 makeCsdEventListDoc specs p = TyDoc empty
 
 
-oPart :: CsdOutputDef pch anno -> Part pch Seconds anno -> Doc
+oPart :: CsdOutputDef pch anno -> Part Seconds pch Seconds anno -> Doc
 oPart def (Part { part_sections = ss }) = 
     vsep $ map (renderSection def) ss
     -- columnHeaders (inst_num $ event_body e) specs 
 
 
-renderSection :: CsdOutputDef pch anno -> Section pch Seconds anno -> Doc
+renderSection :: CsdOutputDef pch anno -> Section Seconds pch Seconds anno -> Doc
 renderSection specs (Section { section_events = es}) = empty

@@ -132,8 +132,10 @@ liftElementTrafo :: (Element p1 d1 a1 -> Element p2 d2 a2)
                  -> Mon st (Element p2 d2 a2)
 liftElementTrafo f = \e -> return (f e)
 
+
+
 --------------------------------------------------------------------------------
--- Duration
+-- Pitch
 
 data ExtPitchAlgo st pch1 pch2 = ExtPitchAlgo 
     { initial_stateP :: st

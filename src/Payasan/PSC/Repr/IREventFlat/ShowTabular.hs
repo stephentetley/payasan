@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Repr.IREventFlat.ShowTabular
--- Copyright   :  (c) Stephen Tetley 2016
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -33,25 +33,21 @@ import Payasan.PSC.Base.ShowTabularUtils
 import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
-showTabularIREventFlat :: LeafOutputEvent pch time anno -> Part pch time anno -> Doc
+showTabularIREventFlat :: LeafOutputEvent onset pch drn anno 
+                       -> Part onset pch drn anno -> Doc
 showTabularIREventFlat def ph = concatBars 2 $ oPart def ph
 
 
-oPart :: LeafOutputEvent pch time anno -> Part pch time anno -> [Doc]
+oPart :: LeafOutputEvent onset pch drn anno -> Part onset pch drn anno -> [Doc]
 oPart def (Part xs)             = concat $ map (oSection def) xs
 
-oSection :: LeafOutputEvent pch time anno -> Section pch time anno -> [Doc]
+oSection :: LeafOutputEvent onset pch drn anno -> Section onset pch drn anno -> [Doc]
 oSection def (Section { section_events = es })  = map (oEvent def) es
 
-oEvent :: LeafOutputEvent pch time anno -> Event pch time anno -> Doc
-oEvent def (Event ot body)        = ppO ot <++> oEventBody def body
-  where
-    ppO = pp_onset def
 
-
-oEventBody :: LeafOutputEvent pch time anno -> EventBody pch time anno -> Doc
-oEventBody def (Event1 pch drn anno)    = (pp_event def) pch drn anno
-oEventBody def (EventGrace pch drn)     = (pp_event_grace def) pch drn
+oEvent :: LeafOutputEvent onset pch drn anno -> Event onset pch drn anno -> Doc
+oEvent def (Event ot pch drn anno)    = pp_onset def ot <++> (pp_event def) pch drn anno
+oEvent def (Grace ot pch drn)         = pp_onset def ot <++> (pp_event_grace def) pch drn
 
 
 

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Base.ShowCommon
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -52,10 +52,10 @@ data LeafOutputNote pch drn anno = LeafOutputNote
     , pp_anno           :: anno -> Doc
     }
 
-data LeafOutputEvent pch time anno = LeafOutputEvent
-    { pp_onset          :: time -> Doc
-    , pp_event          :: pch -> time -> anno -> Doc
-    , pp_event_grace    :: pch -> time -> Doc
+data LeafOutputEvent onset pch drn anno = LeafOutputEvent
+    { pp_onset          :: onset -> Doc
+    , pp_event          :: pch -> drn -> anno -> Doc
+    , pp_event_grace    :: pch -> drn -> Doc
     }
 
 std_ly_output :: LeafOutputNote LY.LyPitch LY.LyNoteLength ()

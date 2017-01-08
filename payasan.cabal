@@ -132,6 +132,7 @@ library
     Payasan.PSC.Repr.IREventFlat.FromIREventBar,
     Payasan.PSC.Repr.IREventFlat.ShowTabular,
     Payasan.PSC.Repr.IREventFlat.Syntax,
+    Payasan.PSC.Repr.IREventFlat.Traversals,
     Payasan.PSC.Repr.IRSimpleTile.Coalesce,
     Payasan.PSC.Repr.IRSimpleTile.FromExternal,
     Payasan.PSC.Repr.IRSimpleTile.Syntax,
