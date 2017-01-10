@@ -40,6 +40,13 @@ module Payasan.PSC.Repr.IREventFlat.Traversals
   , FlatAnnoAlgo(..)
   , transformA
 
+  -- Alternative...
+  , FlatAlgo(..)
+  , transformFlat
+  , mapOnset
+  , mapPitch
+  , mapDuration
+  , mapAnno
 
   ) where
 
@@ -109,9 +116,11 @@ sectionT elemT (Section name es) =
 -- Lift a pure Event transformer
 
 liftEventTrafo :: (Event ot1 p1 d1 a1 -> Event ot2 p2 d2 a2) 
-                 -> Event ot1 p1 d1 a1 
-                 -> Mon st (Event ot2 p2 d2 a2)
+               -> Event ot1 p1 d1 a1 
+               -> Mon st (Event ot2 p2 d2 a2)
 liftEventTrafo f = \e -> return (f e)
+
+
 
 
 
@@ -195,3 +204,67 @@ transformA :: forall st onset pch drn a1 a2.
 transformA (FlatAnnoAlgo { initial_stateA = st0 
                          , element_trafoA = elemT }) = 
     genTransform elemT st0
+
+
+--------------------------------------------------------------------------------
+-- Flat algo
+
+-- DESIGN NOTE
+-- Alternative - a single element changing transform algo.
+-- Can we derive (all) other transformations from it? 
+
+data FlatAlgo st onset1 onset2 pch1 pch2 drn1 drn2 anno1 anno2 = FlatAlgo 
+    { initial_state :: st
+    , event_trafo :: 
+            Event onset1 pch1 drn1 anno1 -> Mon st (Event onset2 pch2 drn2 anno2)
+    }
+
+
+transformFlat :: FlatAlgo st onset1 onset2 pch1 pch2 drn1 drn2 anno1 anno2
+              -> Part onset1 pch1 drn1 anno1 
+              -> Part onset2 pch2 drn2 anno2
+transformFlat  (FlatAlgo { initial_state = st0 
+                         , event_trafo = elemT }) = 
+    genTransform elemT st0
+
+
+
+mapOnset :: (onset1 -> onset2) 
+         -> Part onset1 pch drn anno 
+         -> Part onset2 pch drn anno
+mapOnset f = transformFlat (FlatAlgo { initial_state = ()
+                                     , event_trafo = liftEventTrafo g })
+  where
+    g (Event o p d a) = Event (f o) p d a
+    g (Grace o p d)   = Grace (f o) p d
+
+
+mapPitch :: (pch1 -> pch2) 
+         -> Part onset pch1 drn anno 
+         -> Part onset pch2 drn anno
+mapPitch f = transformFlat (FlatAlgo { initial_state = ()
+                                     , event_trafo = liftEventTrafo g })
+  where
+    g (Event o p d a) = Event o (f p) d a
+    g (Grace o p d)   = Grace o (f p) d
+
+
+mapDuration :: (drn1 -> drn2) 
+            -> Part onset pch drn1 anno 
+            -> Part onset pch drn2 anno
+mapDuration f = transformFlat (FlatAlgo { initial_state = ()
+                                        , event_trafo = liftEventTrafo g })
+  where
+    g (Event o p d a) = Event o p (f d) a
+    g (Grace o p d)   = Grace o p (f d)
+
+
+mapAnno :: (anno1 -> anno2) 
+        -> Part onset pch drn anno1
+        -> Part onset pch drn anno2
+mapAnno f = transformFlat (FlatAlgo { initial_state = ()
+                                     , event_trafo = liftEventTrafo g })
+  where
+    g (Event o p d a) = Event o p d (f a)
+    g (Grace o p d)   = Grace o p d
+
