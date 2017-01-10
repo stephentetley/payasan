@@ -19,17 +19,19 @@
 
 module Payasan.PSC.Repr.IREventBar.Syntax
   ( 
-    Part(..)
+    Onset
+  , Part(..)
   , Section(..)
   , Bar(..)
   , Event(..)
-  , EventBody(..)
 
   ) where
 
 import Payasan.Base.Basis
 
 import Data.Data
+
+type Onset = Seconds
 
 -- Design note
 -- The point of this eventlist representation is to support 
@@ -55,32 +57,26 @@ data Part pch anno = Part { part_sections :: [Section pch anno] }
 --
 data Section pch anno = Section
     { section_name      :: !String
-    , section_onset     :: !Seconds
+    , section_onset     :: !Onset
     , section_bars      :: [Bar pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
   
 data Bar pch anno = Bar
-    { bar_onset         :: !Seconds
+    { bar_onset         :: !Onset
     , bar_events        :: [Event pch anno]
     }
   deriving (Data,Eq,Show,Typeable)
 
 
 
-
 -- | Distinguish between normal events and graces
 -- (the later cannot be accented).
-
-data Event pch anno = Event 
-    { event_onset       :: !Seconds
-    , event_body        :: EventBody pch anno
-    }
+--
+-- First time field is onset, third field is duration.
+--
+data Event pch anno =
+      Event Onset pch Seconds anno
+    | Grace Onset pch Seconds
   deriving (Data,Eq,Show,Typeable)
-
-
-data EventBody pch anno = Event1 pch !Seconds anno
-                        | EventGrace pch !Seconds
-  deriving (Data,Eq,Show,Typeable)
-

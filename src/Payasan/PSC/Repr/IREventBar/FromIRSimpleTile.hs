@@ -78,45 +78,20 @@ barT (Bar { bar_onset = ot
 elementA :: Onset -> Element pch anno -> (Onset, [T.Event pch anno])
 
 elementA ot (Note drn pch anno)             = 
-    let evt  = makeEvent ot pch drn anno
+    let evt  = T.Event ot pch drn anno
     in (ot + drn,[evt])
 
 elementA ot (Rest drn)                      = (ot + drn,[])
     
 elementA ot (Chord drn ps anno)             = 
-    let evts = map (\p -> makeEvent ot p drn anno) ps
+    let evts = map (\p -> T.Event ot p drn anno) ps
     in (ot + drn,evts)
 
 elementA ot (Graces ns)                     = 
     let step = \ons (drn,pch) -> 
-                 let evt = makeEventGrace ons pch drn 
+                 let evt = T.Grace ons pch drn 
                  in (ons + drn, evt)
     in List.mapAccumL step ot ns
 
 elementA ot (TiedCont drn)                  = (ot + drn,[])
-
-
-    
--- | Make an event. Chords and notes generate events in the same
--- way.
---
-makeEvent :: Onset 
-           -> pch 
-           -> Seconds 
-           -> anno 
-           -> T.Event pch anno
-makeEvent ot pch drn anno = 
-    T.Event { T.event_onset = ot
-            , T.event_body  = T.Event1 pch drn anno }
-
--- | Grace has no anno. 
---
-makeEventGrace :: Onset 
-               -> pch 
-               -> Seconds
-               -> T.Event pch anno
-makeEventGrace ot pch drn = 
-    T.Event { T.event_onset = ot
-            , T.event_body  = T.EventGrace pch drn }
-      
 

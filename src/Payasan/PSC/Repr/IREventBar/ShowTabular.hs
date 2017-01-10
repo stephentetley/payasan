@@ -60,13 +60,9 @@ oBar def (Bar _ xs)             = vcat $ map (oEvent def) xs
 oEvent :: LeafOutputEvent Seconds pch Seconds anno 
        -> Event pch anno 
        -> Doc
-oEvent def (Event ot body)        = ppO ot <++> oEventBody def body
+oEvent def evt = case evt of
+    Event o p d a   -> ppO o <++> (pp_event def) p d a 
+    Grace o p d     -> ppO o <++> (pp_event_grace def) p d 
   where
     ppO = pp_onset def
 
-
-oEventBody :: LeafOutputEvent Seconds pch Seconds anno 
-           -> EventBody pch anno 
-           -> Doc
-oEventBody def (Event1 pch drn anno)    = (pp_event def) pch drn anno
-oEventBody def (EventGrace pch drn)     = (pp_event_grace def) pch drn

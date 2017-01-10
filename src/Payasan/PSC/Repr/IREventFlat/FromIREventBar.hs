@@ -47,9 +47,5 @@ barT :: Bar pch anno -> [T.Event Seconds pch Seconds anno]
 barT (Bar ot cs)                    = map (eventT ot) cs
 
 eventT :: Seconds -> Event pch anno -> T.Event Seconds pch Seconds anno
-eventT onsetb (Event ot1 body)  = eventBodyT (onsetb + ot1) body
-          
-
-eventBodyT :: Seconds -> EventBody pch anno -> T.Event Seconds pch Seconds anno
-eventBodyT ot (Event1 p d a)    = T.Event ot p d a
-eventBodyT ot (EventGrace p d)  = T.Grace ot p d
+eventT onsetb (Event o p d a)    = T.Event (onsetb + o) p d a
+eventT onsetb (Grace o p d)      = T.Grace (onsetb + o) p d
