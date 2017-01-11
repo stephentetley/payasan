@@ -39,15 +39,15 @@ transDurationToSeconds = genTransform elementM ()
 
 
 element :: BPM -> Element pch Duration anno -> Element pch Seconds anno
-element bpm (NoteElem e a t)       = NoteElem (note bpm e) a t
+element bpm (Note p d a t)         = Note p (durationLength bpm d) a t
 element bpm (Rest d)               = Rest $ durationLength bpm d
 element bpm (Spacer d)             = Spacer $ durationLength bpm d
 element bpm (Skip d)               = Skip $ durationLength bpm d
 element bpm (Chord ps d a t)       = Chord ps (durationLength bpm d) a t
-element bpm (Graces ns)            = Graces $ map (note bpm) ns
+element bpm (Graces ns)            = Graces $ map (grace1 bpm) ns
 element _   (Punctuation s)        = Punctuation s
 
 
-note :: BPM -> Note pch Duration -> Note pch Seconds
-note bpm (Note pch drn)        = Note pch (durationLength bpm drn)
+grace1 :: BPM -> Grace1 pch Duration -> Grace1 pch Seconds
+grace1 bpm (Grace1 pch drn)        = Grace1 pch (durationLength bpm drn)
 

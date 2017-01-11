@@ -57,19 +57,19 @@ pch_algo = ExtPitchAlgo
 
 
 elementP :: Element Pitch drn anno -> PTMon (Element ABCPitch drn anno)
-elementP (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteP e
+elementP (Note p d a t)         = (\p1 -> Note p1 d a t) <$> transPch p
 elementP (Rest d)               = pure $ Rest d
 elementP (Spacer d)             = pure $ Spacer d
 elementP (Skip d)               = pure $ Skip d
 elementP (Chord ps d a t)       = 
     (\ps1 -> Chord ps1 d a t) <$> mapM transPch ps
 
-elementP (Graces ns)            = Graces    <$> mapM noteP ns
+elementP (Graces ns)            = Graces    <$> mapM grace1P ns
 elementP (Punctuation s)        = pure $ Punctuation s
 
 
-noteP :: Note Pitch drn -> PTMon (Note ABCPitch drn)
-noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
+grace1P :: Grace1 Pitch drn -> PTMon (Grace1 ABCPitch drn)
+grace1P (Grace1 pch drn)            = (\p -> Grace1 p drn) <$> transPch pch
 
 -- This should be optimized to not make a scale each time!
 --
@@ -90,17 +90,17 @@ drn_algo = ExtDurationAlgo
 -- Skip is just a Rest to ABC
 --
 elementD :: Element pch Duration anno -> DTMon (Element pch ABCNoteLength anno)
-elementD (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteD e
+elementD (Note p d a t)         = (\d1 -> Note p d1 a t) <$> changeDrn d
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Spacer d)             = Spacer    <$> changeDrn d
 elementD (Skip d)               = Skip      <$> changeDrn d
 elementD (Chord ps d a t)       = (\d1 -> Chord ps d1 a t) <$> changeDrn d
-elementD (Graces ns)            = Graces    <$> mapM noteD ns
+elementD (Graces ns)            = Graces    <$> mapM grace1D ns
 elementD (Punctuation s)        = pure $ Punctuation s
 
 
-noteD :: Note pch Duration -> DTMon (Note pch ABCNoteLength)
-noteD (Note pch drn)            = Note pch <$> changeDrn drn
+grace1D :: Grace1 pch Duration -> DTMon (Grace1 pch ABCNoteLength)
+grace1D (Grace1 p d)            = Grace1 p <$> changeDrn d
 
 
 changeDrn :: Duration -> DTMon ABCNoteLength

@@ -30,31 +30,5 @@ import Payasan.Base.Pitch
 
 
 translateToCsoundP :: Part Pitch drn anno -> Part CpsPitch drn anno
-translateToCsoundP = transformP pch_algo
-
-
-
---------------------------------------------------------------------------------
--- Pitch translation
-
-
-pch_algo :: ExtPitchAlgo () Pitch CpsPitch
-pch_algo = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = liftElementTrafo elementP
-    }
-
-
-elementP :: Element Pitch drn anno -> Element CpsPitch drn anno
-elementP (NoteElem e a t)       = NoteElem (noteP e) a t
-elementP (Rest d)               = Rest d
-elementP (Spacer d)             = Spacer d
-elementP (Skip d)               = Skip d
-elementP (Chord ps d a t)       = Chord (map pitchToCpsPitch ps) d a t
-elementP (Graces ns)            = Graces $ map noteP ns
-elementP (Punctuation s)        = Punctuation s
-
-
-noteP :: Note Pitch drn -> Note CpsPitch drn
-noteP (Note pch drn)            = Note (pitchToCpsPitch pch) drn
+translateToCsoundP = mapPitch pitchToCpsPitch
 

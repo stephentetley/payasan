@@ -75,7 +75,7 @@ partT gf ph = concat <$> mapM (elementT gf) (makeTiedNoteStream ph)
 -- Ties have been coalesced at this point...
 --
 elementT :: GenIStmt anno -> Element CpsPitch Seconds anno -> Mon [IStmt]
-elementT gf (NoteElem e a _)    = (\x -> [x]) <$> noteT gf a e
+elementT gf (Note p d a _)    = (\x -> [x]) <$> noteT gf a p d
 
 elementT _  (Rest d)            = 
     do { advanceOnset d
@@ -106,8 +106,8 @@ elementT _  (Graces {})         = return []
 elementT _  (Punctuation {})    = return []
 
 
-noteT :: GenIStmt anno -> anno -> Note CpsPitch Seconds -> Mon IStmt
-noteT gf anno (Note pch drn)            = 
+noteT :: GenIStmt anno -> anno -> CpsPitch -> Seconds -> Mon IStmt
+noteT gf anno pch drn           = 
     do { ot <- onset
        ; advanceOnset drn
        ; let fn = gen gf 

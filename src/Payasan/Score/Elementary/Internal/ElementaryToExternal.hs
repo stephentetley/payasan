@@ -49,7 +49,7 @@ transElementaryToExternal name      = sectionT
 
 
     elementT :: Element pch drn anno -> T.Element pch drn anno
-    elementT (Note p d a t)         = T.NoteElem (T.Note p d) a t
+    elementT (Note p d a t)         = T.Note p d a t
     elementT (Rest d)               = T.Rest d
     elementT (Spacer d)             = T.Spacer d
     elementT (Skip d)               = T.Skip d
@@ -84,7 +84,7 @@ chord_transElementaryToExternal name = sectionT
     elementT (Note p d a t)         = 
         case p of 
           []  -> T.Rest d
-          [x] -> T.NoteElem (T.Note x d) a t
+          [x] -> T.Note x d a t
           xs  -> T.Chord xs d a t
 
     elementT (Rest d)               = T.Rest d

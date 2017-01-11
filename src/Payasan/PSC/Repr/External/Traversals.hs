@@ -235,7 +235,7 @@ mapPitch f =
     transformExternal (ExternalAlgo { initial_state = ()
                                     , element_trafo = liftElementTrafo g })
   where
-    g (NoteElem n a t)          = NoteElem (h n) a t
+    g (Note p d a t)            = Note (f p) d a t
     g (Rest d)                  = Rest d
     g (Spacer d)                = Spacer d
     g (Skip d)                  = Skip d
@@ -243,7 +243,7 @@ mapPitch f =
     g (Graces ns)               = Graces $ map h ns
     g (Punctuation s)           = Punctuation s
 
-    h (Note p d)                = Note (f p) d
+    h (Grace1 p d)              = Grace1 (f p) d
     
 -- TODO - sharing "Note" between NoteElem and Graces is too 
 -- finicky, change syntax at some point.
@@ -257,7 +257,7 @@ mapDuration f =
     transformExternal (ExternalAlgo { initial_state = ()
                                     , element_trafo = liftElementTrafo g })
   where
-    g (NoteElem n a t)          = NoteElem (h n) a t
+    g (Note p d a t)            = Note p (f d) a t
     g (Rest d)                  = Rest $ f d
     g (Spacer d)                = Spacer $ f d
     g (Skip d)                  = Skip $ f d
@@ -265,7 +265,7 @@ mapDuration f =
     g (Graces ns)               = Graces $ map h ns
     g (Punctuation s)           = Punctuation s
 
-    h (Note p d)                = Note p (f d)
+    h (Grace1 p d)              = Grace1 p (f d)
 
 
 mapAnno :: (anno1 -> anno2) 
@@ -275,7 +275,7 @@ mapAnno f =
     transformExternal (ExternalAlgo { initial_state = ()
                                     , element_trafo = liftElementTrafo g })
   where
-    g (NoteElem n a t)          = NoteElem n (f a) t
+    g (Note p d a t)            = Note p d (f a) t
     g (Rest d)                  = Rest d
     g (Spacer d)                = Spacer d
     g (Skip d)                  = Skip d

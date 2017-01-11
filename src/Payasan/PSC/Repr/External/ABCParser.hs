@@ -23,7 +23,7 @@ module Payasan.PSC.Repr.External.ABCParser
   , ABCQBar
   , ABCQNoteGroup
   , ABCQElement
-  , ABCQNote
+  , ABCQGrace1
 
   -- * Elementary parsers
   , pitch
@@ -75,7 +75,7 @@ abc = QuasiQuoter
 type ABCQBar              = Bar         ABCPitch ABCNoteLength ()
 type ABCQNoteGroup        = NoteGroup   ABCPitch ABCNoteLength ()
 type ABCQElement          = Element     ABCPitch ABCNoteLength ()
-type ABCQNote             = Note        ABCPitch ABCNoteLength
+type ABCQGrace1           = Grace1      ABCPitch ABCNoteLength
 
 --------------------------------------------------------------------------------
 -- Parser
@@ -103,20 +103,20 @@ noteGroup :: ABCParser ABCQNoteGroup
 noteGroup = tuplet <|> (Atom <$> element)
 
 element :: ABCParser ABCQElement
-element = lexeme (rest <|> noteElem <|> chord <|> graces)
+element = lexeme (rest <|> note <|> chord <|> graces)
 
 rest :: ABCParser ABCQElement
 rest = Rest <$> (char 'z' *> noteLength)
 
-noteElem :: ABCParser ABCQElement
-noteElem = (\e t -> NoteElem e () t) <$> note <*> tie
+note :: ABCParser ABCQElement
+note = (\p d t -> Note p d () t) <$> pitch <*> noteLength <*> tie
 
 chord :: ABCParser ABCQElement
 chord = (\ps d t -> Chord ps d () t)
           <$> squares (many1 pitch) <*> noteLength <*> tie
 
 graces :: ABCParser ABCQElement
-graces = Graces <$> braces (many1 note)
+graces = Graces <$> braces (many1 grace1)
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
@@ -137,9 +137,9 @@ countedNoteGroups n
                        
     
 
-note :: ABCParser ABCQNote
-note = Note <$> pitch <*> noteLength
-    <?> "note"
+grace1 :: ABCParser ABCQGrace1
+grace1 = Grace1 <$> pitch <*> noteLength
+    <?> "grace1"
 
 
 pitch :: ABCParser ABCPitch

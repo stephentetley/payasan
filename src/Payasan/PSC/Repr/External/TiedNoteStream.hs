@@ -71,17 +71,17 @@ linearizeNG bpm (Tuplet spec es)    = map (scaleD (t%n)) $ concatMap (linearizeN
 
 
 linearizeE :: BPM -> Element pch Duration anno -> Element pch Seconds anno
-linearizeE bpm (NoteElem e a t)     = NoteElem (linearizeN bpm e) a t
+linearizeE bpm (Note p d a t)       = Note p (noteDuration bpm d) a t
 linearizeE bpm (Rest d)             = Rest $ noteDuration bpm d
 linearizeE bpm (Spacer d)           = Spacer $ noteDuration bpm d
 linearizeE bpm (Skip d)             = Skip $ noteDuration bpm d
 linearizeE bpm (Chord ps d a t)     = Chord ps (noteDuration bpm d) a t
-linearizeE bpm (Graces ns)          = Graces $ map (linearizeN bpm) ns
+linearizeE bpm (Graces ns)          = Graces $ map (linearizeG1 bpm) ns
 linearizeE _   (Punctuation s)      = Punctuation s
 
 
-linearizeN :: BPM -> Note pch Duration -> Note pch Seconds
-linearizeN bpm (Note pch drn)   = Note pch $ noteDuration bpm drn
+linearizeG1 :: BPM -> Grace1 pch Duration -> Grace1 pch Seconds
+linearizeG1 bpm (Grace1 pch drn)    = Grace1 pch $ noteDuration bpm drn
 
 
 
@@ -91,15 +91,15 @@ linearizeN bpm (Note pch drn)   = Note pch $ noteDuration bpm drn
 scaleD :: Ratio Int -> Element pch Seconds anno -> Element pch Seconds anno
 scaleD sc elt = step (realToFrac sc) elt
   where
-    step x (NoteElem n a t)     = NoteElem (note x n) a t
+    step x (Note p d a t)       = Note p (x * d) a t
     step x (Rest d)             = Rest $ x * d
     step x (Spacer d)           = Spacer $ x * d
     step x (Skip d)             = Skip $ x * d
     step x (Chord ps d a t)     = Chord ps (x * d) a t
-    step x (Graces ns)          = Graces $ map (note x) ns
+    step x (Graces ns)          = Graces $ map (grace1 x) ns
     step _ (Punctuation s)      = Punctuation s
 
-    note x (Note p d)           = Note p (x * d)
+    grace1 x (Grace1 p d)       = Grace1 p (x * d)
 
 
 
@@ -119,9 +119,9 @@ together :: Eq pch
          => Element pch Seconds anno 
          -> Element pch Seconds anno 
          -> Maybe (Element pch Seconds anno)
-together (NoteElem n1 _ t1)     (NoteElem n2 a t2)    = 
-    case together1 n1 n2 t1 of
-      Just note -> Just $ NoteElem note a t2
+together (Note p1 d1 _ t1)     (Note p2 d2 a t2)    = 
+    case together1 (p1,d1) (p2,d2) t1 of
+      Just (pnew,dnew) -> Just $ Note pnew dnew a t2
       Nothing -> Nothing
 
 together (Chord ps1 d1 _ TIE)   (Chord ps2 d2 a t)    = 
@@ -135,12 +135,12 @@ together _                      _                     = Nothing
 -- Together for notes...
 --
 together1 :: Eq pch
-          => Note pch Seconds 
-          -> Note pch Seconds 
+          => (pch, Seconds)
+          -> (pch, Seconds)
           -> Tie 
-          -> Maybe (Note pch Seconds)
-together1 (Note p1 d1) (Note p2 d2) t 
-    | p1 == p2 && t == TIE   = Just $ Note p1 (d1+d2)
+          -> Maybe (pch,Seconds)
+together1 (p1,d1) (p2,d2) t 
+    | p1 == p2 && t == TIE   = Just $ (p1, d1+d2)
     | otherwise              = Nothing
 
 

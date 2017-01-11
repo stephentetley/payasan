@@ -25,12 +25,12 @@ module Payasan.PSC.Repr.External.LilyPondParser
   , LyQBar
   , LyQNoteGroup
   , LyQElement
-  , LyQNote
+  , LyQGrace1
 
   , GenLyQBar
   , GenLyQNoteGroup
   , GenLyQElement
-  , GenLyQNote
+  , GenLyQGrace1
   
   -- * Parsers
     
@@ -100,13 +100,13 @@ lilypond = QuasiQuoter
 type LyQBar             = Bar         LyPitch LyNoteLength ()
 type LyQNoteGroup       = NoteGroup   LyPitch LyNoteLength ()
 type LyQElement         = Element     LyPitch LyNoteLength ()
-type LyQNote            = Note        LyPitch LyNoteLength
+type LyQGrace1          = Grace1      LyPitch LyNoteLength
 
 
 type GenLyQBar          pch anno    = Bar         pch LyNoteLength anno
 type GenLyQNoteGroup    pch anno    = NoteGroup   pch LyNoteLength anno
 type GenLyQElement      pch anno    = Element     pch LyNoteLength anno
-type GenLyQNote         pch anno    = Note        pch LyNoteLength
+type GenLyQGrace1       pch anno    = Grace1        pch LyNoteLength
 
 --------------------------------------------------------------------------------
 -- Parser
@@ -190,12 +190,11 @@ makeLyParser def = fullParseLy qsection
     atom = Atom <$> element
 
     element :: LyParser (GenLyQElement pch anno)
-    element = lexeme (rest <|> noteElem <|> chord <|> graces)
+    element = lexeme (rest <|> note <|> chord <|> graces)
 
 
-    noteElem :: LyParser (GenLyQElement pch anno)
-    noteElem = (\n a t -> NoteElem n a t) 
-                  <$> note <*> pAnno <*> tie
+    note :: LyParser (GenLyQElement pch anno)
+    note = Note <$> pPitch <*> noteLength <*> pAnno <*> tie
 
     rest :: LyParser (GenLyQElement pch anno)
     rest = Rest <$> (char 'r' *> noteLength)
@@ -208,13 +207,13 @@ makeLyParser def = fullParseLy qsection
     graces :: LyParser (GenLyQElement pch anno)
     graces = Graces <$> (command "grace" *> (multi <|> single))
       where
-        multi   = braces (many1 note)
-        single  = (\a -> [a]) <$> note
+        multi   = braces (many1 grace1)
+        single  = (\a -> [a]) <$> grace1
 
 
-    note :: LyParser (GenLyQNote pch anno)
-    note = Note <$> pPitch <*> noteLength
-        <?> "note"
+    grace1 :: LyParser (GenLyQGrace1 pch anno)
+    grace1 = Grace1 <$> pPitch <*> noteLength
+        <?> "grace1"
 
 
 tupletSpec :: LyParser (Int,Int)

@@ -47,14 +47,14 @@ pch_algo = ExtPitchAlgo
 
 
 elementP :: Element DrumPitch drn anno -> PTMon (Element MidiPitch drn anno)
-elementP (NoteElem e a t)       = (\n -> NoteElem n a t) <$> noteP e
+elementP (Note p d a t)         = (\p1 -> Note p1 d a t) <$> pure (toMidiValue p)
 elementP (Rest d)               = pure $ Rest d
 elementP (Spacer d)             = pure $ Spacer d
 elementP (Skip d)               = pure $ Skip d
 elementP (Chord ps d a t)       = pure $ Chord (map toMidiValue ps) d a t
-elementP (Graces ns)            = Graces <$> mapM noteP ns
+elementP (Graces ns)            = Graces <$> mapM grace1P ns
 elementP (Punctuation s)        = pure $ Punctuation s
 
 
-noteP :: Note DrumPitch drn -> PTMon (Note MidiPitch drn)
-noteP (Note pch drn)            = pure $ Note (toMidiValue pch) drn
+grace1P :: Grace1 DrumPitch drn -> PTMon (Grace1 MidiPitch drn)
+grace1P (Grace1 p d)            = pure $ Grace1 (toMidiValue p) d

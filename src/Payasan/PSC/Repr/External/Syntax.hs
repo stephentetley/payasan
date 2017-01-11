@@ -26,7 +26,7 @@ module Payasan.PSC.Repr.External.Syntax
   , StdBar
   , StdNoteGroup
   , StdElement
-  , StdNote
+  , StdGrace1
 
   , StdPart1
   , StdSection1
@@ -39,7 +39,7 @@ module Payasan.PSC.Repr.External.Syntax
   , Bar(..)
   , NoteGroup(..)
   , Element(..)
-  , Note(..)
+  , Grace1(..)
 
   -- * Concrete syntax fragments
   , GenLySectionQuote(..)
@@ -82,7 +82,7 @@ type StdSection         = Section   Pitch Duration ()
 type StdBar             = Bar       Pitch Duration () 
 type StdNoteGroup       = NoteGroup Pitch Duration () 
 type StdElement         = Element   Pitch Duration ()
-type StdNote            = Note      Pitch Duration
+type StdGrace1          = Grace1    Pitch Duration
 
 type StdPart1 anno      = Part      Pitch Duration anno
 type StdSection1 anno   = Section   Pitch Duration anno
@@ -159,17 +159,17 @@ data NoteGroup pch drn anno =
 -- differentiated.
 --
 data Element pch drn anno = 
-      NoteElem      (Note pch drn) anno   Tie
+      Note          pch     drn anno   Tie
     | Rest          drn
     | Spacer        drn
     | Skip          drn
-    | Chord         [pch]          drn    anno   Tie
-    | Graces        [Note pch drn]
+    | Chord         [pch]   drn anno   Tie
+    | Graces        [Grace1 pch drn]
     | Punctuation   String
   deriving (Data,Eq,Show,Typeable)
 
 
-data Note pch drn = Note pch drn
+data Grace1 pch drn = Grace1 pch drn
   deriving (Data,Eq,Show,Typeable)
 
 --------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ sizeNoteGroup (Tuplet spec es)      = tupletUnitRatDuration spec (firstOf es)
     firstOf []      = durationToRatDuration d_eighth
 
 sizeElement :: Element pch Duration anno -> RatDuration
-sizeElement (NoteElem (Note _ d) _ _)   = durationToRatDuration d
+sizeElement (Note _ d _ _)              = durationToRatDuration d
 sizeElement (Rest d)                    = durationToRatDuration d
 sizeElement (Spacer d)                  = durationToRatDuration d
 sizeElement (Skip d)                    = durationToRatDuration d

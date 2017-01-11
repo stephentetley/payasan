@@ -100,7 +100,7 @@ noteGroupA t (Tuplet _ grps)      =
 -- use a list for subsequent concatenation.
 -- 
 elementA :: Tie -> Element pch Seconds anno -> (Tie, [T.Element pch anno])
-elementA t (NoteElem (Note pch drn) ann t1)   = 
+elementA t (Note pch drn ann t1)   = 
     case t of 
       NO_TIE -> (t1, [T.Note drn pch ann])
       TIE -> (t1, [T.TiedCont drn])
@@ -117,7 +117,7 @@ elementA t (Chord ps drn ann t1)              =
       TIE -> (t1, [T.TiedCont drn])
     
 elementA _ (Graces ns)                        = 
-    (NO_TIE, [T.Graces $ map (\(Note p d) -> (d,p)) ns])
+    (NO_TIE, [T.Graces $ map (\(Grace1 p d) -> (d,p)) ns])
     
 elementA _ (Punctuation {})                   = (NO_TIE, [])
 

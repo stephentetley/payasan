@@ -78,7 +78,7 @@ partT td ph =
 -- Ties have been coalesced at this point...
 --
 elementT :: Element T.MidiPitch Seconds anno -> Mon [T.MidiNote]
-elementT (NoteElem e _ _)       = (\x -> [x]) <$> noteT e
+elementT (Note p d _ _)         = (\x -> [x]) <$> noteT p d
 
 elementT (Rest d)               = 
     do { advanceOnset d
@@ -108,8 +108,8 @@ elementT (Graces {})            = return []
 elementT (Punctuation {})       = return []
 
 
-noteT :: Note T.MidiPitch Seconds -> Mon T.MidiNote
-noteT (Note pch drn)            = 
+noteT :: T.MidiPitch -> Seconds -> Mon T.MidiNote
+noteT pch drn                   = 
     do { ot <- onset
        ; advanceOnset drn
        ; return $ makeNote ot drn pch

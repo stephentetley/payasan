@@ -98,18 +98,17 @@ elementP :: forall pch drn anno.
          -> Element pch drn anno 
          -> Element DrumPitch drn anno
 elementP dpitch elt = case elt of 
-    NoteElem e a t      -> NoteElem (noteP e) a t
+    Note _ d a t        -> Note dpitch d a t
     Rest d              -> Rest d
     Spacer d            -> Spacer d
     Skip d              -> Skip d
-    Chord _ d a t       -> 
-        NoteElem (Note dpitch d) a t
+    Chord _ d a t       -> Note dpitch d a t
 
-    Graces ns           -> Graces $ map noteP ns
+    Graces ns           -> Graces $ map grace1P ns
     Punctuation s       -> Punctuation s
   where
-    noteP :: Note pch drn -> Note DrumPitch drn
-    noteP (Note _ drn)         = Note dpitch drn
+    grace1P :: Grace1 pch drn -> Grace1 DrumPitch drn
+    grace1P (Grace1 _ d)        = Grace1 dpitch d
 
 
 --------------------------------------------------------------------------------

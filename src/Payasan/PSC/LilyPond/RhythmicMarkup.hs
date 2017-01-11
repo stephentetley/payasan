@@ -72,23 +72,21 @@ elementP :: forall pch drn anno.
          -> Element pch drn anno 
          -> Element LyPitch drn Doc
 elementP mo elt = case elt of 
-    NoteElem e _ t      -> NoteElem (notePA e) (markupPA e) t
+    Note p d _ t        -> Note middle_c d (markupF p) t
     Rest d              -> Rest d
     Spacer d            -> Spacer d
     Skip d              -> Skip d
     Chord ps d _ t      -> 
-        NoteElem (Note middle_c d) (mconcat $ map markupF ps) t
+        Note middle_c d (mconcat $ map markupF ps) t
 
-    Graces ns           -> Graces $ map notePA ns
+    Graces ns           -> Graces $ map grace1PA ns
     Punctuation s       -> Punctuation s
   where
     markupF                     = asMarkup mo
 
-    notePA   :: Note pch drn -> (Note LyPitch drn)
-    notePA (Note _ drn)         = Note middle_c drn
+    grace1PA :: Grace1 pch drn -> (Grace1 LyPitch drn)
+    grace1PA (Grace1 _ drn)     = Grace1 middle_c drn
 
-    markupPA :: Note pch drn -> Doc
-    markupPA (Note pch _)       = markupF pch
 
 
 --------------------------------------------------------------------------------

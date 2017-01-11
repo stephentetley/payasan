@@ -168,7 +168,7 @@ detachableE :: Element pch drn anno -> Bool
 detachableE (Rest {})           = True
 detachableE (Spacer {})         = True
 detachableE (Skip {})           = True
-detachableE (NoteElem {})       = False
+detachableE (Note {})           = False
 detachableE (Chord {})          = False
 detachableE (Graces {})         = False
 detachableE (Punctuation {})    = True

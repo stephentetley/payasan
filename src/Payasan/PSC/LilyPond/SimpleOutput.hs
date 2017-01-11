@@ -278,19 +278,19 @@ oElement def e                  = fn e
    where
      pPitch                     = printPitch def
      pAnno                      = printAnno def
-     fn (NoteElem n a t)        = oNote def n <> pAnno a <> tie t
+     fn (Note p d a t)          = pPitch p <> noteLength d <> pAnno a <> tie t
      fn (Rest d)                = rest d 
      fn (Spacer d)              = spacer d 
      fn (Skip d)                = skip d 
      fn (Chord ps d a t)        = 
         chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t
 
-     fn (Graces ns)            = graceForm $ map (oNote def) ns
+     fn (Graces ns)            = graceForm $ map (oGrace1 def) ns
      fn (Punctuation s)        = text s
 
 
-oNote :: LyOutputDef pch anno -> Note pch LyNoteLength -> Doc
-oNote def (Note p d)            = pPitch p <> noteLength d
+oGrace1 :: LyOutputDef pch anno -> Grace1 pch LyNoteLength -> Doc
+oGrace1 def (Grace1 p d)       = pPitch p <> noteLength d
    where
      pPitch = printPitch def
 

@@ -36,7 +36,7 @@ fromNoteList :: String -> SectionInfo -> [[NoteListAtom]] -> Part Pitch Duration
 fromNoteList name info xss = Part [Section name info $ map Bar xss]
 
 note :: Pitch -> Duration -> NoteListAtom
-note p d = Atom $ NoteElem (Note p d) () NO_TIE
+note p d = Atom $ Note p d () NO_TIE
 
 rest :: Duration -> NoteListAtom
 rest d = Atom $ Rest d 

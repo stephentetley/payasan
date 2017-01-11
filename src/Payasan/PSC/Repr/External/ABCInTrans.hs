@@ -82,19 +82,19 @@ translatePitch info = genTransformBars elementP info ()
    
 
 elementP :: Element ABCPitch drn anno -> PTMon (Element Pitch drn anno)
-elementP (NoteElem e a t)       = (\e1 -> NoteElem e1 a t)  <$> noteP e
+elementP (Note p d a t)         = (\p1 -> Note p1 d a t)  <$> transPch p
 elementP (Rest d)               = pure $ Rest d
 elementP (Spacer d)             = pure $ Spacer d
 elementP (Skip d)               = pure $ Skip d
 elementP (Chord ps d a t)       = 
     (\ps1 -> Chord ps1 d a t) <$> mapM transPch ps
 
-elementP (Graces ns)            = Graces    <$> mapM noteP ns
+elementP (Graces ns)            = Graces <$> mapM grace1P ns
 elementP (Punctuation s)        = pure $ Punctuation s
 
 
-noteP :: Note ABCPitch drn -> PTMon (Note Pitch drn)
-noteP (Note pch drn)            = (\p -> Note p drn) <$> transPch pch
+grace1P :: Grace1 ABCPitch drn -> PTMon (Grace1 Pitch drn)
+grace1P (Grace1 p d)            = (\p1 -> Grace1 p1 d) <$> transPch p
 
 
 
@@ -119,17 +119,17 @@ translateDuration info =
 
 
 elementD :: Element pch ABCNoteLength anno -> DTMon (Element pch Duration anno)
-elementD (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteD e
+elementD (Note p d a t)         = (\d1 -> Note p d1 a t) <$> changeDrn d
 elementD (Rest d)               = Rest      <$> changeDrn d
 elementD (Spacer d)             = Spacer    <$> changeDrn d
 elementD (Skip d)               = Skip      <$> changeDrn d
 elementD (Chord ps d a t)       = (\d1 -> Chord ps d1 a t) <$> changeDrn d
-elementD (Graces ns)            = Graces    <$> mapM noteD ns
+elementD (Graces ns)            = Graces    <$> mapM grace1D ns
 elementD (Punctuation s)        = pure $ Punctuation s
 
 
-noteD :: Note pch ABCNoteLength -> DTMon (Note pch Duration)
-noteD (Note pch drn)            = Note pch <$> changeDrn drn
+grace1D :: Grace1 pch ABCNoteLength -> DTMon (Grace1 pch Duration)
+grace1D (Grace1 p d)            = Grace1 p <$> changeDrn d
 
 
 changeDrn :: ABCNoteLength -> DTMon Duration

@@ -133,19 +133,19 @@ setPrevPitch = put
 
 
 relElementP :: Element LyPitch drn anno -> RelPMon (Element Pitch drn anno)
-relElementP (NoteElem e a t)    = (\e1 -> NoteElem e1 a t) <$> relNoteP e
+relElementP (Note p d a t)      = (\p1 -> Note p1 d a t) <$> changePitchRel p
 relElementP (Rest d)            = pure $ Rest d
 relElementP (Spacer d)          = pure $ Spacer d
 relElementP (Skip d)            = pure $ Skip d
 relElementP (Chord ps d a t)    = 
     (\ps1 -> Chord ps1 d a t) <$> mapM changePitchRel ps
 
-relElementP (Graces ns)         = Graces <$> mapM relNoteP ns
+relElementP (Graces ns)         = Graces <$> mapM relGrace1P ns
 relElementP (Punctuation s)     = pure $ Punctuation s
 
 
-relNoteP :: Note LyPitch drn -> RelPMon (Note Pitch drn)
-relNoteP (Note pch drn)         = (\p -> Note p drn) <$> changePitchRel pch
+relGrace1P :: Grace1 LyPitch drn -> RelPMon (Grace1 Pitch drn)
+relGrace1P (Grace1 p d)         = (\p1 -> Grace1 p1 d) <$> changePitchRel p
 
 
 changePitchRel :: LyPitch -> RelPMon Pitch
@@ -171,19 +171,19 @@ translatePitchAbsolute info =
 
 
 absElementP :: Element LyPitch drn anno -> AbsPMon (Element Pitch drn anno)
-absElementP (NoteElem e a t)  = (\e1 -> NoteElem e1 a t) <$> absNoteP e
+absElementP (Note p d a t)      = (\p1 -> Note p1 d a t) <$> changePitchAbs p
 absElementP (Rest d)            = pure $ Rest d
 absElementP (Spacer d)          = pure $ Spacer d
 absElementP (Skip d)            = pure $ Skip d
 absElementP (Chord ps d a t)    = 
     (\ps1 -> Chord ps1 d a t) <$> mapM changePitchAbs ps
 
-absElementP (Graces ns)         = Graces <$> mapM absNoteP ns
+absElementP (Graces ns)         = Graces <$> mapM absGrace1P ns
 absElementP (Punctuation s)     = pure $ Punctuation s
 
 
-absNoteP :: Note LyPitch drn -> AbsPMon (Note Pitch drn)
-absNoteP (Note pch drn)         = (\p -> Note p drn) <$> changePitchAbs pch
+absGrace1P :: Grace1 LyPitch drn -> AbsPMon (Grace1 Pitch drn)
+absGrace1P (Grace1 p d)         = (\p1 -> Grace1 p1 d) <$> changePitchAbs p
 
 
 changePitchAbs :: LyPitch -> AbsPMon Pitch
@@ -207,16 +207,16 @@ setPrevDuration d = put d
 -- | Spacer and Skip treated differently...
 --
 elementD :: Element pch LyNoteLength anno -> DMon (Element pch Duration anno)
-elementD (NoteElem e a t)       = (\e1 -> NoteElem e1 a t) <$> noteD e
+elementD (Note p d a t)         = (\d1 -> Note p d1 a t) <$> changeDuration d
 elementD (Rest d)               = Rest      <$> changeDuration d
 elementD (Spacer d)             = Spacer    <$> changeDuration d
 elementD (Skip d)               = Rest      <$> skipDuration d
 elementD (Chord ps d a t)       = (\d1 -> Chord ps d1 a t) <$> changeDuration d
-elementD (Graces ns)            = Graces    <$> mapM noteD ns
+elementD (Graces ns)            = Graces    <$> mapM grace1D ns
 elementD (Punctuation s)        = pure $ Punctuation s
 
-noteD :: Note pch LyNoteLength -> DMon (Note pch Duration)
-noteD (Note pch drn)            = Note pch <$> changeDuration drn
+grace1D :: Grace1 pch LyNoteLength -> DMon (Grace1 pch Duration)
+grace1D (Grace1 pch drn)        = Grace1 pch <$> changeDuration drn
 
 
 

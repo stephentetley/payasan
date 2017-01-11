@@ -42,7 +42,7 @@ noteGroupT (Beamed gs)          = T.Beamed $ map noteGroupT gs
 noteGroupT (Tuplet spec es)     = T.Tuplet spec $ map (T.Atom . elementT) es
 
 elementT :: Element pch drn anno -> T.Element pch drn anno
-elementT (Note p d a t)         = T.NoteElem (T.Note p d) a t
+elementT (Note p d a t)         = T.Note p d a t
 elementT (Rest d)               = T.Rest d
 elementT (Spacer d)             = T.Spacer d
 elementT (Skip d)               = T.Skip d

@@ -38,7 +38,6 @@ module Payasan.PSC.ABC.Utils
   ) where
 
 
-import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -113,8 +112,8 @@ pitchName (P.PitchName l a) = text (show l) <> alt a
 -- | Print a note. Note that durations in ABC are multipliers of
 -- the /unit note length/ rather than absolute values. 
 --
-note :: Note ABCPitch ABCNoteLength -> Doc 
-note (Note p d) = pitch p <> noteLength d
+note :: ABCPitch -> ABCNoteLength -> Doc 
+note p d = pitch p <> noteLength d
 
 rest :: ABCNoteLength -> Doc
 rest d = char 'z' <> noteLength d
