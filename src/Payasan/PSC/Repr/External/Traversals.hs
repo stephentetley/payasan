@@ -37,6 +37,13 @@ module Payasan.PSC.Repr.External.Traversals
   , ExtPitchAnnoAlgo(..)
   , transformPA
 
+  -- Alternative...
+  , ExternalAlgo(..)
+  , transformExternal
+  , mapPitch
+  , mapDuration
+  , mapAnno
+
   ) where
 
 
@@ -173,7 +180,7 @@ transformD (ExtDurationAlgo { initial_stateD = st0
 
 
 --------------------------------------------------------------------------------
--- Duration
+-- Pitch and Anno
 
 data ExtPitchAnnoAlgo st pch1 anno1 pch2 anno2 = ExtPitchAnnoAlgo 
     { initial_statePA :: st
@@ -190,4 +197,89 @@ transformPA :: forall st p1 p2 drn a1 a2.
 transformPA (ExtPitchAnnoAlgo { initial_statePA = st0 
                                , element_trafoPA = elemT }) = 
     genTransform elemT st0
+
+
+
+--------------------------------------------------------------------------------
+-- External algo
+
+-- DESIGN NOTE
+-- Alternative - a single element changing transform algo.
+-- Can we derive (all) other transformations from it? 
+
+
+data ExternalAlgo st pch1 pch2 drn1 drn2 anno1 anno2 = ExternalAlgo 
+    { initial_state :: st
+    , element_trafo :: 
+            Element pch1 drn1 anno1 -> Mon st (Element pch2 drn2 anno2)
+    }
+
+
+transformExternal :: ExternalAlgo st pch1 pch2 drn1 drn2 anno1 anno2
+                  -> Part pch1 drn1 anno1 
+                  -> Part pch2 drn2 anno2
+transformExternal  (ExternalAlgo { initial_state = st0 
+                                 , element_trafo = elemT }) = 
+    genTransform elemT st0
+
+
+-- NOTE - mapping traversals are expected for unit changing.
+-- Musical transformations may require more knowledge of 
+-- structure, e.g whether we are changing notes in a chord or 
+-- a note, etc.
+
+mapPitch :: (pch1 -> pch2) 
+         -> Part pch1 drn anno 
+         -> Part pch2 drn anno
+mapPitch f = 
+    transformExternal (ExternalAlgo { initial_state = ()
+                                    , element_trafo = liftElementTrafo g })
+  where
+    g (NoteElem n a t)          = NoteElem (h n) a t
+    g (Rest d)                  = Rest d
+    g (Spacer d)                = Spacer d
+    g (Skip d)                  = Skip d
+    g (Chord ps d a t)          = Chord (map f ps) d a t
+    g (Graces ns)               = Graces $ map h ns
+    g (Punctuation s)           = Punctuation s
+
+    h (Note p d)                = Note (f p) d
+    
+-- TODO - sharing "Note" between NoteElem and Graces is too 
+-- finicky, change syntax at some point.
+
+
+
+mapDuration :: (drn1 -> drn2) 
+            -> Part pch drn1 anno 
+            -> Part pch drn2 anno
+mapDuration f = 
+    transformExternal (ExternalAlgo { initial_state = ()
+                                    , element_trafo = liftElementTrafo g })
+  where
+    g (NoteElem n a t)          = NoteElem (h n) a t
+    g (Rest d)                  = Rest $ f d
+    g (Spacer d)                = Spacer $ f d
+    g (Skip d)                  = Skip $ f d
+    g (Chord ps d a t)          = Chord ps (f d) a t
+    g (Graces ns)               = Graces $ map h ns
+    g (Punctuation s)           = Punctuation s
+
+    h (Note p d)                = Note p (f d)
+
+
+mapAnno :: (anno1 -> anno2) 
+        -> Part pch drn anno1
+        -> Part pch drn anno2
+mapAnno f = 
+    transformExternal (ExternalAlgo { initial_state = ()
+                                    , element_trafo = liftElementTrafo g })
+  where
+    g (NoteElem n a t)          = NoteElem n (f a) t
+    g (Rest d)                  = Rest d
+    g (Spacer d)                = Spacer d
+    g (Skip d)                  = Skip d
+    g (Chord ps d a t)          = Chord ps d (f a) t
+    g (Graces ns)               = Graces ns
+    g (Punctuation s)           = Punctuation s
 
