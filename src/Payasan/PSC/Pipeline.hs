@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Pipeline
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -26,8 +26,6 @@ module Payasan.PSC.Pipeline
   , ScoreInfo(..)
   , default_score_info 
 
-  , StaffInfo(..)
-  , default_staff_info 
 
   , SectionInfo(..)
   , UnitNoteLength(..)

@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Base.SyntaxCommon
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -25,11 +25,9 @@ module Payasan.PSC.Base.SyntaxCommon
   
   
   , ScoreInfo(..)
-  , StaffInfo(..)
   , Clef(..)
 
   , default_score_info
-  , default_staff_info 
 
   , SectionInfo(..)
   , UnitNoteLength(..)
@@ -105,6 +103,8 @@ type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 -- property.
 --
 
+
+
 -- | DEPRECATED - move to ABC and LilyPond _compilers_.
 data ScoreInfo = ScoreInfo
     { score_title               :: !String
@@ -113,15 +113,6 @@ data ScoreInfo = ScoreInfo
   deriving (Data,Eq,Show,Typeable)
 
 
-
-
--- | TODO - are there any more fields to add to this?
--- If not we should just use Clef.
---
-data StaffInfo = StaffInfo 
-    { staff_clef                :: !Clef
-    }
-  deriving (Data,Eq,Show,Typeable)
 
 
   
@@ -133,16 +124,11 @@ data Clef = TREBLE | BASS
   deriving (Data,Eq,Show,Typeable)
 
 
+
 default_score_info :: ScoreInfo
 default_score_info = ScoreInfo
     { score_title               = ""
     , score_ly_version          = "2.18.2"
-    }
-
-
-default_staff_info :: StaffInfo
-default_staff_info = StaffInfo 
-    { staff_clef                = TREBLE
     }
 
 

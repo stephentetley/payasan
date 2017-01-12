@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert Pitch to MidiPitch and Duration to RDuration.
+-- Convert Pitch to MidiPitch.
 -- 
 --------------------------------------------------------------------------------
 

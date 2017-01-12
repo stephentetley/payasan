@@ -30,8 +30,6 @@ module Payasan.Score.Elementary.Notelist
   , ScoreInfo(..)        -- Re-export
   , default_score_info
 
-  , StaffInfo(..)
-  , default_staff_info
 
   , SectionInfo(..)         -- Re-export
   , UnitNoteLength(..)

@@ -25,8 +25,6 @@ module Payasan.LilyPond.Percussion.Notelist
   , ScoreInfo(..)
   , default_score_info
 
-  , StaffInfo(..)
-  , default_staff_info
 
   , SectionInfo(..)
   , UnitNoteLength(..)

@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Internal.Base
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -88,6 +88,6 @@ instance Pretty Syllable where
 
 
 inTrans :: ScoreInfo -> LyLyricSection1 anno -> LyricSection1 anno
-inTrans _info = trafoDuration
+inTrans _ = trafoDuration
 
 
