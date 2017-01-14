@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Notelist
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.LilyPond.Percussion.Notelist
   ( 
 
-    module Payasan.PSC.Shell
+    module Payasan.PSC.Old.Shell
 
   , StdDrumPart
   , drums
@@ -61,7 +61,7 @@ import qualified Payasan.PSC.MIDI.Output            as MIDI
 import qualified Payasan.PSC.MIDI.PrimitiveSyntax   as MIDI
 
 
-import Payasan.PSC.Shell
+import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 
@@ -73,7 +73,7 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.ShowLinear
 import Payasan.PSC.Repr.External.ShowTabular
 
-import qualified Payasan.PSC.Pipeline                           as MAIN
+import qualified Payasan.PSC.Old.Pipeline                           as MAIN
 
 
 

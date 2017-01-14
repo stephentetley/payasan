@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.FretDiagram.Notelist
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.LilyPond.FretDiagram.Notelist
   ( 
    
-    module Payasan.PSC.Shell
+    module Payasan.PSC.Old.Shell
   , module Payasan.LilyPond.FretDiagram.Internal.Plain
 
   , ScoreInfo(..)               -- Re-export
@@ -49,10 +49,10 @@ import qualified Payasan.PSC.LilyPond.OutTrans      as LY
 import Payasan.Score.Elementary.Internal.ElementaryToExternal
 
 
-import Payasan.PSC.Shell
+import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.PSC.Pipeline as MAIN
+import qualified Payasan.PSC.Old.Pipeline as MAIN
 
 
 

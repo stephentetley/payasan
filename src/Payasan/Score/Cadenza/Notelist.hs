@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Cadenza.Notelist
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.Score.Cadenza.Notelist
   ( 
 
-    module Payasan.PSC.Shell
+    module Payasan.PSC.Old.Shell
    
   , StdCadenzaSection
   , cadenza
@@ -51,9 +51,9 @@ import qualified Payasan.PSC.LilyPond.SimpleOutput    as LY
 import qualified Payasan.PSC.LilyPond.Utils           as PP
 
 import Payasan.PSC.Repr.External.AddBeams (noBeams)
-import Payasan.PSC.Pipeline (LilyPondPipeline(..))
-import qualified Payasan.PSC.Pipeline                         as MAIN
-import Payasan.PSC.Shell
+import Payasan.PSC.Old.Pipeline (LilyPondPipeline(..))
+import qualified Payasan.PSC.Old.Pipeline                         as MAIN
+import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Basis

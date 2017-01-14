@@ -32,7 +32,7 @@ import Payasan.PSC.LilyPond.Utils
 import Payasan.PSC.Repr.External.AddBeams
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
-import qualified Payasan.PSC.Pipeline                 as MAIN
+import qualified Payasan.PSC.Old.Pipeline                 as MAIN
 import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 

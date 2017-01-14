@@ -11,7 +11,7 @@ description:
   .
   Framework for music composition / song writing.
   .
-  (c) Stephen Tetley 2015-16
+  (c) Stephen Tetley 2015-17
   .
 
 build-type:         Simple
@@ -98,7 +98,7 @@ library
     Payasan.PSC.Csound.Compile,
     Payasan.PSC.Csound.IStmt,
     Payasan.PSC.Csound.Output,
-    Payasan.PSC.Csound.OutputNew,
+    Payasan.PSC.Csound.OutputOld,
     Payasan.PSC.Csound.OutTrans,
     Payasan.PSC.Csound.RenderScore,
     Payasan.PSC.Csound.Syntax,
@@ -113,7 +113,8 @@ library
     Payasan.PSC.MIDI.Output,
     Payasan.PSC.MIDI.OutTrans,
     Payasan.PSC.MIDI.PrimitiveSyntax,
-    Payasan.PSC.Pipeline,
+    Payasan.PSC.Old.Pipeline,
+    Payasan.PSC.Old.Shell,
     Payasan.PSC.Repr.External.AddBeams,
     Payasan.PSC.Repr.External.ABCInTrans,
     Payasan.PSC.Repr.External.ABCParser,
@@ -137,7 +138,6 @@ library
     Payasan.PSC.Repr.IRSimpleTile.FromExternal,
     Payasan.PSC.Repr.IRSimpleTile.Syntax,
     Payasan.PSC.Repr.IRSimpleTile.ShowTabular,
-    Payasan.PSC.Shell,
     Payasan.Score.Analysis.Common,
     Payasan.Score.Analysis.Trace,
     Payasan.Score.Cadenza.Notelist,

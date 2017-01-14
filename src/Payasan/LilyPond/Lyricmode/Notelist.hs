@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Notelist
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.LilyPond.Lyricmode.Notelist
   ( 
 
-    module Payasan.PSC.Shell
+    module Payasan.PSC.Old.Shell
    
   , LyricSection1
   , lyricmode
@@ -50,8 +50,8 @@ import qualified Payasan.Score.Elementary.Notelist              as ELEM
 import qualified Payasan.PSC.LilyPond.OutTrans          as LY
 
 import Payasan.PSC.Repr.External.AddBeams
-import qualified Payasan.PSC.Pipeline                           as MAIN
-import Payasan.PSC.Shell
+import qualified Payasan.PSC.Old.Pipeline                           as MAIN
+import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 

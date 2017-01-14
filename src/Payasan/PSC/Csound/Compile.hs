@@ -28,7 +28,7 @@ module Payasan.PSC.Csound.Compile
 
 
 import Payasan.PSC.Csound.Base
-import Payasan.PSC.Csound.OutputNew
+import Payasan.PSC.Csound.Output
 
 import Payasan.PSC.Repr.External.OutTransSeconds
 import Payasan.PSC.Repr.External.Syntax

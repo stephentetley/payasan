@@ -43,7 +43,6 @@ import Control.Monad.State
 type RewriteError = String
 
 
--- newtype Rewrite env st a = Rewrite { getRewrite :: 
 
 
 -- Rewrite: Reader + State + Except

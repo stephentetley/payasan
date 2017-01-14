@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Notelist
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.Score.Elementary.Notelist
   ( 
 
-    module Payasan.PSC.Shell
+    module Payasan.PSC.Old.Shell
   , module Payasan.Score.Elementary.Internal.Transform
 
   , Section
@@ -88,10 +88,10 @@ import Payasan.Score.Elementary.Internal.Traversals
 import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as LY
 
 import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )
-import Payasan.PSC.Shell
+import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
-import qualified Payasan.PSC.Pipeline as MAIN
+import qualified Payasan.PSC.Old.Pipeline as MAIN
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

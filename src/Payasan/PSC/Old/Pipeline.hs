@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Pipeline
+-- Module      :  Payasan.PSC.Old.Pipeline
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -14,7 +14,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Pipeline
+module Payasan.PSC.Old.Pipeline
   ( 
 
     EXT.StdPart         -- * re-export
@@ -62,8 +62,8 @@ module Payasan.PSC.Pipeline
 
   , writeAsMIDI
 
-  , outputAsCsound
-  , printAsCsound
+--  , outputAsCsound
+--  , printAsCsound
 
   , outputAsTabular
   , printAsTabular
@@ -73,12 +73,13 @@ module Payasan.PSC.Pipeline
 
   ) where
 
--- Note - temporary imports
--- Csound imports should not be accessed by Payasan.Base
+
+
 import Payasan.PSC.Csound.Base
 import Payasan.PSC.Csound.BeamToCsound
-import Payasan.PSC.Csound.Output
+import Payasan.PSC.Csound.OutputOld
 import qualified Payasan.PSC.Csound.OutTrans            as CS
+
 
 import qualified Payasan.PSC.MIDI.BeamToMIDI            as MIDI
 import qualified Payasan.PSC.MIDI.Output                as MIDI
@@ -333,8 +334,9 @@ writeAsMIDI path ph =
 
 
 --------------------------------------------------------------------------------
--- MIDI
+-- Csound
 
+{-
 
 outputAsCsound :: ColumnSpecs -> GenIStmt anno -> EXT.StdPart1 anno -> String
 outputAsCsound cols gf ph =
@@ -344,7 +346,7 @@ outputAsCsound cols gf ph =
 
 printAsCsound :: ColumnSpecs -> GenIStmt anno -> EXT.StdPart1 anno -> IO ()
 printAsCsound cols gf = putStrLn . outputAsCsound cols gf
-
+-}
 
 --------------------------------------------------------------------------------
 -- Debug...

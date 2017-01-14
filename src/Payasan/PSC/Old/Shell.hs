@@ -3,19 +3,21 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Shell
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Module      :  Payasan.PSC.Old.Shell
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
 -- Stability   :  unstable
 -- Portability :  GHC
 --
+-- DEPRECATED
+--
 -- Shell interaction for viewing output.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Shell
+module Payasan.PSC.Old.Shell
   ( 
     payasan_temp_directory
   , default_shell_help
