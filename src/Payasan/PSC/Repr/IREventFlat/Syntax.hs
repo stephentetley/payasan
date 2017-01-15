@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Repr.IREventFlat.Syntax
--- Copyright   :  (c) Stephen Tetley 2016
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,6 +18,9 @@
 --
 -- Intended as the final intermediate representation before 
 -- rendering to an audio format - e.g. Csound or MIDI.
+--
+-- Potentially it should support prettifying the output 
+-- e.g. ellipses in subsquent Csound rows.
 --
 --------------------------------------------------------------------------------
 
@@ -45,35 +48,39 @@ import Data.Data
 -- manipulated.
 --
 
-data Part onset pch drn anno = Part 
-    { part_sections     :: [Section onset pch drn anno] 
+data Part onset drn attrs = Part 
+    { part_sections     :: [Section onset drn attrs] 
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Section onset pch drn anno = Section
+data Section onset drn attrs = Section
     { section_name      :: !String
-    , section_events    :: [Event onset pch drn anno]
+    , section_events    :: [Event onset drn attrs]
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+-- Events might better be parametric on attributes rather than anno
+-- (This would need a rewrite function during conversion from IREventBar)
+--
+-- Attrs might be a list, a map or a data type...
+--
+data Event onset drn attrs = Event
+    { event_onset       :: onset
+    , event_duration    :: drn
+    , event_attrs       :: attrs
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Event onset pch drn anno =
-      Event onset pch drn anno
-    | Grace onset pch drn
-  deriving (Data,Eq,Show,Typeable)
 
   
-sortByOnset :: Ord onset => Part onset pch drn anno -> Part onset pch drn anno
+sortByOnset :: Ord onset => Part onset drn attrs -> Part onset drn attrs
 sortByOnset p@(Part { part_sections = ss }) = 
     p { part_sections = map sortSection ss }
   where
     sortSection s@(Section {section_events = es}) = 
         s { section_events = sortBy cmp es }
 
-    cmp e1 e2 = compare (getOnset e1) (getOnset e2)
+    cmp e1 e2 = compare (event_onset e1) (event_onset e2)
 
-
-getOnset :: Event onset pch drn anno -> onset
-getOnset (Event ot _ _ _)       = ot
-getOnset (Grace ot _ _)         = ot

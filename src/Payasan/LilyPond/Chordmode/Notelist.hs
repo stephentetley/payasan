@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Notelist
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -17,7 +17,7 @@
 module Payasan.LilyPond.Chordmode.Notelist
   ( 
 
-    module Payasan.PSC.Shell
+    module Payasan.PSC.Old.Shell
 
   , StdChordSection
   , chordmode
@@ -67,18 +67,19 @@ import qualified Payasan.Score.Elementary.Notelist                      as ELEM
 import Payasan.Score.Elementary.Internal.ShowLinear
 import Payasan.Score.Elementary.Internal.ShowTabular
 
-import Payasan.PSC.Repr.External.AddBeams
+import qualified Payasan.PSC.Old.Pipeline                       as MAIN
+import Payasan.PSC.Old.Shell
+
 import qualified Payasan.PSC.Repr.External.Syntax as MAIN
+import Payasan.PSC.Repr.External.AddBeams
 
 import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )
-import Payasan.PSC.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 import qualified Payasan.PSC.LilyPond.OutTrans        as LY
 import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as RHY
 import Payasan.PSC.LilyPond.Utils
 
-import qualified Payasan.PSC.Pipeline                       as MAIN
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 

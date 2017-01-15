@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.Csound.RenderScore
--- Copyright   :  (c) Stephen Tetley 2016
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -58,7 +58,7 @@ makeCsdEventListDoc specs p =
 -- firstInst _            = Nothing
 
 
-renderScore :: ColumnSpecs -> Part Seconds pch Seconds anno -> Doc 
+renderScore :: ColumnSpecs -> Part Seconds Seconds anno -> Doc 
 renderScore specs p1 = error "OLD" -- renderPart1 specs p1
      
 {-

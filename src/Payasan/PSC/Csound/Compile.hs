@@ -42,7 +42,10 @@ import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 
+import Payasan.Base.Basis
+import Payasan.Base.Pitch
 
+import Text.PrettyPrint.HughesPJ                -- package: pretty
 
 
 import qualified Data.Text              as TEXT
@@ -54,14 +57,18 @@ import System.FilePath
 
 
 
-data CompilerDef = CompilerDef
+data CompilerDef pch anno attrs = CompilerDef
     { pathto_working_dir        :: !FilePath
     , outfile_name              :: !String
     , pathto_csd_template       :: !FilePath
     , template_anchor           :: !String
+    , make_event_attrs          :: pch -> anno -> attrs
+    , make_grace_attrs          :: pch -> attrs
+    , make_istmt                :: Seconds -> Seconds -> attrs -> Doc
+    
     }
   
-emptyDef :: CompilerDef
+emptyDef :: CompilerDef pch anno attrs
 emptyDef = CompilerDef
     { pathto_working_dir        = ""
     , outfile_name              = "cs_output.csd"
@@ -73,12 +80,12 @@ emptyDef = CompilerDef
 -- then this will allow reuse for multi-notelist models 
 -- (e.g. polyrhythms)
 
-data Compiler = Compiler
-   { compile :: forall anno. StdPart1 anno -> IO ()
+data Compiler anno = Compiler
+   { compile :: StdPart1 anno -> IO ()
    
    }
 
-makeCompiler :: CompilerDef -> Compiler
+makeCompiler :: CompilerDef Pitch anno attrs -> Compiler anno
 makeCompiler env = 
     Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
              }
@@ -87,7 +94,7 @@ type CsdCompile a = CM a
 
 
 
-compile1 :: CompilerDef -> StdPart1 anno -> CsdCompile ()
+compile1 :: CompilerDef Pitch anno attrs -> StdPart1 anno -> CsdCompile ()
 compile1 def part = do 
     { events <- compilePartToEventList1 def part
     ; csd <- assembleOutput1 def events
@@ -96,35 +103,36 @@ compile1 def part = do
 
 
 -- MakeEventDef pch anno evt 
-compilePartToEventList1 :: CompilerDef -> StdPart1 anno -> CsdCompile CsdEventListDoc
+compilePartToEventList1 :: CompilerDef Pitch anno attrs -> StdPart1 anno -> CsdCompile CsdEventListDoc
 compilePartToEventList1 def p = 
-    let ast1 = fromIREventBar $ fromIRSimpleTile $ fromExternal $ transDurationToSeconds p
+    let gendict = GenEventAttrs (make_event_attrs def) (make_grace_attrs def)
+        ast1 = fromIREventBar gendict $ fromIRSimpleTile $ fromExternal $ transDurationToSeconds p
     in error "TODO"
 
 
 -- This is monadic...
-assembleOutput1 :: CompilerDef -> CsdEventListDoc -> CsdCompile TEXT.Text
+assembleOutput1 :: CompilerDef Pitch anno attrs -> CsdEventListDoc -> CsdCompile TEXT.Text
 assembleOutput1 def sco = 
     let scotext = TEXT.pack $ ppRender $ extractDoc sco
     in do { xcsd <- readFileCM (pathto_csd_template def)
           ; return $ TEXT.replace (TEXT.pack $ template_anchor def) scotext xcsd
           }
 
-csoundInsertNotes1 :: CompilerDef -> String -> TEXT.Text -> TEXT.Text
+csoundInsertNotes1 :: CompilerDef pch anno attrs -> String -> TEXT.Text -> TEXT.Text
 csoundInsertNotes1 def sco = 
     TEXT.replace (TEXT.pack $ template_anchor def) (TEXT.pack sco)
 
 
 -- | Csd has already been rendered to Text.
 --
-writeCsdFile1 :: CompilerDef -> TEXT.Text -> CsdCompile ()
+writeCsdFile1 :: CompilerDef pch anno attrs -> TEXT.Text -> CsdCompile ()
 writeCsdFile1 def csd = 
     do { outfile <- workingFileName1 def
        ; liftIO $ TEXT.writeFile outfile csd
        ; return ()
        }
 
-workingFileName1 :: CompilerDef -> CsdCompile String
+workingFileName1 :: CompilerDef pch anno attrs -> CsdCompile String
 workingFileName1 def = 
     do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
        ; let name = outfile_name def

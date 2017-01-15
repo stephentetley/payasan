@@ -16,7 +16,8 @@
 
 module Payasan.PSC.Repr.IREventFlat.FromIREventBar
   ( 
-    fromIREventBar
+    GenEventAttrs(..)
+  , fromIREventBar
   ) where
 
 import Payasan.PSC.Repr.IREventBar.Syntax
@@ -24,28 +25,51 @@ import qualified Payasan.PSC.Repr.IREventFlat.Syntax as T
 
 import Payasan.Base.Basis (Seconds)
 
+data GenEventAttrs pch anno attrs = GenEventAttrs
+    { genAttrsFromEvent        :: pch -> anno -> attrs
+    , genAttrsFromGrace        :: pch -> attrs
+    }
+
+
 
 -- NOTE - there is no obligation to fix the type of Onset to
 -- Seconds, although it is unlikely to be anything else. 
 
-fromIREventBar :: Part pch anno -> T.Part Seconds pch Seconds anno
+fromIREventBar :: GenEventAttrs pch anno attrs
+               -> Part pch anno 
+               -> T.Part Seconds Seconds attrs
 fromIREventBar = partT
 
 
-partT :: Part pch anno -> T.Part Seconds pch Seconds anno
-partT (Part ss)                     = 
-    T.Part { T.part_sections = map sectionT ss }
+partT :: GenEventAttrs pch anno attrs
+      -> Part pch anno 
+      -> T.Part Seconds Seconds attrs
+partT def (Part ss)                     = 
+    T.Part { T.part_sections = map (sectionT def) ss }
 
-sectionT :: Section pch anno -> T.Section Seconds pch Seconds anno
-sectionT (Section { section_name = name
-                  , section_bars = bs   })  = 
+
+sectionT :: GenEventAttrs pch anno attrs
+         -> Section pch anno 
+         -> T.Section Seconds Seconds attrs
+sectionT def (Section { section_name = name
+                      , section_bars = bs   })  = 
     T.Section { T.section_name = name
-              , T.section_events = concatMap barT bs
+              , T.section_events = concatMap (barT def) bs
               }
 
-barT :: Bar pch anno -> [T.Event Seconds pch Seconds anno]
-barT (Bar ot cs)                    = map (eventT ot) cs
+barT :: GenEventAttrs pch anno attrs
+     -> Bar pch anno 
+     -> [T.Event Seconds Seconds attrs]
+barT def (Bar ot cs)                = map (eventT def ot) cs
 
-eventT :: Seconds -> Event pch anno -> T.Event Seconds pch Seconds anno
-eventT onsetb (Event o p d a)    = T.Event (onsetb + o) p d a
-eventT onsetb (Grace o p d)      = T.Grace (onsetb + o) p d
+
+
+eventT :: GenEventAttrs pch anno attrs
+       -> Seconds 
+       -> Event pch anno 
+       -> T.Event Seconds Seconds attrs
+eventT def onsetb (Event o p d a)   = 
+    let vals = (genAttrsFromEvent def) p a in T.Event (onsetb + o) d vals
+
+eventT def onsetb (Grace o p d)     = 
+    let vals = (genAttrsFromGrace def) p in T.Event (onsetb + o) d vals

@@ -34,20 +34,20 @@ import Text.PrettyPrint.HughesPJClass                -- package: pretty
 
 
 showTabularIREventFlat :: LeafOutputEvent onset pch drn anno 
-                       -> Part onset pch drn anno -> Doc
+                       -> Part onset drn anno -> Doc
 showTabularIREventFlat def ph = concatBars 2 $ oPart def ph
 
 
-oPart :: LeafOutputEvent onset pch drn anno -> Part onset pch drn anno -> [Doc]
+oPart :: LeafOutputEvent onset pch drn anno -> Part onset drn anno -> [Doc]
 oPart def (Part xs)             = concat $ map (oSection def) xs
 
-oSection :: LeafOutputEvent onset pch drn anno -> Section onset pch drn anno -> [Doc]
+oSection :: LeafOutputEvent onset pch drn anno -> Section onset drn anno -> [Doc]
 oSection def (Section { section_events = es })  = map (oEvent def) es
 
 
-oEvent :: LeafOutputEvent onset pch drn anno -> Event onset pch drn anno -> Doc
-oEvent def (Event ot pch drn anno)    = pp_onset def ot <++> (pp_event def) pch drn anno
-oEvent def (Grace ot pch drn)         = pp_onset def ot <++> (pp_event_grace def) pch drn
+oEvent :: LeafOutputEvent onset pch drn anno -> Event onset drn anno -> Doc
+oEvent def (Event ot d a)    = error "TODO"
+    -- pp_onset def ot <++> (pp_event def) pch drn anno
 
 
 
