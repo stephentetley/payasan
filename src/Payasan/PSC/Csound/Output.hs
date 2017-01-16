@@ -39,20 +39,29 @@ data CsdEventList_
 type CsdEventListDoc = TyDoc CsdEventList_
 
 
-data GenCsdOutput attrs = GenOutputDef 
+data GenCsdOutput attrs = GenCsdOutput
     { genIStmt          :: Seconds -> Seconds -> attrs -> Doc
     }
 
 
-makeCsdEventListDoc :: GenCsdOutput attrs-> Part Seconds Seconds attrs -> CsdEventListDoc
-makeCsdEventListDoc def p = TyDoc empty
+makeCsdEventListDoc :: GenCsdOutput attrs
+                    -> Part Seconds Seconds attrs 
+                    -> CsdEventListDoc
+makeCsdEventListDoc def p = TyDoc $ oPart def p
 
 
 oPart :: GenCsdOutput attrs -> Part Seconds Seconds attrs -> Doc
 oPart def (Part { part_sections = ss }) = 
     vsep $ map (renderSection def) ss
+
     -- columnHeaders (inst_num $ event_body e) specs 
 
 
 renderSection :: GenCsdOutput attrs -> Section Seconds Seconds attrs -> Doc
-renderSection def (Section { section_events = es}) = empty
+renderSection def (Section { section_events = es }) = 
+    vsep $ map (renderEvent def) es
+
+renderEvent :: GenCsdOutput attrs -> Event Seconds Seconds attrs -> Doc
+renderEvent def (Event { event_onset    = o
+                       , event_duration = d
+                       , event_attrs    = a}) = (genIStmt def) o d a

@@ -23,6 +23,8 @@ module Payasan.Base.Basis
   , Seconds
   , BPM
 
+  , ppSeconds
+
   , PitchOrd(..)
 
   , Meter(..)
@@ -37,6 +39,7 @@ module Payasan.Base.Basis
 
 -- Basis should have no dependencies on other Payasan modules
 
+import Text.PrettyPrint.HughesPJ
 
 import Data.Data
 import Data.Fixed
@@ -50,6 +53,9 @@ type Seconds = Decimal
 
 type BPM     = Decimal
 
+
+ppSeconds :: Seconds -> Doc
+ppSeconds = text . show
 
 -- | Pitches can be spelled differently but still represent the
 -- same absolute pitch (frequency), hence Haskell's Ord class

@@ -64,8 +64,7 @@ data CompilerDef pch anno attrs = CompilerDef
     , template_anchor           :: !String
     , make_event_attrs          :: pch -> anno -> attrs
     , make_grace_attrs          :: pch -> attrs
-    , make_istmt                :: Seconds -> Seconds -> attrs -> Doc
-    
+    , make_istmt                :: Seconds -> Seconds -> attrs -> Doc    
     }
   
 emptyDef :: CompilerDef pch anno attrs
@@ -103,11 +102,16 @@ compile1 def part = do
 
 
 -- MakeEventDef pch anno evt 
-compilePartToEventList1 :: CompilerDef Pitch anno attrs -> StdPart1 anno -> CsdCompile CsdEventListDoc
+compilePartToEventList1 :: CompilerDef Pitch anno attrs 
+                        -> StdPart1 anno 
+                        -> CsdCompile CsdEventListDoc
 compilePartToEventList1 def p = 
-    let gendict = GenEventAttrs (make_event_attrs def) (make_grace_attrs def)
-        ast1 = fromIREventBar gendict $ fromIRSimpleTile $ fromExternal $ transDurationToSeconds p
-    in error "TODO"
+    let def_bar  = GenEventAttrs { genAttrsFromEvent = make_event_attrs def
+                                 , genAttrsFromGrace = make_grace_attrs def }          
+        def_flat = GenCsdOutput { genIStmt = make_istmt def }
+        irsimple = fromExternal $ transDurationToSeconds p
+        irflat   = fromIREventBar def_bar $ fromIRSimpleTile irsimple
+    in return $ makeCsdEventListDoc def_flat irflat
 
 
 -- This is monadic...
