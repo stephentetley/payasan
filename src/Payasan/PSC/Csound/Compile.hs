@@ -27,7 +27,6 @@ module Payasan.PSC.Csound.Compile
   ) where
 
 
-import Payasan.PSC.Csound.Base
 import Payasan.PSC.Csound.Output
 
 import Payasan.PSC.Repr.External.OutTransSeconds
@@ -42,10 +41,8 @@ import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 
-import Payasan.Base.Basis
 import Payasan.Base.Pitch
 
-import Text.PrettyPrint.HughesPJ                -- package: pretty
 
 
 import qualified Data.Text              as TEXT
@@ -62,9 +59,11 @@ data CompilerDef pch anno attrs = CompilerDef
     , outfile_name              :: !String
     , pathto_csd_template       :: !FilePath
     , template_anchor           :: !String
+    , inst_number               :: !Int
     , make_event_attrs          :: pch -> anno -> attrs
     , make_grace_attrs          :: pch -> attrs
-    , make_istmt                :: Seconds -> Seconds -> attrs -> Doc    
+    , column_formats            :: ColumnFormats
+    , make_values               :: attrs -> [Value]
     }
   
 emptyDef :: CompilerDef pch anno attrs
@@ -73,6 +72,10 @@ emptyDef = CompilerDef
     , outfile_name              = "cs_output.csd"
     , pathto_csd_template       = "./demo/template.csd"
     , template_anchor           = "[|notelist|]"
+    , inst_number               = 1
+    , column_formats            = ColumnFormats { inst_colwidth  = 7
+                                                , time_colformat = (7,3)
+                                                , other_widths   = [6,6,6] }
     }    
     
 -- TODO - should provide a method just to compile Part to a doc
@@ -108,7 +111,9 @@ compilePartToEventList1 :: CompilerDef Pitch anno attrs
 compilePartToEventList1 def p = 
     let def_bar  = GenEventAttrs { genAttrsFromEvent = make_event_attrs def
                                  , genAttrsFromGrace = make_grace_attrs def }          
-        def_flat = GenCsdOutput { genIStmt = make_istmt def }
+        def_flat = GenCsdOutput { instr_number   = inst_number def
+                                , column_specs   = column_formats def
+                                , genAttrValues  = make_values def }
         irsimple = fromExternal $ transDurationToSeconds p
         irflat   = fromIREventBar def_bar $ fromIRSimpleTile irsimple
     in return $ makeCsdEventListDoc def_flat irflat
@@ -122,9 +127,11 @@ assembleOutput1 def sco =
           ; return $ TEXT.replace (TEXT.pack $ template_anchor def) scotext xcsd
           }
 
+{-
 csoundInsertNotes1 :: CompilerDef pch anno attrs -> String -> TEXT.Text -> TEXT.Text
 csoundInsertNotes1 def sco = 
     TEXT.replace (TEXT.pack $ template_anchor def) (TEXT.pack sco)
+-}
 
 
 -- | Csd has already been rendered to Text.

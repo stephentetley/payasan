@@ -21,6 +21,7 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass
 
+import Payasan.PSC.Csound.Output (Value(..))
 
 
 -- MONOPHONIC
@@ -76,7 +77,11 @@ bbGrace p =
                   }
 
 -- Demanding users generate Istmts is wrong...
-genIStmt o d _  = text "i1" <+> ppSeconds o <+> ppSeconds d <+> text "todo"
+genValues :: BowedBarAttrs -> [Value]
+genValues (BowedBarAttrs { bb_amp      = amp
+                         , bb_pitch    = pch
+                         , bb_const    = konst }) = 
+    [VFloat 2 amp, VFloat 2 $ realToFrac $ getCpsPitch pch, VFloat 1 konst ]
 
 
 csd_compiler :: CSD.Compiler anno
@@ -86,7 +91,7 @@ csd_compiler = CSD.makeCompiler def
                        , CSD.outfile_name         = "csd_output.csd"
                        , CSD.make_event_attrs     = bbEvent
                        , CSD.make_grace_attrs     = bbGrace
-                       , CSD.make_istmt           = genIStmt    
+                       , CSD.make_values          = genValues
                        }
     
 
