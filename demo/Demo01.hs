@@ -4,18 +4,38 @@
 module Demo01 where
 
 import qualified Payasan.PSC.ABC.Compile as ABC
+import qualified Payasan.PSC.LilyPond.Compile as LY
+import qualified Payasan.PSC.Csound.Compile as CSD
 
 import Payasan.PSC.Repr.External.ABCInTrans
 import Payasan.PSC.Repr.External.ABCParser
+import Payasan.PSC.Repr.External.LilyPondInTrans
+import Payasan.PSC.Repr.External.LilyPondParser
 import Payasan.PSC.Repr.External.Syntax
-
 import Payasan.PSC.Base.SyntaxCommon
 
+import Payasan.Base.AltPitch
+import Payasan.Base.Basis
+import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
-abc_compiler ::ABC.Compiler
+import Text.PrettyPrint.HughesPJClass
+
+
+
+-- MONOPHONIC
+
+locals :: SectionInfo
+locals = default_section_info
+
+globals :: ScoreInfo
+globals = default_score_info 
+
+
+abc_compiler :: ABC.Compiler
 abc_compiler = ABC.makeCompiler def
   where 
-    def = ABC.emptyDef { ABC.pathto_working_dir     = "PAYASAN_TEMP_DIR"
+    def = ABC.emptyDef { ABC.pathto_working_dir     = ""
                        , ABC.outfile_name           = "abc_output.abc"
                        }
 
@@ -23,52 +43,118 @@ compileABC :: StdPart -> IO ()
 compileABC = ABC.compile abc_compiler
 
 
-s01 :: ABCSectionQuote
-s01 = [abc| [cg] G2 E2 C/2 | c |]
+ly_compiler :: Anno anno => LY.Compiler anno
+ly_compiler = LY.makeCompiler def
+  where 
+    def = LY.emptyDef { LY.pathto_working_dir     = ""
+                      , LY.outfile_name           = "ly_output.ly"
+                      }
 
-locals :: SectionInfo
-locals = default_section_info { section_unit_note_len = UNIT_NOTE_4 }
-
-section01 :: StdSection
-section01 = unquoteABC "Phrase1" locals s01
+compileLy :: StdPart -> IO ()
+compileLy = LY.compile ly_compiler
 
 
+data BowedBarAttrs = BowedBarAttrs 
+    { bb_amp       :: Decimal
+    , bb_pitch     :: CpsPitch
+    , bb_const     :: Decimal
+    }
+  deriving (Eq,Show)
 
+bbEvent :: Pitch -> anno -> BowedBarAttrs
+bbEvent p _ = 
+    BowedBarAttrs { bb_amp      = 0.8
+                  , bb_pitch    = pitchToCpsPitch p
+                  , bb_const    = 0.0
+                  }
+
+bbGrace :: Pitch -> BowedBarAttrs
+bbGrace p = 
+    BowedBarAttrs { bb_amp      = 0.6
+                  , bb_pitch    = pitchToCpsPitch p
+                  , bb_const    = 0.0
+                  }
+
+-- Demanding users generate Istmts is wrong...
+genIStmt o d _  = text "i1" <+> ppSeconds o <+> ppSeconds d <+> text "todo"
+
+
+csd_compiler :: CSD.Compiler anno
+csd_compiler = CSD.makeCompiler def
+  where 
+    def = CSD.emptyDef { CSD.pathto_working_dir   = ""
+                       , CSD.outfile_name         = "csd_output.csd"
+                       , CSD.make_event_attrs     = bbEvent
+                       , CSD.make_grace_attrs     = bbGrace
+                       , CSD.make_istmt           = genIStmt    
+                       }
+    
+
+
+   
+
+compileCsd :: StdPart -> IO ()
+compileCsd = CSD.compile csd_compiler
+
+
+
+
+section1abc :: StdSection
+section1abc = unquoteABC "Phrase1abc" locals $ [abc| B4 z B B - | BB B2 z4 |]
 
 demo01 :: IO ()
-demo01 = compileABC (Part { part_sections = [section01] })
+demo01 = compileABC (Part { part_sections = [section1abc] })
+
+
+-- Note - ElemPart reads (and ignores) beam group brackets.
+-- Beams are re-synthesized in the output.
+--
+section1ly :: StdSection
+section1ly = unquoteLyRelative "Phrase1ly" locals middle_c $ 
+    [lilypond| b'2 r8 b8 b4 ~ | b8[b] b4 r2 |]
+
+demo02 :: IO ()
+demo02 = compileLy (Part { part_sections = [section1ly] })
+
+demo03 :: IO ()
+demo03 = compileCsd (Part { part_sections = [section1abc] })
+
+
 
 
 {-
-demo01a :: IO ()
-demo01a = writeAsMIDI "out/phrase1.mid" phrase01
-
--- Be care to judge on beaming - manual may be non-standard
-phrase02 :: StdPart
-phrase02 = fromABCWith locals $ 
-    [abc| c2 {d}c {c2d2}c|{dcd}c {ede}d {fef}e f| c/{gfef}d/e/f/ f/e/{gfedc}d/c/|c G E {cBAGFED}C| |]
+demo01 :: IO ()
+demo01 = shellOutABC default_shell_info $ 
+    outputAsABC globals staff $ phrase01abc
 
 demo02 :: IO ()
-demo02 = printAsABC default_score_info default_staff_info phrase02
-
-phrase03 :: StdPart
-phrase03 = fromABCWith locals $ 
-    [abc| (3cde e2 | (6cegczg (3czg | (3:2:2G4c2 | (3:2:4G2A2Bc | (3:2:6(3GGGA2Bc |]
-
-demo03:: IO ()
-demo03 = printAsABC default_score_info default_staff_info phrase03
+demo02 = shellOutLilyPond default_shell_info $ 
+    outputAsLilyPond_Relative globals middle_c $ phrase01ly
 
 
-testPh :: StdPart
-testPh = fromABCWith locals $ 
-    [abc| c c//c//c//c//  c/4c/4c/4c/4 c |]
+-- Just two notes...
+phrase02 :: StdElemPart
+phrase02 = fromLilyPondWith_Relative middle_c locals $ 
+    [lilypond| b'2 r8 b8 ~ b4  |]
 
-test01 :: IO ()
-test01 = printAsABC default_score_info default_staff_info testPh
+demo03 :: IO ()
+demo03 = writeAsMIDI "out/tied01.mid" phrase02
 
 
-testMiddleC :: StdPart
-testMiddleC = fromABCWith locals $ 
-    [abc| C |]
+
+phrase10 :: StdElemPart
+phrase10 = fromABCWith locals $ [abc| c G2 E2 C/2 | c |]
+
+demo10 :: IO ()
+demo10 = printAsABC default_score_info staff phrase10
+
+demo11 :: IO ()
+demo11 = writeAsMIDI "out/phrase1.mid" phrase10
+
+demo12 :: IO ()
+demo12 = printAsTabular default_score_info phrase10
+
+demo13 :: IO ()
+demo13 = printAsLinear default_score_info phrase10
 
 -}

@@ -25,7 +25,6 @@ instr 1
   iamp    = p4
   ipch    = cpspch(p5)
   iconst  = p6
-  izout   = p7
   kb      line 0.5, idur, 0.1
   kp      line 0.6, idur, 0.7
   kc      line 1, p3, 1
@@ -49,7 +48,7 @@ endin
 </CsInstruments>
 <CsScore>
 ; Part 1
-;ins st      drn     amp    pch    const  zout
+;ins    st      drn     amp    pch    const
 [|notelist|]
 ;
    

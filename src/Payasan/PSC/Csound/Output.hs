@@ -39,6 +39,10 @@ data CsdEventList_
 type CsdEventListDoc = TyDoc CsdEventList_
 
 
+-- It would likely be better to generate a list of 'Values' 
+-- then we can eleviate from the user some of the detail of 
+-- printing them.
+--
 data GenCsdOutput attrs = GenCsdOutput
     { genIStmt          :: Seconds -> Seconds -> attrs -> Doc
     }
