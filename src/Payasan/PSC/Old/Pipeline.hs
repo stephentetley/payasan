@@ -62,8 +62,6 @@ module Payasan.PSC.Old.Pipeline
 
   , writeAsMIDI
 
---  , outputAsCsound
---  , printAsCsound
 
   , outputAsTabular
   , printAsTabular
@@ -75,10 +73,6 @@ module Payasan.PSC.Old.Pipeline
 
 
 
-import Payasan.PSC.Csound.Base
-import Payasan.PSC.Csound.BeamToCsound
-import Payasan.PSC.Csound.OutputOld
-import qualified Payasan.PSC.Csound.OutTrans            as CS
 
 
 import qualified Payasan.PSC.MIDI.BeamToMIDI            as MIDI
@@ -332,21 +326,6 @@ writeAsMIDI path ph =
         trk     = MIDI.translateToMIDI (MIDI.simpleTrackData 1) notes
     in MIDI.writeMF1 path [trk]
 
-
---------------------------------------------------------------------------------
--- Csound
-
-{-
-
-outputAsCsound :: ColumnSpecs -> GenIStmt anno -> EXT.StdPart1 anno -> String
-outputAsCsound cols gf ph =
-    let notes   = CS.translateToCsoundP $ transExternalToIRBeam ph
-        stmts   = translateToCsound gf notes
-    in ppRender $ csoundOutput cols stmts
-
-printAsCsound :: ColumnSpecs -> GenIStmt anno -> EXT.StdPart1 anno -> IO ()
-printAsCsound cols gf = putStrLn . outputAsCsound cols gf
--}
 
 --------------------------------------------------------------------------------
 -- Debug...

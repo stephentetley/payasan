@@ -18,7 +18,8 @@
 module Payasan.PSC.Csound.Compile
   ( 
     
-    CompilerDef(..)       
+    CsdCompile
+  , CompilerDef(..)       
   , emptyDef
 
   , Compiler(..)
@@ -53,6 +54,8 @@ import Control.Monad.IO.Class
 import System.FilePath
 
 
+type CsdCompile a = CM a
+
 
 data CompilerDef pch anno attrs = CompilerDef
     { pathto_working_dir        :: !FilePath
@@ -73,11 +76,17 @@ emptyDef = CompilerDef
     , pathto_csd_template       = "./demo/template.csd"
     , template_anchor           = "[|notelist|]"
     , inst_number               = 1
+    , make_event_attrs          = \_ _ -> mkErr "make_event_attrs"
+    , make_grace_attrs          = \_ -> mkErr "make_grace_attrs"
     , column_formats            = ColumnFormats { inst_colwidth  = 7
                                                 , time_colformat = (7,3)
                                                 , other_widths   = [6,6,6] }
+    , make_values               = mkErr "make_values"
     }    
-    
+  where
+    mkErr ss = error $ "Must supply an implementation of " ++ ss
+
+
 -- TODO - should provide a method just to compile Part to a doc
 -- then this will allow reuse for multi-notelist models 
 -- (e.g. polyrhythms)
@@ -92,7 +101,6 @@ makeCompiler env =
     Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
              }
 
-type CsdCompile a = CM a
 
 
 
