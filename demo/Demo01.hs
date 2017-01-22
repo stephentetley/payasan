@@ -6,7 +6,7 @@ module Demo01 where
 import qualified Payasan.PSC.ABC.Compile            as ABC
 import qualified Payasan.PSC.Csound.Compile         as CSD
 import qualified Payasan.PSC.LilyPond.Compile       as LY
--- import qualified Payasan.PSC.MIDI.Compile           as MIDI
+import qualified Payasan.PSC.MIDI.Compile           as MIDI
 
 import Payasan.PSC.Repr.External.ABCInTrans
 import Payasan.PSC.Repr.External.ABCParser

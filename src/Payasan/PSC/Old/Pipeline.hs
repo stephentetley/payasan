@@ -60,7 +60,6 @@ module Payasan.PSC.Old.Pipeline
 
   , ppRender
 
-  , writeAsMIDI
 
 
   , outputAsTabular
@@ -75,10 +74,6 @@ module Payasan.PSC.Old.Pipeline
 
 
 
-import qualified Payasan.PSC.MIDI.BeamToMIDI            as MIDI
-import qualified Payasan.PSC.MIDI.Output                as MIDI
-import qualified Payasan.PSC.MIDI.OutTrans              as MIDI
-import qualified Payasan.PSC.MIDI.PrimitiveSyntax       as MIDI
 
 
 import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC
@@ -319,13 +314,15 @@ ppRender = renderStyle (style {lineLength=500})
 
 -- Should we have a @genOutputAsMIDI@ function?
 
+{-
+
 
 writeAsMIDI :: FilePath -> EXT.StdPart1 anno -> IO ()
 writeAsMIDI path ph = 
     let notes   = MIDI.translateToMidiP $ transExternalToIRBeam ph
         trk     = MIDI.translateToMIDI (MIDI.simpleTrackData 1) notes
     in MIDI.writeMF1 path [trk]
-
+-}
 
 --------------------------------------------------------------------------------
 -- Debug...

@@ -102,7 +102,7 @@ library
     Payasan.PSC.LilyPond.SimpleOutput,
     Payasan.PSC.LilyPond.Utils,
     Payasan.PSC.MIDI.BeamToMIDI,
---    Payasan.PSC.MIDI.Compile,
+    Payasan.PSC.MIDI.Compile,
     Payasan.PSC.MIDI.Output,
     Payasan.PSC.MIDI.OutTrans,
     Payasan.PSC.MIDI.PrimitiveSyntax,

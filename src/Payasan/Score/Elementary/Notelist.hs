@@ -59,7 +59,7 @@ module Payasan.Score.Elementary.Notelist
 
   , ppRender
 
-  , writeAsMIDI
+--  , writeAsMIDI
 
   , outputAsTabular
   , printAsTabular
@@ -182,9 +182,10 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
+{-
 writeAsMIDI :: FilePath -> StdElemSection -> IO ()
 writeAsMIDI path = MAIN.writeAsMIDI path . transElementaryToExternal "noname"
-
+-}
 
 
 outputAsTabular :: (Pretty pch, Pretty drn) 

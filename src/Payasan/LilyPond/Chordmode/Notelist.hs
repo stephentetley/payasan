@@ -41,7 +41,7 @@ module Payasan.LilyPond.Chordmode.Notelist
 
   , ppRender
 
-  , writeAsMIDI
+--  , writeAsMIDI
 
   , outputAsTabular
   , printAsTabular
@@ -130,6 +130,7 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
+{-
 writeAsMIDI :: FilePath -> StdChordSection -> IO ()
 writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes 
 
@@ -140,7 +141,7 @@ writeAsMIDI path notes = MAIN.writeAsMIDI path $ midiTrans notes
 
 midiTrans :: StdChordSection -> MAIN.Part Pitch Duration ()
 midiTrans = ELEM.chord_transElementaryToExternal "noname" . chordTrans
-
+-}
 
 
 chordTrans :: StdChordSection -> ELEM.Section [Pitch] Duration ()
