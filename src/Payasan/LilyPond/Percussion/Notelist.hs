@@ -39,7 +39,7 @@ module Payasan.LilyPond.Percussion.Notelist
 
   , ppRender
 
-  , writeAsMIDI
+--  , writeAsMIDI
 
   , outputAsTabular
   , printAsTabular
@@ -56,9 +56,6 @@ import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
 import qualified Payasan.PSC.Repr.External.AddBeams           as BEAM
 
-import qualified Payasan.PSC.MIDI.BeamToMIDI        as MIDI
-import qualified Payasan.PSC.MIDI.Output            as MIDI
-import qualified Payasan.PSC.MIDI.PrimitiveSyntax   as MIDI
 
 
 import Payasan.PSC.Old.Shell
@@ -111,12 +108,13 @@ ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
 
+{-
 writeAsMIDI :: FilePath -> StdDrumPart -> IO ()
 writeAsMIDI path ph = 
    let notes = PERC.translate $ transExternalToIRBeam ph
        trk   = MIDI.translateToMIDI (MIDI.simpleTrackData 9) notes
    in MIDI.writeMF1 path [trk]
-
+-}
 
 
 

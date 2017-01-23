@@ -99,24 +99,24 @@ istmtDoc (ColumnFormats { inst_colwidth   = instw
     go _      []        = empty
 
 
-makeCsdEventListDoc :: GenCsdOutput attrs
-                    -> Part Seconds Seconds attrs 
+makeCsdEventListDoc :: GenCsdOutput body
+                    -> Part Seconds Seconds body 
                     -> CsdEventListDoc
 makeCsdEventListDoc def p = TyDoc $ oPart def p
 
 
-oPart :: GenCsdOutput attrs -> Part Seconds Seconds attrs -> Doc
+oPart :: GenCsdOutput body -> Part Seconds Seconds body -> Doc
 oPart def (Part { part_sections = ss }) = 
     vsep $ map (renderSection def) ss
 
 
-renderSection :: GenCsdOutput attrs -> Section Seconds Seconds attrs -> Doc
+renderSection :: GenCsdOutput body -> Section Seconds Seconds body -> Doc
 renderSection def (Section { section_events = es }) = 
     vsep $ map (renderEvent def) es
 
-renderEvent :: GenCsdOutput attrs -> Event Seconds Seconds attrs -> Doc
+renderEvent :: GenCsdOutput body -> Event Seconds Seconds body -> Doc
 renderEvent def (Event { event_onset    = o
                        , event_duration = d
-                       , event_attrs    = a}) = 
+                       , event_body     = a}) = 
     let values  = genAttrValues def a
     in istmtDoc (column_specs def) (instr_number def) o d values

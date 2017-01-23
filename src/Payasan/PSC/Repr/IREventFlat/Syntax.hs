@@ -48,34 +48,37 @@ import Data.Data
 -- manipulated.
 --
 
-data Part onset drn attrs = Part 
-    { part_sections     :: [Section onset drn attrs] 
+data Part onset drn body = Part 
+    { part_sections     :: [Section onset drn body] 
     }
   deriving (Data,Eq,Show,Typeable)
 
 
-data Section onset drn attrs = Section
+data Section onset drn body = Section
     { section_name      :: !String
-    , section_events    :: [Event onset drn attrs]
+    , section_events    :: [Event onset drn body]
     }
   deriving (Data,Eq,Show,Typeable)
 
--- Events might better be parametric on attributes rather than anno
--- (This would need a rewrite function during conversion from IREventBar)
+-- Events are parametric on body - essentially this means we 
+-- don't know anything about them.
 --
--- Attrs might be a list, a map or a data type...
+-- (This would need a rewrite function during conversion from 
+-- IREventBar)
 --
-data Event onset drn attrs = Event
+-- Body might be a list, a map or a data type...
+--
+data Event onset drn body = Event
     { event_onset       :: onset
     , event_duration    :: drn
-    , event_attrs       :: attrs
+    , event_body        :: body
     }
   deriving (Data,Eq,Show,Typeable)
 
 
 
   
-sortByOnset :: Ord onset => Part onset drn attrs -> Part onset drn attrs
+sortByOnset :: Ord onset => Part onset drn body -> Part onset drn body
 sortByOnset p@(Part { part_sections = ss }) = 
     p { part_sections = map sortSection ss }
   where

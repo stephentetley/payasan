@@ -33,7 +33,7 @@ module Payasan.PSC.Repr.IREventFlat.Traversals
   , transformFlat
   , mapOnset
   , mapDuration
-  , mapAttrs
+  , mapBody
 
   ) where
 
@@ -119,16 +119,16 @@ liftEventTrafo f = \e -> return (f e)
 -- Alternative - a single element changing transform algo.
 -- Can we derive (all) other transformations from it? 
 
-data FlatAlgo st onset1 onset2 drn1 drn2 attrs1 attrs2 = FlatAlgo 
+data FlatAlgo st onset1 onset2 drn1 drn2 body1 body2 = FlatAlgo 
     { initial_state :: st
     , event_trafo :: 
-            Event onset1 drn1 attrs1 -> Mon st (Event onset2 drn2 attrs2)
+            Event onset1 drn1 body1 -> Mon st (Event onset2 drn2 body2)
     }
 
 
-transformFlat :: FlatAlgo st onset1 onset2 drn1 drn2 attrs1 attrs2
-              -> Part onset1 drn1 attrs1 
-              -> Part onset2 drn2 attrs2
+transformFlat :: FlatAlgo st onset1 onset2 drn1 drn2 body1 body2
+              -> Part onset1 drn1 body1 
+              -> Part onset2 drn2 body2
 transformFlat  (FlatAlgo { initial_state = st0 
                          , event_trafo = elemT }) = 
     genTransform elemT st0
@@ -136,8 +136,8 @@ transformFlat  (FlatAlgo { initial_state = st0
 
 
 mapOnset :: (onset1 -> onset2) 
-         -> Part onset1 drn attrs 
-         -> Part onset2 drn attrs
+         -> Part onset1 drn body 
+         -> Part onset2 drn body
 mapOnset f = transformFlat (FlatAlgo { initial_state = ()
                                      , event_trafo = liftEventTrafo g })
   where
@@ -146,19 +146,19 @@ mapOnset f = transformFlat (FlatAlgo { initial_state = ()
 
 
 mapDuration :: (drn1 -> drn2) 
-            -> Part onset drn1 attrs 
-            -> Part onset drn2 attrs
+            -> Part onset drn1 body 
+            -> Part onset drn2 body
 mapDuration f = transformFlat (FlatAlgo { initial_state = ()
                                         , event_trafo = liftEventTrafo g })
   where
     g (Event o d a) = Event o (f d) a
 
 
-mapAttrs :: (attrs1 -> attrs2) 
-         -> Part onset drn attrs1
-         -> Part onset drn attrs2
-mapAttrs f = transformFlat (FlatAlgo { initial_state = ()
-                                     , event_trafo = liftEventTrafo g })
+mapBody :: (body1 -> body2) 
+        -> Part onset drn body1
+        -> Part onset drn body2
+mapBody f = transformFlat (FlatAlgo { initial_state = ()
+                                    , event_trafo = liftEventTrafo g })
   where
     g (Event o d a) = Event o d (f a)
 

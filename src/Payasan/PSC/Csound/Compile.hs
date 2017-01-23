@@ -57,27 +57,27 @@ import System.FilePath
 type CsdCompile a = CM a
 
 
-data CompilerDef pch anno attrs = CompilerDef
+data CompilerDef pch anno body = CompilerDef
     { pathto_working_dir        :: !FilePath
     , outfile_name              :: !String
     , pathto_csd_template       :: !FilePath
     , template_anchor           :: !String
     , inst_number               :: !Int
-    , make_event_attrs          :: pch -> anno -> attrs
-    , make_grace_attrs          :: pch -> attrs
+    , make_event_body           :: pch -> anno -> body
+    , make_grace_body           :: pch -> body
     , column_formats            :: ColumnFormats
-    , make_values               :: attrs -> [Value]
+    , make_values               :: body -> [Value]
     }
   
-emptyDef :: CompilerDef pch anno attrs
+emptyDef :: CompilerDef pch anno body
 emptyDef = CompilerDef
     { pathto_working_dir        = ""
     , outfile_name              = "cs_output.csd"
     , pathto_csd_template       = "./demo/template.csd"
     , template_anchor           = "[|notelist|]"
     , inst_number               = 1
-    , make_event_attrs          = \_ _ -> mkErr "make_event_attrs"
-    , make_grace_attrs          = \_ -> mkErr "make_grace_attrs"
+    , make_event_body           = \_ _ -> mkErr "make_event_body"
+    , make_grace_body           = \_ -> mkErr "make_grace_body"
     , column_formats            = ColumnFormats { inst_colwidth  = 7
                                                 , time_colformat = (7,3)
                                                 , other_widths   = [6,6,6] }
@@ -96,7 +96,7 @@ data Compiler anno = Compiler
    
    }
 
-makeCompiler :: CompilerDef Pitch anno attrs -> Compiler anno
+makeCompiler :: CompilerDef Pitch anno body -> Compiler anno
 makeCompiler env = 
     Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
              }
@@ -104,7 +104,7 @@ makeCompiler env =
 
 
 
-compile1 :: CompilerDef Pitch anno attrs -> StdPart1 anno -> CsdCompile ()
+compile1 :: CompilerDef Pitch anno body -> StdPart1 anno -> CsdCompile ()
 compile1 def part = do 
     { events <- compilePartToEventList1 def part
     ; csd <- assembleOutput1 def events
@@ -113,12 +113,12 @@ compile1 def part = do
 
 
 -- MakeEventDef pch anno evt 
-compilePartToEventList1 :: CompilerDef Pitch anno attrs 
+compilePartToEventList1 :: CompilerDef Pitch anno body 
                         -> StdPart1 anno 
                         -> CsdCompile CsdEventListDoc
 compilePartToEventList1 def p = 
-    let def_bar  = GenEventAttrs { genAttrsFromEvent = make_event_attrs def
-                                 , genAttrsFromGrace = make_grace_attrs def }          
+    let def_bar  = GenEventBody { genBodyFromEvent = make_event_body def
+                                , genBodyFromGrace = make_grace_body def }          
         def_flat = GenCsdOutput { instr_number   = inst_number def
                                 , column_specs   = column_formats def
                                 , genAttrValues  = make_values def }
@@ -128,7 +128,7 @@ compilePartToEventList1 def p =
 
 
 -- This is monadic...
-assembleOutput1 :: CompilerDef Pitch anno attrs -> CsdEventListDoc -> CsdCompile TEXT.Text
+assembleOutput1 :: CompilerDef Pitch anno body -> CsdEventListDoc -> CsdCompile TEXT.Text
 assembleOutput1 def sco = 
     let scotext = TEXT.pack $ ppRender $ extractDoc sco
     in do { xcsd <- readFileCM (pathto_csd_template def)
@@ -136,7 +136,7 @@ assembleOutput1 def sco =
           }
 
 {-
-csoundInsertNotes1 :: CompilerDef pch anno attrs -> String -> TEXT.Text -> TEXT.Text
+csoundInsertNotes1 :: CompilerDef pch anno body -> String -> TEXT.Text -> TEXT.Text
 csoundInsertNotes1 def sco = 
     TEXT.replace (TEXT.pack $ template_anchor def) (TEXT.pack sco)
 -}
@@ -144,14 +144,14 @@ csoundInsertNotes1 def sco =
 
 -- | Csd has already been rendered to Text.
 --
-writeCsdFile1 :: CompilerDef pch anno attrs -> TEXT.Text -> CsdCompile ()
+writeCsdFile1 :: CompilerDef pch anno body -> TEXT.Text -> CsdCompile ()
 writeCsdFile1 def csd = 
     do { outfile <- workingFileName1 def
        ; liftIO $ TEXT.writeFile outfile csd
        ; return ()
        }
 
-workingFileName1 :: CompilerDef pch anno attrs -> CsdCompile String
+workingFileName1 :: CompilerDef pch anno body -> CsdCompile String
 workingFileName1 def = 
     do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
        ; let name = outfile_name def
