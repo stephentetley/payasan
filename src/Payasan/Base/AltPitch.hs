@@ -40,7 +40,7 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 import qualified Data.Fixed as FIXED
-
+import Data.Word
 
 
 
@@ -50,7 +50,7 @@ import qualified Data.Fixed as FIXED
 --
 -- [But a Num instance would allow us to use numeric literals]
 --
-newtype MidiPitch = MidiPitch { getMidiPitch :: Int }
+newtype MidiPitch = MidiPitch { getMidiPitch :: Word8 }
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
@@ -100,7 +100,7 @@ midi_middle_c = MidiPitch 60
 
 
 pitchToMidiPitch :: Pitch -> MidiPitch
-pitchToMidiPitch = MidiPitch . midiSemitoneCount
+pitchToMidiPitch = MidiPitch . fromIntegral . midiSemitoneCount
 
 
 -- TODO - add conversions to HzPitch etc. 

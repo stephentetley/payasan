@@ -3,39 +3,44 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.MIDI.Output
--- Copyright   :  (c) Stephen Tetley 2014-2016
+-- Copyright   :  (c) Stephen Tetley 2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Generate MIDI files from /PrimitiveSyntax/.
+-- Generate MIDI files from MIDI IRFlatSyntax.
 -- 
 --------------------------------------------------------------------------------
 
 module Payasan.PSC.MIDI.Output
   ( 
+
+{-
     render
   , midiFileFormat0
   , midiFileFormat1
   , writeMF0
   , writeMF1
-
+-}
   ) where
 
-import Payasan.PSC.MIDI.PrimitiveSyntax
+import Payasan.PSC.MIDI.Syntax
+import Payasan.PSC.Repr.IREventFlat.Syntax
 import Payasan.PSC.Base.Utils
 
 import Payasan.Base.AltPitch (MidiPitch(..), getMidiPitch)
 import Payasan.Base.Basis (Seconds)
 
-import qualified ZMidi.Core as Z                -- packahe: zmidi-core
+import qualified ZMidi.Core as Z                -- package: zmidi-core
 
 import Data.List ( sort )
 import Data.Word
 
 
+
+{-
 
 -- Note - this is a Double so it is the right type for calculating
 -- durations, in MIDI files the size of the ticks-per-beat 
@@ -117,28 +122,30 @@ trackPrologue (TrackData { channel_number  = ch
                              in wrapH (0, evt) 
 
 
--- Assumes single instrument - should channel be part of MidiNote?
-messageList :: Word8 -> [MidiNote] -> [Z.MidiMessage]
-messageList chan = delta 0 . sort . expand
+-}
+
+
+delta_end_of_track :: Z.MidiMessage
+delta_end_of_track = (0, Z.MetaEvent $ Z.EndOfTrack)
+
+
+part :: Word8 -> MIDIPart -> [Z.MidiMessage]
+part chan (Part { part_sections = ss }) = go ss
   where
-    expand []              = []
-    expand (x:xs)          = let (a,b) = expandMidiNote chan x in a:b:expand xs
+    go []     = [delta_end_of_track]
+    go (x:xs) = section chan x ++ go xs
 
-    delta dt ((ot,msg):xs) = let ot1 = fromIntegral $ miditime ot 
-                             in (ot1 - dt,msg) : delta ot1 xs
-    delta _  []            = [delta_end_of_track]
-
+section :: Word8 -> MIDISection -> [Z.MidiMessage]
+section chan (Section { section_events = es }) = map (event chan) es
 
 
-type AbsMessage = (Seconds,Z.MidiEvent)
+-- Onset has already been transformed to delta time...
+-- 
+event :: Word8 -> MIDIEvent -> Z.MidiMessage
+event chan (Event { event_onset = ot, event_body = body }) = 
+    (fromIntegral ot, Z.VoiceEvent Z.RS_OFF $ eventBody chan body)
 
-expandMidiNote :: Word8 -> MidiNote -> (AbsMessage, AbsMessage)
-expandMidiNote chan (MidiNote { note_start    = ot
-                              , note_dur      = drn
-                              , note_value    = val }) = 
-    let pch   = fromIntegral $ getMidiPitch $ note_pitch val
-        von   = fromIntegral $ note_velo_on val
-        voff  = fromIntegral $ note_velo_off val
-        onn   = Z.VoiceEvent Z.RS_OFF (Z.NoteOn chan pch von)
-        off   = Z.VoiceEvent Z.RS_OFF (Z.NoteOff chan pch voff)
-    in ((ot,onn), (ot+drn,off))
+
+eventBody :: Word8 -> MIDIEventBody -> Z.MidiVoiceEvent
+eventBody chan (NoteOff pch vel) = Z.NoteOff  chan (getMidiPitch pch) vel
+eventBody chan (NoteOn  pch vel) = Z.NoteOn   chan (getMidiPitch pch) vel
