@@ -18,6 +18,11 @@ module Payasan.PSC.Repr.IREventFlat.FromIREventBar
   ( 
     GenEventBody(..)
   , fromIREventBar
+
+  -- Version for MIDI which generates two events (Note-on, Note-off)
+  , GenEventBody2(..)
+  , fromIREventBar2
+
   ) where
 
 import Payasan.PSC.Repr.IREventBar.Syntax
@@ -32,44 +37,67 @@ data GenEventBody pch anno body = GenEventBody
 
 
 
--- NOTE - there is no obligation to fix the type of Onset to
--- Seconds, although it is unlikely to be anything else. 
+-- NOTE - Onsets and Durations are not unit-changed duraing 
+-- translation.
+-- They remain in Seconds though they can be mapped to something 
+-- else after translation. 
 
 fromIREventBar :: GenEventBody pch anno body
                -> Part pch anno 
                -> T.Part Seconds Seconds body
-fromIREventBar = partT
+fromIREventBar def = partT
+  where
+    partT (Part { part_sections = ss }) = 
+          T.Part { T.part_sections = map sectionT ss }
 
-
-partT :: GenEventBody pch anno body
-      -> Part pch anno 
-      -> T.Part Seconds Seconds body
-partT def (Part ss)                     = 
-    T.Part { T.part_sections = map (sectionT def) ss }
-
-
-sectionT :: GenEventBody pch anno body
-         -> Section pch anno 
-         -> T.Section Seconds Seconds body
-sectionT def (Section { section_name = name
+    sectionT (Section { section_name = name
                       , section_bars = bs   })  = 
-    T.Section { T.section_name = name
-              , T.section_events = concatMap (barT def) bs
-              }
+          T.Section { T.section_name = name
+                    , T.section_events = concatMap barT bs }
 
-barT :: GenEventBody pch anno body
-     -> Bar pch anno 
-     -> [T.Event Seconds Seconds body]
-barT def (Bar ot cs)                = map (eventT def ot) cs
+    barT (Bar { bar_onset  = ot
+              , bar_events = es })  = map (eventT ot) es
+
+    eventT onsetb (Event o p d a)   = 
+          let body = (genBodyFromEvent def) p a in T.Event (onsetb + o) d body
+
+    eventT onsetb (Grace o p d)     = 
+          let body = (genBodyFromGrace def) p in T.Event (onsetb + o) d body
 
 
+--------------------------------------------------------------------------------
 
-eventT :: GenEventBody pch anno body
-       -> Seconds 
-       -> Event pch anno 
-       -> T.Event Seconds Seconds body
-eventT def onsetb (Event o p d a)   = 
-    let vals = (genBodyFromEvent def) p a in T.Event (onsetb + o) d vals
+data GenEventBody2 pch anno body = GenEventBody2
+    { genBodyFromEvent2       :: pch -> anno -> (body,body)
+    , genBodyFromGrace2       :: pch -> (body,body)
+    }
 
-eventT def onsetb (Grace o p d)     = 
-    let vals = (genBodyFromGrace def) p in T.Event (onsetb + o) d vals
+
+fromIREventBar2 :: GenEventBody2 pch anno body
+                -> Part pch anno 
+                -> T.Part Seconds () body
+fromIREventBar2 def = partT
+  where
+    partT (Part { part_sections = ss }) = 
+          T.Part { T.part_sections = map sectionT ss }
+
+    sectionT (Section { section_name = name
+                      , section_bars = bs   })  = 
+          T.Section { T.section_name = name
+                    , T.section_events = concatMap barT bs }
+
+    barT (Bar { bar_onset  = ot
+              , bar_events = es })  = concatMap (eventT ot) es
+
+    eventT onsetb (Event o p d a)   = 
+          let (body1,body2) = (genBodyFromEvent2 def) p a 
+              t1            = onsetb + o
+              t2            = t1 + d
+          in [ T.Event t1 () body1, T.Event t2 () body2 ]
+
+    eventT onsetb (Grace o p d)     = 
+          let (body1,body2) = (genBodyFromGrace2 def) p 
+              t1            = onsetb + o
+              t2            = t1 + d
+          in [ T.Event t1 () body1, T.Event t2 () body2 ]
+

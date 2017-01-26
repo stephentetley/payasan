@@ -26,12 +26,14 @@ module Payasan.PSC.MIDI.Syntax
   , MIDIEventBody(..)
 
   , secondsToMIDITicks
+  , ticksTrafo
 
   ) where
 
 
-import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.IREventFlat.Syntax
+import Payasan.PSC.Repr.IREventFlat.Traversals
+import Payasan.PSC.Base.Utils
 
 import Payasan.Base.AltPitch
 import Payasan.Base.Basis (Seconds)
@@ -68,4 +70,6 @@ secondsToMIDITicks tpqn r = floor $ (4 * ticks_per_quarternote) * (realToFrac r)
 
 
 
+ticksTrafo :: Int -> Part Seconds () MIDIEventBody -> MIDIPart AbsTicks
+ticksTrafo tpqn = mapOnset (secondsToMIDITicks tpqn)
 
