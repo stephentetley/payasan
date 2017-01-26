@@ -17,7 +17,9 @@
 module Payasan.PSC.MIDI.Syntax
   ( 
 
-    MIDITicks
+    AbsTicks
+  , DeltaTicks
+
   , MIDIPart
   , MIDISection
   , MIDIEvent
@@ -37,14 +39,15 @@ import Payasan.Base.Basis (Seconds)
 import Data.Function ( on )
 import Data.Word
 
-type MIDITicks = Word32
+type AbsTicks = Word32
+type DeltaTicks = Word32
 
 
-type MIDIPart    = Part     MIDITicks () MIDIEventBody
+type MIDIPart onset     = Part     onset () MIDIEventBody
 
-type MIDISection = Section  MIDITicks () MIDIEventBody
+type MIDISection onset  = Section  onset () MIDIEventBody
 
-type MIDIEvent   = Event    MIDITicks () MIDIEventBody
+type MIDIEvent onset    = Event    onset () MIDIEventBody
 
 
 data MIDIEventBody = 
@@ -56,7 +59,7 @@ data MIDIEventBody =
 
 
 
-secondsToMIDITicks :: Int -> Seconds -> MIDITicks
+secondsToMIDITicks :: Int -> Seconds -> AbsTicks
 secondsToMIDITicks tpqn r = floor $ (4 * ticks_per_quarternote) * (realToFrac r)
   where
     ticks_per_quarternote :: Double

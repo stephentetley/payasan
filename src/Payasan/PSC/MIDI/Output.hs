@@ -28,6 +28,7 @@ module Payasan.PSC.MIDI.Output
 
 import Payasan.PSC.MIDI.Syntax
 import Payasan.PSC.Repr.IREventFlat.Syntax
+import Payasan.PSC.Repr.IREventFlat.Traversals
 import Payasan.PSC.Base.Utils
 
 import Payasan.Base.AltPitch (MidiPitch(..), getMidiPitch)
@@ -125,23 +126,34 @@ trackPrologue (TrackData { channel_number  = ch
 -}
 
 
+
+-- Maybe MIDIPart should actually store onset in Seconds
+-- and we encapsulate the unit change to (delta) MidiTicks 
+-- in this module?
+
+
+renderTrack :: Word8 -> MIDIPart AbsTicks -> Z.MidiTrack
+renderTrack chan p = Z.MidiTrack $ part chan (deltaTrafo p)
+
 delta_end_of_track :: Z.MidiMessage
 delta_end_of_track = (0, Z.MetaEvent $ Z.EndOfTrack)
 
 
-part :: Word8 -> MIDIPart -> [Z.MidiMessage]
+part :: Word8 -> MIDIPart DeltaTicks -> [Z.MidiMessage]
 part chan (Part { part_sections = ss }) = go ss
   where
     go []     = [delta_end_of_track]
     go (x:xs) = section chan x ++ go xs
 
-section :: Word8 -> MIDISection -> [Z.MidiMessage]
+
+
+section :: Word8 -> MIDISection DeltaTicks -> [Z.MidiMessage]
 section chan (Section { section_events = es }) = map (event chan) es
 
 
 -- Onset has already been transformed to delta time...
 -- 
-event :: Word8 -> MIDIEvent -> Z.MidiMessage
+event :: Word8 -> MIDIEvent DeltaTicks -> Z.MidiMessage
 event chan (Event { event_onset = ot, event_body = body }) = 
     (fromIntegral ot, Z.VoiceEvent Z.RS_OFF $ eventBody chan body)
 
@@ -149,3 +161,11 @@ event chan (Event { event_onset = ot, event_body = body }) =
 eventBody :: Word8 -> MIDIEventBody -> Z.MidiVoiceEvent
 eventBody chan (NoteOff pch vel) = Z.NoteOff  chan (getMidiPitch pch) vel
 eventBody chan (NoteOn  pch vel) = Z.NoteOn   chan (getMidiPitch pch) vel
+
+
+
+--------------------------------------------------------------------------------
+-- Delta trafo
+
+deltaTrafo :: MIDIPart AbsTicks -> MIDIPart DeltaTicks
+deltaTrafo = mapAccumOnset (\acc ot -> (ot, ot - acc)) 0

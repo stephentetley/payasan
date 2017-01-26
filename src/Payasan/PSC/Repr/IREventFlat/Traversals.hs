@@ -32,6 +32,7 @@ module Payasan.PSC.Repr.IREventFlat.Traversals
   , FlatAlgo(..)
   , transformFlat
   , mapOnset
+  , mapAccumOnset
   , mapDuration
   , mapBody
 
@@ -143,6 +144,14 @@ mapOnset f = transformFlat (FlatAlgo { initial_state = ()
   where
     g (Event o d a) = Event (f o) d a
 
+mapAccumOnset :: (st -> onset1 -> (st,onset2))
+              -> st 
+              -> Part onset1 drn body 
+              -> Part onset2 drn body
+mapAccumOnset f s0 = transformFlat (FlatAlgo { initial_state = s0
+                                             , event_trafo   = mf })
+  where
+    mf (Event o d a) = get >>= \s -> let (s1,o1) = f s o in put s1 >> return (Event o1 d a)
 
 
 mapDuration :: (drn1 -> drn2) 
