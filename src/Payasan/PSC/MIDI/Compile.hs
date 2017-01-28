@@ -32,6 +32,7 @@ import Payasan.PSC.MIDI.Output
 import Payasan.PSC.MIDI.Syntax
 
 import Payasan.PSC.Repr.External.OutTransSeconds
+import qualified Payasan.PSC.Repr.External.Syntax       as EXT
 
 import Payasan.PSC.Repr.IREventFlat.Syntax
 import Payasan.PSC.Repr.IRSimpleTile.FromExternal
@@ -43,9 +44,11 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.External.Syntax
 
-
-
+import Payasan.Base.Duration ( Duration )
 import Payasan.Base.Pitch ( Pitch )
+
+import qualified ZMidi.Core as Z                -- package: zmidi-core
+
 
 import Text.PrettyPrint.HughesPJ                -- package: pretty
 
@@ -77,13 +80,13 @@ emptyDef = CompilerDef
     }
   
 
-data Compiler anno = Compiler
-   { compile :: StdPart1 anno -> IO ()
+data Compiler pch anno = Compiler
+   { compile :: EXT.Part pch Duration anno -> IO ()
    
    }
 
 
-makeCompiler :: CompilerDef pch anno -> Compiler anno
+makeCompiler :: CompilerDef pch anno -> Compiler pch anno
 makeCompiler env = 
     Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
              }
@@ -91,21 +94,18 @@ makeCompiler env =
 
 
 
-compile1 :: CompilerDef pch anno -> StdPart1 anno -> MIDICompile ()
-compile1 _ _ = error "compile1"
-
-{-
+compile1 :: CompilerDef pch anno -> EXT.Part pch Duration anno -> MIDICompile ()
 compile1 def part = do 
     { events <- compilePartToEventList1 def part
-    ; csd <- assembleOutput1 def events
-    ; writeCsdFile1 def csd
+    ; csd    <- assembleOutput1 def events
+    ; writeMIDIFile1 def csd
     }
--}
+
     
 
 
-compilePartToEventList1 :: CompilerDef Pitch anno
-                        -> StdPart1 anno 
+compilePartToEventList1 :: CompilerDef pch anno
+                        -> EXT.Part pch Duration anno 
                         -> MIDICompile (MIDIPart AbsTicks)
 compilePartToEventList1 def p = 
     let def_bar  = GenEventBody2 { genBodyFromEvent2 = make_event_body def
@@ -114,4 +114,31 @@ compilePartToEventList1 def p =
         irflat   = fromIREventBar2 def_bar $ fromIRSimpleTile irsimple
     in return $ ticksTrafo (ticks_per_quarter_note def) $ irflat
 
+
+
+assembleOutput1 :: CompilerDef pitch anno -> MIDIPart AbsTicks -> MIDICompile Z.MidiFile
+assembleOutput1 def p = undefined
+{-
+    let scotext = TEXT.pack $ ppRender $ extractDoc sco
+    in do { xcsd <- readFileCM (pathto_csd_template def)
+          ; return $ TEXT.replace (TEXT.pack $ template_anchor def) scotext xcsd
+          }
+-}
+
+
+writeMIDIFile1 :: CompilerDef pch anno -> Z.MidiFile -> MIDICompile ()
+writeMIDIFile1 def midi =
+    do { outfile <- workingFileName1 def
+       ; liftIO $ Z.writeMidi outfile midi
+       ; return ()
+       }
+
+
+workingFileName1 :: CompilerDef pch anno -> MIDICompile FilePath
+workingFileName1 def = 
+    do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
+       ; let name = outfile_name def
+       ; let outfile = root </> name
+       ; return outfile
+       }
 

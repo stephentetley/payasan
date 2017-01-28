@@ -151,7 +151,7 @@ writeCsdFile1 def csd =
        ; return ()
        }
 
-workingFileName1 :: CompilerDef pch anno body -> CsdCompile String
+workingFileName1 :: CompilerDef pch anno body -> CsdCompile FilePath
 workingFileName1 def = 
     do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
        ; let name = outfile_name def

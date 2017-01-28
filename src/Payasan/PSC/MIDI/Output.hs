@@ -75,7 +75,7 @@ midiFileFormat0 trk = Z.MidiFile { Z.mf_header = header
 
 
 
-midiFileFormat1 :: [Track] -> Z.MidiFile
+midiFileFormat1 :: [Part ] -> Z.MidiFile
 midiFileFormat1 trks = Z.MidiFile { Z.mf_header = header
                                   , Z.mf_tracks = map render trks }
   where
@@ -85,6 +85,7 @@ midiFileFormat1 trks = Z.MidiFile { Z.mf_header = header
                            , Z.time_division = timediv }
 
     timediv = Z.TPB $ floor $ ticks_per_quarternote
+
 
 writeMF0 :: FilePath -> Track -> IO ()
 writeMF0 path trk = Z.writeMidi path $ midiFileFormat0 trk
@@ -132,35 +133,35 @@ trackPrologue (TrackData { channel_number  = ch
 -- in this module?
 
 
-renderTrack :: Word8 -> MIDIPart AbsTicks -> Z.MidiTrack
-renderTrack chan p = Z.MidiTrack $ part chan (deltaTrafo p)
+renderTrack :: MIDIPart AbsTicks -> Z.MidiTrack
+renderTrack p = Z.MidiTrack $ part (deltaTrafo p)
 
 delta_end_of_track :: Z.MidiMessage
 delta_end_of_track = (0, Z.MetaEvent $ Z.EndOfTrack)
 
 
-part :: Word8 -> MIDIPart DeltaTicks -> [Z.MidiMessage]
-part chan (Part { part_sections = ss }) = go ss
+part :: MIDIPart DeltaTicks -> [Z.MidiMessage]
+part (Part { part_sections = ss }) = go ss
   where
     go []     = [delta_end_of_track]
-    go (x:xs) = section chan x ++ go xs
+    go (x:xs) = section x ++ go xs
 
 
 
-section :: Word8 -> MIDISection DeltaTicks -> [Z.MidiMessage]
-section chan (Section { section_events = es }) = map (event chan) es
+section :: MIDISection DeltaTicks -> [Z.MidiMessage]
+section (Section { section_events = es }) = map event es
 
 
 -- Onset has already been transformed to delta time...
 -- 
-event :: Word8 -> MIDIEvent DeltaTicks -> Z.MidiMessage
-event chan (Event { event_onset = ot, event_body = body }) = 
-    (fromIntegral ot, Z.VoiceEvent Z.RS_OFF $ eventBody chan body)
+event :: MIDIEvent DeltaTicks -> Z.MidiMessage
+event (Event { event_onset = ot, event_body = body }) = 
+    (fromIntegral ot, Z.VoiceEvent Z.RS_OFF $ eventBody body)
 
 
-eventBody :: Word8 -> MIDIEventBody -> Z.MidiVoiceEvent
-eventBody chan (NoteOff pch vel) = Z.NoteOff  chan (getMidiPitch pch) vel
-eventBody chan (NoteOn  pch vel) = Z.NoteOn   chan (getMidiPitch pch) vel
+eventBody :: MIDIEventBody -> Z.MidiVoiceEvent
+eventBody (NoteOff chan pch vel)    = Z.NoteOff  chan (getMidiPitch pch) vel
+eventBody (NoteOn  chan pch vel)    = Z.NoteOn   chan (getMidiPitch pch) vel
 
 
 

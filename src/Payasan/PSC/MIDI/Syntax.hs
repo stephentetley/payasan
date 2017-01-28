@@ -20,6 +20,8 @@ module Payasan.PSC.MIDI.Syntax
     AbsTicks
   , DeltaTicks
 
+  , Track
+
   , MIDIPart
   , MIDISection
   , MIDIEvent
@@ -45,6 +47,9 @@ type AbsTicks = Word32
 type DeltaTicks = Word32
 
 
+newtype Track = Track { getTrack :: [MIDIEvent AbsTicks] }
+
+
 type MIDIPart onset     = Part     onset () MIDIEventBody
 
 type MIDISection onset  = Section  onset () MIDIEventBody
@@ -53,8 +58,8 @@ type MIDIEvent onset    = Event    onset () MIDIEventBody
 
 
 data MIDIEventBody = 
-      NoteOff  { midi_note :: !MidiPitch, midi_velocity :: !Word8 }
-    | NoteOn   { midi_note :: !MidiPitch, midi_velocity :: !Word8 }
+      NoteOff  !Word8 !MidiPitch !Word8         -- chan * pch * velocity
+    | NoteOn   !Word8 !MidiPitch !Word8         
   deriving (Eq,Ord,Show)
 
 
