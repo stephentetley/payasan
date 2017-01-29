@@ -20,7 +20,7 @@ module Payasan.PSC.MIDI.Syntax
     AbsTicks
   , DeltaTicks
 
-  , Track
+  , MIDIEventList(..)
 
   , MIDIPart
   , MIDISection
@@ -30,24 +30,27 @@ module Payasan.PSC.MIDI.Syntax
   , secondsToMIDITicks
   , ticksTrafo
 
+  , makeMIDIEventList
+  , mergeMIDIEventLists
+
   ) where
 
 
 import Payasan.PSC.Repr.IREventFlat.Syntax
 import Payasan.PSC.Repr.IREventFlat.Traversals
-import Payasan.PSC.Base.Utils
 
 import Payasan.Base.AltPitch
 import Payasan.Base.Basis (Seconds)
 
-import Data.Function ( on )
 import Data.Word
 
 type AbsTicks = Word32
 type DeltaTicks = Word32
 
-
-newtype Track = Track { getTrack :: [MIDIEvent AbsTicks] }
+-- We need an equivalent of LyNoteListDoc to assemble multiple 
+-- parts together for the final rendering.
+-- 
+newtype MIDIEventList = MIDIEventList { getMIDIEventList :: [MIDIEvent AbsTicks] }
 
 
 type MIDIPart onset     = Part     onset () MIDIEventBody
@@ -64,6 +67,8 @@ data MIDIEventBody =
 
 
 
+--------------------------------------------------------------------------------
+-- Operations
 
 
 secondsToMIDITicks :: Int -> Seconds -> AbsTicks
@@ -77,4 +82,17 @@ secondsToMIDITicks tpqn r = floor $ (4 * ticks_per_quarternote) * (realToFrac r)
 
 ticksTrafo :: Int -> Part Seconds () MIDIEventBody -> MIDIPart AbsTicks
 ticksTrafo tpqn = mapOnset (secondsToMIDITicks tpqn)
+
+
+-- No end of track
+makeMIDIEventList :: MIDIPart AbsTicks -> MIDIEventList
+makeMIDIEventList (Part { part_sections = ss }) = 
+    MIDIEventList $ concatMap section_events ss
+
+mergeMIDIEventLists :: [MIDIEventList] -> MIDIEventList
+mergeMIDIEventLists xs = MIDIEventList $ foldr fn [] xs
+  where
+    fn x ac = ac ++ getMIDIEventList x
+
+
 

@@ -17,93 +17,91 @@
 module Payasan.PSC.MIDI.Output
   ( 
 
-{-
-    render
+    makeZMidiTrack
+
   , midiFileFormat0
-  , midiFileFormat1
-  , writeMF0
-  , writeMF1
--}
+  , midiFileFormat1 
   ) where
 
 import Payasan.PSC.MIDI.Syntax
 import Payasan.PSC.Repr.IREventFlat.Syntax
-import Payasan.PSC.Repr.IREventFlat.Traversals
-import Payasan.PSC.Base.Utils
 
 import Payasan.Base.AltPitch (MidiPitch(..), getMidiPitch)
-import Payasan.Base.Basis (Seconds)
 
 import qualified ZMidi.Core as Z                -- package: zmidi-core
 
-import Data.List ( sort )
-import Data.Word
+import Data.List ( sort, mapAccumL )
 
 
 
-{-
 
--- Note - this is a Double so it is the right type for calculating
--- durations, in MIDI files the size of the ticks-per-beat 
--- designator is actually a Word16.
---
-ticks_per_quarternote :: Double
-ticks_per_quarternote = 480.0
 
-miditime :: Seconds -> Word32
-miditime r = floor $ (4 * ticks_per_quarternote) * (realToFrac r)
+
+
+makeZMidiTrack :: MIDIEventList -> Z.MidiTrack
+makeZMidiTrack = render . preprocess . getMIDIEventList 
+  where
+    preprocess  = deltaTrafo . sort
+    render xs   = Z.MidiTrack $ step xs
+    step []     = [delta_end_of_track]
+    step (e:es) = event e : step es
+
 
 delta_end_of_track :: Z.MidiMessage
 delta_end_of_track = (0, Z.MetaEvent $ Z.EndOfTrack)
 
 
--- render should make a Track...
-render :: Track -> Z.MidiTrack
-render = renderInterim . getTrack
+-- Onset has already been transformed to delta time...
+-- 
+event :: MIDIEvent DeltaTicks -> Z.MidiMessage
+event (Event { event_onset = ot, event_body = body }) = 
+    (fromIntegral ot, Z.VoiceEvent Z.RS_OFF $ eventBody body)
 
 
-midiFileFormat0 :: Track -> Z.MidiFile
-midiFileFormat0 trk = Z.MidiFile { Z.mf_header = header
-                                 , Z.mf_tracks = [ render trk ] }
+eventBody :: MIDIEventBody -> Z.MidiVoiceEvent
+eventBody (NoteOff chan pch vel)    = Z.NoteOff  chan (getMidiPitch pch) vel
+eventBody (NoteOn  chan pch vel)    = Z.NoteOn   chan (getMidiPitch pch) vel
+
+
+
+deltaTrafo :: [MIDIEvent AbsTicks] -> [MIDIEvent DeltaTicks]
+deltaTrafo = snd .  mapAccumL fn 0
+  where
+    fn acc evt@(Event { event_onset = ot }) = (ot, evt { event_onset = ot - acc })
+
+
+
+--------------------------------------------------------------------------------
+-- Make MIDI files
+
+
+midiFileFormat0 :: Int -> Z.MidiTrack -> Z.MidiFile
+midiFileFormat0 tpqn trk = 
+    Z.MidiFile { Z.mf_header = header
+               , Z.mf_tracks = [ trk ] }
   where
     header  :: Z.MidiHeader
     header  = Z.MidiHeader { Z.hdr_format    = Z.MF0
                            , Z.num_tracks    = 1
-                           , Z.time_division = timediv }
+                           , Z.time_division = Z.TPB $ fromIntegral tpqn }
 
-    timediv = Z.TPB $ floor $ ticks_per_quarternote
+ 
 
 
 
-midiFileFormat1 :: [Part ] -> Z.MidiFile
-midiFileFormat1 trks = Z.MidiFile { Z.mf_header = header
-                                  , Z.mf_tracks = map render trks }
+midiFileFormat1 :: Int -> [Z.MidiTrack] -> Z.MidiFile
+midiFileFormat1 tpqn trks = 
+    Z.MidiFile { Z.mf_header = header
+               , Z.mf_tracks = trks }
   where
     header  :: Z.MidiHeader
     header  = Z.MidiHeader { Z.hdr_format    = Z.MF1
                            , Z.num_tracks    = fromIntegral $ length trks
-                           , Z.time_division = timediv }
-
-    timediv = Z.TPB $ floor $ ticks_per_quarternote
+                           , Z.time_division = Z.TPB $ fromIntegral tpqn }
 
 
-writeMF0 :: FilePath -> Track -> IO ()
-writeMF0 path trk = Z.writeMidi path $ midiFileFormat0 trk
 
-writeMF1 :: FilePath -> [Track] -> IO ()
-writeMF1 path trks = Z.writeMidi path $ midiFileFormat1 trks
-
-
---------------------------------------------------------------------------------
--- Interim to ZMidi
-
-renderInterim :: InterimTrack -> Z.MidiTrack
-renderInterim (InterimTrack cfg xs) = Z.MidiTrack $ prolog $ body
-  where
-    prolog  = trackPrologue cfg
-    body    = messageList (fromIntegral $ channel_number cfg) xs
-
-
+{-
 
 trackPrologue :: TrackData -> H Z.MidiMessage
 trackPrologue (TrackData { channel_number  = ch
@@ -127,46 +125,3 @@ trackPrologue (TrackData { channel_number  = ch
 -}
 
 
-
--- Maybe MIDIPart should actually store onset in Seconds
--- and we encapsulate the unit change to (delta) MidiTicks 
--- in this module?
-
-
-renderTrack :: MIDIPart AbsTicks -> Z.MidiTrack
-renderTrack p = Z.MidiTrack $ part (deltaTrafo p)
-
-delta_end_of_track :: Z.MidiMessage
-delta_end_of_track = (0, Z.MetaEvent $ Z.EndOfTrack)
-
-
-part :: MIDIPart DeltaTicks -> [Z.MidiMessage]
-part (Part { part_sections = ss }) = go ss
-  where
-    go []     = [delta_end_of_track]
-    go (x:xs) = section x ++ go xs
-
-
-
-section :: MIDISection DeltaTicks -> [Z.MidiMessage]
-section (Section { section_events = es }) = map event es
-
-
--- Onset has already been transformed to delta time...
--- 
-event :: MIDIEvent DeltaTicks -> Z.MidiMessage
-event (Event { event_onset = ot, event_body = body }) = 
-    (fromIntegral ot, Z.VoiceEvent Z.RS_OFF $ eventBody body)
-
-
-eventBody :: MIDIEventBody -> Z.MidiVoiceEvent
-eventBody (NoteOff chan pch vel)    = Z.NoteOff  chan (getMidiPitch pch) vel
-eventBody (NoteOn  chan pch vel)    = Z.NoteOn   chan (getMidiPitch pch) vel
-
-
-
---------------------------------------------------------------------------------
--- Delta trafo
-
-deltaTrafo :: MIDIPart AbsTicks -> MIDIPart DeltaTicks
-deltaTrafo = mapAccumOnset (\acc ot -> (ot, ot - acc)) 0

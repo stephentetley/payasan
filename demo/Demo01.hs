@@ -90,8 +90,8 @@ csd_compiler = CSD.makeCompiler def
   where 
     def = CSD.emptyDef { CSD.pathto_working_dir   = ""
                        , CSD.outfile_name         = "csd_output.csd"
-                       , CSD.make_event_attrs     = bbEvent
-                       , CSD.make_grace_attrs     = bbGrace
+                       , CSD.make_event_body      = bbEvent
+                       , CSD.make_grace_body      = bbGrace
                        , CSD.make_values          = genValues
                        }
     

@@ -73,7 +73,7 @@ data Event onset drn body = Event
     , event_duration    :: drn
     , event_body        :: body
     }
-  deriving (Data,Eq,Show,Typeable)
+  deriving (Data,Eq,Ord,Show,Typeable)
 
 
 
