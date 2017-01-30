@@ -44,6 +44,9 @@ import Data.Word
 
 
 
+-- NOTE - should MIDI be capitalized? 
+-- (If so then should Cps?)
+
 -- | Although Midi Pitch can potentially support Num and 
 -- integral classes, it shouldn't as pitch operations are not
 -- really numeric.

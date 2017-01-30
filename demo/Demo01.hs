@@ -8,6 +8,10 @@ import qualified Payasan.PSC.Csound.Compile         as CSD
 import qualified Payasan.PSC.LilyPond.Compile       as LY
 import qualified Payasan.PSC.MIDI.Compile           as MIDI
 
+import Payasan.PSC.Csound.Output (Value(..))
+import Payasan.PSC.MIDI.Syntax
+
+
 import Payasan.PSC.Repr.External.ABCInTrans
 import Payasan.PSC.Repr.External.ABCParser
 import Payasan.PSC.Repr.External.LilyPondInTrans
@@ -22,7 +26,6 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass
 
-import Payasan.PSC.Csound.Output (Value(..))
 
 
 -- MONOPHONIC
@@ -54,6 +57,8 @@ ly_compiler = LY.makeCompiler def
 
 compileLy :: StdPart -> IO ()
 compileLy = LY.compile ly_compiler
+
+
 
 
 data BowedBarAttrs = BowedBarAttrs 
@@ -102,7 +107,26 @@ csd_compiler = CSD.makeCompiler def
 compileCsd :: StdPart -> IO ()
 compileCsd = CSD.compile csd_compiler
 
+-- TODO we shouldn't be "allocating" channel here...
 
+midiEvent :: Pitch -> anno -> (MIDIEventBody, MIDIEventBody)
+midiEvent pch _ = 
+    let midinote = pitchToMidiPitch pch in (NoteOn 1 midinote 40, NoteOff 1 midinote 40)
+
+midiGrace :: Pitch -> (MIDIEventBody, MIDIEventBody)
+midiGrace pch = 
+    let midinote = pitchToMidiPitch pch in (NoteOn 1 midinote 40, NoteOff 1 midinote 40)
+
+midi_compiler :: MIDI.Compiler Pitch anno
+midi_compiler = MIDI.makeCompiler def
+  where
+    def = MIDI.emptyDef { MIDI.outfile_name    = "midi_output.midi"
+                        , MIDI.make_event_body = midiEvent
+                        , MIDI.make_grace_body = midiGrace
+                        }
+
+compileMIDI :: StdPart -> IO ()
+compileMIDI = MIDI.compile midi_compiler  
 
 
 section1abc :: StdSection
@@ -124,6 +148,10 @@ demo02 = compileLy (Part { part_sections = [section1ly] })
 
 demo03 :: IO ()
 demo03 = compileCsd (Part { part_sections = [section1abc] })
+
+
+demo04 :: IO ()
+demo04 = compileMIDI (Part { part_sections = [section1abc] })
 
 
 
