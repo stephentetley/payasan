@@ -29,7 +29,7 @@ import Payasan.Base.Duration
 
 
 translate :: Part DrumPitch Duration anno -> Part MidiPitch Duration anno
-translate = transformP pch_algo
+translate = transformExternal pch_algo
 
 
 type PTMon   a      = Mon () a
@@ -39,10 +39,10 @@ type PTMon   a      = Mon () a
 -- Pitch translation
 
 
-pch_algo :: ExtPitchAlgo () DrumPitch MidiPitch
-pch_algo = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = elementP
+pch_algo :: ExternalAlgo () DrumPitch MidiPitch drn drn anno anno
+pch_algo = ExternalAlgo
+    { initial_state     = ()
+    , element_trafo     = elementP
     }
 
 

@@ -32,13 +32,13 @@ module Payasan.PSC.Old.Pipeline
   , default_section_info
 
 
-  , fromABC
-  , fromABCWith
-  , fromABCWithIO       -- temp ?
+--  , fromABC
+--  , fromABCWith
+--  , fromABCWithIO       -- temp ?
 
-  , fromLilyPond_Relative
-  , fromLilyPondWith_Relative
-  , fromLilyPondWithIO_Relative  -- temp ?
+--  , fromLilyPond_Relative
+--  , fromLilyPondWith_Relative
+--  , fromLilyPondWithIO_Relative  -- temp ?
   
 --  , outputAsABC
 --  , printAsABC
@@ -154,6 +154,7 @@ debug f a = tell (f a) >> return a
 transExternalToIRBeam :: a -> a
 transExternalToIRBeam = id
 
+{-
 fromABC :: EXT.Part ABCPitch ABCNoteLength () -> EXT.StdPart
 fromABC = fromABCWith default_section_info
 
@@ -170,16 +171,18 @@ fromABCWithIO locals ph =
               ; ph2 <- debug (mainTabular pitch_duration_output) $ ABC.translateFromInput ph1
               ; return ph2
               }
+-}
 
-
-
+{-
 fromLilyPond_Relative :: Pitch -> EXT.Part LyPitch LyNoteLength () -> EXT.StdPart 
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
+
 
 
 fromLilyPondWith_Relative :: Pitch -> SectionInfo -> EXT.Part LyPitch LyNoteLength () -> EXT.StdPart
 fromLilyPondWith_Relative pch locals = 
     LY.translateFromInput_Relative pch . EXT.pushSectionInfo locals
+
 
 
 fromLilyPondWithIO_Relative :: Pitch
@@ -193,7 +196,7 @@ fromLilyPondWithIO_Relative pch locals ph =
               ; ph2 <- debug (mainTabular pitch_duration_output) $ LY.translateFromInput_Relative pch ph1
               ; return ph2
               }
-
+-}
 
 {-
 outputAsABC :: ScoreInfo -> StaffInfo -> EXT.StdPart1 anno -> String

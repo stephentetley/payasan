@@ -52,7 +52,7 @@ translateToLyPartOut_RhythmicMarkup :: MarkupOutput pch
                                     -> Part pch Duration anno 
                                     -> LyPartOut Doc
 translateToLyPartOut_RhythmicMarkup mo = 
-    transformPA (markup_algo mo) . translateToLyPartOut_DurationOnly
+    transformExternal (markup_algo mo) . translateToLyPartOut_DurationOnly
 
 
 
@@ -60,10 +60,10 @@ translateToLyPartOut_RhythmicMarkup mo =
 --------------------------------------------------------------------------------
 -- Pitch to markup translation
 
-markup_algo :: MarkupOutput pch -> ExtPitchAnnoAlgo () pch anno LyPitch Doc
-markup_algo mo = ExtPitchAnnoAlgo
-    { initial_statePA   = ()
-    , element_trafoPA   = liftElementTrafo $ elementP mo
+markup_algo :: MarkupOutput pch -> ExternalAlgo () pch LyPitch drn drn anno Doc
+markup_algo mo = ExternalAlgo
+    { initial_state     = ()
+    , element_trafo     = liftElementTrafo $ elementP mo
     }
 
 

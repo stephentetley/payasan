@@ -38,18 +38,18 @@ translateToLyPartOut_Relative :: Pitch
                               -> Part Pitch Duration anno 
                               -> LyPartOut anno
 translateToLyPartOut_Relative pch = 
-    transformP (rel_pch_algo pch) . transformD drn_algo
+    transformExternal (rel_pch_algo pch) . transformExternal drn_algo
 
 
 translateToLyPartOut_Absolute :: Part Pitch Duration anno 
                               -> LyPartOut anno
 translateToLyPartOut_Absolute = 
-    transformP abs_pch_algo . transformD drn_algo
+    transformExternal abs_pch_algo . transformExternal drn_algo
 
 
 translateToLyPartOut_DurationOnly :: Part pch Duration anno 
                                   -> GenLyPartOut pch anno
-translateToLyPartOut_DurationOnly = transformD drn_algo
+translateToLyPartOut_DurationOnly = transformExternal drn_algo
 
 type DMon    a      = Mon Duration a
 type RelPMon a      = Mon Pitch a
@@ -59,10 +59,10 @@ type AbsPMon a      = Mon () a
 --------------------------------------------------------------------------------
 -- Relative Pitch translation
 
-rel_pch_algo :: Pitch -> ExtPitchAlgo Pitch Pitch LyPitch
-rel_pch_algo start = ExtPitchAlgo
-    { initial_stateP    = start
-    , element_trafoP    = relElementP
+rel_pch_algo :: Pitch -> ExternalAlgo Pitch Pitch LyPitch drn drn anno anno
+rel_pch_algo start = ExternalAlgo
+    { initial_state     = start
+    , element_trafo     = relElementP
     }
 
 
@@ -101,10 +101,10 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 
-abs_pch_algo :: ExtPitchAlgo () Pitch LyPitch
-abs_pch_algo = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = absElementP
+abs_pch_algo :: ExternalAlgo () Pitch LyPitch drn drn anno anno
+abs_pch_algo = ExternalAlgo
+    { initial_state     = ()
+    , element_trafo     = absElementP
     }
 
 
@@ -135,10 +135,10 @@ changePitchAbs p1 = return $ fromPitchAbs p1
 -- We always want the first duration to print in the output,
 -- so the initial state is 0 which should never match.
 --
-drn_algo :: ExtDurationAlgo Duration Duration LyNoteLength
-drn_algo = ExtDurationAlgo
-    { initial_stateD    = d_zero        
-    , element_trafoD    = elementD
+drn_algo :: ExternalAlgo Duration pch pch Duration LyNoteLength anno anno
+drn_algo = ExternalAlgo
+    { initial_state     = d_zero        
+    , element_trafo     = elementD
     }
 
 previousDuration :: DMon Duration

@@ -31,8 +31,8 @@ module Payasan.LilyPond.Percussion.Notelist
   , default_section_info
 
 
-  , fromLilyPond
-  , fromLilyPondWith
+--  , fromLilyPond
+--  , fromLilyPondWith
 
   , outputAsLilyPond
   , printAsLilyPond
@@ -80,15 +80,17 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 transExternalToIRBeam :: a -> a
 transExternalToIRBeam = id
 
+{-
 fromLilyPond :: LyDrumPart -> StdDrumPart
 fromLilyPond = fromLilyPondWith default_section_info
+
 
 fromLilyPondWith :: SectionInfo 
                  -> LyDrumPart
                  -> StdDrumPart
 fromLilyPondWith locals = 
     LY.translateFromInput_DurationOnly . pushSectionInfo locals
-
+-}
 
 
 outputAsLilyPond :: ScoreInfo -> StdDrumPart -> String

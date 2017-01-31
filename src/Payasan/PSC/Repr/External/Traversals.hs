@@ -28,19 +28,11 @@ module Payasan.PSC.Repr.External.Traversals
   
   , liftElementTrafo
 
-  , ExtPitchAlgo(..)
-  , transformP
 
-  , ExtDurationAlgo(..)
-  , transformD
-
-  , ExtPitchAnnoAlgo(..)
-  , transformPA
-
-  -- Alternative...
   , ExternalAlgo(..)
   , transformExternal
   , mapPitch
+  , mapAccumPitch
   , mapDuration
   , mapAnno
 
@@ -54,7 +46,7 @@ import Payasan.PSC.Base.SyntaxCommon
 import Control.Monad.Reader                     -- package: mtl
 import Control.Monad.State
 
-
+import Data.List ( mapAccumL )
   
  
 --
@@ -141,63 +133,6 @@ liftElementTrafo f = \e -> return (f e)
 
 
 
---------------------------------------------------------------------------------
--- Pitch
-
-data ExtPitchAlgo st pch1 pch2 = ExtPitchAlgo 
-    { initial_stateP :: st
-    , element_trafoP :: forall drn anno. 
-                        Element pch1 drn anno -> Mon st (Element pch2 drn anno)
-    }
-
-
-transformP :: forall st p1 p2 drn anno.
-              ExtPitchAlgo st p1 p2 
-           -> Part p1 drn anno 
-           -> Part p2 drn anno
-transformP (ExtPitchAlgo { initial_stateP = st0 
-                          , element_trafoP = elemT }) = 
-    genTransform elemT st0
-
-
---------------------------------------------------------------------------------
--- Duration
-
-data ExtDurationAlgo st drn1 drn2 = ExtDurationAlgo 
-    { initial_stateD :: st
-    , element_trafoD :: forall pch anno. 
-                        Element pch drn1 anno -> Mon st (Element pch drn2 anno)
-    }
-
-
-transformD :: forall st pch d1 d2 anno.
-              ExtDurationAlgo st d1 d2 
-           -> Part pch d1 anno 
-           -> Part pch d2 anno
-transformD (ExtDurationAlgo { initial_stateD = st0 
-                            , element_trafoD = elemT }) = 
-    genTransform elemT st0
-
-
---------------------------------------------------------------------------------
--- Pitch and Anno
-
-data ExtPitchAnnoAlgo st pch1 anno1 pch2 anno2 = ExtPitchAnnoAlgo 
-    { initial_statePA :: st
-    , element_trafoPA :: 
-             forall drn. 
-             Element pch1 drn anno1 -> Mon st (Element pch2 drn anno2)
-    }
-
-
-transformPA :: forall st p1 p2 drn a1 a2.
-               ExtPitchAnnoAlgo st p1 a1 p2 a2
-            -> Part p1 drn a1 
-            -> Part p2 drn a2
-transformPA (ExtPitchAnnoAlgo { initial_statePA = st0 
-                               , element_trafoPA = elemT }) = 
-    genTransform elemT st0
-
 
 
 --------------------------------------------------------------------------------
@@ -245,9 +180,33 @@ mapPitch f =
 
     h (Grace1 p d)              = Grace1 (f p) d
     
--- TODO - sharing "Note" between NoteElem and Graces is too 
--- finicky, change syntax at some point.
+mapAccumPitch :: (st -> pch1 -> (st,pch2))
+              -> st 
+              -> Part pch1 drn anno 
+              -> Part pch2 drn anno
+mapAccumPitch f s0 = 
+    transformExternal (ExternalAlgo { initial_state = s0
+                                    , element_trafo = mf })
+  where
+    mf e = get >>= \s -> let (s1,e1) = g s e in put s1 >> return e1
 
+    g s (Note p d a t)          = let (s1,p1) = f s p in (s1, Note p1 d a t)
+
+    g s (Rest d)                = (s, Rest d)
+
+    g s (Spacer d)              = (s, Spacer d)
+
+    g s (Skip d)                = (s, Skip d)
+
+    g s (Chord ps d a t)        = let (s1,ps1) = mapAccumL f s ps 
+                                  in (s1, Chord ps1 d a t)
+
+    g s (Graces ns)             = let (s1,ns1) = mapAccumL h s ns 
+                                  in (s1, Graces ns1)
+
+    g s (Punctuation a)         = (s, Punctuation a)
+                   
+    h s (Grace1 p d)            = let (s1,p1) = f s p in (s1, Grace1 p1 d)
 
 
 mapDuration :: (drn1 -> drn2) 

@@ -82,14 +82,14 @@ timbalesTrafo :: DrumPitch
               -> Part pch Duration a 
               -> Part DrumPitch LyNoteLength a
 timbalesTrafo pch = 
-    transformP (drumnote_algo pch) . LY.translateToLyPartOut_DurationOnly
+    transformExternal (drumnote_algo pch) . LY.translateToLyPartOut_DurationOnly
 
 
 
-drumnote_algo :: DrumPitch -> ExtPitchAlgo () pch DrumPitch
-drumnote_algo pch = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = liftElementTrafo $ elementP pch
+drumnote_algo :: DrumPitch -> ExternalAlgo () pch DrumPitch drn drn anno anno
+drumnote_algo pch = ExternalAlgo
+    { initial_state     = ()
+    , element_trafo     = liftElementTrafo $ elementP pch
     }
 
 

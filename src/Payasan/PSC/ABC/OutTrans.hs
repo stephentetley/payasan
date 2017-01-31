@@ -36,7 +36,8 @@ import Payasan.Base.Scale
 
 
 translateToABCPartOut :: Part Pitch Duration anno -> ABCPartOut anno
-translateToABCPartOut = transformP pch_algo . transformD drn_algo
+translateToABCPartOut = 
+    transformExternal pch_algo . transformExternal drn_algo
 
 type PTMon a = Mon () a
 type DTMon a = Mon UnitNoteLength a
@@ -48,10 +49,10 @@ type DTMon a = Mon UnitNoteLength a
 -- TODO - This should be aware of keysig changes...
 
 
-pch_algo :: ExtPitchAlgo () Pitch ABCPitch
-pch_algo = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = elementP
+pch_algo :: ExternalAlgo () Pitch ABCPitch drn drn anno anno
+pch_algo = ExternalAlgo
+    { initial_state     = ()
+    , element_trafo     = elementP
     }
 
 
@@ -79,10 +80,10 @@ transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asks section_key
 --------------------------------------------------------------------------------
 -- Translate duration
 
-drn_algo :: ExtDurationAlgo UnitNoteLength Duration ABCNoteLength
-drn_algo = ExtDurationAlgo
-    { initial_stateD    = UNIT_NOTE_8
-    , element_trafoD    = elementD
+drn_algo :: ExternalAlgo UnitNoteLength pch pch Duration ABCNoteLength anno anno
+drn_algo = ExternalAlgo
+    { initial_state     = UNIT_NOTE_8
+    , element_trafo     = elementD
     }
 
 

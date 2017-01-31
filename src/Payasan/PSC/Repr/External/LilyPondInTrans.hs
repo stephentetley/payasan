@@ -21,9 +21,9 @@ module Payasan.PSC.Repr.External.LilyPondInTrans
   , unquoteGenLy
   
   -- * DEPRECATED
-  , translateFromInput_Relative
-  , translateFromInput_Absolute
-  , translateFromInput_DurationOnly
+--  , translateFromInput_Relative
+--  , translateFromInput_Absolute
+--  , translateFromInput_DurationOnly
   ) where
 
 
@@ -67,6 +67,7 @@ unquoteGenLy name info (GenLySectionQuote bs) =
                }
 
                
+{-
                
 -- | DEPRECATED - input should be translated from LySectionQuote
 translateFromInput_Relative :: Pitch
@@ -112,7 +113,7 @@ drn_algo = ExtDurationAlgo
    
 
 
-
+-}
 
 --------------------------------------------------------------------------------
 -- Relative Pitch translation

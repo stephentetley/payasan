@@ -144,6 +144,8 @@ mapOnset f = transformFlat (FlatAlgo { initial_state = ()
   where
     g (Event o d a) = Event (f o) d a
 
+
+
 mapAccumOnset :: (st -> onset1 -> (st,onset2))
               -> st 
               -> Part onset1 drn body 

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.ABCInTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -20,12 +20,12 @@ module Payasan.Score.Elementary.Internal.ABCInTrans
   ) where
 
 
+import Payasan.PSC.Old.RewriteMonad
 
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.PSC.Base.ABCCommon 
-import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
