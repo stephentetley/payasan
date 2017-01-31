@@ -42,12 +42,12 @@ import Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Score.Analysis.Common
 
-import Payasan.PSC.Old.RewriteMonad
-
 import Payasan.Base.Basis
 import Payasan.Base.Pitch
 import Payasan.Base.Diatonic
 
+
+import Control.Monad.State              -- package: mtl
 
 -- Simple metrics
 

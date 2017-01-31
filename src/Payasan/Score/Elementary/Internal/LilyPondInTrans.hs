@@ -33,11 +33,11 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Old.RewriteMonad
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
+import Control.Monad.State
 
 
 lilyPondTranslate_Relative :: Pitch
@@ -49,6 +49,7 @@ lilyPondTranslate_Relative pch = trafoRelPitch pch . trafoDuration
 lilyPondTranslate_Absolute :: LyElemSection2 LyPitch anno 
                            -> StdElemSection1 anno
 lilyPondTranslate_Absolute = trafoAbsPitch . trafoDuration
+
 
 
 type DMon a    = Mon Duration a

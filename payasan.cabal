@@ -105,7 +105,6 @@ library
     Payasan.PSC.MIDI.OutTrans,
     Payasan.PSC.MIDI.PrimitiveSyntax,
     Payasan.PSC.MIDI.Syntax,
-    Payasan.PSC.Old.RewriteMonad,
     Payasan.PSC.Old.Pipeline,
     Payasan.PSC.Old.Shell,
     Payasan.PSC.Repr.External.AddBeams,

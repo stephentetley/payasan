@@ -20,7 +20,6 @@
 module Payasan.PSC.Repr.External.ABCInTrans
   (
     unquoteABC
---  , translateFromInput
   ) where
 
 import Payasan.PSC.Base.ABCCommon
@@ -47,31 +46,6 @@ unquoteABC name info (ABCSectionQuote bs) =
                , section_bars      = bars
                }
 
-{-
--- | DEPRECATED - input should be translated from ABCSectionQuote
-translateFromInput :: Part ABCPitch ABCNoteLength anno 
-                   -> Part Pitch Duration anno
-translateFromInput = transformP pch_algo . transformD drn_algo
--}
-
---------------------------------------------------------------------------------
--- Pitch translation
-
-{-
--- | DEPRECATED
-pch_algo :: ExtPitchAlgo () ABCPitch Pitch
-pch_algo = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = elementP
-    }
-
--- | DEPRECATED
-drn_algo :: ExtDurationAlgo UnitNoteLength ABCNoteLength Duration
-drn_algo = ExtDurationAlgo
-    { initial_stateD    = UNIT_NOTE_8
-    , element_trafoD    = elementD
-    }
--}
 --------------------------------------------------------------------------------
 -- Pitch translation
 

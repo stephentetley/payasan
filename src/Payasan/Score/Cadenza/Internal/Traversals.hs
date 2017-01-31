@@ -55,19 +55,24 @@ module Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Score.Cadenza.Internal.Syntax
 
-import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Scale
 
+import Control.Monad.Identity           -- package: mtl
+import Control.Monad.Reader
+import Control.Monad.State
+
 import Data.Foldable (foldlM)
 import Data.Maybe
 
-type Mon st a = Rewrite SectionInfo st a
 
 
-fromRight :: Either z a -> a
-fromRight _ = error "fromRight TODO"
+type Mon st = ReaderT SectionInfo (StateT st Identity)
+
+evalRewrite :: Mon st a -> SectionInfo -> st -> a
+evalRewrite mf r s = runIdentity (evalStateT (runReaderT mf r) s)
+
 
 -- | Do not expose this as it is too general / complex.
 --
@@ -78,7 +83,7 @@ genCollect :: forall st pch drn anno ac.
            -> Section pch drn anno 
            -> ac
 genCollect mf a0 st ph = 
-    fromRight $ evalRewrite (partC a0 ph) default_section_info st
+    evalRewrite (partC a0 ph) default_section_info st
   where
 
     partC :: ac -> Section pch drn anno -> Mon st ac
@@ -98,7 +103,7 @@ genTransform :: forall st p1 p2 d1 d2 a1 a2.
              -> Section p1 d1 a1
              -> Section p2 d2 a2
 genTransform elemT st0 ph = 
-    fromRight $ evalRewrite (partT ph) default_section_info st0
+    evalRewrite (partT ph) default_section_info st0
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 

@@ -20,10 +20,6 @@ module Payasan.PSC.Repr.External.LilyPondInTrans
   , unquoteLyAbsolute
   , unquoteGenLy
   
-  -- * DEPRECATED
---  , translateFromInput_Relative
---  , translateFromInput_Absolute
---  , translateFromInput_DurationOnly
   ) where
 
 
@@ -67,53 +63,6 @@ unquoteGenLy name info (GenLySectionQuote bs) =
                }
 
                
-{-
-               
--- | DEPRECATED - input should be translated from LySectionQuote
-translateFromInput_Relative :: Pitch
-                            -> Part LyPitch LyNoteLength anno 
-                            -> Part Pitch Duration anno
-translateFromInput_Relative pch  = 
-    transformP (rel_pch_algo pch) . transformD drn_algo
-
-
--- | DEPRECATED - input should be translated from LySectionQuote
-translateFromInput_Absolute :: Part LyPitch LyNoteLength anno 
-                            -> Part Pitch Duration anno
-translateFromInput_Absolute = 
-    transformP abs_pch_algo . transformD drn_algo
-
--- | DEPRECATED - input should be translated from GenLySectionQuote
-translateFromInput_DurationOnly :: Part pch LyNoteLength anno 
-                                -> Part pch Duration anno
-translateFromInput_DurationOnly = transformD drn_algo
-
-
-
--- | DEPRECATED
-rel_pch_algo :: Pitch -> ExtPitchAlgo Pitch LyPitch Pitch
-rel_pch_algo start = ExtPitchAlgo
-    { initial_stateP    = start
-    , element_trafoP    = relElementP
-    }
-
--- | DEPRECATED
-abs_pch_algo :: ExtPitchAlgo () LyPitch Pitch
-abs_pch_algo = ExtPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = absElementP
-    }
-
--- | DEPRECATED
-drn_algo :: ExtDurationAlgo Duration LyNoteLength Duration 
-drn_algo = ExtDurationAlgo
-    { initial_stateD    = d_quarter
-    , element_trafoD    = elementD
-    }
-   
-
-
--}
 
 --------------------------------------------------------------------------------
 -- Relative Pitch translation

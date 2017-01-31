@@ -36,9 +36,7 @@ import Payasan.Score.Cadenza.Internal.Metrics
 import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.Score.Cadenza.Internal.Traversals
 
-import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
-
 
 import Payasan.Base.Duration
 import Payasan.Base.Diatonic
@@ -47,6 +45,7 @@ import Payasan.Base.Names.Interval
 import Payasan.Base.Pitch
 import Payasan.Base.Scale
 
+import Control.Monad.Reader             -- package: mtl
 
 -- | Double note lengths.
 --

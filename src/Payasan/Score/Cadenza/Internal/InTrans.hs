@@ -32,12 +32,11 @@ import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Old.RewriteMonad
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-
+import Control.Monad.State              -- package: mtl
 
 lilyPondTranslate_Relative :: Pitch
                            -> LyCadenzaSection2 LyPitch anno 

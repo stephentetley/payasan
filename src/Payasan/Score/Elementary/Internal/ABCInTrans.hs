@@ -20,7 +20,6 @@ module Payasan.Score.Elementary.Internal.ABCInTrans
   ) where
 
 
-import Payasan.PSC.Old.RewriteMonad
 
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
@@ -32,6 +31,7 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 import Payasan.Base.Scale
 
+import Control.Monad.Reader
 
 abcTranslate :: ABCElemSection -> Section Pitch Duration ()
 abcTranslate = transformP pch_algo . transformD drn_algo
