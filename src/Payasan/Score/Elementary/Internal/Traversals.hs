@@ -111,7 +111,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Analysis.Common
 import Payasan.Score.Analysis.Trace
 
-import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Scale

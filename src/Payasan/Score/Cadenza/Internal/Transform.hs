@@ -36,7 +36,7 @@ import Payasan.Score.Cadenza.Internal.Metrics
 import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.Score.Cadenza.Internal.Traversals
 
-import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 

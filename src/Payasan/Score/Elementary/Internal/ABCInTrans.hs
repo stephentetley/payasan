@@ -25,7 +25,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.PSC.Base.ABCCommon 
-import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration

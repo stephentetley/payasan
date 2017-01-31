@@ -33,7 +33,7 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Old.RewriteMonad
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

@@ -57,7 +57,6 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 import Control.Monad.State
 
 
--- TODO Shouldn't use Rewrite...
 type Mon a = State St a
 
 -- Meter pattern (SectionInfo) is irrelevant at this stage.

@@ -55,7 +55,7 @@ module Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Score.Cadenza.Internal.Syntax
 
-import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Old.RewriteMonad
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Scale

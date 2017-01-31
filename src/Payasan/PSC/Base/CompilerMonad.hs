@@ -29,15 +29,12 @@ module Payasan.PSC.Base.CompilerMonad
   , guard
 
  
-  , rewrite
- 
   , getWorkingDirectory
   , readFileCM  
 
   ) where
 
 
-import Payasan.PSC.Base.RewriteMonad
 
 
 import qualified Data.Text              as TEXT
@@ -114,12 +111,6 @@ prompt ma = runCM ma >>= \ans -> case ans of
     Left err -> error err
     Right a -> return a
 
-
---------------------------------------------------------------------------------
--- Run rewrites
-
-rewrite :: Rewrite env st a -> env -> st -> CM a
-rewrite ma env st = CM $ return (evalRewrite ma env st)
 
 
 --------------------------------------------------------------------------------

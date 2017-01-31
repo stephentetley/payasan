@@ -2,8 +2,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Base.RewriteMonad
--- Copyright   :  (c) Stephen Tetley 2014-2016
+-- Module      :  Payasan.PSC.Old.RewriteMonad
+-- Copyright   :  (c) Stephen Tetley 2014-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -14,7 +14,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Base.RewriteMonad
+module Payasan.PSC.Old.RewriteMonad
   ( 
 
     RewriteError

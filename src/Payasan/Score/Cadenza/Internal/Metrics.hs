@@ -42,7 +42,7 @@ import Payasan.Score.Cadenza.Internal.Traversals
 
 import Payasan.Score.Analysis.Common
 
-import Payasan.PSC.Base.RewriteMonad
+import Payasan.PSC.Old.RewriteMonad
 
 import Payasan.Base.Basis
 import Payasan.Base.Pitch

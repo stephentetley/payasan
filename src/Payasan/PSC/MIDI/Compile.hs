@@ -53,6 +53,14 @@ import System.FilePath
 
 type MIDICompile a = CM a
 
+--
+-- make_event_body is wrong - it exposes chan and potentially
+-- allows two NoteOns or two NoteOffs
+-- 
+-- There is also a dichotomy between compiling a file and 
+-- compiling a track (a file might have a number of tracks...)
+--
+
 
 data CompilerDef pch anno = CompilerDef
     { pathto_working_dir        :: !FilePath
