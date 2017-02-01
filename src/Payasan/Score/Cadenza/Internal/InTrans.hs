@@ -59,12 +59,12 @@ type AbsPMon a = Mon () a
 -- Relative Pitch translation
 
 trafoRelPitch :: Pitch -> Section LyPitch drn anno -> Section Pitch drn anno
-trafoRelPitch p0 = transformP (rel_pch_algo p0)
+trafoRelPitch p0 = transformCadenza (rel_pch_algo p0)
 
-rel_pch_algo :: Pitch -> CadenzaPitchAlgo Pitch LyPitch Pitch
-rel_pch_algo start = CadenzaPitchAlgo
-    { initial_stateP    = start
-    , element_trafoP    = relElementP
+rel_pch_algo :: Pitch -> CadenzaAlgo Pitch LyPitch Pitch drn drn anno anno
+rel_pch_algo start = CadenzaAlgo
+    { initial_state = start
+    , element_trafo = relElementP
     }
 
 
@@ -99,13 +99,13 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 trafoAbsPitch :: Section LyPitch drn anno -> Section Pitch drn anno
-trafoAbsPitch = transformP abs_pch_algo
+trafoAbsPitch = transformCadenza abs_pch_algo
 
 
-abs_pch_algo :: CadenzaPitchAlgo () LyPitch Pitch
-abs_pch_algo = CadenzaPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = absElementP
+abs_pch_algo :: CadenzaAlgo () LyPitch Pitch drn drn anno anno
+abs_pch_algo = CadenzaAlgo
+    { initial_state = ()
+    , element_trafo = absElementP
     }
 
 
@@ -127,13 +127,13 @@ changePitchAbs p1 = return $ toPitchAbs p1
 -- Duration translation
 
 trafoDuration :: Section pch LyNoteLength anno -> Section pch Duration anno
-trafoDuration = transformD drn_algo
+trafoDuration = transformCadenza drn_algo
 
 
-drn_algo :: CadenzaDurationAlgo Duration LyNoteLength Duration 
-drn_algo = CadenzaDurationAlgo
-    { initial_stateD    = d_quarter
-    , element_trafoD    = elementD
+drn_algo :: CadenzaAlgo Duration pch pch LyNoteLength Duration anno anno
+drn_algo = CadenzaAlgo
+    { initial_state = d_quarter
+    , element_trafo = elementD
     }
 
 previousDuration :: DMon Duration

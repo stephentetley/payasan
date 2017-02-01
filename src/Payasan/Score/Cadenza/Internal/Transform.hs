@@ -123,10 +123,10 @@ diatonically fn = fromDiatonicSection . fn . toDiatonicSection
 
 
 toDiatonicSection :: Section Pitch drn anno -> Section Diatonic drn anno
-toDiatonicSection = transformP step_algo
+toDiatonicSection = transformCadenza step_algo
   where
-    step_algo = CadenzaPitchAlgo { initial_stateP = ()
-                              , element_trafoP = change }
+    step_algo = CadenzaAlgo { initial_state = ()
+                            , element_trafo = change }
 
     change (Note p d a t)       = (\p1 -> Note p1 d a t) <$> mf p
     change (Rest d)             = pure $ Rest d
@@ -139,10 +139,10 @@ toDiatonicSection = transformP step_algo
 
 
 fromDiatonicSection :: Section Diatonic drn anno -> Section Pitch drn anno
-fromDiatonicSection = transformP step_algo
+fromDiatonicSection = transformCadenza step_algo
   where
-    step_algo = CadenzaPitchAlgo { initial_stateP = ()
-                              , element_trafoP = change }
+    step_algo = CadenzaAlgo { initial_state = ()
+                            , element_trafo = change }
 
     change (Note p d a t)       = (\p1 -> Note p1 d a t) <$> mf p
     change (Rest d)             = pure $ Rest d

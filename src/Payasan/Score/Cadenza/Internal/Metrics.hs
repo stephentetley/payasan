@@ -87,9 +87,10 @@ highestDiatonic = fmap nubAlteration . foldPitch fn Nothing
 
 
 contourAlgo :: (Pitch -> Pitch -> ctour) 
-            -> CadenzaPitchAlgo (Maybe Pitch) Pitch ctour
-contourAlgo comp = CadenzaPitchAlgo { initial_stateP = Nothing
-                                    , element_trafoP = fn }
+            -> CadenzaAlgo (Maybe Pitch) Pitch ctour drn drn anno anno
+contourAlgo comp = 
+    CadenzaAlgo { initial_state = Nothing
+                , element_trafo = fn }
   where   
     fn (Note p d a t)   = do { opt <- get 
                              ; case opt of 
@@ -106,7 +107,7 @@ contourAlgo comp = CadenzaPitchAlgo { initial_stateP = Nothing
 
 
 semitoneInterval :: Section Pitch drn anno -> Section Int drn anno
-semitoneInterval = transformP (contourAlgo comp)
+semitoneInterval = transformCadenza (contourAlgo comp)
   where
     comp pold pnew = let sc = interval_semitones $ intervalBetween pold pnew
                      in if pnew `isLower` pold then negate sc else sc
@@ -116,7 +117,7 @@ semitoneInterval = transformP (contourAlgo comp)
 
 
 grossContour :: Section Pitch drn anno -> Section GrossContour drn anno
-grossContour = transformP (contourAlgo comp)
+grossContour = transformCadenza (contourAlgo comp)
   where
     comp pold pnew | pnew `isHigher` pold = UP
                    | pnew `isLower`  pold = DOWN
@@ -127,7 +128,7 @@ grossContour = transformP (contourAlgo comp)
 
 
 refinedContour :: Section Pitch drn anno -> Section RefinedContour drn anno
-refinedContour = transformP (contourAlgo comp)
+refinedContour = transformCadenza (contourAlgo comp)
   where
     comp pold pnew 
         | pnew `isHigher` pold = let ival = intervalBetween pold pnew
