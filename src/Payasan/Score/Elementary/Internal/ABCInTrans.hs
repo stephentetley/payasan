@@ -34,7 +34,7 @@ import Payasan.Base.Scale
 import Control.Monad.Reader
 
 abcTranslate :: ABCElemSection -> Section Pitch Duration ()
-abcTranslate = transformP pch_algo . transformD drn_algo
+abcTranslate = transformElementary pch_algo . transformElementary drn_algo
 
 
 --------------------------------------------------------------------------------
@@ -42,10 +42,10 @@ abcTranslate = transformP pch_algo . transformD drn_algo
 
 type PMon a = Mon () a
 
-pch_algo :: ElemPitchAlgo () ABCPitch Pitch
-pch_algo = ElemPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = elementP
+pch_algo :: ElementaryAlgo () ABCPitch Pitch drn drn anno anno
+pch_algo = ElementaryAlgo
+    { initial_state = ()
+    , element_trafo = elementP
     }
 
 
@@ -66,10 +66,10 @@ transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
 
 type DMon a = Mon UnitNoteLength a
 
-drn_algo :: ElemDurationAlgo UnitNoteLength ABCNoteLength Duration
-drn_algo = ElemDurationAlgo
-    { initial_stateD    = UNIT_NOTE_8
-    , element_trafoD    = elementD
+drn_algo :: ElementaryAlgo UnitNoteLength pch pch ABCNoteLength Duration anno anno
+drn_algo = ElementaryAlgo
+    { initial_state = UNIT_NOTE_8
+    , element_trafo = elementD
     }
 
 

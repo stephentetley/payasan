@@ -62,12 +62,12 @@ type AbsPMon a = Mon () a
 -- Relative Pitch translation
 
 trafoRelPitch :: Pitch -> Section LyPitch drn anno -> Section Pitch drn anno
-trafoRelPitch p0 = transformP (rel_pch_algo p0)
+trafoRelPitch p0 = transformElementary (rel_pch_algo p0)
 
-rel_pch_algo :: Pitch -> ElemPitchAlgo Pitch LyPitch Pitch
-rel_pch_algo start = ElemPitchAlgo
-    { initial_stateP    = start
-    , element_trafoP    = relElementP
+rel_pch_algo :: Pitch -> ElementaryAlgo Pitch LyPitch Pitch drn drn anno anno
+rel_pch_algo start = ElementaryAlgo
+    { initial_state = start
+    , element_trafo = relElementP
     }
 
 
@@ -102,13 +102,13 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 trafoAbsPitch :: Section LyPitch drn anno -> Section Pitch drn anno
-trafoAbsPitch = transformP abs_pch_algo
+trafoAbsPitch = transformElementary abs_pch_algo
 
 
-abs_pch_algo :: ElemPitchAlgo () LyPitch Pitch
-abs_pch_algo = ElemPitchAlgo
-    { initial_stateP    = ()
-    , element_trafoP    = absElementP
+abs_pch_algo :: ElementaryAlgo () LyPitch Pitch drn drn anno anno
+abs_pch_algo = ElementaryAlgo
+    { initial_state = ()
+    , element_trafo = absElementP
     }
 
 
@@ -130,13 +130,13 @@ changePitchAbs p1 = return $ toPitchAbs p1
 -- Duration translation
 
 trafoDuration :: Section pch LyNoteLength anno -> Section pch Duration anno
-trafoDuration = transformD drn_algo
+trafoDuration = transformElementary drn_algo
 
 
-drn_algo :: ElemDurationAlgo Duration LyNoteLength Duration 
-drn_algo = ElemDurationAlgo
-    { initial_stateD    = d_quarter
-    , element_trafoD    = elementD
+drn_algo :: ElementaryAlgo Duration pch pch LyNoteLength Duration anno anno
+drn_algo = ElementaryAlgo
+    { initial_state = d_quarter
+    , element_trafo = elementD
     }
 
 previousDuration :: DMon Duration

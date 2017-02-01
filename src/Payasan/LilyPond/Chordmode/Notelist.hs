@@ -70,7 +70,7 @@ import Payasan.Score.Elementary.Internal.ShowTabular
 import qualified Payasan.PSC.Old.Pipeline                       as MAIN
 import Payasan.PSC.Old.Shell
 
-import qualified Payasan.PSC.Repr.External.Syntax as MAIN
+-- import qualified Payasan.PSC.Repr.External.Syntax as MAIN
 import Payasan.PSC.Repr.External.AddBeams
 
 import Payasan.PSC.Base.ShowCommon ( LeafOutputNote(..) )

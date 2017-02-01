@@ -64,28 +64,23 @@ module Payasan.Score.Elementary.Internal.Traversals
 
   , Mon 
 
-  , ElemPitchAlgo(..)
-  , transformP
+  , ElementaryAlgo(..)
+  , transformElementary
+
   , collectP
   , mapPitch
   , ctxMapPitch   -- TEMP ?
   , foldPitch 
 
 
-  , ElemDurationAlgo(..)
-  , transformD
   , collectD
   , mapDuration
   , foldDuration
 
-  , ElemAnnoAlgo(..)
-  , transformA
   , collectA
   , mapAnno
   , foldAnno
 
-  , ElemPitchAnnoAlgo(..)
-  , transformPA
   , collectPA
   , mapPitchAnno
   , foldPitchAnno
@@ -568,19 +563,21 @@ genTransform elemT st0 ph =
 --
 
 
-data ElemPitchAlgo st pch1 pch2 = ElemPitchAlgo 
-    { initial_stateP  :: st
-    , element_trafoP  :: forall drn anno. 
-                         Element pch1 drn anno -> Mon st (Element pch2 drn anno)
+data ElementaryAlgo st pch1 pch2 drn1 drn2 anno1 anno2 = ElementaryAlgo 
+    { initial_state :: st
+    , element_trafo :: 
+            Element pch1 drn1 anno1 -> Mon st (Element pch2 drn2 anno2)
     }
 
 
-transformP :: forall st p1 p2 drn anno. 
-              ElemPitchAlgo st p1 p2 
-           -> Section p1 drn anno 
-           -> Section p2 drn anno
-transformP (ElemPitchAlgo { initial_stateP = st0 
-                          , element_trafoP = elemT }) = genTransform elemT st0
+transformElementary :: ElementaryAlgo st pch1 pch2 drn1 drn2 anno1 anno2
+                    -> Section pch1 drn1 anno1 
+                    -> Section pch2 drn2 anno2
+transformElementary (ElementaryAlgo { initial_state = st0 
+                                    , element_trafo = elemT }) = 
+    genTransform elemT st0
+
+
 
 
 -- | This is a seems less generally useful than @transformP@ 
@@ -613,10 +610,10 @@ mapPitch fn = ctxMapPitch (\_ p -> fn p)
 ctxMapPitch :: (Key -> pch1 -> pch2) 
             -> Section pch1 drn anno 
             -> Section pch2 drn anno
-ctxMapPitch fn = transformP algo 
+ctxMapPitch fn = transformElementary algo 
   where
-    algo  = ElemPitchAlgo { initial_stateP    = ()
-                          , element_trafoP    = stepE }
+    algo = ElementaryAlgo { initial_state = ()
+                          , element_trafo = stepE }
 
     stepE (Note p d a t)    = (\ks -> Note (fn ks p) d a t) <$> asks section_key
     stepE (Rest d)          = pure $ Rest d
@@ -632,20 +629,6 @@ foldPitch fn a0 ph = collectP step a0 () ph
 
 --------------------------------------------------------------------------------
 -- Duration
-
-data ElemDurationAlgo st drn1 drn2 = ElemDurationAlgo 
-    { initial_stateD :: st
-    , element_trafoD :: forall pch anno. 
-                        Element pch drn1 anno -> Mon st (Element pch drn2 anno)
-    }
-
-
-transformD :: forall st pch d1 d2 anno.
-              ElemDurationAlgo st d1 d2 
-           -> Section pch d1 anno 
-           -> Section pch d2 anno
-transformD (ElemDurationAlgo { initial_stateD = st0 
-                             , element_trafoD = elemT }) = genTransform elemT st0
 
 
 -- | This is a seems less generally useful than @transformD@ 
@@ -673,10 +656,10 @@ collectD mf = genCollect elementC
 -- recalculating bar lines.
 
 mapDuration :: (drn1 -> drn2) -> Section pch drn1 anno -> Section pch drn2 anno
-mapDuration fn = transformD algo 
+mapDuration fn = transformElementary algo 
   where
-    algo  = ElemDurationAlgo { initial_stateD   = ()
-                             , element_trafoD   = stepE }
+    algo = ElementaryAlgo { initial_state = ()
+                          , element_trafo = stepE }
 
     stepE (Note p d a t)        = pure $ Note p (fn d) a t
     stepE (Rest d)              = pure $ Rest (fn d)
@@ -692,21 +675,6 @@ foldDuration fn a0 ph = collectD step a0 () ph
 
 --------------------------------------------------------------------------------
 -- Annotation
-
-
-data ElemAnnoAlgo st anno1 anno2 = ElemAnnoAlgo 
-    { initial_stateA  :: st
-    , element_trafoA  :: forall pch drn. 
-                         Element pch drn anno1 -> Mon st (Element pch drn anno2)
-    }
-
-
-transformA :: forall st pch drn a1 a2.
-              ElemAnnoAlgo st a1 a2
-           -> Section pch drn a1 
-           -> Section pch drn a2
-transformA (ElemAnnoAlgo { initial_stateA = st0 
-                         , element_trafoA = elemT }) = genTransform elemT st0
 
 
 collectA :: forall st pch drn anno ac.
@@ -730,10 +698,10 @@ collectA mf = genCollect elementC
 
 
 mapAnno :: (anno1 -> anno2) -> Section pch drn anno1 -> Section pch drn anno2
-mapAnno fn = transformA algo 
+mapAnno fn = transformElementary algo 
   where
-    algo  = ElemAnnoAlgo { initial_stateA   = ()
-                         , element_trafoA   = stepE }
+    algo = ElementaryAlgo { initial_state = ()
+                          , element_trafo = stepE }
 
     stepE (Note p d a t)        = pure $ Note p d (fn a) t
     stepE (Rest d)              = pure $ Rest d
@@ -749,23 +717,6 @@ foldAnno fn a0 ph = collectA step a0 () ph
 
 --------------------------------------------------------------------------------
 -- Pitch and Annotation
-
-data ElemPitchAnnoAlgo st pch1 anno1 pch2 anno2 = ElemPitchAnnoAlgo 
-    { initial_statePA :: st
-    , element_trafoPA :: 
-             forall drn. 
-             Element pch1 drn anno1 -> Mon st (Element pch2 drn anno2)
-    }
-
-
-transformPA :: forall st p1 p2 drn a1 a2.
-               ElemPitchAnnoAlgo st p1 a1 p2 a2
-            -> Section p1 drn a1 
-            -> Section p2 drn a2
-transformPA (ElemPitchAnnoAlgo { initial_statePA = st0 
-                               , element_trafoPA = elemT }) = 
-    genTransform elemT st0
-
 
 collectPA :: forall st pch drn anno ac.
              (ac -> pch -> anno -> Mon st ac) 
@@ -789,10 +740,10 @@ collectPA mf = genCollect elementC
 
 
 mapPitchAnno :: (p1 -> a1 -> (p2,a2)) -> Section p1 drn a1 -> Section p2 drn a2
-mapPitchAnno fn = transformPA algo 
+mapPitchAnno fn = transformElementary algo 
   where
-    algo  = ElemPitchAnnoAlgo { initial_statePA   = ()
-                              , element_trafoPA   = stepE }
+    algo = ElementaryAlgo { initial_state = ()
+                          , element_trafo = stepE }
 
     stepE (Note p d a t)    = let (p1,a1) = fn p a in pure $ Note p1 d a1 t
     stepE (Rest d)          = pure $ Rest d
