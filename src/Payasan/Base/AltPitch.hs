@@ -21,15 +21,17 @@ module Payasan.Base.AltPitch
 
 
     MidiPitch(..)
-  , CpsPitch(..)
+  , OctPitch(..)
   , HzPitch(..)
   
   , midi_middle_c
   , pitchToMidiPitch
   
-  , cps_middle_c
-  , pitchToCpsPitch
+  , hz_middle_c
+  , pitchToHzPitch
 
+  , oct_middle_c
+  , pitchToOctPitch
   
   )  where
 
@@ -45,7 +47,7 @@ import Data.Word
 
 
 -- NOTE - should MIDI be capitalized? 
--- (If so then should Cps?)
+-- (If so then should Hz?)
 
 -- | Although Midi Pitch can potentially support Num and 
 -- integral classes, it shouldn't as pitch operations are not
@@ -58,7 +60,8 @@ newtype MidiPitch = MidiPitch { getMidiPitch :: Word8 }
 
 
 -- | Middle C is octave 8
-newtype CpsPitch = CpsPitch { getCpsPitch :: FIXED.Milli }
+-- Octave fractions - e.g. 8.0, 8.1667, 8.3334 ..
+newtype OctPitch = OctPitch { getOctPitch :: FIXED.Milli }
   deriving (Data,Eq,Ord,Show,Typeable)
   
 
@@ -75,8 +78,8 @@ newtype HzPitch = HzPitch { getHzPitch :: FIXED.Milli }
 instance Pretty MidiPitch where 
   pPrint (MidiPitch i)   = text $ show i
 
-instance Pretty CpsPitch where 
-  pPrint (CpsPitch d)   = text $ show d
+instance Pretty OctPitch where 
+  pPrint (OctPitch d)   = text $ show d
   
 instance Pretty HzPitch where 
   pPrint (HzPitch d)   = text $ show d
@@ -84,13 +87,19 @@ instance Pretty HzPitch where
   
 --------------------------------------------------------------------------------
 -- operations and constants  
+
+midiOct :: MidiPitch -> OctPitch
+midiOct m = OctPitch $ 8.0 + (realToFrac $ getMidiPitch m - 60)/12.0
   
-cps_middle_c :: CpsPitch
-cps_middle_c = CpsPitch 8.000
+
+hz_middle_c :: HzPitch
+hz_middle_c = HzPitch 261.625565
 
 
-pitchToCpsPitch :: Pitch -> CpsPitch
-pitchToCpsPitch (Pitch (PitchName l a) ove) = CpsPitch $ o + frac
+-- This is likely wrong - it was copied in from somewhere and is probably 
+-- oct(-ave fraction)... 
+pitchToHzPitch :: Pitch -> HzPitch
+pitchToHzPitch (Pitch (PitchName l a) ove) = HzPitch $ o + frac
   where
     o     = fromIntegral $ 4 + ove
     semis = fromPitchLetter l + fromAlteration a
@@ -104,6 +113,15 @@ midi_middle_c = MidiPitch 60
 
 pitchToMidiPitch :: Pitch -> MidiPitch
 pitchToMidiPitch = MidiPitch . fromIntegral . midiSemitoneCount
+
+
+
+oct_middle_c :: OctPitch
+oct_middle_c = OctPitch 8.000
+
+
+pitchToOctPitch :: Pitch -> OctPitch
+pitchToOctPitch = midiOct . pitchToMidiPitch
 
 
 -- TODO - add conversions to HzPitch etc. 
