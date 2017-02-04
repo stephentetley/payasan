@@ -21,17 +21,17 @@ module Payasan.Base.AltPitch
 
 
     MidiPitch(..)
-  , OctPitch(..)
-  , HzPitch(..)
+  , HertzPitch(..)
+  , PCPitch(..)
   
   , midi_middle_c
   , pitchToMidiPitch
   
-  , hz_middle_c
-  , pitchToHzPitch
+  , hertz_middle_c
+  , pitchToHertzPitch
 
-  , oct_middle_c
-  , pitchToOctPitch
+  , octave_pitch_middle_c
+  , pitchToPCPitch
   
   )  where
 
@@ -59,15 +59,16 @@ newtype MidiPitch = MidiPitch { getMidiPitch :: Word8 }
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
 
 
+
+newtype HertzPitch = HertzPitch { getHertzPitch :: FIXED.Micro }
+  deriving (Data,Eq,Ord,Show,Typeable)  
+
+
 -- | Middle C is octave 8
--- Octave fractions - e.g. 8.0, 8.1667, 8.3334 ..
-newtype OctPitch = OctPitch { getOctPitch :: FIXED.Milli }
+-- Octave fractions - e.g. 8.0, 8.01, 8.02 ..
+newtype PCPitch = PCPitch { getPCPitch :: FIXED.Centi }
   deriving (Data,Eq,Ord,Show,Typeable)
   
-
-
-newtype HzPitch = HzPitch { getHzPitch :: FIXED.Milli }
-  deriving (Data,Eq,Ord,Show,Typeable)  
 
 
 
@@ -78,34 +79,15 @@ newtype HzPitch = HzPitch { getHzPitch :: FIXED.Milli }
 instance Pretty MidiPitch where 
   pPrint (MidiPitch i)   = text $ show i
 
-instance Pretty OctPitch where 
-  pPrint (OctPitch d)   = text $ show d
+instance Pretty PCPitch where 
+  pPrint (PCPitch d)   = text $ show d
   
-instance Pretty HzPitch where 
-  pPrint (HzPitch d)   = text $ show d
+instance Pretty HertzPitch where 
+  pPrint (HertzPitch d)   = text $ show d
   
   
 --------------------------------------------------------------------------------
--- operations and constants  
-
-midiOct :: MidiPitch -> OctPitch
-midiOct m = OctPitch $ 8.0 + (realToFrac $ getMidiPitch m - 60)/12.0
-  
-
-hz_middle_c :: HzPitch
-hz_middle_c = HzPitch 261.625565
-
-
--- This is likely wrong - it was copied in from somewhere and is probably 
--- oct(-ave fraction)... 
-pitchToHzPitch :: Pitch -> HzPitch
-pitchToHzPitch (Pitch (PitchName l a) ove) = HzPitch $ o + frac
-  where
-    o     = fromIntegral $ 4 + ove
-    semis = fromPitchLetter l + fromAlteration a
-    frac  = (realToFrac semis) / 100
-
-
+-- MidiPitch
 
 midi_middle_c :: MidiPitch
 midi_middle_c = MidiPitch 60
@@ -115,18 +97,48 @@ pitchToMidiPitch :: Pitch -> MidiPitch
 pitchToMidiPitch = MidiPitch . fromIntegral . midiSemitoneCount
 
 
+  
 
-oct_middle_c :: OctPitch
-oct_middle_c = OctPitch 8.000
+--------------------------------------------------------------------------------
+-- HertzPitch
+
+midiHz :: MidiPitch -> Double
+midiHz m = 6.875 * (2.0 ** ((m' +3) / 12)) 
+  where
+    m' = realToFrac $ getMidiPitch m
 
 
-pitchToOctPitch :: Pitch -> OctPitch
-pitchToOctPitch = midiOct . pitchToMidiPitch
+hertz_middle_c :: HertzPitch
+hertz_middle_c = HertzPitch 261.625565
 
 
--- TODO - add conversions to HzPitch etc. 
--- Haskell code that I've already written exists somewhere in
--- Copperbox (Googlecode)...
+-- This is likely wrong - it was copied in from somewhere and is probably 
+-- oct(-ave fraction)... 
+pitchToHertzPitch :: Pitch -> HertzPitch
+pitchToHertzPitch = HertzPitch . realToFrac . midiHz . pitchToMidiPitch
+
+
+
+
+--------------------------------------------------------------------------------
+-- PCPitch
+
+
+-- midiPC :: MidiPitch -> PCPitch
+-- midiPC m = PCPitch $ 8.0 + (realToFrac $ getMidiPitch m - 60)/12.0
+
+
+octave_pitch_middle_c :: PCPitch
+octave_pitch_middle_c = PCPitch 8.000
+
+
+pitchToPCPitch :: Pitch -> PCPitch
+pitchToPCPitch (Pitch (PitchName l a) ove) = PCPitch $ o + frac
+  where
+    o     = fromIntegral $ 4 + ove
+    semis = fromPitchLetter l + fromAlteration a
+    frac  = (realToFrac semis) / 100
+
 
 
 
