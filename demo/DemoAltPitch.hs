@@ -21,3 +21,6 @@ demo01 = pitchToHertzPitch a_3
 
 demo02 :: PCPitch
 demo02 = pitchToPCPitch a_3
+
+demo03 :: OctPitch
+demo03 = pitchToOctPitch a_3

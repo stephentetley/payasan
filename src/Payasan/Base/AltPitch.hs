@@ -12,7 +12,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Low level pitch representations for backend output.
+-- Alternative pitch representations for backend output.
 -- 
 --------------------------------------------------------------------------------
 
@@ -23,6 +23,8 @@ module Payasan.Base.AltPitch
     MidiPitch(..)
   , HertzPitch(..)
   , PCPitch(..)
+  , OctPitch(..)
+
   
   , midi_middle_c
   , pitchToMidiPitch
@@ -30,8 +32,11 @@ module Payasan.Base.AltPitch
   , hertz_middle_c
   , pitchToHertzPitch
 
-  , octave_pitch_middle_c
+  , pc_pitch_middle_c
   , pitchToPCPitch
+
+  , oct_pitch_middle_c
+  , pitchToOctPitch
   
   )  where
 
@@ -66,9 +71,17 @@ newtype HertzPitch = HertzPitch { getHertzPitch :: FIXED.Micro }
 
 -- | Middle C is octave 8
 -- Octave fractions - e.g. 8.0, 8.01, 8.02 ..
+--
 newtype PCPitch = PCPitch { getPCPitch :: FIXED.Centi }
   deriving (Data,Eq,Ord,Show,Typeable)
   
+
+
+-- | Each semitone is 0.16667
+--
+newtype OctPitch = OctPitch { getOctPitch :: FIXED.Micro }
+  deriving (Data,Eq,Ord,Show,Typeable)  
+
 
 
 
@@ -79,11 +92,15 @@ newtype PCPitch = PCPitch { getPCPitch :: FIXED.Centi }
 instance Pretty MidiPitch where 
   pPrint (MidiPitch i)   = text $ show i
 
+instance Pretty HertzPitch where 
+  pPrint (HertzPitch d)   = text $ show d
+
 instance Pretty PCPitch where 
   pPrint (PCPitch d)   = text $ show d
   
-instance Pretty HertzPitch where 
-  pPrint (HertzPitch d)   = text $ show d
+instance Pretty OctPitch where 
+  pPrint (OctPitch d)   = text $ show d
+  
   
   
 --------------------------------------------------------------------------------
@@ -128,8 +145,8 @@ pitchToHertzPitch = HertzPitch . realToFrac . midiHz . pitchToMidiPitch
 -- midiPC m = PCPitch $ 8.0 + (realToFrac $ getMidiPitch m - 60)/12.0
 
 
-octave_pitch_middle_c :: PCPitch
-octave_pitch_middle_c = PCPitch 8.000
+pc_pitch_middle_c :: PCPitch
+pc_pitch_middle_c = PCPitch 8.000
 
 
 pitchToPCPitch :: Pitch -> PCPitch
@@ -142,4 +159,19 @@ pitchToPCPitch (Pitch (PitchName l a) ove) = PCPitch $ o + frac
 
 
 
+--------------------------------------------------------------------------------
+-- OctPitch
+
+
+oct_pitch_middle_c :: OctPitch
+oct_pitch_middle_c = OctPitch 8.000
+
+
+pitchToOctPitch :: Pitch -> OctPitch
+pitchToOctPitch (Pitch (PitchName l a) ove) = 
+    OctPitch $ o + frac
+  where
+    o     = fromIntegral $ 4 + ove
+    semis = fromPitchLetter l + fromAlteration a
+    frac  = (realToFrac semis) * (1 / 12.0)
     
