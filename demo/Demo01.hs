@@ -63,7 +63,7 @@ compileLy = LY.compile ly_compiler
 
 data BowedBarAttrs = BowedBarAttrs 
     { bb_amp       :: Decimal
-    , bb_pitch     :: CpsPitch
+    , bb_pitch     :: PCPitch
     , bb_const     :: Decimal
     }
   deriving (Eq,Show)
@@ -71,14 +71,14 @@ data BowedBarAttrs = BowedBarAttrs
 bbEvent :: Pitch -> anno -> BowedBarAttrs
 bbEvent p _ = 
     BowedBarAttrs { bb_amp      = 0.8
-                  , bb_pitch    = pitchToCpsPitch p
+                  , bb_pitch    = pitchToPCPitch p
                   , bb_const    = 0.0
                   }
 
 bbGrace :: Pitch -> BowedBarAttrs
 bbGrace p = 
     BowedBarAttrs { bb_amp      = 0.6
-                  , bb_pitch    = pitchToCpsPitch p
+                  , bb_pitch    = pitchToPCPitch p
                   , bb_const    = 0.0
                   }
 
@@ -87,7 +87,7 @@ genValues :: BowedBarAttrs -> [Value]
 genValues (BowedBarAttrs { bb_amp      = amp
                          , bb_pitch    = pch
                          , bb_const    = konst }) = 
-    [VFloat 2 amp, VFloat 2 $ realToFrac $ getCpsPitch pch, VFloat 1 konst ]
+    [VFloat 2 amp, VFloat 2 $ realToFrac $ getPCPitch pch, VFloat 1 konst ]
 
 
 csd_compiler :: CSD.Compiler anno
@@ -109,13 +109,13 @@ compileCsd = CSD.compile csd_compiler
 
 -- TODO we shouldn't be "allocating" channel here...
 
-midiEvent :: Pitch -> anno -> (MIDIEventBody, MIDIEventBody)
+midiEvent :: Pitch -> anno -> MIDI.MIDINote
 midiEvent pch _ = 
-    let midinote = pitchToMidiPitch pch in (NoteOn 1 midinote 40, NoteOff 1 midinote 40)
+    let midinote = pitchToMidiPitch pch in MIDI.MIDINote 1 midinote 40 40
 
-midiGrace :: Pitch -> (MIDIEventBody, MIDIEventBody)
+midiGrace :: Pitch -> MIDI.MIDINote
 midiGrace pch = 
-    let midinote = pitchToMidiPitch pch in (NoteOn 1 midinote 40, NoteOff 1 midinote 40)
+    let midinote = pitchToMidiPitch pch in MIDI.MIDINote 1 midinote 40 40
 
 midi_compiler :: MIDI.Compiler Pitch anno
 midi_compiler = MIDI.makeCompiler def
