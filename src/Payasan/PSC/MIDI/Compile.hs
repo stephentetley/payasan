@@ -58,11 +58,8 @@ import System.FilePath
 
 type MIDICompile a = CM a
 
---
--- make_event_body is wrong - it exposes chan and potentially
--- allows two NoteOns or two NoteOffs
 -- 
--- There is also a dichotomy between compiling a file and 
+-- There is a dichotomy between compiling a file and 
 -- compiling a track (a file might have a number of tracks...)
 --
 
@@ -86,9 +83,6 @@ data CompilerDef pch anno = CompilerDef
     }
 
 
--- data MidiNote = MidiNote !MidiPitch !Word8 !Word
-
--- make_event_body  :: pch anno -> 
 
 emptyDef :: CompilerDef pch anno
 emptyDef = CompilerDef
@@ -103,9 +97,10 @@ emptyDef = CompilerDef
 
 
 data Compiler pch anno = Compiler
-   { compile :: EXT.Part pch Duration anno -> IO ()
+    { compile :: EXT.Part pch Duration anno -> IO ()
    
-   }
+    }
+
 
 
 makeCompiler :: CompilerDef pch anno -> Compiler pch anno
@@ -117,10 +112,10 @@ makeCompiler env =
 
 
 compile1 :: CompilerDef pch anno -> EXT.Part pch Duration anno -> MIDICompile ()
-compile1 def part = do 
-    { events <- compilePartToEventList1 def part
-    ; csd    <- assembleOutput1 def events
-    ; writeMIDIFile1 def csd
+compile1 lib part = do 
+    { events <- compilePartToEventList1 lib part
+    ; csd    <- assembleOutput1 lib events
+    ; writeMIDIFile1 lib csd
     }
 
     
@@ -129,41 +124,86 @@ compile1 def part = do
 compilePartToEventList1 :: CompilerDef pch anno
                         -> EXT.Part pch Duration anno 
                         -> MIDICompile MIDIEventList
-compilePartToEventList1 def part = 
+compilePartToEventList1 lib part = 
     let irsimple = fromExternal $ transDurationToSeconds part
         irflat   = fromIREventBar2 def_bar $ fromIRSimpleTile irsimple
-    in return $ makeMIDIEventList $ ticksTrafo (ticks_per_quarter_note def) $ irflat
+    in return $ makeMIDIEventList $ ticksTrafo (ticks_per_quarter_note lib) $ irflat
   where
-    event2   = \p a -> let (MIDINote ch pch onn off) = (make_event_body def) p a
-                       in (NoteOn ch pch onn, NoteOff ch pch off) 
-
-    grace2   = \p -> let (MIDINote ch pch onn off) = (make_grace_body def) p
-                     in (NoteOn ch pch onn, NoteOff ch pch off) 
-
-    def_bar  = GenEventBody2 { genBodyFromEvent2 = event2
-                             , genBodyFromGrace2 = grace2 }
+    def_bar  = makeGenEventBody2 lib
 
     
+makeGenEventBody2 :: CompilerDef pch anno -> GenEventBody2 pch anno MIDIEventBody
+makeGenEventBody2 lib = 
+    GenEventBody2 { genBodyFromEvent2 = event
+                  , genBodyFromGrace2 = grace }
+  where
+    event p a = let (MIDINote ch pch onn off) = (make_event_body lib) p a
+                in (NoteOn ch pch onn, NoteOff ch pch off) 
+
+    grace p   = let (MIDINote ch pch onn off) = (make_grace_body lib) p
+                in (NoteOn ch pch onn, NoteOff ch pch off) 
 
 
 assembleOutput1 :: CompilerDef pitch anno -> MIDIEventList -> MIDICompile Z.MidiFile
-assembleOutput1 def evts = 
-    return $ midiFileFormat0 (ticks_per_quarter_note def) (makeZMidiTrack evts)
+assembleOutput1 lib evts = 
+    return $ midiFileFormat0 (ticks_per_quarter_note lib) (makeZMidiTrack evts)
 
 
 writeMIDIFile1 :: CompilerDef pch anno -> Z.MidiFile -> MIDICompile ()
-writeMIDIFile1 def midi =
-    do { outfile <- workingFileName1 def
+writeMIDIFile1 lib midi =
+    do { outfile <- workingFileName1 lib
        ; liftIO $ Z.writeMidi outfile midi
        ; return ()
        }
 
 
 workingFileName1 :: CompilerDef pch anno -> MIDICompile FilePath
-workingFileName1 def = 
-    do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
-       ; let name = outfile_name def
+workingFileName1 lib = 
+    do { root <- getWorkingDirectory (Right $ pathto_working_dir lib) 
+       ; let name = outfile_name lib
        ; let outfile = root </> name
        ; return outfile
        }
+
+--------------------------------------------------------------------------------
+-- 
+
+data Compiler1 pch anno = Compiler1
+    { compilePart :: EXT.Part pch Duration anno -> MIDIEventList
+    }
+
+data Compiler1Def pch anno = PartDef 
+    { midi_channel              :: !Int
+    , ticks_per_quarter_note1   :: !Int
+    , make_event_body1          :: pch -> anno -> MIDINote
+    , make_grace_body1          :: pch -> MIDINote
+    } 
+
+
+-- This indicates a problem - we want to be able to combine
+-- MIDIEventLists but they might be rendered with different 
+-- ticks_per_quarter_note...
+--
+makeCompiler1 :: Compiler1Def pch anno -> Compiler1 pch anno
+makeCompiler1 lib = Compiler1
+    { compilePart = compile1
+    }
+  where
+    gen2          = makeGenEventBody2_ lib
+    compile1 part = let irsimple = fromExternal $ transDurationToSeconds part
+                        irflat   = fromIREventBar2 gen2 $ fromIRSimpleTile irsimple
+                    in  makeMIDIEventList $ ticksTrafo (ticks_per_quarter_note1 lib) $ irflat
+
+
+
+makeGenEventBody2_ :: Compiler1Def pch anno -> GenEventBody2 pch anno MIDIEventBody
+makeGenEventBody2_ lib = 
+    GenEventBody2 { genBodyFromEvent2 = event
+                  , genBodyFromGrace2 = grace }
+  where
+    event p a = let (MIDINote ch pch onn off) = (make_event_body1 lib) p a
+                in (NoteOn ch pch onn, NoteOff ch pch off) 
+
+    grace p   = let (MIDINote ch pch onn off) = (make_grace_body1 lib) p
+                in (NoteOn ch pch onn, NoteOff ch pch off) 
 
