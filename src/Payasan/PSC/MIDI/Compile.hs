@@ -77,7 +77,6 @@ data MIDINote = MIDINote
 data CompilerDef pch anno = CompilerDef
     { pathto_working_dir        :: !FilePath
     , outfile_name              :: !String
-    , ticks_per_quarter_note    :: !Int
     , make_event_body           :: pch -> anno -> MIDINote
     , make_grace_body           :: pch -> MIDINote
     }
@@ -88,7 +87,6 @@ emptyDef :: CompilerDef pch anno
 emptyDef = CompilerDef
     { pathto_working_dir        = ""
     , outfile_name              = "midi_output.midi"
-    , ticks_per_quarter_note    = 480
     , make_event_body           = \_ _ -> mkErr "make_event_body"
     , make_grace_body           = \_ -> mkErr "make_grace_body"
     }
@@ -127,7 +125,7 @@ compilePartToEventList1 :: CompilerDef pch anno
 compilePartToEventList1 lib part = 
     let irsimple = fromExternal $ transDurationToSeconds part
         irflat   = fromIREventBar2 def_bar $ fromIRSimpleTile irsimple
-    in return $ makeMIDIEventList $ ticksTrafo (ticks_per_quarter_note lib) $ irflat
+    in return $ makeMIDIEventList $ ticksTrafo irflat
   where
     def_bar  = makeGenEventBody2 lib
 
@@ -146,7 +144,7 @@ makeGenEventBody2 lib =
 
 assembleOutput1 :: CompilerDef pitch anno -> MIDIEventList -> MIDICompile Z.MidiFile
 assembleOutput1 lib evts = 
-    return $ midiFileFormat0 (ticks_per_quarter_note lib) (makeZMidiTrack evts)
+    return $ midiFileFormat0 (makeZMidiTrack evts)
 
 
 writeMIDIFile1 :: CompilerDef pch anno -> Z.MidiFile -> MIDICompile ()
@@ -174,7 +172,6 @@ data Compiler1 pch anno = Compiler1
 
 data Compiler1Def pch anno = PartDef 
     { midi_channel              :: !Int
-    , ticks_per_quarter_note1   :: !Int
     , make_event_body1          :: pch -> anno -> MIDINote
     , make_grace_body1          :: pch -> MIDINote
     } 
@@ -192,7 +189,7 @@ makeCompiler1 lib = Compiler1
     gen2          = makeGenEventBody2_ lib
     compile1 part = let irsimple = fromExternal $ transDurationToSeconds part
                         irflat   = fromIREventBar2 gen2 $ fromIRSimpleTile irsimple
-                    in  makeMIDIEventList $ ticksTrafo (ticks_per_quarter_note1 lib) $ irflat
+                    in  makeMIDIEventList $ ticksTrafo irflat
 
 
 

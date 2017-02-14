@@ -103,7 +103,6 @@ library
     Payasan.PSC.MIDI.Compile,
     Payasan.PSC.MIDI.Output,
     Payasan.PSC.MIDI.OutTrans,
-    Payasan.PSC.MIDI.PrimitiveSyntax,
     Payasan.PSC.MIDI.Syntax,
     Payasan.PSC.Old.Pipeline,
     Payasan.PSC.Old.Shell,

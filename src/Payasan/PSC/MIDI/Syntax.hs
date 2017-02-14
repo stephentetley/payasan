@@ -27,6 +27,7 @@ module Payasan.PSC.MIDI.Syntax
   , MIDIEvent
   , MIDIEventBody(..)
 
+  , ticks_per_quarter_note
   , secondsToMIDITicks
   , ticksTrafo
 
@@ -71,17 +72,20 @@ data MIDIEventBody =
 -- Operations
 
 
-secondsToMIDITicks :: Int -> Seconds -> AbsTicks
-secondsToMIDITicks tpqn r = floor $ (4 * ticks_per_quarternote) * (realToFrac r)
+ticks_per_quarter_note :: Int
+ticks_per_quarter_note = 480
+
+
+secondsToMIDITicks :: Seconds -> AbsTicks
+secondsToMIDITicks r = floor $ (4 * tpqn) * (realToFrac r)
   where
-    ticks_per_quarternote :: Double
-    ticks_per_quarternote = realToFrac tpqn
+    tpqn :: Double
+    tpqn = realToFrac ticks_per_quarter_note
 
 
 
-
-ticksTrafo :: Int -> Part Seconds () MIDIEventBody -> MIDIPart AbsTicks
-ticksTrafo tpqn = mapOnset (secondsToMIDITicks tpqn)
+ticksTrafo :: Part Seconds () MIDIEventBody -> MIDIPart AbsTicks
+ticksTrafo = mapOnset secondsToMIDITicks
 
 
 -- No end of track

@@ -75,29 +75,29 @@ deltaTrafo = snd .  mapAccumL fn 0
 -- Make MIDI files
 
 
-midiFileFormat0 :: Int -> Z.MidiTrack -> Z.MidiFile
-midiFileFormat0 tpqn trk = 
+midiFileFormat0 :: Z.MidiTrack -> Z.MidiFile
+midiFileFormat0 trk = 
     Z.MidiFile { Z.mf_header = header
                , Z.mf_tracks = [ trk ] }
   where
     header  :: Z.MidiHeader
     header  = Z.MidiHeader { Z.hdr_format    = Z.MF0
                            , Z.num_tracks    = 1
-                           , Z.time_division = Z.TPB $ fromIntegral tpqn }
+                           , Z.time_division = Z.TPB $ fromIntegral ticks_per_quarter_note }
 
  
 
 
 
-midiFileFormat1 :: Int -> [Z.MidiTrack] -> Z.MidiFile
-midiFileFormat1 tpqn trks = 
+midiFileFormat1 :: [Z.MidiTrack] -> Z.MidiFile
+midiFileFormat1 trks = 
     Z.MidiFile { Z.mf_header = header
                , Z.mf_tracks = trks }
   where
     header  :: Z.MidiHeader
     header  = Z.MidiHeader { Z.hdr_format    = Z.MF1
                            , Z.num_tracks    = fromIntegral $ length trks
-                           , Z.time_division = Z.TPB $ fromIntegral tpqn }
+                           , Z.time_division = Z.TPB $ fromIntegral ticks_per_quarter_note }
 
 
 
