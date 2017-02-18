@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.ABC.Output
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -58,6 +58,7 @@ deltaMetrical (SectionInfo { section_meter = m1
         | section_meter prev == m1 && section_unit_note_len prev == u1 = Nothing
         | otherwise        = Just (m1,u1)
 
+
 deltaKey :: SectionInfo -> Mon (Maybe Key)
 deltaKey (SectionInfo { section_key = k1 }) = 
     fn <$> get
@@ -72,14 +73,15 @@ deltaKey (SectionInfo { section_key = k1 }) =
 -- ABC can handle annotations - it simply ignores them.
 
 
+type ABCPartOut anno            = Part        ABCPitch ABCNoteLength anno
 type ABCSectionOut anno         = Section     ABCPitch ABCNoteLength anno
 type ABCBarOut anno             = Bar         ABCPitch ABCNoteLength anno
 type ABCNoteGroupOut anno       = NoteGroup   ABCPitch ABCNoteLength anno
 type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 
 
--- Maybe Doc fragments should use a common (phantom) type?
--- This would prevent a proliferation of slightly differently 
+-- Doc fragments use a common (phantom) type.
+-- This prevents a proliferation of slightly differently 
 -- named wrappers / unwrappers, but allow some type 
 -- differentiation (safety) in APIs.
 --

@@ -36,24 +36,20 @@ import Payasan.Base.Pitch
 
 translateToLyPartOut_Relative :: Pitch
                               -> Part Pitch Duration anno 
-                              -> LyPartOut anno
+                              -> Part LyPitch LyNoteLength anno
 translateToLyPartOut_Relative pch = 
     transformExternal (rel_pch_algo pch) . transformExternal drn_algo
 
 
 translateToLyPartOut_Absolute :: Part Pitch Duration anno 
-                              -> LyPartOut anno
+                              -> Part LyPitch LyNoteLength anno
 translateToLyPartOut_Absolute = 
-    transformExternal abs_pch_algo . transformExternal drn_algo
+    absPitchTrafo . transformExternal drn_algo
 
 
 translateToLyPartOut_DurationOnly :: Part pch Duration anno 
-                                  -> GenLyPartOut pch anno
+                                  -> Part pch LyNoteLength anno
 translateToLyPartOut_DurationOnly = transformExternal drn_algo
-
-type DMon    a      = Mon Duration a
-type RelPMon a      = Mon Pitch a
-type AbsPMon a      = Mon () a
 
 
 --------------------------------------------------------------------------------
@@ -64,6 +60,8 @@ rel_pch_algo start = ExternalAlgo
     { initial_state     = start
     , element_trafo     = relElementP
     }
+
+type RelPMon a      = Mon Pitch a
 
 
 previousPitch :: RelPMon Pitch
@@ -101,32 +99,8 @@ changePitchRel p1 =
 -- Abs Pitch translation
 
 
-abs_pch_algo :: ExternalAlgo () Pitch LyPitch drn drn anno anno
-abs_pch_algo = ExternalAlgo
-    { initial_state     = ()
-    , element_trafo     = absElementP
-    }
-
-
-absElementP :: Element Pitch drn anno -> AbsPMon (Element LyPitch drn anno)
-absElementP (Note p d a t)      = (\p1 -> Note p1 d a t) <$> changePitchAbs p
-absElementP (Rest d)            = pure $ Rest d
-absElementP (Spacer d)          = pure $ Spacer d
-absElementP (Skip d)            = pure $ Skip d
-absElementP (Chord ps d a t)    = 
-    (\ps1 -> Chord ps1 d a t) <$> mapM changePitchAbs ps
-
-absElementP (Graces ns)         = Graces <$> mapM absNoteP ns
-absElementP (Punctuation s)     = pure $ Punctuation s
-
-
-absNoteP :: Grace1 Pitch drn -> AbsPMon (Grace1 LyPitch drn)
-absNoteP (Grace1 p d)           = (\p1 -> Grace1 p1 d) <$> changePitchAbs p
-
-
--- No previous pitch indicates Absolute pitch mode
-changePitchAbs :: Pitch -> AbsPMon LyPitch
-changePitchAbs p1 = return $ fromPitchAbs p1
+absPitchTrafo :: Part Pitch drn anno -> Part LyPitch drn anno
+absPitchTrafo = mapPitch fromPitchAbs
 
 
 --------------------------------------------------------------------------------
@@ -140,6 +114,10 @@ drn_algo = ExternalAlgo
     { initial_state     = d_zero        
     , element_trafo     = elementD
     }
+
+
+type DMon    a      = Mon Duration a
+
 
 previousDuration :: DMon Duration
 previousDuration = get

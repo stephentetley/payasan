@@ -50,7 +50,7 @@ data MarkupOutput pch = MarkupOutput { asMarkup :: pch -> Doc }
 
 translateToLyPartOut_RhythmicMarkup :: MarkupOutput pch
                                     -> Part pch Duration anno 
-                                    -> LyPartOut Doc
+                                    -> Part LyPitch LyNoteLength Doc
 translateToLyPartOut_RhythmicMarkup mo = 
     transformExternal (markup_algo mo) . translateToLyPartOut_DurationOnly
 

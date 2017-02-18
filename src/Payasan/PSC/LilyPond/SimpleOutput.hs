@@ -142,7 +142,8 @@ assembleLy header body = extractDoc header $+$ extractDoc body
 simpleScore_Relative :: LyOutputDef pch anno 
                      -> ScoreInfo 
                      -> Pitch
-                     -> GenLyPartOut pch anno -> Doc
+                     -> Part pch LyNoteLength anno 
+                     -> Doc
 simpleScore_Relative def infos pch ph = 
         header 
     $+$ anonBlock (simpleVoice_Relative def pch ph)
@@ -151,7 +152,8 @@ simpleScore_Relative def infos pch ph =
 
 simpleScore_Absolute :: LyOutputDef pch anno 
                      -> ScoreInfo 
-                     -> GenLyPartOut pch anno -> Doc
+                     -> Part pch LyNoteLength anno 
+                     -> Doc
 simpleScore_Absolute def infos ph = 
         header 
     $+$ anonBlock (simpleVoice_Absolute def ph)
@@ -187,7 +189,7 @@ phraseHeader locals = case section_meter locals of
 -- 
 simpleVoice_Relative :: LyOutputDef pch anno 
                      -> Pitch
-                     -> GenLyPartOut pch anno -> Doc
+                     -> Part pch LyNoteLength anno -> Doc
 simpleVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (notes_header $+$ notes)
   where
@@ -197,7 +199,7 @@ simpleVoice_Relative def pch ph =
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
-                     -> GenLyPartOut pch anno -> Doc
+                     -> Part pch LyNoteLength anno -> Doc
 simpleVoice_Absolute def ph = 
     absolute_ $+$ notes_header $+$ notes
   where
@@ -214,7 +216,7 @@ simpleVoice_Absolute def ph =
 --
 makeLyNoteListDoc :: LyOutputDef pch anno 
                   -> SectionInfo
-                  -> GenLyPartOut pch anno
+                  -> Part pch LyNoteLength anno
                   -> LyNoteListDoc
 makeLyNoteListDoc def info ph =
     evalState (TyDoc <$> oLyPart def ph) (stateZero info)
@@ -228,7 +230,7 @@ makeLyNoteListDoc def info ph =
 --
 lilypondNoteList :: LyOutputDef pch anno 
                  -> SectionInfo 
-                 -> GenLyPartOut pch anno
+                 -> Part pch LyNoteLength anno
                  -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
     evalState (TyDoc <$> oLyPart def ph) (stateZero prefix_locals)

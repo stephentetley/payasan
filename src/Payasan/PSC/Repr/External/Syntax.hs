@@ -48,9 +48,6 @@ module Payasan.PSC.Repr.External.Syntax
 
   , specializeGenLySectionQuote
   
-  , GenLyPartOut
-  , LyPartOut
-  , ABCPartOut
   
   -- * Operations
   , pushSectionInfo
@@ -199,20 +196,6 @@ specializeGenLySectionQuote :: GenLySectionQuote LyPitch anno
 specializeGenLySectionQuote = LySectionQuote . getGenLySectionQuote
 
 
--- These defs need not go in this module. 
---
--- For extensibility (clients should be able to define their own 
--- backends) specific backend code could be outside the 
--- Payasan.PSC.Repr.External namespace. However LilyPond and ABC 
--- are so fundamental that it is harmless to define them here.
---
-
-
-type GenLyPartOut pch anno      = Part pch LyNoteLength anno
-
-type LyPartOut anno             = Part LyPitch LyNoteLength anno
-
-type ABCPartOut anno            = Part ABCPitch ABCNoteLength anno
 
 
 --------------------------------------------------------------------------------
