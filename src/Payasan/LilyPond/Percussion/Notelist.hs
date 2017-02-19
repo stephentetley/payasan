@@ -62,7 +62,7 @@ import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 
-import qualified Payasan.PSC.Repr.External.LilyPondInTrans      as LY
+import qualified Payasan.PSC.LilyPond.ExternalUnquote      as LY
 import qualified Payasan.PSC.LilyPond.OutTrans          as LYOut
 
 import Payasan.PSC.Base.ShowCommon

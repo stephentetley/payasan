@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.Parser
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -24,8 +24,8 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.Score.Elementary.Internal.LilyPondParser
 
-import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Base.LilyPondLexer
+import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Lexer
 
 import Text.Parsec                              -- package: parsec
 

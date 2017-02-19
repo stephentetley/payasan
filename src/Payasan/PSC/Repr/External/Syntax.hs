@@ -60,7 +60,7 @@ module Payasan.PSC.Repr.External.Syntax
 
 
 import Payasan.PSC.Base.ABCCommon
-import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.LilyPond.Common      -- TODO: dependency in wrong direction
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration

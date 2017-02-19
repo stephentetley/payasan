@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.External.LilyPondParser
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Module      :  Payasan.PSC.LilyPond.ExternalParser
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.External.LilyPondParser
+module Payasan.PSC.LilyPond.ExternalParser
   (
 
     lilypond  
@@ -57,11 +57,10 @@ module Payasan.PSC.Repr.External.LilyPondParser
 
   ) where
 
+import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Lexer
 
 import Payasan.PSC.Repr.External.Syntax
-
-import Payasan.PSC.Base.LilyPondCommon
-import Payasan.PSC.Base.LilyPondLexer
 
 import Payasan.PSC.Base.SyntaxCommon
 

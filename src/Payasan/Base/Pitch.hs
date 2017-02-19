@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Base.Pitch
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -173,6 +173,9 @@ asSharp p       = setAlteration p SHARP
 asFlat          :: Pitch -> Pitch
 asFlat p        = setAlteration p FLAT
 
+
+-- TODO - from/to prefixes are not very helpful when have an API
+-- with hundreds of functions.
 
 toAlteration :: Integral a => a -> Alteration
 toAlteration i 

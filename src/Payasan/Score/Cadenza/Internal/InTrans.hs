@@ -31,7 +31,7 @@ module Payasan.Score.Cadenza.Internal.InTrans
 import Payasan.Score.Cadenza.Internal.Syntax
 import Payasan.Score.Cadenza.Internal.Traversals
 
-import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.LilyPond.Common
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

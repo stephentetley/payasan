@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.InTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -25,7 +25,7 @@ import Payasan.Score.Elementary.Internal.LilyPondInTrans
 import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.LilyPond.Common
 
 translateInput :: LyChordSection -> StdChordSection
 translateInput = trafoAnnos . trafoDuration

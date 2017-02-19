@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.Parser
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -24,8 +24,9 @@ module Payasan.LilyPond.Percussion.Internal.Parser
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.PSC.Base.LilyPondLexer
-import Payasan.PSC.Repr.External.LilyPondParser
+import Payasan.PSC.LilyPond.ExternalParser
+import Payasan.PSC.LilyPond.Lexer
+
 import Payasan.PSC.Repr.External.Syntax
 
 import Text.Parsec                              -- package: parsec

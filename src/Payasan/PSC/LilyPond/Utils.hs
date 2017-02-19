@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.LilyPond.Utils
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -100,7 +100,8 @@ module Payasan.PSC.LilyPond.Utils
  
   ) where
 
-import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.LilyPond.Common
+
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Basis

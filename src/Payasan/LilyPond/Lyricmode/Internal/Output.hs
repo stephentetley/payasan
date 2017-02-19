@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Lyricmode.Internal.Output
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -26,12 +26,11 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
-import qualified Payasan.PSC.Repr.External.Syntax as EXT
-
+import Payasan.PSC.LilyPond.Common
 import Payasan.PSC.LilyPond.SimpleOutput
 import Payasan.PSC.LilyPond.Utils
 
-import Payasan.PSC.Base.LilyPondCommon
+import qualified Payasan.PSC.Repr.External.Syntax as EXT
 import Payasan.PSC.Base.SyntaxCommon
 
 

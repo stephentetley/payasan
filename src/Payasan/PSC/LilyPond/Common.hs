@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Base.LilyPondCommon
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Module      :  Payasan.PSC.LilyPond.Common
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -18,7 +18,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Base.LilyPondCommon
+module Payasan.PSC.LilyPond.Common
   ( 
 
 

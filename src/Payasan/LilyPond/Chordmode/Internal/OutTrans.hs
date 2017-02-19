@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.OutTrans
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -24,7 +24,7 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.Score.Elementary.Internal.Syntax         as ELEM
 
-import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.LilyPond.Common
 
 translateOutput :: ELEM.Section Chord drn anno -> ELEM.Section LyPitch drn ChordSuffix
 translateOutput = trafoAnnos 

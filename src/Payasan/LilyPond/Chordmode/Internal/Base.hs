@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.Base
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -34,7 +34,8 @@ module Payasan.LilyPond.Chordmode.Internal.Base
 
   ) where
 
-import Payasan.PSC.Base.LilyPondCommon
+import Payasan.PSC.LilyPond.Common
+
 import qualified Payasan.PSC.Repr.External.Syntax           as EXT
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 

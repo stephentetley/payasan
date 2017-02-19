@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Models.Lyrics.Internal.Base
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -30,7 +30,7 @@ import qualified Payasan.LilyPond.Lyricmode.Internal.Base       as LY
 import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
 import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
-import qualified Payasan.PSC.Repr.External.LilyPondParser       as P
+import qualified Payasan.PSC.LilyPond.ExternalParser       as P
 import Payasan.PSC.LilyPond.Utils
 
 import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM

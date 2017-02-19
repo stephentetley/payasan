@@ -36,7 +36,7 @@ module Payasan.PSC.Base.ShowCommon
 
 
 import qualified Payasan.PSC.Base.ABCCommon as ABC
-import qualified Payasan.PSC.Base.LilyPondCommon as LY
+import qualified Payasan.PSC.LilyPond.Common as LY      -- TODO: dependency in wrong direction
 
 import Payasan.Base.Basis
 import Payasan.Base.Duration

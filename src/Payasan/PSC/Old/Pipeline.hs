@@ -81,8 +81,9 @@ import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
 
 
 
-import qualified Payasan.PSC.Repr.External.LilyPondInTrans    as LY
-import qualified Payasan.PSC.Repr.External.LilyPondParser     as LY
+import Payasan.PSC.LilyPond.Common
+import qualified Payasan.PSC.LilyPond.ExternalUnquote    as LY
+import qualified Payasan.PSC.LilyPond.ExternalParser     as LY
 
 import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as LYOut
 import qualified Payasan.PSC.LilyPond.OutTrans        as LYOut
@@ -91,7 +92,6 @@ import qualified Payasan.PSC.LilyPond.Utils           as LYOut
 
 
 import Payasan.PSC.Base.ABCCommon
-import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Repr.External.ShowLinear
 import Payasan.PSC.Repr.External.ShowTabular

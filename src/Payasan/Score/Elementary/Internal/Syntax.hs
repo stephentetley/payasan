@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.Syntax
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -75,8 +75,9 @@ module Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Score.Analysis.Common
 
+import Payasan.PSC.LilyPond.Common
+
 import Payasan.PSC.Base.ABCCommon
-import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration

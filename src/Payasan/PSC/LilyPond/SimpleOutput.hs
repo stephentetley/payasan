@@ -40,11 +40,11 @@ module Payasan.PSC.LilyPond.SimpleOutput
 
   ) where
 
+import Payasan.PSC.LilyPond.Common
 import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Repr.External.Syntax
 
-import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 

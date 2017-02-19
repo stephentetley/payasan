@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.External.LilyPondInTrans
+-- Module      :  Payasan.PSC.LilyPond.ExternalUnquote
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -10,11 +10,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert LilyPond to Main Syntax.
+-- Convert LilyPond to External Syntax.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.External.LilyPondInTrans
+module Payasan.PSC.LilyPond.ExternalUnquote
   (
     unquoteLyRelative
   , unquoteLyAbsolute
@@ -23,10 +23,11 @@ module Payasan.PSC.Repr.External.LilyPondInTrans
   ) where
 
 
+import Payasan.PSC.LilyPond.Common
+
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
-import Payasan.PSC.Base.LilyPondCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 

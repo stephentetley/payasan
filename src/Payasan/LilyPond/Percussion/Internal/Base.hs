@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.Base
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -28,7 +28,7 @@ module Payasan.LilyPond.Percussion.Internal.Base
 
   ) where
 
-import Payasan.PSC.Base.LilyPondCommon (LyNoteLength)
+import Payasan.PSC.LilyPond.Common (LyNoteLength)
 
 import qualified Payasan.PSC.Repr.External.Syntax       as EXT
 
