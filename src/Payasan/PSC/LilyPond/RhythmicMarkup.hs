@@ -108,14 +108,14 @@ rhythmicMarkupVoice def ph =
           (absolute_ $+$ notes_header $+$ (extractDoc notes))
   where
     local1          = initialSectionInfo ph
-    notes_header    = oPartHeader local1
+    notes_header    = renderPartHeader local1
     notes           = lilypondNoteList def local1 ph
 
 
 
 -- TODO - this should be common...
-oPartHeader :: SectionInfo -> Doc
-oPartHeader locals = case section_meter locals of
+renderPartHeader :: SectionInfo -> Doc
+renderPartHeader locals = case section_meter locals of
     Unmetered -> keyline
     Metered t -> keyline $+$ time_ t
   where

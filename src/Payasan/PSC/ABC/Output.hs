@@ -76,8 +76,6 @@ deltaKey (SectionInfo { section_key = k1 }) =
 type ABCPartOut anno            = Part        ABCPitch ABCNoteLength anno
 type ABCSectionOut anno         = Section     ABCPitch ABCNoteLength anno
 type ABCBarOut anno             = Bar         ABCPitch ABCNoteLength anno
-type ABCNoteGroupOut anno       = NoteGroup   ABCPitch ABCNoteLength anno
-type ABCElementOut anno         = Element     ABCPitch ABCNoteLength anno
 
 
 -- Doc fragments use a common (phantom) type.
@@ -131,8 +129,8 @@ makeABCNoteListDoc cols info (Part xs) =
     evalState (TyDoc <$> step xs) info
   where
     step []       = return empty
-    step [s]      = oSection cols (text "|]") s
-    step (s:ss)   = do { d1 <- oSection cols (char '|') s
+    step [s]      = renderSectionM cols (text "|]") s
+    step (s:ss)   = do { d1 <- renderSectionM cols (char '|') s
                        ; ds <- step ss
                        ; return (d1 $+$ ds)
                        }
@@ -142,11 +140,12 @@ makeABCNoteListDoc cols info (Part xs) =
 -- 
 -- TODO - midtune fields need improving for clarity.
 --
-oSection :: Int -> Doc -> ABCSectionOut anno -> Mon Doc
-oSection cols end (Section _ info cs) = 
+renderSectionM :: Int -> Doc -> ABCSectionOut anno -> Mon Doc
+renderSectionM cols end (Section { section_info = info 
+                                 , section_bars = cs }) = 
     do { dkey    <- deltaKey info
        ; dmeter  <- deltaMetrical info
-       ; let ans = ppSection cols end $ map oBar cs 
+       ; let ans = ppSection cols end $ map renderBar cs 
        ; put info
        ; return $ prefixM dmeter $ prefixK dkey $ ans
        }
@@ -158,30 +157,24 @@ oSection cols end (Section _ info cs) =
                                        <> midtuneField 'L' (unitNoteLength u))
                             in (doc <+>)
 
-oBar :: ABCBarOut anno -> Doc
-oBar (Bar cs) = oNoteGroupList (<+>) cs
+renderBar :: ABCBarOut anno -> Doc
+renderBar (Bar { note_groups = ns }) = 
+    let op = (<+>) in noteGroupList op ns
+  where
+    noteGroupList op xs             = sepList op $ map (noteGroup op) xs
+    
+    noteGroup op (Atom e)           = element op e
+    noteGroup _  (Beamed cs)        = noteGroupList (<>) cs
+    noteGroup op (Tuplet spec cs)   = tupletSpec spec <> noteGroupList op cs
 
-oNoteGroupList :: CatOp -> [ABCNoteGroupOut anno] -> Doc
-oNoteGroupList op xs            = sepList op $ map (oNoteGroup op) xs
+    element op (Note p d _ t)       = tied op (note p d) t
+    element _  (Rest d)             = rest d 
+    element _  (Spacer d)           = spacer d 
+    element _  (Skip d)             = spacer d 
+    element op (Chord ps d _ t)     = tied op (chord ps d) t
+    element _  (Graces xs)          = graceForm $ map (\(Grace1 p d) -> note p d) xs
+    element _  (Punctuation {})     = empty
 
-oNoteGroup :: CatOp -> ABCNoteGroupOut anno -> Doc
-oNoteGroup op (Atom e)          = oElement op e
-oNoteGroup _  (Beamed cs)       = oNoteGroupList (<>) cs
-oNoteGroup op (Tuplet spec cs)  = tupletSpec spec <> oNoteGroupList op cs
-
-
--- | Punctuation is not used by ABC.
---
--- Skip is treated as a spacer.
---
-oElement :: CatOp -> ABCElementOut anno -> Doc
-oElement op (Note p d _ t)      = tied op (note p d) t
-oElement _  (Rest d)            = rest d 
-oElement _  (Spacer d)          = spacer d 
-oElement _  (Skip d)            = spacer d 
-oElement op (Chord ps d _ t)    = tied op (chord ps d) t
-oElement _  (Graces xs)         = graceForm $ map (\(Grace1 p d) -> note p d) xs
-oElement _  (Punctuation {})    = empty
 
 
 tied :: CatOp -> Doc -> Tie -> Doc
@@ -190,11 +183,6 @@ tied op d TIE    = d `op` char '-'
 
 
 
-
--- (Somewhat) general combinator to pretty print sections.
--- It is general in the sense that everything has already been
--- turned into a Doc. Maybe we need a naming convention for this 
--- type of combinator.
 
 
 

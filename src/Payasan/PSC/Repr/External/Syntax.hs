@@ -132,7 +132,7 @@ data Section pch drn anno = Section
 -- | Change - Beaming is now captured in parsing.
 --   Change - SectionInfo promoted to (new element) Section.
 --
-data Bar pch drn anno = Bar { bar_groups :: [NoteGroup pch drn anno] }
+data Bar pch drn anno = Bar { note_groups :: [NoteGroup pch drn anno] }
   deriving (Data,Eq,Show,Typeable)
 
 -- | Note Beaming is not captured in parsing.

@@ -219,7 +219,7 @@ makeLyNoteListDoc :: LyOutputDef pch anno
                   -> Part pch LyNoteLength anno
                   -> LyNoteListDoc
 makeLyNoteListDoc def info ph =
-    evalState (TyDoc <$> oLyPart def ph) (stateZero info)
+    TyDoc $ evalState (renderLyPartM def ph) (stateZero info)
 
 
 -- | Pitch should be \"context free\" at this point.
@@ -233,68 +233,61 @@ lilypondNoteList :: LyOutputDef pch anno
                  -> Part pch LyNoteLength anno
                  -> LyNoteListDoc
 lilypondNoteList def prefix_locals ph = 
-    evalState (TyDoc <$> oLyPart def ph) (stateZero prefix_locals)
+    TyDoc $ evalState (renderLyPartM def ph) (stateZero prefix_locals)
 
 
 
-oLyPart :: LyOutputDef pch anno -> Part pch LyNoteLength anno -> Mon Doc
-oLyPart _   (Part [])           = return empty
-oLyPart def (Part (x:xs))       = do { d <- oSection def x; step d xs }
-  where
-    step d []     = return d
-    step d (s:ss) = do { d1    <- oSection def s
-                       ; let ac = d $+$ d1
-                       ; step ac ss
-                       }
+renderLyPartM :: LyOutputDef pch anno 
+              -> Part pch LyNoteLength anno 
+              -> Mon Doc
+renderLyPartM lib (Part { part_sections = xs }) = 
+    vsep <$> mapM (renderSectionM lib) xs
+
 
 -- Note - delta key implies standard pitch 
 -- (i.e. not drum notes, neume names, etc...)
 --
 -- Should print section name first in a comment...
 -- 
-oSection :: LyOutputDef pch anno -> Section pch LyNoteLength anno -> Mon Doc
-oSection def (Section _ locals bs) =
+renderSectionM :: LyOutputDef pch anno 
+               -> Section pch LyNoteLength anno 
+               -> Mon Doc
+renderSectionM lib (Section { section_info = locals
+                            , section_bars = bs }) =
     do { dkeysig               <- deltaKeySig locals
        ; (dtime,dtimestop)     <- deltaTimeSig locals
-       ; let ans = ppSection (bar_ "\\") $ map (oBar def) bs
+       ; let ans = ppSection (bar_ "\\") $ map (renderBar lib) bs
        ; setInfo locals
        ; return (dtime ?+$ dkeysig ?+$ (ans $+? dtimestop))
        }
 
 
 -- | Bars are not terminated...
-oBar :: LyOutputDef pch anno -> Bar pch LyNoteLength anno -> Doc
-oBar def (Bar cs) = hsep (map (oNoteGroup def) cs)
-
-
-oNoteGroup :: LyOutputDef pch anno -> NoteGroup pch LyNoteLength anno -> Doc
-oNoteGroup def grp              = fn grp
+--
+renderBar :: LyOutputDef pch anno -> Bar pch LyNoteLength anno -> Doc
+renderBar lib (Bar { note_groups = xs }) = hsep (map noteGroup xs)
   where
-    fn (Atom e)                 = oElement def e
-    fn (Beamed cs)              = beamForm $ map fn cs
-    fn (Tuplet spec cs)         = tupletForm spec (map fn cs)
+    pPitch                          = printPitch lib
+    pAnno                           = printAnno lib
 
-oElement :: LyOutputDef pch anno -> Element pch LyNoteLength anno -> Doc
-oElement def e                  = fn e
-   where
-     pPitch                     = printPitch def
-     pAnno                      = printAnno def
-     fn (Note p d a t)          = pPitch p <> noteLength d <> pAnno a <> tie t
-     fn (Rest d)                = rest d 
-     fn (Spacer d)              = spacer d 
-     fn (Skip d)                = skip d 
-     fn (Chord ps d a t)        = 
+    -- Decons NoteGroup
+    noteGroup (Atom e)              = element e
+    noteGroup (Beamed cs)           = beamForm $ map noteGroup cs
+    noteGroup (Tuplet spec cs)      = tupletForm spec (map noteGroup cs)
+
+    -- Decons Element
+    element (Note p d a t)          = pPitch p <> noteLength d <> pAnno a <> tie t
+    element (Rest d)                = rest d 
+    element (Spacer d)              = spacer d 
+    element (Skip d)                = skip d 
+    element (Chord ps d a t)        = 
         chordForm (map pPitch ps) <> noteLength d <> pAnno a <> tie t
 
-     fn (Graces ns)            = graceForm $ map (oGrace1 def) ns
-     fn (Punctuation s)        = text s
-
-
-oGrace1 :: LyOutputDef pch anno -> Grace1 pch LyNoteLength -> Doc
-oGrace1 def (Grace1 p d)       = pPitch p <> noteLength d
-   where
-     pPitch = printPitch def
-
+    element (Graces ns)            = graceForm $ map grace1 ns
+    element (Punctuation s)        = text s
+     
+    -- Decons Grace1
+    grace1 (Grace1 p d)            = pPitch p <> noteLength d
 
 
 ppSection :: Doc -> [Doc] -> Doc

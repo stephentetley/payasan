@@ -63,9 +63,9 @@ data Acc = Acc !Tie !Seconds
 
 
 barA :: Acc -> Bar pch Seconds anno -> (Acc, T.Bar pch anno)
-barA (Acc t ot) (Bar { bar_groups = gs })       = (Acc t1 (ot + drn), bar1)
+barA (Acc t ot) (Bar { note_groups = xs })       = (Acc t1 (ot + drn), bar1)
   where
-    (t1,ess)     = mapAccumL noteGroupA t gs
+    (t1,ess)     = mapAccumL noteGroupA t xs
     elems        = concat ess
     drn          = sum $ map T.elementDuration elems
     bar1         = T.Bar { T.bar_onset = ot
