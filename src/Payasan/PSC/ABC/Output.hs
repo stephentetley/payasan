@@ -25,11 +25,11 @@ module Payasan.PSC.ABC.Output
   
   ) where
 
+import Payasan.PSC.ABC.Common
 import Payasan.PSC.ABC.Utils
 
 import Payasan.PSC.Repr.External.Syntax
 
-import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 

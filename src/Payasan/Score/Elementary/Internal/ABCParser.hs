@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.ABCParser
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -22,9 +22,9 @@ module Payasan.Score.Elementary.Internal.ABCParser
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.PSC.Base.ABCLexer
-import qualified Payasan.PSC.Repr.External.ABCParser as P
-import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.ABC.Common
+import qualified Payasan.PSC.ABC.ExternalParser as P
+import Payasan.PSC.ABC.Lexer
 
 import Payasan.PSC.Base.SyntaxCommon
 

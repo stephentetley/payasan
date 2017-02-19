@@ -59,7 +59,7 @@ module Payasan.PSC.Repr.External.Syntax
   ) where
 
 
-import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.ABC.Common           -- TODO: dependency in wrong direction
 import Payasan.PSC.LilyPond.Common      -- TODO: dependency in wrong direction
 import Payasan.PSC.Base.SyntaxCommon
 

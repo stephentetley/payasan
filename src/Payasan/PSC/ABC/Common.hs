@@ -3,8 +3,8 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Base.ABCCommon
--- Copyright   :  (c) Stephen Tetley 2016
+-- Module      :  Payasan.PSC.ABC.Common
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Base.ABCCommon
+module Payasan.PSC.ABC.Common
   ( 
 
 

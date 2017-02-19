@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.External.ABCParser
+-- Module      :  Payasan.PSC.ABC.ExternalParser
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.External.ABCParser
+module Payasan.PSC.ABC.ExternalParser
   (
     abc
     
@@ -36,10 +36,11 @@ module Payasan.PSC.Repr.External.ABCParser
   ) where
 
 
+import Payasan.PSC.ABC.Lexer
+import Payasan.PSC.ABC.Common
+
 import Payasan.PSC.Repr.External.Syntax
 
-import Payasan.PSC.Base.ABCLexer
-import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Text.Parsec                              -- package: parsec

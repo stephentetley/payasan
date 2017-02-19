@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.ABC.Utils
--- Copyright   :  (c) Stephen Tetley 2015
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -38,7 +38,8 @@ module Payasan.PSC.ABC.Utils
   ) where
 
 
-import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.ABC.Common
+
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Basis

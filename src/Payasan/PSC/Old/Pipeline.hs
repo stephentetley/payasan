@@ -76,10 +76,9 @@ module Payasan.PSC.Old.Pipeline
 
 
 
-import qualified Payasan.PSC.Repr.External.ABCInTrans         as ABC
-import qualified Payasan.PSC.Repr.External.ABCParser          as ABC
-
-
+import Payasan.PSC.ABC.Common
+import qualified Payasan.PSC.ABC.ExternalUnquote         as ABC
+import qualified Payasan.PSC.ABC.ExternalParser          as ABC
 
 import Payasan.PSC.LilyPond.Common
 import qualified Payasan.PSC.LilyPond.ExternalUnquote    as LY
@@ -91,7 +90,6 @@ import qualified Payasan.PSC.LilyPond.SimpleOutput    as LYOut
 import qualified Payasan.PSC.LilyPond.Utils           as LYOut
 
 
-import Payasan.PSC.Base.ABCCommon
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Repr.External.ShowLinear
 import Payasan.PSC.Repr.External.ShowTabular

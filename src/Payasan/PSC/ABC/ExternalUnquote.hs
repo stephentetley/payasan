@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.External.ABCInTrans
+-- Module      :  Payasan.PSC.ABC.ExternalUnquote
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -17,12 +17,12 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.External.ABCInTrans
+module Payasan.PSC.ABC.ExternalUnquote
   (
     unquoteABC
   ) where
 
-import Payasan.PSC.Base.ABCCommon
+import Payasan.PSC.ABC.Common
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals

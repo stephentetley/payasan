@@ -24,7 +24,7 @@ module Payasan.Score.Elementary.Internal.ABCInTrans
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
-import Payasan.PSC.Base.ABCCommon 
+import Payasan.PSC.ABC.Common 
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
