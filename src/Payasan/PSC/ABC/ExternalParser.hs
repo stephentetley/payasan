@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell            #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -17,13 +16,9 @@
 
 module Payasan.PSC.ABC.ExternalParser
   (
-    abc
-    
-  -- * Aliases
-  , ABCQBar
-  , ABCQNoteGroup
-  , ABCQElement
-  , ABCQGrace1
+
+    parseABCPart
+
 
   -- * Elementary parsers
   , pitch
@@ -46,37 +41,6 @@ import Payasan.PSC.Base.SyntaxCommon
 import Text.Parsec                              -- package: parsec
 
 
-import Language.Haskell.TH.Quote
-
-
---------------------------------------------------------------------------------
--- Quasiquote
-
-abc :: QuasiQuoter
-abc = QuasiQuoter
-    { quoteExp = \s -> case parseABCPart s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
-
-
---------------------------------------------------------------------------------
--- Aliases
-
--- The aliases are for transitory types - we define them 
--- alongside their respective parsers. 
---
--- Useless a user was developing an alternative parser, there
--- should be no need to consider these aliases.
-
-
-type ABCQBar              = Bar         ABCPitch ABCNoteLength ()
-type ABCQNoteGroup        = NoteGroup   ABCPitch ABCNoteLength ()
-type ABCQElement          = Element     ABCPitch ABCNoteLength ()
-type ABCQGrace1           = Grace1      ABCPitch ABCNoteLength
 
 --------------------------------------------------------------------------------
 -- Parser
@@ -88,47 +52,47 @@ parseABCPart = runParser (fullParseABC qsection) () ""
 qsection :: ABCParser ABCSectionQuote
 qsection = (\bs -> ABCSectionQuote { getABCSection = bs}) <$> bars
 
-bars :: ABCParser [ABCQBar]
+bars :: ABCParser [Bar ABCPitch ABCNoteLength ()]
 bars = sepBy bar barline
 
 barline :: ABCParser ()
 barline = reservedOp "|"
 
-bar :: ABCParser ABCQBar
+bar :: ABCParser (Bar ABCPitch ABCNoteLength ())
 bar = Bar <$> noteGroups 
 
-noteGroups :: ABCParser [ABCQNoteGroup]
+noteGroups :: ABCParser [NoteGroup ABCPitch ABCNoteLength ()]
 noteGroups = whiteSpace *> many noteGroup
 
-noteGroup :: ABCParser ABCQNoteGroup
+noteGroup :: ABCParser (NoteGroup ABCPitch ABCNoteLength ())
 noteGroup = tuplet <|> (Atom <$> element)
 
-element :: ABCParser ABCQElement
+element :: ABCParser (Element ABCPitch ABCNoteLength ())
 element = lexeme (rest <|> note <|> chord <|> graces)
 
-rest :: ABCParser ABCQElement
+rest :: ABCParser (Element ABCPitch ABCNoteLength ())
 rest = Rest <$> (char 'z' *> noteLength)
 
-note :: ABCParser ABCQElement
+note :: ABCParser (Element ABCPitch ABCNoteLength ())
 note = (\p d t -> Note p d () t) <$> pitch <*> noteLength <*> tie
 
-chord :: ABCParser ABCQElement
+chord :: ABCParser (Element ABCPitch ABCNoteLength ())
 chord = (\ps d t -> Chord ps d () t)
           <$> squares (many1 pitch) <*> noteLength <*> tie
 
-graces :: ABCParser ABCQElement
+graces :: ABCParser (Element ABCPitch ABCNoteLength ())
 graces = Graces <$> braces (many1 grace1)
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser ABCQNoteGroup
+tuplet :: ABCParser (NoteGroup ABCPitch ABCNoteLength ())
 tuplet = do 
    spec   <- tupletSpec
    notes  <- countedNoteGroups (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedNoteGroups :: Int -> ABCParser [ABCQNoteGroup]
+countedNoteGroups :: Int -> ABCParser [NoteGroup ABCPitch ABCNoteLength ()]
 countedNoteGroups n 
     | n > 0       = do { e  <- noteGroup
                        ; es <- countedNoteGroups (n - elementSize e)
@@ -138,7 +102,7 @@ countedNoteGroups n
                        
     
 
-grace1 :: ABCParser ABCQGrace1
+grace1 :: ABCParser (Grace1 ABCPitch ABCNoteLength)
 grace1 = Grace1 <$> pitch <*> noteLength
     <?> "grace1"
 
@@ -237,7 +201,7 @@ tie = atie <|> notie
 -- Helpers
 
 
-elementSize :: ABCQNoteGroup -> Int
+elementSize :: NoteGroup ABCPitch ABCNoteLength () -> Int
 elementSize (Tuplet spec _) = tuplet_len spec
 elementSize _               = 1
 

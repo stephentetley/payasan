@@ -19,10 +19,13 @@
 
 module Payasan.PSC.ABC.ExternalUnquote
   (
-    unquoteABC
+    abc
+  , unquoteABC
+
   ) where
 
 import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.ExternalParser
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
@@ -32,6 +35,25 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 import Payasan.Base.Scale
+
+
+import Language.Haskell.TH.Quote        -- package: template-haskell
+
+
+--------------------------------------------------------------------------------
+-- Quasiquote
+
+abc :: QuasiQuoter
+abc = QuasiQuoter
+    { quoteExp = \s -> case parseABCPart s of
+                         Left err -> error $ show err
+                         Right xs -> dataToExpQ (const Nothing) xs
+    , quoteType = \_ -> error "QQ - no Score Type"
+    , quoteDec  = \_ -> error "QQ - no Score Decl"
+    , quotePat  = \_ -> error "QQ - no Score Patt" 
+    } 
+
+
 
 
 type PTMon a = Mon () a

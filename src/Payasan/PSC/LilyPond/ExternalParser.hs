@@ -19,22 +19,11 @@
 module Payasan.PSC.LilyPond.ExternalParser
   (
 
-    lilypond  
-  
-    -- * Aliases
-  , LyQBar
-  , LyQNoteGroup
-  , LyQElement
-  , LyQGrace1
-
-  , GenLyQBar
-  , GenLyQNoteGroup
-  , GenLyQElement
-  , GenLyQGrace1
-  
   -- * Parsers
     
-  , LyParserDef (..)
+    LyParserDef (..)
+
+  , parseLilyPondNoAnno
   , parseLySectionQuote
   , makeLyParser
   
@@ -68,44 +57,8 @@ import Payasan.Base.Duration
 
 import Text.Parsec                              -- package: parsec
 
-import Language.Haskell.TH.Quote                -- package: template-haskell
 
 
-
---------------------------------------------------------------------------------
--- Quasiquote
-
-
-lilypond :: QuasiQuoter
-lilypond = QuasiQuoter
-    { quoteExp = \s -> case parseLilyPondNoAnno s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
-
-
---------------------------------------------------------------------------------
--- Aliases
-
--- The aliases are for transitory types - we define them 
--- alongside their respective parsers. 
---
--- Useless a user was developing an alternative parser, there
--- should be no need to consider these aliases.
-    
-type LyQBar             = Bar         LyPitch LyNoteLength ()
-type LyQNoteGroup       = NoteGroup   LyPitch LyNoteLength ()
-type LyQElement         = Element     LyPitch LyNoteLength ()
-type LyQGrace1          = Grace1      LyPitch LyNoteLength
-
-
-type GenLyQBar          pch anno    = Bar         pch LyNoteLength anno
-type GenLyQNoteGroup    pch anno    = NoteGroup   pch LyNoteLength anno
-type GenLyQElement      pch anno    = Element     pch LyNoteLength anno
-type GenLyQGrace1       pch anno    = Grace1        pch LyNoteLength
 
 --------------------------------------------------------------------------------
 -- Parser
@@ -150,7 +103,7 @@ makeLyParser def = fullParseLy qsection
     qsection :: LyParser (GenLySectionQuote pch anno)
     qsection = (\bs -> GenLySectionQuote { getGenLySectionQuote = bs }) <$> bars
 
-    bars :: LyParser [GenLyQBar pch anno]
+    bars :: LyParser [Bar pch LyNoteLength anno]
     bars = sepBy bar barline
 
     -- Beaming is not strictly nested in LilyPond (i.e. beam 
@@ -158,19 +111,19 @@ makeLyParser def = fullParseLy qsection
     -- so we do a post-processing step to reconcile the first 
     -- member of the beam group.
     --
-    bar :: LyParser (GenLyQBar pch anno)
+    bar :: LyParser (Bar pch LyNoteLength anno)
     bar = Bar <$> noteGroups 
 
-    noteGroups :: LyParser [GenLyQNoteGroup pch anno]
+    noteGroups :: LyParser [NoteGroup pch LyNoteLength anno]
     noteGroups = concat <$> (whiteSpace *> many noteGroup)
 
-    noteGroup :: LyParser [GenLyQNoteGroup pch anno]
+    noteGroup :: LyParser [NoteGroup pch LyNoteLength anno]
     noteGroup = mult tuplet <|> beamTail <|> mult atom
       where
         mult p = (\a -> [a]) <$> p
 
 
-    beamTail :: LyParser [GenLyQNoteGroup pch anno]
+    beamTail :: LyParser [NoteGroup pch LyNoteLength anno]
     beamTail = squares noteGroups
 
 
@@ -178,39 +131,37 @@ makeLyParser def = fullParseLy qsection
     -- of notes in the tuplet to parse (they are properly enclosed 
     -- in braces).
     --
-    tuplet :: LyParser (GenLyQNoteGroup pch anno)
+    tuplet :: LyParser (NoteGroup pch LyNoteLength anno)
     tuplet = 
         (\spec notes -> Tuplet (makeTupletSpec spec (length notes)) notes)
             <$> tupletSpec <*> braces (noteGroups)
 
 
-
-    atom :: LyParser (GenLyQNoteGroup pch anno)
+    atom :: LyParser (NoteGroup pch LyNoteLength anno)
     atom = Atom <$> element
 
-    element :: LyParser (GenLyQElement pch anno)
+    element :: LyParser (Element pch LyNoteLength anno)
     element = lexeme (rest <|> note <|> chord <|> graces)
 
 
-    note :: LyParser (GenLyQElement pch anno)
+    note :: LyParser (Element pch LyNoteLength anno)
     note = Note <$> pPitch <*> noteLength <*> pAnno <*> tie
 
-    rest :: LyParser (GenLyQElement pch anno)
+    rest :: LyParser (Element pch LyNoteLength anno)
     rest = Rest <$> (char 'r' *> noteLength)
 
-    chord :: LyParser (GenLyQElement pch anno)
+    chord :: LyParser (Element pch LyNoteLength anno)
     chord = (\ps n a t -> Chord ps n a t)
                 <$> angles (many1 pPitch) <*> noteLength <*> pAnno <*> tie
 
-
-    graces :: LyParser (GenLyQElement pch anno)
+    graces :: LyParser (Element pch LyNoteLength anno)
     graces = Graces <$> (command "grace" *> (multi <|> single))
       where
         multi   = braces (many1 grace1)
         single  = (\a -> [a]) <$> grace1
 
 
-    grace1 :: LyParser (GenLyQGrace1 pch anno)
+    grace1 :: LyParser (Grace1 pch LyNoteLength)
     grace1 = Grace1 <$> pPitch <*> noteLength
         <?> "grace1"
 

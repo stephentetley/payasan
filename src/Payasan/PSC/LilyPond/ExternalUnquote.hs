@@ -16,7 +16,10 @@
 
 module Payasan.PSC.LilyPond.ExternalUnquote
   (
-    unquoteLyRelative
+
+    lilypond
+
+  , unquoteLyRelative
   , unquoteLyAbsolute
   , unquoteGenLy
   
@@ -24,6 +27,7 @@ module Payasan.PSC.LilyPond.ExternalUnquote
 
 
 import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.ExternalParser
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
@@ -34,12 +38,34 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
+import Language.Haskell.TH.Quote                -- package: template-haskell
+
+--------------------------------------------------------------------------------
+-- Quasiquote
+
+
+lilypond :: QuasiQuoter
+lilypond = QuasiQuoter
+    { quoteExp = \s -> case parseLilyPondNoAnno s of
+                         Left err -> error $ show err
+                         Right xs -> dataToExpQ (const Nothing) xs
+    , quoteType = \_ -> error "QQ - no Score Type"
+    , quoteDec  = \_ -> error "QQ - no Score Decl"
+    , quotePat  = \_ -> error "QQ - no Score Patt" 
+    } 
+
+
+--------------------------------------------------------------------------------
     
 type DMon    a      = Mon Duration a
 type RelPMon a      = Mon Pitch a
 type AbsPMon a      = Mon () a
 
-unquoteLyRelative :: String -> SectionInfo -> Pitch -> LySectionQuote anno -> Section Pitch Duration anno
+unquoteLyRelative :: String 
+                  -> SectionInfo 
+                  -> Pitch 
+                  -> LySectionQuote anno 
+                  -> Section Pitch Duration anno
 unquoteLyRelative name info rpitch (LySectionQuote bs) =
     let bars = translateDuration info $ translatePitchRelative info rpitch bs
     in Section { section_name      = name

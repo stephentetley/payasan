@@ -4,18 +4,18 @@
 module Demo01 where
 
 import qualified Payasan.PSC.ABC.Compile            as ABC
+import Payasan.PSC.ABC.ExternalUnquote
+
 import qualified Payasan.PSC.Csound.Compile         as CSD
 import qualified Payasan.PSC.LilyPond.Compile       as LY
+import Payasan.PSC.LilyPond.ExternalUnquote
+
 import qualified Payasan.PSC.MIDI.Compile           as MIDI
 
 import Payasan.PSC.Csound.Output (Value(..))
 import Payasan.PSC.MIDI.Syntax
 
 
-import Payasan.PSC.Repr.External.ABCInTrans
-import Payasan.PSC.Repr.External.ABCParser
-import Payasan.PSC.Repr.External.LilyPondInTrans
-import Payasan.PSC.Repr.External.LilyPondParser
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 
