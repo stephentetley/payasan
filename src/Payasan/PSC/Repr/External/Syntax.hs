@@ -41,13 +41,6 @@ module Payasan.PSC.Repr.External.Syntax
   , Element(..)
   , Grace1(..)
 
-  -- * Concrete syntax fragments
-  , GenLySectionQuote(..)
-  , LySectionQuote(..)
-  , ABCSectionQuote(..)
-
-  , specializeGenLySectionQuote
-  
   
   -- * Operations
   , pushSectionInfo
@@ -59,8 +52,6 @@ module Payasan.PSC.Repr.External.Syntax
   ) where
 
 
-import Payasan.PSC.ABC.Common           -- TODO: dependency in wrong direction
-import Payasan.PSC.LilyPond.Common      -- TODO: dependency in wrong direction
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
@@ -168,33 +159,6 @@ data Element pch drn anno =
 
 data Grace1 pch drn = Grace1 pch drn
   deriving (Data,Eq,Show,Typeable)
-
---------------------------------------------------------------------------------
--- Quasiquote / TH fragments
-
--- Notes
--- LySectionQuote & GenLySectionQuote represent what is parsed
---
--- There is no meter / key info in parsed fragments so we omit 
--- them. We do not attempt to synthesize them with defaults.
-
-newtype GenLySectionQuote pch anno = 
-    GenLySectionQuote { getGenLySectionQuote :: [Bar pch LyNoteLength anno] } 
-    deriving (Data,Eq,Show,Typeable)
-
-newtype LySectionQuote anno = 
-    LySectionQuote { getLySectionQuote :: [Bar LyPitch LyNoteLength anno] } 
-    deriving (Data,Eq,Show,Typeable)
-      
-newtype ABCSectionQuote = 
-    ABCSectionQuote { getABCSection :: [Bar ABCPitch ABCNoteLength ()] } 
-    deriving (Data,Eq,Show,Typeable)
-
-    
-specializeGenLySectionQuote :: GenLySectionQuote LyPitch anno 
-                            -> LySectionQuote anno
-specializeGenLySectionQuote = LySectionQuote . getGenLySectionQuote
-
 
 
 

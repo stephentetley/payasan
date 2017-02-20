@@ -21,8 +21,14 @@
 module Payasan.PSC.LilyPond.Common
   ( 
 
+  -- * Concrete syntax fragments
+    GenLySectionQuote(..)
+  , LySectionQuote(..)
 
-    LyTupletSpec(..)
+  , specializeGenLySectionQuote
+
+  
+  , LyTupletSpec(..)
   , LyPitch(..)
   , Accidental(..)
   , PitchLetter(..)
@@ -56,6 +62,9 @@ module Payasan.PSC.LilyPond.Common
 
   ) where
 
+
+import Payasan.PSC.Repr.External.Syntax
+
 import Payasan.PSC.Base.ShowCommon
 
 import Payasan.Base.Duration
@@ -66,6 +75,19 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 
+
+newtype GenLySectionQuote pch anno = 
+    GenLySectionQuote { getGenLySectionQuote :: [Bar pch LyNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+
+newtype LySectionQuote anno = 
+    LySectionQuote { getLySectionQuote :: [Bar LyPitch LyNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+      
+    
+specializeGenLySectionQuote :: GenLySectionQuote LyPitch anno 
+                            -> LySectionQuote anno
+specializeGenLySectionQuote = LySectionQuote . getGenLySectionQuote
 
 
 

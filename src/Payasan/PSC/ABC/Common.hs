@@ -18,8 +18,9 @@
 module Payasan.PSC.ABC.Common
   ( 
 
+    ABCSectionQuote(..)
 
-    ABCPitch(..)
+  , ABCPitch(..)
   , Accidental(..)
   , PitchLetter(..)
   , OctaveModifier(..)
@@ -42,6 +43,8 @@ module Payasan.PSC.ABC.Common
   ) where
 
 
+import Payasan.PSC.Repr.External.Syntax
+
 import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -54,6 +57,10 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 import Data.Ratio
 
+
+newtype ABCSectionQuote = 
+    ABCSectionQuote { getABCSection :: [Bar ABCPitch ABCNoteLength ()] } 
+    deriving (Data,Eq,Show,Typeable)
 
 
 -- Just give Picth and NoteLength ABC- prefix as they are 

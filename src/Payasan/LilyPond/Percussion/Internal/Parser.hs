@@ -24,6 +24,7 @@ module Payasan.LilyPond.Percussion.Internal.Parser
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
+import Payasan.PSC.LilyPond.Common
 import Payasan.PSC.LilyPond.ExternalParser
 import Payasan.PSC.LilyPond.Lexer
 
