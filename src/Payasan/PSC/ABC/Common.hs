@@ -33,9 +33,16 @@ module Payasan.PSC.ABC.Common
   , toDuration
   , fromDuration
 
+
+  -- * Debug output
+  , std_abc_output
+  , abcNoteLength
+  , abcPitch
+
   ) where
 
 
+import Payasan.PSC.Base.ShowCommon
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
@@ -238,5 +245,18 @@ instance Pretty ABCNoteLength where
   pPrint (Divd d)               = text "1/"<> int d
   pPrint (Frac n d)             = int n <> char '/' <> int d
 
+--------------------------------------------------------------------------------
+-- Debug output
 
+std_abc_output :: LeafOutputNote ABCPitch ABCNoteLength ()
+std_abc_output = 
+    LeafOutputNote { pp_pitch     = abcPitch
+                   , pp_duration  = abcNoteLength
+                   , pp_anno      = const empty
+                   }
 
+abcNoteLength :: ABCNoteLength -> Doc
+abcNoteLength = pPrint
+
+abcPitch :: ABCPitch -> Doc
+abcPitch = pPrint

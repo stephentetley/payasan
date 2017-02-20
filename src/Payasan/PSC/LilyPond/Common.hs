@@ -47,7 +47,16 @@ module Payasan.PSC.LilyPond.Common
   , toPitchRel
   , fromPitchRel
 
+  -- * Debug output
+  , std_ly_output
+  , lyNoteLength
+  , lyPitch
+
+
+
   ) where
+
+import Payasan.PSC.Base.ShowCommon
 
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
@@ -250,4 +259,19 @@ instance Pretty Octave where
 instance Pretty LyNoteLength where
   pPrint (DrnDefault)           = char '.'
   pPrint (DrnExplicit d)        = pPrint d
+
+--------------------------------------------------------------------------------
+
+std_ly_output :: LeafOutputNote LyPitch LyNoteLength ()
+std_ly_output = 
+    LeafOutputNote { pp_pitch     = lyPitch
+                   , pp_duration  = lyNoteLength
+                   , pp_anno      = const empty
+                   }
+
+lyNoteLength :: LyNoteLength -> Doc
+lyNoteLength = pPrint
+
+lyPitch :: LyPitch -> Doc
+lyPitch = pPrint
 
