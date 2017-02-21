@@ -117,17 +117,29 @@ midiGrace :: Pitch -> MIDI.MIDINote
 midiGrace pch = 
     let midinote = pitchToMidiPitch pch in MIDI.MIDINote 1 midinote 40 40
 
-midi_compiler :: MIDI.Compiler Pitch anno
-midi_compiler = MIDI.makeCompiler def
+midi_compiler_ :: MIDI.Compiler Pitch anno
+midi_compiler_ = MIDI.makeCompiler def
   where
-    def = MIDI.emptyDef { MIDI.outfile_name    = "midi_output.midi"
-                        , MIDI.make_event_body = midiEvent
-                        , MIDI.make_grace_body = midiGrace
-                        }
+    def = MIDI.emptyDef_ { MIDI.outfile_name    = "midi_output.midi"
+                         , MIDI.make_event_body = midiEvent
+                         , MIDI.make_grace_body = midiGrace
+                         }
+
 
 compileMIDI :: StdPart -> IO ()
-compileMIDI = MIDI.compile midi_compiler  
+compileMIDI = MIDI.compile midi_compiler_
 
+midi_compiler1 :: MIDI.PartCompiler Pitch anno
+midi_compiler1 = MIDI.makePartCompiler lib
+  where
+    lib = MIDI.emptyDef { MIDI.make_event_body1 = midiEvent
+                        , MIDI.make_grace_body1 = midiGrace
+                        }
+
+compileMIDIPart :: FilePath -> StdPart -> IO ()
+compileMIDIPart path part = 
+   let midi = MIDI.assembleOutputAlt $  MIDI.compilePart midi_compiler1 part
+   in MIDI.writeMIDIFileAlt path midi
 
 section1abc :: StdSection
 section1abc = unquoteABC "Phrase1abc" locals $ [abc| B4 z B B - | BB B2 z4 |]
@@ -151,7 +163,7 @@ demo03 = compileCsd (Part { part_sections = [section1abc] })
 
 
 demo04 :: IO ()
-demo04 = compileMIDI (Part { part_sections = [section1abc] })
+demo04 = compileMIDIPart "midi_output.midi" (Part { part_sections = [section1abc] })
 
 
 

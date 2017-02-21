@@ -21,11 +21,19 @@ module Payasan.PSC.MIDI.Compile
   , MIDINote(..)
 
   , CompilerDef(..)       
-  , emptyDef
+  , emptyDef_
 
   , Compiler(..)
   , makeCompiler
 
+  , PartCompilerDef(..)
+  , emptyDef
+
+  , PartCompiler(..)
+  , makePartCompiler
+
+  , assembleOutputAlt
+  , writeMIDIFileAlt
 
   ) where
 
@@ -83,8 +91,8 @@ data CompilerDef pch anno = CompilerDef
 
 
 
-emptyDef :: CompilerDef pch anno
-emptyDef = CompilerDef
+emptyDef_ :: CompilerDef pch anno
+emptyDef_ = CompilerDef
     { pathto_working_dir        = ""
     , outfile_name              = "midi_output.midi"
     , make_event_body           = \_ _ -> mkErr "make_event_body"
@@ -143,7 +151,7 @@ makeGenEventBody2 lib =
 
 
 assembleOutput1 :: CompilerDef pitch anno -> MIDIEventList -> MIDICompile Z.MidiFile
-assembleOutput1 lib evts = 
+assembleOutput1 _lib evts = 
     return $ midiFileFormat0 (makeZMidiTrack evts)
 
 
@@ -164,36 +172,47 @@ workingFileName1 lib =
        }
 
 --------------------------------------------------------------------------------
--- 
+-- Latest work 
 
-data Compiler1 pch anno = Compiler1
+-- Compilation may compile more-than-one Parts which each have different
+-- configurations. Need to treat Parts individually.
+
+data PartCompiler pch anno = PartCompiler
     { compilePart :: EXT.Part pch Duration anno -> MIDIEventList
     }
 
-data Compiler1Def pch anno = PartDef 
+data PartCompilerDef pch anno = PartCompilerDef 
     { midi_channel              :: !Int
     , make_event_body1          :: pch -> anno -> MIDINote
     , make_grace_body1          :: pch -> MIDINote
     } 
 
+emptyDef :: PartCompilerDef pch anno
+emptyDef = PartCompilerDef 
+    { midi_channel              = 1
+    , make_event_body1          = \_ _ -> mkErr "make_event_body1"
+    , make_grace_body1          = \_ -> mkErr "make_grace_body1"
+    }
+  where
+    mkErr ss = error $ "Must supply an implementation of " ++ ss
 
--- This indicates a problem - we want to be able to combine
--- MIDIEventLists but they might be rendered with different 
--- ticks_per_quarter_note...
+
+
+-- ticks_per_quarter_note is solved by always using 480
 --
-makeCompiler1 :: Compiler1Def pch anno -> Compiler1 pch anno
-makeCompiler1 lib = Compiler1
-    { compilePart = compile1
+makePartCompiler :: PartCompilerDef pch anno -> PartCompiler pch anno
+makePartCompiler lib = PartCompiler
+    { compilePart = compileP
     }
   where
     gen2          = makeGenEventBody2_ lib
-    compile1 part = let irsimple = fromExternal $ transDurationToSeconds part
+    compileP part = let irsimple = fromExternal $ transDurationToSeconds part
                         irflat   = fromIREventBar2 gen2 $ fromIRSimpleTile irsimple
                     in  makeMIDIEventList $ ticksTrafo irflat
 
 
 
-makeGenEventBody2_ :: Compiler1Def pch anno -> GenEventBody2 pch anno MIDIEventBody
+makeGenEventBody2_ :: PartCompilerDef pch anno -> GenEventBody2 pch anno MIDIEventBody
 makeGenEventBody2_ lib = 
     GenEventBody2 { genBodyFromEvent2 = event
                   , genBodyFromGrace2 = grace }
@@ -203,4 +222,14 @@ makeGenEventBody2_ lib =
 
     grace p   = let (MIDINote ch pch onn off) = (make_grace_body1 lib) p
                 in (NoteOn ch pch onn, NoteOff ch pch off) 
+
+
+
+assembleOutputAlt :: MIDIEventList -> Z.MidiFile
+assembleOutputAlt evts = midiFileFormat0 (makeZMidiTrack evts)
+
+writeMIDIFileAlt :: FilePath -> Z.MidiFile -> IO ()
+writeMIDIFileAlt path midi = Z.writeMidi path midi
+       
+       
 
