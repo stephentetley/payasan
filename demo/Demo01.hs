@@ -107,27 +107,15 @@ csd_compiler = CSD.makeCompiler def
 compileCsd :: StdPart -> IO ()
 compileCsd = CSD.compile csd_compiler
 
--- TODO we shouldn't be "allocating" channel here...
 
 midiEvent :: Pitch -> anno -> MIDI.MIDINote
 midiEvent pch _ = 
-    let midinote = pitchToMidiPitch pch in MIDI.MIDINote 1 midinote 40 40
+    let midinote = pitchToMidiPitch pch in MIDI.MIDINote midinote 40 40
 
 midiGrace :: Pitch -> MIDI.MIDINote
 midiGrace pch = 
-    let midinote = pitchToMidiPitch pch in MIDI.MIDINote 1 midinote 40 40
+    let midinote = pitchToMidiPitch pch in MIDI.MIDINote midinote 40 40
 
-midi_compiler_ :: MIDI.Compiler Pitch anno
-midi_compiler_ = MIDI.makeCompiler def
-  where
-    def = MIDI.emptyDef_ { MIDI.outfile_name    = "midi_output.midi"
-                         , MIDI.make_event_body = midiEvent
-                         , MIDI.make_grace_body = midiGrace
-                         }
-
-
-compileMIDI :: StdPart -> IO ()
-compileMIDI = MIDI.compile midi_compiler_
 
 midi_compiler1 :: MIDI.PartCompiler Pitch anno
 midi_compiler1 = MIDI.makePartCompiler lib
@@ -138,8 +126,8 @@ midi_compiler1 = MIDI.makePartCompiler lib
 
 compileMIDIPart :: FilePath -> StdPart -> IO ()
 compileMIDIPart path part = 
-   let midi = MIDI.assembleOutputAlt $  MIDI.compilePart midi_compiler1 part
-   in MIDI.writeMIDIFileAlt path midi
+   let midi = MIDI.assembleOutput $  MIDI.compilePart midi_compiler1 part
+   in MIDI.writeMIDIFile path midi
 
 section1abc :: StdSection
 section1abc = unquoteABC "Phrase1abc" locals $ [abc| B4 z B B - | BB B2 z4 |]
