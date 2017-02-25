@@ -18,8 +18,8 @@
 module Payasan.PSC.Csound.Output
   ( 
 
-    CsdEventListDoc
-  , GenCsdOutput(..)
+    CsoundEventListDoc
+  , GenCsoundOutput(..)
   , ColumnFormats(..)
 
   , Value(..)  -- ideally shouldn't expose VEllipsis to users
@@ -42,15 +42,15 @@ import Payasan.Base.Basis
 import Text.PrettyPrint.HughesPJ                -- package: pretty
 
 
-data CsdEventList_
-type CsdEventListDoc = TyDoc CsdEventList_
+data CsoundEventList_
+type CsoundEventListDoc = TyDoc CsoundEventList_
 
 
 -- It would likely be better to generate a list of 'Values' 
 -- then we can eleviate from the user some of the detail of 
 -- printing them.
 --
-data GenCsdOutput attrs = GenCsdOutput
+data GenCsoundOutput attrs = GenCsoundOutput
     { instr_number      :: Int
     , column_specs      :: ColumnFormats
     , genAttrValues     :: attrs -> [Value]
@@ -99,24 +99,22 @@ istmtDoc (ColumnFormats { inst_colwidth   = instw
     go _      []        = empty
 
 
-makeCsdEventListDoc :: GenCsdOutput body
+makeCsdEventListDoc :: GenCsoundOutput body
                     -> Part Seconds Seconds body 
-                    -> CsdEventListDoc
-makeCsdEventListDoc def p = TyDoc $ oPart def p
+                    -> CsoundEventListDoc
+makeCsdEventListDoc lib p = TyDoc $ renderPart lib p
 
 
-oPart :: GenCsdOutput body -> Part Seconds Seconds body -> Doc
-oPart def (Part { part_sections = ss }) = 
-    vsep $ map (renderSection def) ss
+renderPart :: GenCsoundOutput body -> Part Seconds Seconds body -> Doc
+renderPart lib (Part { part_sections = ss }) = vsep $ map renderSection ss
+  where
+    genAttrs    = genAttrValues lib
+    inst_num    = instr_number lib
+    col_specs   = column_specs lib
 
+    renderSection (Section { section_events = es }) = vsep $ map renderEvent es
 
-renderSection :: GenCsdOutput body -> Section Seconds Seconds body -> Doc
-renderSection def (Section { section_events = es }) = 
-    vsep $ map (renderEvent def) es
-
-renderEvent :: GenCsdOutput body -> Event Seconds Seconds body -> Doc
-renderEvent def (Event { event_onset    = o
+    renderEvent (Event { event_onset    = o
                        , event_duration = d
                        , event_body     = a}) = 
-    let values  = genAttrValues def a
-    in istmtDoc (column_specs def) (instr_number def) o d values
+        istmtDoc col_specs inst_num o d (genAttrs a)

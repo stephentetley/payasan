@@ -31,6 +31,7 @@ module Payasan.PSC.Csound.Compile
 import Payasan.PSC.Csound.Output
 
 import Payasan.PSC.Repr.External.OutTransSeconds
+import qualified Payasan.PSC.Repr.External.Syntax as EXT
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.IRSimpleTile.FromExternal
 import Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
@@ -42,6 +43,7 @@ import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 
+import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
@@ -115,20 +117,22 @@ compile1 def part = do
 -- MakeEventDef pch anno evt 
 compilePartToEventList1 :: CompilerDef Pitch anno body 
                         -> StdPart1 anno 
-                        -> CsdCompile CsdEventListDoc
+                        -> CsdCompile CsoundEventListDoc
 compilePartToEventList1 def p = 
     let def_bar  = GenEventBody { genBodyFromEvent = make_event_body def
                                 , genBodyFromGrace = make_grace_body def }          
-        def_flat = GenCsdOutput { instr_number   = inst_number def
-                                , column_specs   = column_formats def
-                                , genAttrValues  = make_values def }
+        def_flat = GenCsoundOutput { instr_number   = inst_number def
+                                   , column_specs   = column_formats def
+                                   , genAttrValues  = make_values def }
         irsimple = fromExternal $ transDurationToSeconds p
         irflat   = fromIREventBar def_bar $ fromIRSimpleTile irsimple
     in return $ makeCsdEventListDoc def_flat irflat
 
 
 -- This is monadic...
-assembleOutput1 :: CompilerDef Pitch anno body -> CsdEventListDoc -> CsdCompile TEXT.Text
+assembleOutput1 :: CompilerDef Pitch anno body 
+                -> CsoundEventListDoc 
+                -> CsdCompile TEXT.Text
 assembleOutput1 def sco = 
     let scotext = TEXT.pack $ ppRender $ extractDoc sco
     in do { xcsd <- readFileCM (pathto_csd_template def)
@@ -159,3 +163,33 @@ workingFileName1 def =
        ; return outfile
        }
 
+--------------------------------------------------------------------------------
+-- Latest cf. MIDI
+
+
+data CsoundNote pch = CsoundNote 
+    { note_pitch         :: !pch
+    , note_attrs         :: [Value]  -- TODO this leaks ellipsis
+    }
+  deriving (Eq,Show)
+
+
+-- first thing rename CsdEventList to CsoundEventList
+
+data PartCompiler pch anno = PartCompiler
+    { compilePart :: EXT.Part pch Duration anno -> CsoundEventListDoc
+    }
+
+
+
+
+{-
+-- TODO - is parametric 'body' too loose? 
+-- Can we fully sepcify the type?
+data PartCompilerDef pch pch2 anno = PartCompilerDef
+    { intrument_number          :: !Int
+    , make_event_body2           :: pch -> anno -> CsoundNote pch2
+    , make_grace_body2           :: pch -> CsoundNote pch2
+    }
+
+-}
