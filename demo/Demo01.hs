@@ -13,7 +13,6 @@ import Payasan.PSC.LilyPond.ExternalUnquote
 import qualified Payasan.PSC.MIDI.Compile           as MIDI
 
 import Payasan.PSC.Csound.Output (Value(..))
-import Payasan.PSC.MIDI.Syntax
 
 
 import Payasan.PSC.Repr.External.Syntax
@@ -21,10 +20,11 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.AltPitch
 import Payasan.Base.Basis
-import Payasan.Base.Duration
+-- import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.PrettyPrint.HughesPJClass
+
+import qualified Data.Text.IO           as TEXT
 
 
 
@@ -82,30 +82,35 @@ bbGrace p =
                   , bb_const    = 0.0
                   }
 
--- Demanding users generate Istmts is wrong...
-genValues :: BowedBarAttrs -> [Value]
+genValues :: BowedBarAttrs -> CSD.CsoundNote
 genValues (BowedBarAttrs { bb_amp      = amp
                          , bb_pitch    = pch
                          , bb_const    = konst }) = 
-    [VFloat 2 amp, VFloat 2 $ realToFrac $ getPCPitch pch, VFloat 1 konst ]
+    CSD.CsoundNote $ [ VFloat 2 amp
+                     , VFloat 2 $ realToFrac $ getPCPitch pch
+                     , VFloat 1 konst 
+                     ]
 
 
-csd_compiler :: CSD.Compiler anno
-csd_compiler = CSD.makeCompiler def
+csd_compiler :: CSD.PartCompiler Pitch anno
+csd_compiler = CSD.makePartCompiler lib
   where 
-    def = CSD.emptyDef { CSD.pathto_working_dir   = ""
-                       , CSD.outfile_name         = "csd_output.csd"
-                       , CSD.make_event_body      = bbEvent
-                       , CSD.make_grace_body      = bbGrace
-                       , CSD.make_values          = genValues
+    lib = CSD.emptyDef { CSD.instrument_number    = 1
+                       , CSD.make_event_body      = \p a -> genValues $ bbEvent p a
+                       , CSD.make_grace_body      = genValues . bbGrace
                        }
     
 
 
+compileCsoundPart :: FilePath -> StdPart -> IO ()
+compileCsoundPart path part = 
+   do { xplate <- CSD.readCsdTemplate "./demo/template.csd"
+      ; let sco = CSD.compilePart csd_compiler part
+      ; let csd = CSD.assembleOutput xplate "[|notelist|]" sco
+      ; TEXT.writeFile path csd
+      }
    
 
-compileCsd :: StdPart -> IO ()
-compileCsd = CSD.compile csd_compiler
 
 
 midiEvent :: Pitch -> anno -> MIDI.MIDINote
@@ -117,16 +122,16 @@ midiGrace pch =
     let midinote = pitchToMidiPitch pch in MIDI.MIDINote midinote 40 40
 
 
-midi_compiler1 :: MIDI.PartCompiler Pitch anno
-midi_compiler1 = MIDI.makePartCompiler lib
+midi_compiler :: MIDI.PartCompiler Pitch anno
+midi_compiler = MIDI.makePartCompiler lib
   where
-    lib = MIDI.emptyDef { MIDI.make_event_body1 = midiEvent
-                        , MIDI.make_grace_body1 = midiGrace
+    lib = MIDI.emptyDef { MIDI.make_event_body = midiEvent
+                        , MIDI.make_grace_body = midiGrace
                         }
 
 compileMIDIPart :: FilePath -> StdPart -> IO ()
 compileMIDIPart path part = 
-   let midi = MIDI.assembleOutput $  MIDI.compilePart midi_compiler1 part
+   let midi = MIDI.assembleOutput $  MIDI.compilePart midi_compiler part
    in MIDI.writeMIDIFile path midi
 
 section1abc :: StdSection
@@ -147,7 +152,7 @@ demo02 :: IO ()
 demo02 = compileLy (Part { part_sections = [section1ly] })
 
 demo03 :: IO ()
-demo03 = compileCsd (Part { part_sections = [section1abc] })
+demo03 = compileCsoundPart "csd_output.csd" (Part { part_sections = [section1abc] })
 
 
 demo04 :: IO ()

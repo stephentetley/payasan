@@ -17,13 +17,27 @@
 
 module Payasan.PSC.Csound.Compile
   ( 
-    
-    CsdCompile
+
+    CsoundNote(..)
+   
+{- 
+  , CsdCompile
   , CompilerDef(..)       
   , emptyDef
 
   , Compiler(..)
   , makeCompiler
+-}
+
+  , PartCompilerDef(..)
+  , emptyDef
+
+  , PartCompiler(..)
+  , makePartCompiler
+
+
+  , readCsdTemplate
+  , assembleOutput
 
   ) where
 
@@ -32,144 +46,50 @@ import Payasan.PSC.Csound.Output
 
 import Payasan.PSC.Repr.External.OutTransSeconds
 import qualified Payasan.PSC.Repr.External.Syntax as EXT
-import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.IRSimpleTile.FromExternal
 import Payasan.PSC.Repr.IREventBar.FromIRSimpleTile
 import Payasan.PSC.Repr.IREventFlat.FromIREventBar
 
-
-
-import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Duration
-import Payasan.Base.Pitch
-
 
 
 import qualified Data.Text              as TEXT
 import qualified Data.Text.IO           as TEXT
 
 
-import Control.Monad.IO.Class
-import System.FilePath
 
-
-type CsdCompile a = CM a
-
-
-data CompilerDef pch anno body = CompilerDef
-    { pathto_working_dir        :: !FilePath
-    , outfile_name              :: !String
-    , pathto_csd_template       :: !FilePath
-    , template_anchor           :: !String
-    , inst_number               :: !Int
-    , make_event_body           :: pch -> anno -> body
-    , make_grace_body           :: pch -> body
-    , column_formats            :: ColumnFormats
-    , make_values               :: body -> [Value]
-    }
-  
-emptyDef :: CompilerDef pch anno body
-emptyDef = CompilerDef
-    { pathto_working_dir        = ""
-    , outfile_name              = "cs_output.csd"
-    , pathto_csd_template       = "./demo/template.csd"
-    , template_anchor           = "[|notelist|]"
-    , inst_number               = 1
-    , make_event_body           = \_ _ -> mkErr "make_event_body"
-    , make_grace_body           = \_ -> mkErr "make_grace_body"
-    , column_formats            = ColumnFormats { inst_colwidth  = 7
-                                                , time_colformat = (7,3)
-                                                , other_widths   = [6,6,6] }
-    , make_values               = mkErr "make_values"
-    }    
-  where
-    mkErr ss = error $ "Must supply an implementation of " ++ ss
-
-
--- TODO - should provide a method just to compile Part to a doc
--- then this will allow reuse for multi-notelist models 
--- (e.g. polyrhythms)
-
-data Compiler anno = Compiler
-   { compile :: StdPart1 anno -> IO ()
-   
-   }
-
-makeCompiler :: CompilerDef Pitch anno body -> Compiler anno
-makeCompiler env = 
-    Compiler { compile = \part -> prompt (compile1 env part)  >> return ()
-             }
-
-
-
-
-compile1 :: CompilerDef Pitch anno body -> StdPart1 anno -> CsdCompile ()
-compile1 def part = do 
-    { events <- compilePartToEventList1 def part
-    ; csd <- assembleOutput1 def events
-    ; writeCsdFile1 def csd
-    }
-
-
--- MakeEventDef pch anno evt 
-compilePartToEventList1 :: CompilerDef Pitch anno body 
-                        -> StdPart1 anno 
-                        -> CsdCompile CsoundEventListDoc
-compilePartToEventList1 def p = 
-    let def_bar  = GenEventBody { genBodyFromEvent = make_event_body def
-                                , genBodyFromGrace = make_grace_body def }          
-        def_flat = GenCsoundOutput { instr_number   = inst_number def
-                                   , column_specs   = column_formats def
-                                   , genAttrValues  = make_values def }
-        irsimple = fromExternal $ transDurationToSeconds p
-        irflat   = fromIREventBar def_bar $ fromIRSimpleTile irsimple
-    in return $ makeCsdEventListDoc def_flat irflat
-
-
--- This is monadic...
-assembleOutput1 :: CompilerDef Pitch anno body 
-                -> CsoundEventListDoc 
-                -> CsdCompile TEXT.Text
-assembleOutput1 def sco = 
-    let scotext = TEXT.pack $ ppRender $ extractDoc sco
-    in do { xcsd <- readFileCM (pathto_csd_template def)
-          ; return $ TEXT.replace (TEXT.pack $ template_anchor def) scotext xcsd
-          }
-
-{-
-csoundInsertNotes1 :: CompilerDef pch anno body -> String -> TEXT.Text -> TEXT.Text
-csoundInsertNotes1 def sco = 
-    TEXT.replace (TEXT.pack $ template_anchor def) (TEXT.pack sco)
--}
-
-
--- | Csd has already been rendered to Text.
---
-writeCsdFile1 :: CompilerDef pch anno body -> TEXT.Text -> CsdCompile ()
-writeCsdFile1 def csd = 
-    do { outfile <- workingFileName1 def
-       ; liftIO $ TEXT.writeFile outfile csd
-       ; return ()
-       }
-
-workingFileName1 :: CompilerDef pch anno body -> CsdCompile FilePath
-workingFileName1 def = 
-    do { root <- getWorkingDirectory (Right $ pathto_working_dir def) 
-       ; let name = outfile_name def
-       ; let outfile = root </> name
-       ; return outfile
-       }
 
 --------------------------------------------------------------------------------
 -- Latest cf. MIDI
 
 
-data CsoundNote pch = CsoundNote 
-    { note_pitch         :: !pch
-    , note_attrs         :: [Value]  -- TODO this leaks ellipsis
+-- How should Pitch be exposed to users?
+-- Csound can have different representations of pitch in the 
+-- output (frequency, pitch class, ...)
+--
+-- For MIDI the user is obliged to supply the translation from 
+-- pch to MIDIPitch. However, it feels like Csound would need
+-- two steps - translate to some user required pitch type, and 
+-- pretty print this pitch type to the required number of decimal 
+-- places.
+--
+-- This makes the implementation uglier.
+-- (We want a concrete pch value rather than going straight to
+-- a Doc so we can have ellipsis for subsequent equal values).
+-- 
+-- A mid-way point is to represent pch as a Csound value, this
+-- potentielly allows (erroneous) mixed representations (String, 
+-- Bool) but removes the annoying extra complexity of parametric pch.
+-- 
+-- Also the user must specify the order of fields - whilst pitch
+-- is commonly first there is no guarantee and the backend cannot 
+-- know the order 
+-- 
+data CsoundNote = CsoundNote 
+    { note_values        :: [Value]  -- TODO this leaks ellipsis
     }
   deriving (Eq,Show)
 
@@ -183,13 +103,65 @@ data PartCompiler pch anno = PartCompiler
 
 
 
-{-
--- TODO - is parametric 'body' too loose? 
--- Can we fully sepcify the type?
-data PartCompilerDef pch pch2 anno = PartCompilerDef
-    { intrument_number          :: !Int
-    , make_event_body2           :: pch -> anno -> CsoundNote pch2
-    , make_grace_body2           :: pch -> CsoundNote pch2
+
+data PartCompilerDef pch anno = PartCompilerDef
+    { instrument_number         :: !Int
+    , make_event_body           :: pch -> anno -> CsoundNote
+    , make_grace_body           :: pch -> CsoundNote
+    , column_formats            :: ColumnFormats
     }
 
--}
+
+
+emptyDef :: PartCompilerDef pch anno
+emptyDef = PartCompilerDef 
+    { instrument_number         = 1
+    , make_event_body           = \_ _ -> mkErr "make_event_body"
+    , make_grace_body           = \_ -> mkErr "make_grace_body"
+    , column_formats            = ColumnFormats { inst_colwidth  = 7
+                                                , time_colformat = (7,3)
+                                                , other_widths   = [6,6,6] }
+    }
+  where
+    mkErr ss = error $ "Must supply an implementation of " ++ ss
+
+
+makePartCompiler :: PartCompilerDef pch anno -> PartCompiler pch anno
+makePartCompiler lib = PartCompiler
+    { compilePart = compileP
+    }
+  where
+    gen_bar  = makeGenEventBody lib
+
+    gen_flat = GenCsoundOutput { instr_number   = instrument_number lib
+                               , column_specs   = column_formats lib }
+
+    compileP part = let irsimple = fromExternal $ transDurationToSeconds part
+                        irflat   = fromIREventBar gen_bar $ fromIRSimpleTile irsimple
+                    in makeCsdEventListDoc gen_flat irflat
+
+
+makeGenEventBody :: PartCompilerDef pch anno -> GenEventBody pch anno [Value]
+makeGenEventBody lib = 
+    GenEventBody { genBodyFromEvent = event
+                 , genBodyFromGrace = grace }
+  where
+    event p a = let (CsoundNote vals) = (make_event_body lib) p a in vals
+
+    grace p   = let (CsoundNote vals) = (make_grace_body lib) p in vals
+
+
+newtype CsdTemplate = CsdTemplate { getCsdTemplate :: TEXT.Text }
+
+
+readCsdTemplate :: FilePath -> IO CsdTemplate
+readCsdTemplate path = CsdTemplate <$> TEXT.readFile path
+
+assembleOutput :: CsdTemplate
+               -> String
+               -> CsoundEventListDoc 
+               -> TEXT.Text
+assembleOutput template anchor sco = 
+    let scotext = TEXT.pack $ ppRender $ extractDoc sco
+    in TEXT.replace (TEXT.pack anchor) scotext (getCsdTemplate $ template)
+       

@@ -74,15 +74,15 @@ data PartCompiler pch anno = PartCompiler
 
 data PartCompilerDef pch anno = PartCompilerDef 
     { midi_channel              :: !Int
-    , make_event_body1          :: pch -> anno -> MIDINote
-    , make_grace_body1          :: pch -> MIDINote
+    , make_event_body           :: pch -> anno -> MIDINote
+    , make_grace_body           :: pch -> MIDINote
     } 
 
 emptyDef :: PartCompilerDef pch anno
 emptyDef = PartCompilerDef 
     { midi_channel              = 1
-    , make_event_body1          = \_ _ -> mkErr "make_event_body1"
-    , make_grace_body1          = \_ -> mkErr "make_grace_body1"
+    , make_event_body           = \_ _ -> mkErr "make_event_body"
+    , make_grace_body           = \_ -> mkErr "make_grace_body"
     }
   where
     mkErr ss = error $ "Must supply an implementation of " ++ ss
@@ -105,14 +105,14 @@ makePartCompiler lib = PartCompiler
 
 makeGenEventBody2 :: PartCompilerDef pch anno -> GenEventBody2 pch anno MIDIEventBody
 makeGenEventBody2 lib = 
-    GenEventBody2{ genBodyFromEvent2 = event
+    GenEventBody2 { genBodyFromEvent2 = event
                   , genBodyFromGrace2 = grace }
   where
     chan      = fromIntegral $ midi_channel lib
-    event p a = let (MIDINote pch onn off) = (make_event_body1 lib) p a
+    event p a = let (MIDINote pch onn off) = (make_event_body lib) p a
                 in (NoteOn chan pch onn, NoteOff chan pch off) 
 
-    grace p   = let (MIDINote pch onn off) = (make_grace_body1 lib) p
+    grace p   = let (MIDINote pch onn off) = (make_grace_body lib) p
                 in (NoteOn chan pch onn, NoteOff chan pch off) 
 
 

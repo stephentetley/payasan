@@ -50,10 +50,10 @@ type CsoundEventListDoc = TyDoc CsoundEventList_
 -- then we can eleviate from the user some of the detail of 
 -- printing them.
 --
-data GenCsoundOutput attrs = GenCsoundOutput
+data GenCsoundOutput = GenCsoundOutput
     { instr_number      :: Int
     , column_specs      :: ColumnFormats
-    , genAttrValues     :: attrs -> [Value]
+--    , genAttrValues     :: attrs -> [Value]
     }
 
 
@@ -99,16 +99,16 @@ istmtDoc (ColumnFormats { inst_colwidth   = instw
     go _      []        = empty
 
 
-makeCsdEventListDoc :: GenCsoundOutput body
-                    -> Part Seconds Seconds body 
+makeCsdEventListDoc :: GenCsoundOutput
+                    -> Part Seconds Seconds [Value]
                     -> CsoundEventListDoc
 makeCsdEventListDoc lib p = TyDoc $ renderPart lib p
 
 
-renderPart :: GenCsoundOutput body -> Part Seconds Seconds body -> Doc
+renderPart :: GenCsoundOutput -> Part Seconds Seconds [Value] -> Doc
 renderPart lib (Part { part_sections = ss }) = vsep $ map renderSection ss
   where
-    genAttrs    = genAttrValues lib
+--    genAttrs    = genAttrValues lib
     inst_num    = instr_number lib
     col_specs   = column_specs lib
 
@@ -116,5 +116,5 @@ renderPart lib (Part { part_sections = ss }) = vsep $ map renderSection ss
 
     renderEvent (Event { event_onset    = o
                        , event_duration = d
-                       , event_body     = a}) = 
-        istmtDoc col_specs inst_num o d (genAttrs a)
+                       , event_body     = vals}) = 
+        istmtDoc col_specs inst_num o d vals
