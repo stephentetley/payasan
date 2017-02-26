@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.LilyPond.Compile
--- Copyright   :  (c) Stephen Tetley 2016
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -26,6 +26,7 @@ module Payasan.PSC.LilyPond.Compile
   ) where
 
 
+import Payasan.PSC.LilyPond.Common hiding ( middle_c )
 import Payasan.PSC.LilyPond.OutTrans
 import Payasan.PSC.LilyPond.SimpleOutput
 import Payasan.PSC.LilyPond.Utils

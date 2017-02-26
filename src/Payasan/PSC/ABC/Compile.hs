@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.PSC.ABC.Compile
--- Copyright   :  (c) Stephen Tetley 2016
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -34,6 +34,9 @@ import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.External.Syntax
+import qualified Payasan.PSC.Repr.External.Syntax as EXT
+
+import Payasan.Base.Duration
 
 
 
@@ -146,3 +149,18 @@ workingFileName1 def =
        ; return outfile
        }
 
+--------------------------------------------------------------------------------
+-- Latest - move to PartCompiler style...
+
+
+data PartCompiler pch anno = PartCompiler
+    { compilePart :: EXT.Part pch Duration anno -> ABCNoteListDoc
+    }
+
+{-
+data PartCompilerDef pch anno = PartCompilerDef 
+    { midi_channel              :: !Int
+    , make_event_body           :: pch -> anno -> MIDINote
+    , make_grace_body           :: pch -> MIDINote
+    } 
+-}

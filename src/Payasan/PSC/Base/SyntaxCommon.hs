@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveDataTypeable         #-}
-{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -21,10 +20,6 @@ module Payasan.PSC.Base.SyntaxCommon
 
     TyDoc(..)
   , TyText(..)
-
-  , LyNoteListDoc
-  , ABCNoteListDoc
-  
   
   , ScoreInfo(..)
   , Clef(..)
@@ -72,23 +67,8 @@ data TyDoc a = TyDoc { extractDoc :: Doc }
 data TyText a = TyText { extractText :: TEXT.Text }
 
 
--- | Note list fragment for LilyPond.
--- This should represent the final output of a score pipeline 
--- and it is expected to be plugged into a "hole" in score 
--- template.
---
-data LyNoteListDoc_ 
-
-type LyNoteListDoc = TyDoc LyNoteListDoc_ 
 
 
-
--- | Notelist fragment for ABC.
---
-
-data ABCNoteListDoc_
-
-type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 
 
 --------------------------------------------------------------------------------

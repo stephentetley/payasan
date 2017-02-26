@@ -19,6 +19,7 @@ module Payasan.PSC.ABC.Output
   ( 
     
     ABCHeader
+  , ABCNoteListDoc
   , makeHeader
   , makeABCNoteListDoc
   , assembleABC
@@ -89,6 +90,13 @@ data ABCHeader_
 
 type ABCHeader = TyDoc ABCHeader_ 
 
+
+-- | Notelist fragment for ABC.
+--
+
+data ABCNoteListDoc_
+
+type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 
 
 

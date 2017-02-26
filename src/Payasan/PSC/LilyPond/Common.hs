@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -21,8 +22,10 @@
 module Payasan.PSC.LilyPond.Common
   ( 
 
+    LyNoteListDoc
+
   -- * Concrete syntax fragments
-    GenLySectionQuote(..)
+  , GenLySectionQuote(..)
   , LySectionQuote(..)
 
   , specializeGenLySectionQuote
@@ -66,6 +69,7 @@ module Payasan.PSC.LilyPond.Common
 import Payasan.PSC.Repr.External.Syntax
 
 import Payasan.PSC.Base.ShowCommon
+import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import qualified Payasan.Base.Pitch as PCH
@@ -74,6 +78,16 @@ import qualified Payasan.Base.Pitch as PCH
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
+
+
+-- | Note list fragment for LilyPond.
+-- This should represent the final output of a score pipeline 
+-- and it is expected to be plugged into a "hole" in score 
+-- template.
+--
+data LyNoteListDoc_ 
+
+type LyNoteListDoc = TyDoc LyNoteListDoc_ 
 
 
 newtype GenLySectionQuote pch anno = 
