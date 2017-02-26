@@ -20,11 +20,9 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.AltPitch
 import Payasan.Base.Basis
--- import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
-import qualified Data.Text.IO           as TEXT
 
 
 
@@ -106,8 +104,8 @@ compileCsoundPart :: FilePath -> StdPart -> IO ()
 compileCsoundPart path part = 
    do { xplate <- CSD.readCsdTemplate "./demo/template.csd"
       ; let sco = CSD.compilePart csd_compiler part
-      ; let csd = CSD.assembleOutput xplate "[|notelist|]" sco
-      ; TEXT.writeFile path csd
+      ; let csd = CSD.assembleOutput xplate "[|eventlist|]" sco
+      ; CSD.writeCsdFile path csd
       }
    
 

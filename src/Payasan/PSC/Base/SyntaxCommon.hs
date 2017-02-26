@@ -20,6 +20,8 @@ module Payasan.PSC.Base.SyntaxCommon
   ( 
 
     TyDoc(..)
+  , TyText(..)
+
   , LyNoteListDoc
   , ABCNoteListDoc
   
@@ -58,11 +60,16 @@ import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ hiding (Mode)               -- package: pretty
 
+
+import qualified Data.Text as TEXT
+
 import Data.Data
 import Data.Ratio
 
 data TyDoc a = TyDoc { extractDoc :: Doc }
 
+
+data TyText a = TyText { extractText :: TEXT.Text }
 
 
 -- | Note list fragment for LilyPond.

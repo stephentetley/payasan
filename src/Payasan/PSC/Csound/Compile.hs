@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -19,15 +19,6 @@ module Payasan.PSC.Csound.Compile
   ( 
 
     CsoundNote(..)
-   
-{- 
-  , CsdCompile
-  , CompilerDef(..)       
-  , emptyDef
-
-  , Compiler(..)
-  , makeCompiler
--}
 
   , PartCompilerDef(..)
   , emptyDef
@@ -36,8 +27,12 @@ module Payasan.PSC.Csound.Compile
   , makePartCompiler
 
 
+  , CsdTemplate
+  , CsdFile
+
   , readCsdTemplate
   , assembleOutput
+  , writeCsdFile
 
   ) where
 
@@ -94,8 +89,6 @@ data CsoundNote = CsoundNote
   deriving (Eq,Show)
 
 
--- first thing rename CsdEventList to CsoundEventList
-
 data PartCompiler pch anno = PartCompiler
     { compilePart :: EXT.Part pch Duration anno -> CsoundEventListDoc
     }
@@ -151,17 +144,25 @@ makeGenEventBody lib =
     grace p   = let (CsoundNote vals) = (make_grace_body lib) p in vals
 
 
-newtype CsdTemplate = CsdTemplate { getCsdTemplate :: TEXT.Text }
+data CsdTemplate_ 
+type CsdTemplate = TyText CsdTemplate_
+
+data CsdFile_ 
+type CsdFile = TyText CsdFile_
 
 
 readCsdTemplate :: FilePath -> IO CsdTemplate
-readCsdTemplate path = CsdTemplate <$> TEXT.readFile path
+readCsdTemplate path = TyText <$> TEXT.readFile path
+
 
 assembleOutput :: CsdTemplate
                -> String
                -> CsoundEventListDoc 
-               -> TEXT.Text
+               -> CsdFile
 assembleOutput template anchor sco = 
     let scotext = TEXT.pack $ ppRender $ extractDoc sco
-    in TEXT.replace (TEXT.pack anchor) scotext (getCsdTemplate $ template)
+    in TyText $ TEXT.replace (TEXT.pack anchor) scotext (extractText template)
        
+
+writeCsdFile :: FilePath -> CsdFile -> IO ()
+writeCsdFile path csd = TEXT.writeFile path (extractText csd)

@@ -49,7 +49,7 @@ endin
 <CsScore>
 ; Part 1
 ;ins    st      drn     amp    pch    const
-[|notelist|]
+[|eventlist|]
 ;
    
 </CsScore>
