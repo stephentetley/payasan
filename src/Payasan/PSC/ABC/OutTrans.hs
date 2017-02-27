@@ -17,7 +17,8 @@
 
 module Payasan.PSC.ABC.OutTrans
   (
-    translateToABCPartOut
+    specializeToABCExternal
+  , translateToABCPartOut       -- old
   ) where
 
 
@@ -33,6 +34,11 @@ import Payasan.Base.Pitch
 import Payasan.Base.Scale
 
 
+-- Note - this should not be in a separate module - merge with output...
+
+specializeToABCExternal :: Part Pitch Duration anno -> Part ABCPitch ABCNoteLength anno
+specializeToABCExternal = 
+    transformExternal pch_algo . transformExternal drn_algo
 
 
 translateToABCPartOut :: Part Pitch Duration anno -> Part ABCPitch ABCNoteLength anno

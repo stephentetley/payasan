@@ -34,7 +34,7 @@ locals = default_section_info
 globals :: ScoreInfo
 globals = default_score_info 
 
-
+{-
 abc_compiler :: ABC.Compiler
 abc_compiler = ABC.makeCompiler def
   where 
@@ -44,7 +44,17 @@ abc_compiler = ABC.makeCompiler def
 
 compileABC :: StdPart -> IO ()
 compileABC = ABC.compile abc_compiler
+-}
 
+abc_compiler :: ABC.PartCompiler
+abc_compiler = ABC.makePartCompiler lib
+  where
+    lib = ABC.emptyDef2
+
+compileABCPart :: FilePath -> StdPart -> IO ()
+compileABCPart path part = 
+   let doc = ABC.assembleOutput "Untitled" TREBLE (initialSectionInfo part) $ ABC.compilePart abc_compiler part
+   in ABC.writeABCFile path doc
 
 ly_compiler :: Anno anno => LY.Compiler anno
 ly_compiler = LY.makeCompiler def
@@ -136,7 +146,7 @@ section1abc :: StdSection
 section1abc = unquoteABC "Phrase1abc" locals $ [abc| B4 z B B - | BB B2 z4 |]
 
 demo01 :: IO ()
-demo01 = compileABC (Part { part_sections = [section1abc] })
+demo01 = compileABCPart "abc_output.abc" (Part { part_sections = [section1abc] })
 
 
 -- Note - ElemPart reads (and ignores) beam group brackets.

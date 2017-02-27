@@ -24,6 +24,16 @@ module Payasan.PSC.ABC.Compile
   , Compiler(..)
   , makeCompiler
 
+
+  , PartCompilerDef(..)
+  , emptyDef2
+
+  , PartCompiler(..)
+  , makePartCompiler
+
+  , assembleOutput
+  , writeABCFile
+
   ) where
 
 
@@ -37,7 +47,9 @@ import Payasan.PSC.Repr.External.Syntax
 import qualified Payasan.PSC.Repr.External.Syntax as EXT
 
 import Payasan.Base.Duration
+import Payasan.Base.Pitch
 
+import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 
 import Control.Monad
@@ -153,14 +165,48 @@ workingFileName1 def =
 -- Latest - move to PartCompiler style...
 
 
-data PartCompiler pch anno = PartCompiler
-    { compilePart :: EXT.Part pch Duration anno -> ABCNoteListDoc
+data PartCompiler = PartCompiler
+    { compilePart :: forall anno. EXT.Part Pitch Duration anno -> ABCNoteListDoc
     }
 
-{-
-data PartCompilerDef pch anno = PartCompilerDef 
-    { midi_channel              :: !Int
-    , make_event_body           :: pch -> anno -> MIDINote
-    , make_grace_body           :: pch -> MIDINote
+
+-- Clef is a mid-tune field in ABC, hence we should be able to 
+-- render parts with different clefs in the same score.
+
+
+data PartCompilerDef = PartCompilerDef 
+    { clef1             :: !Clef
+    , bars_per_line1    :: !Int
     } 
--}
+
+emptyDef2 :: PartCompilerDef
+emptyDef2 = PartCompilerDef
+    { clef1             = TREBLE
+    , bars_per_line1    = 4
+    }
+
+
+
+makePartCompiler :: PartCompilerDef -> PartCompiler
+makePartCompiler lib = PartCompiler
+    { compilePart = compileP
+    }
+  where
+    cols          = bars_per_line1 lib
+    
+    compileP part = let info    = initialSectionInfo part
+                        abc_ext = specializeToABCExternal part
+                        out     = makeABCNoteListDoc cols info abc_ext
+                    in out
+
+
+-- TODO clef and SectionInfo should be not be exposed...
+--
+assembleOutput :: String -> Clef -> SectionInfo -> ABCNoteListDoc -> Doc
+assembleOutput title1 clef1 info notes = 
+    assembleABC (makeHeader title1 clef1 info) notes
+
+
+writeABCFile :: FilePath -> Doc -> IO ()
+writeABCFile path doc = 
+    writeFile path (ppRender doc)
