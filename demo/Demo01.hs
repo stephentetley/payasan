@@ -49,7 +49,7 @@ compileABC = ABC.compile abc_compiler
 abc_compiler :: ABC.PartCompiler
 abc_compiler = ABC.makePartCompiler lib
   where
-    lib = ABC.emptyDef2
+    lib = ABC.emptyDef
 
 compileABCPart :: FilePath -> StdPart -> IO ()
 compileABCPart path part = 
