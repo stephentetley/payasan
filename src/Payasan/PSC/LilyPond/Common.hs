@@ -22,7 +22,7 @@
 module Payasan.PSC.LilyPond.Common
   ( 
 
-    LyNoteListDoc
+    LyNoteList
 
   -- * Concrete syntax fragments
   , GenLySectionQuote(..)
@@ -85,9 +85,9 @@ import Data.Data
 -- and it is expected to be plugged into a "hole" in score 
 -- template.
 --
-data LyNoteListDoc_ 
+data LyNoteList_ 
 
-type LyNoteListDoc = TyDoc LyNoteListDoc_ 
+type LyNoteList = TyDoc LyNoteList_ 
 
 
 newtype GenLySectionQuote pch anno = 

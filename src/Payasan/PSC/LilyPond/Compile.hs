@@ -108,7 +108,7 @@ compile1 def part = do
 -- | Do we want to recalc beams (probably...)
 
 compilePartToNoteList1 :: Anno anno 
-                       => CompilerDef -> StdPart1 anno -> LyCompile LyNoteListDoc
+                       => CompilerDef -> StdPart1 anno -> LyCompile LyNoteList
 compilePartToNoteList1 def p = do 
     { p1 <- rebeam p 
     ; p2 <- normalize p1
@@ -126,7 +126,7 @@ compilePartToNoteList1 def p = do
     delBeams = return
 
     
-assembleOutput1 :: CompilerDef -> LyNoteListDoc -> Doc
+assembleOutput1 :: CompilerDef -> LyNoteList -> Doc
 assembleOutput1 def notes = do 
     assembleLy (makeHeader (ly_version_number def) (tune_title def)) notes
                       

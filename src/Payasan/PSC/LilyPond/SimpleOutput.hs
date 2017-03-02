@@ -135,7 +135,7 @@ makeHeader vstring name =
 
 
 
-assembleLy :: LyHeader -> LyNoteListDoc -> Doc
+assembleLy :: LyHeader -> LyNoteList -> Doc
 assembleLy header body = extractDoc header $+$ extractDoc body
     
 
@@ -217,7 +217,7 @@ simpleVoice_Absolute def ph =
 makeLyNoteListDoc :: LyOutputDef pch anno 
                   -> SectionInfo
                   -> Part pch LyNoteLength anno
-                  -> LyNoteListDoc
+                  -> LyNoteList
 makeLyNoteListDoc def info ph =
     TyDoc $ evalState (renderLyPartM def ph) (stateZero info)
 
@@ -231,7 +231,7 @@ makeLyNoteListDoc def info ph =
 lilypondNoteList :: LyOutputDef pch anno 
                  -> SectionInfo 
                  -> Part pch LyNoteLength anno
-                 -> LyNoteListDoc
+                 -> LyNoteList
 lilypondNoteList def prefix_locals ph = 
     TyDoc $ evalState (renderLyPartM def ph) (stateZero prefix_locals)
 

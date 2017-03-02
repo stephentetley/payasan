@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -18,7 +19,10 @@
 module Payasan.PSC.ABC.Common
   ( 
 
-    ABCSectionQuote(..)
+
+    ABCNoteList
+
+  , ABCSectionQuote(..)
 
   , ABCPitch(..)
   , Accidental(..)
@@ -56,6 +60,16 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 import Data.Ratio
+
+
+-- | Notelist fragment for ABC.
+--
+
+data ABCNoteList_
+
+type ABCNoteList = TyDoc ABCNoteList_
+
+
 
 
 newtype ABCSectionQuote = 

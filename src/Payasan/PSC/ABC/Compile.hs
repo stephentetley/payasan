@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -24,6 +25,8 @@ module Payasan.PSC.ABC.Compile
   , PartCompiler(..)
   , makePartCompiler
 
+  , ABCFile
+
   , assembleOutput
   , writeABCFile
 
@@ -41,7 +44,6 @@ import qualified Payasan.PSC.Repr.External.Syntax as EXT
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 
 
@@ -50,7 +52,7 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
 
 data PartCompiler = PartCompiler
-    { compilePart :: forall anno. EXT.Part Pitch Duration anno -> ABCNoteListDoc
+    { compilePart :: forall anno. EXT.Part Pitch Duration anno -> ABCNoteList
     }
 
 
@@ -80,18 +82,21 @@ makePartCompiler lib = PartCompiler
     
     compileP part = let info    = initialSectionInfo part
                         abc_ext = specializeToABCExternal part
-                        out     = makeABCNoteListDoc cols info abc_ext
+                        out     = makeABCNoteList cols info abc_ext
                     in out
+
+
+data ABCFile_ 
+type ABCFile = TyDoc ABCFile_
 
 
 -- TODO clef and SectionInfo should be not be exposed...
 --
-assembleOutput :: String -> Clef -> SectionInfo -> ABCNoteListDoc -> Doc
+assembleOutput :: String -> Clef -> SectionInfo -> ABCNoteList -> ABCFile
 assembleOutput title1 clef1 info notes = 
-    assembleABC (makeHeader title1 clef1 info) notes
+    TyDoc $ assembleABC (makeABCHeader title1 clef1 info) notes
 
--- TODO - wrap doc in a newtype
---
-writeABCFile :: FilePath -> Doc -> IO ()
+
+writeABCFile :: FilePath -> ABCFile -> IO ()
 writeABCFile path doc = 
-    writeFile path (ppRender doc)
+    writeFile path (ppRender $ extractDoc doc)

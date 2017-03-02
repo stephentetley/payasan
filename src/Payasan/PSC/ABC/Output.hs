@@ -19,9 +19,11 @@ module Payasan.PSC.ABC.Output
   ( 
     
     ABCHeader
-  , ABCNoteListDoc
-  , makeHeader
-  , makeABCNoteListDoc
+  , ABCNoteList
+
+  , makeABCHeader
+  , makeABCNoteList
+
   , assembleABC
   
   ) where
@@ -91,12 +93,6 @@ data ABCHeader_
 type ABCHeader = TyDoc ABCHeader_ 
 
 
--- | Notelist fragment for ABC.
---
-
-data ABCNoteListDoc_
-
-type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 
 
 
@@ -105,7 +101,7 @@ type ABCNoteListDoc = TyDoc ABCNoteListDoc_
 -- | "Document assembly" is so simple that it does not need to 
 -- run in a monad.
 --
-assembleABC :: ABCHeader -> ABCNoteListDoc -> Doc
+assembleABC :: ABCHeader -> ABCNoteList -> Doc
 assembleABC header body = extractDoc header $+$ extractDoc body
 
     
@@ -114,8 +110,8 @@ assembleABC header body = extractDoc header $+$ extractDoc body
 -- 
 -- At some point we should allow this function to be customized...
 --
-makeHeader :: String -> Clef -> SectionInfo -> ABCHeader
-makeHeader title clefname locals = 
+makeABCHeader :: String -> Clef -> SectionInfo -> ABCHeader
+makeABCHeader title clefname locals = 
     TyDoc $ vcat $
        [ field 'X' (int 1)
        , field 'T' (text title)
@@ -132,8 +128,8 @@ makeHeader title clefname locals =
 -- if bars do not fit nicely in 3s or 4s (no need to add 
 -- advanced capabilities to PSC).
 --
-makeABCNoteListDoc :: Int -> SectionInfo -> ABCPartOut anno -> ABCNoteListDoc
-makeABCNoteListDoc cols info (Part xs) = 
+makeABCNoteList :: Int -> SectionInfo -> ABCPartOut anno -> ABCNoteList
+makeABCNoteList cols info (Part xs) = 
     evalState (TyDoc <$> step xs) info
   where
     step []       = return empty
