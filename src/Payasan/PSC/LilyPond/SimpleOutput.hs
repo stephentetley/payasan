@@ -35,7 +35,7 @@ module Payasan.PSC.LilyPond.SimpleOutput
   , scoreHeader
   , phraseHeader
 
-  , makeLyNoteListDoc
+  , makeLyNoteList
   , lilypondNoteList
 
   ) where
@@ -214,11 +214,11 @@ simpleVoice_Absolute def ph =
 
 -- TODO working towards an API that provides a (simple) "makeDoc"...
 --
-makeLyNoteListDoc :: LyOutputDef pch anno 
-                  -> SectionInfo
-                  -> Part pch LyNoteLength anno
-                  -> LyNoteList
-makeLyNoteListDoc def info ph =
+makeLyNoteList :: LyOutputDef pch anno 
+               -> SectionInfo
+               -> Part pch LyNoteLength anno
+               -> LyNoteList
+makeLyNoteList def info ph =
     TyDoc $ evalState (renderLyPartM def ph) (stateZero info)
 
 

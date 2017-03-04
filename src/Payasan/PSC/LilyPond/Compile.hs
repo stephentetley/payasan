@@ -1,3 +1,4 @@
+{-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -23,6 +24,16 @@ module Payasan.PSC.LilyPond.Compile
   , Compiler(..)
   , makeCompiler
 
+  , PartCompilerDef(..)
+  , emptyDef1
+
+  , PartCompiler(..)
+  , makePartCompiler
+
+  , LyFile
+
+  , writeLyFile
+
   ) where
 
 
@@ -35,8 +46,10 @@ import Payasan.PSC.Base.CompilerMonad
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 import Payasan.PSC.Repr.External.Syntax
+import qualified Payasan.PSC.Repr.External.Syntax as EXT
 
-import Payasan.Base.Pitch ( middle_c )
+import Payasan.Base.Duration
+import Payasan.Base.Pitch 
 
 import Text.PrettyPrint.HughesPJ               -- package: pretty
 
@@ -113,7 +126,7 @@ compilePartToNoteList1 def p = do
     { p1 <- rebeam p 
     ; p2 <- normalize p1
     ; let info = initialSectionInfo p
-    ; p3 <- return $ makeLyNoteListDoc outDef info p2
+    ; p3 <- return $ makeLyNoteList outDef info p2
     ; return p3
     }
   where
@@ -149,3 +162,65 @@ workingFileName1 def =
        ; let outfile = root </> name
        ; return outfile
        }
+
+
+--------------------------------------------------------------------------------
+-- PartCompiler
+
+data PartCompiler pch anno = PartCompiler
+    { compilePart :: EXT.Part pch Duration anno -> LyNoteList
+    }
+
+-- Does percussion music need a clef?
+-- (Also should clef be an open set?)
+data PartCompilerDef pch anno = PartCompilerDef 
+    { pPitch            :: LyPitch -> Doc               -- temp wrong
+    , pAnno             :: anno -> Doc
+    , clefm             :: Maybe Clef
+    , recalc_beams1     :: !Bool
+    } 
+
+
+emptyDef1 :: PartCompilerDef pch anno
+emptyDef1 = PartCompilerDef
+    { pPitch            = mkErr "pPitch"
+    , pAnno             = mkErr "pAnno"
+    , clefm             = Just TREBLE
+    , recalc_beams1     = False
+    }
+  where
+    mkErr ss = error $ "Must supply an implementation of " ++ ss
+
+
+
+makePartCompiler :: PartCompilerDef Pitch anno -> PartCompiler Pitch anno
+makePartCompiler lib = PartCompiler
+    { compilePart = compileP
+    }
+  where
+    rebeam s  = if recalc_beams1 lib then (addBeams . delBeams) s else s 
+      where
+        addBeams  = id  -- TEMP
+        delBeams  = id  -- TEMP
+
+    outDef    = LyOutputDef { printPitch = pPitch lib 
+                            , printAnno  = pAnno lib }
+
+    
+    compileP part = let info    = initialSectionInfo part
+                        ext1    = rebeam part
+                        extly   = translateToLyPartOut_Relative middle_c ext1
+                        out     = makeLyNoteList outDef info extly
+                    in out
+
+
+
+data LyFile_ 
+type LyFile = TyDoc LyFile_
+
+
+
+
+writeLyFile :: FilePath -> LyFile -> IO ()
+writeLyFile path doc = 
+    writeFile path (ppRender $ extractDoc doc)
