@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE RankNTypes                 #-}
 {-# LANGUAGE EmptyDataDecls             #-}
 {-# OPTIONS -Wall #-}
 
@@ -167,24 +169,27 @@ workingFileName1 def =
 --------------------------------------------------------------------------------
 -- PartCompiler
 
-data PartCompiler pch anno = PartCompiler
-    { compilePart :: EXT.Part pch Duration anno -> LyNoteList
+data PartCompiler ext_pch anno = PartCompiler
+    { compilePart :: EXT.Part ext_pch Duration anno -> LyNoteList
     }
 
 -- Does percussion music need a clef?
 -- (Also should clef be an open set?)
-data PartCompilerDef pch anno = PartCompilerDef 
-    { pPitch            :: LyPitch -> Doc               -- temp wrong
+data PartCompilerDef ext_pch ly_pch anno = PartCompilerDef 
+    { pPitch            :: ly_pch -> Doc               -- temp wrong
     , pAnno             :: anno -> Doc
+    , transformPitch    :: 
+          forall drn. EXT.Part ext_pch drn anno -> EXT.Part ly_pch drn anno
     , clefm             :: Maybe Clef
     , recalc_beams1     :: !Bool
     } 
 
 
-emptyDef1 :: PartCompilerDef pch anno
+emptyDef1 :: PartCompilerDef ext_pch ly_pch anno
 emptyDef1 = PartCompilerDef
     { pPitch            = mkErr "pPitch"
     , pAnno             = mkErr "pAnno"
+    , transformPitch    = mkErr "transformPitch"
     , clefm             = Just TREBLE
     , recalc_beams1     = False
     }
@@ -192,8 +197,12 @@ emptyDef1 = PartCompilerDef
     mkErr ss = error $ "Must supply an implementation of " ++ ss
 
 
+-- Does LilyPond merit a further Repr?
+-- Need to separate pitch changing and duration changing traversals
+-- so we can expose pitch changing to the user.
 
-makePartCompiler :: PartCompilerDef Pitch anno -> PartCompiler Pitch anno
+makePartCompiler :: forall ext_pch ly_pch anno.
+                    PartCompilerDef ext_pch ly_pch anno -> PartCompiler ext_pch anno
 makePartCompiler lib = PartCompiler
     { compilePart = compileP
     }
@@ -203,13 +212,17 @@ makePartCompiler lib = PartCompiler
         addBeams  = id  -- TEMP
         delBeams  = id  -- TEMP
 
+    pchTrafo :: Part ext_pch drn anno -> Part ly_pch drn anno
+    pchTrafo  = transformPitch lib
+
+    outDef    :: LyOutputDef ly_pch anno
     outDef    = LyOutputDef { printPitch = pPitch lib 
                             , printAnno  = pAnno lib }
 
-    
+    compileP :: Part ext_pch Duration anno -> LyNoteList
     compileP part = let info    = initialSectionInfo part
                         ext1    = rebeam part
-                        extly   = translateToLyPartOut_Relative middle_c ext1
+                        extly   = transformLyNoteLength $ pchTrafo ext1
                         out     = makeLyNoteList outDef info extly
                     in out
 

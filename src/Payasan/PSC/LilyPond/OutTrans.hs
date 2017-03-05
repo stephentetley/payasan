@@ -20,6 +20,10 @@ module Payasan.PSC.LilyPond.OutTrans
     translateToLyPartOut_Relative
   , translateToLyPartOut_Absolute
   , translateToLyPartOut_DurationOnly
+
+  , transformLyNoteLength
+  , transformLyPitch_Relative
+  , transformLyPitch_Absolute
   ) where
 
 
@@ -32,7 +36,8 @@ import Payasan.PSC.Repr.External.Traversals
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-
+-- NOTE - API is wrong, we want to export individual trafos
+-- not their combination.
 
 translateToLyPartOut_Relative :: Pitch
                               -> Part Pitch Duration anno 
@@ -50,6 +55,25 @@ translateToLyPartOut_Absolute =
 translateToLyPartOut_DurationOnly :: Part pch Duration anno 
                                   -> Part pch LyNoteLength anno
 translateToLyPartOut_DurationOnly = transformExternal drn_algo
+
+
+
+-- New API
+
+transformLyNoteLength :: Part pch Duration anno
+                      -> Part pch LyNoteLength anno
+transformLyNoteLength = transformExternal drn_algo
+
+
+transformLyPitch_Relative :: Pitch 
+                          -> Part Pitch drn anno
+                          -> Part LyPitch drn anno
+transformLyPitch_Relative pch = transformExternal (rel_pch_algo pch)
+
+
+transformLyPitch_Absolute :: Part Pitch drn anno
+                          -> Part LyPitch drn anno
+transformLyPitch_Absolute = absPitchTrafo
 
 
 --------------------------------------------------------------------------------
