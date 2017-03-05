@@ -8,6 +8,8 @@ import Payasan.PSC.ABC.ExternalUnquote
 
 import qualified Payasan.PSC.Csound.Compile         as CSD
 import qualified Payasan.PSC.LilyPond.Compile       as LY
+import qualified Payasan.PSC.LilyPond.OutTrans      as LY
+import qualified Payasan.PSC.LilyPond.Utils         as LY
 import Payasan.PSC.LilyPond.ExternalUnquote
 
 import qualified Payasan.PSC.MIDI.Compile           as MIDI
@@ -34,17 +36,6 @@ locals = default_section_info
 globals :: ScoreInfo
 globals = default_score_info 
 
-{-
-abc_compiler :: ABC.Compiler
-abc_compiler = ABC.makeCompiler def
-  where 
-    def = ABC.emptyDef { ABC.pathto_working_dir     = ""
-                       , ABC.outfile_name           = "abc_output.abc"
-                       }
-
-compileABC :: StdPart -> IO ()
-compileABC = ABC.compile abc_compiler
--}
 
 abc_compiler :: ABC.PartCompiler
 abc_compiler = ABC.makePartCompiler lib
@@ -56,17 +47,19 @@ compileABCPart path part =
    let doc = ABC.assembleOutput "Untitled" TREBLE (initialSectionInfo part) $ ABC.compilePart abc_compiler part
    in ABC.writeABCFile path doc
 
-ly_compiler :: Anno anno => LY.Compiler anno
-ly_compiler = LY.makeCompiler def
-  where 
-    def = LY.emptyDef { LY.pathto_working_dir     = ""
-                      , LY.outfile_name           = "ly_output.ly"
+
+ly_compiler :: Anno anno => LY.PartCompiler Pitch anno
+ly_compiler = LY.makePartCompiler lib
+  where
+    lib = LY.emptyDef { LY.transformPitch = LY.transformLyPitch_Absolute
+                      , LY.pAnno = anno 
+                      , LY.pPitch = LY.pitch
                       }
 
-compileLy :: StdPart -> IO ()
-compileLy = LY.compile ly_compiler
-
-
+compileLyPart :: FilePath -> StdPart -> IO ()
+compileLyPart path part = 
+   let doc = LY.assembleOutput "2.18.2" "Untitled" $ LY.compilePart ly_compiler part
+   in LY.writeLyFile path doc
 
 
 data BowedBarAttrs = BowedBarAttrs 
@@ -157,7 +150,7 @@ section1ly = unquoteLyRelative "Phrase1ly" locals middle_c $
     [lilypond| b'2 r8 b8 b4 ~ | b8[b] b4 r2 |]
 
 demo02 :: IO ()
-demo02 = compileLy (Part { part_sections = [section1ly] })
+demo02 = compileLyPart "ly_output.ly" (Part { part_sections = [section1ly] })
 
 demo03 :: IO ()
 demo03 = compileCsoundPart "csd_output.csd" (Part { part_sections = [section1abc] })

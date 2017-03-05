@@ -21,7 +21,7 @@ module Payasan.PSC.LilyPond.SimpleOutput
     LyOutputDef(..)
 
   , LyHeader
-  , makeHeader
+  , makeLyHeader
 
   , assembleLy
 
@@ -126,8 +126,8 @@ data LyOutputDef pch anno = LyOutputDef
 data LyHeader_
 type LyHeader = TyDoc LyHeader_
 
-makeHeader :: String -> String -> LyHeader
-makeHeader vstring name = 
+makeLyHeader :: String -> String -> LyHeader
+makeLyHeader vstring name = 
     TyDoc $ version_ vstring $+$ header
   where
     header  = withString name $ \ss ->
