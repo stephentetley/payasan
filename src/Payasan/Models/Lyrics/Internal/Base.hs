@@ -31,7 +31,7 @@ import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
 import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
 import qualified Payasan.PSC.LilyPond.ExternalParser       as P
-import Payasan.PSC.LilyPond.Utils
+import Payasan.PSC.LilyPond.Pretty
 
 import qualified Payasan.Score.Elementary.Internal.Syntax       as ELEM
 

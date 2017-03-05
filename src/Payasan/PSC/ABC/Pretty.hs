@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.ABC.Utils
+-- Module      :  Payasan.PSC.ABC.Pretty
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -10,11 +10,11 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helpers for ABC output (pretty printers).
+-- Pretty printers for ABC output.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.ABC.Utils
+module Payasan.PSC.ABC.Pretty
   ( 
 
   -- * Output

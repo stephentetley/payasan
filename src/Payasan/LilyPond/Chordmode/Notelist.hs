@@ -78,7 +78,7 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import qualified Payasan.PSC.LilyPond.OutTrans        as LY
 import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as RHY
-import Payasan.PSC.LilyPond.Utils
+import Payasan.PSC.LilyPond.Pretty
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch

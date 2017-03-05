@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Percussion.Internal.Output
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -21,8 +21,8 @@ module Payasan.LilyPond.Percussion.Internal.Output
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
+import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput
-import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Base.SyntaxCommon
 

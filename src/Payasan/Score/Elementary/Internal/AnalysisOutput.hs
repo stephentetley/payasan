@@ -21,8 +21,8 @@ module Payasan.Score.Elementary.Internal.AnalysisOutput
 
 
 import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput
-import Payasan.PSC.LilyPond.Utils
 
 import Payasan.PSC.Repr.External.Syntax
 

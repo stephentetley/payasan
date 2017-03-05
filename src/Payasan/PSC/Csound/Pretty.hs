@@ -2,19 +2,19 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Csound.Utils
--- Copyright   :  (c) Stephen Tetley 2016
+-- Module      :  Payasan.PSC.Csound.Pretty
+-- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helpers for Csound output (pretty printers).
+-- Pretty printers for Csound output.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Csound.Utils
+module Payasan.PSC.Csound.Pretty
   ( 
 
     comment 

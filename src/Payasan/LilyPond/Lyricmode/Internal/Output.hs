@@ -27,8 +27,8 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
 import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput
-import Payasan.PSC.LilyPond.Utils
 
 import qualified Payasan.PSC.Repr.External.Syntax as EXT
 import Payasan.PSC.Base.SyntaxCommon

@@ -30,7 +30,7 @@ module Payasan.PSC.Csound.Output
   ) where
 
 
-import Payasan.PSC.Csound.Utils
+import Payasan.PSC.Csound.Pretty
 
 import Payasan.PSC.Repr.IREventFlat.Syntax
 

@@ -41,7 +41,7 @@ module Payasan.PSC.LilyPond.SimpleOutput
   ) where
 
 import Payasan.PSC.LilyPond.Common
-import Payasan.PSC.LilyPond.Utils
+import Payasan.PSC.LilyPond.Pretty
 
 import Payasan.PSC.Repr.External.Syntax
 

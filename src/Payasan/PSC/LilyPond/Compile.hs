@@ -98,7 +98,7 @@ makePartCompiler lib = PartCompiler
         addBeams  = id  -- TEMP
         delBeams  = id  -- TEMP
 
-    pchTrafo :: Part ext_pch drn anno -> Part ly_pch drn anno
+    pchTrafo  :: Part ext_pch drn anno -> Part ly_pch drn anno
     pchTrafo  = transformPitch lib
 
     outDef    :: LyOutputDef ly_pch anno

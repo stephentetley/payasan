@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.FretDiagram.Internal.Base
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -33,7 +33,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
 
   ) where
 
-import Payasan.PSC.LilyPond.Utils
+import Payasan.PSC.LilyPond.Pretty
 import Payasan.Score.Elementary.Internal.Syntax (Section)
 
 import Payasan.Base.Duration

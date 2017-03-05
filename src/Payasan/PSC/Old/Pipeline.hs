@@ -87,7 +87,7 @@ import qualified Payasan.PSC.LilyPond.ExternalParser     as LY
 import qualified Payasan.PSC.LilyPond.RhythmicMarkup  as LYOut
 import qualified Payasan.PSC.LilyPond.OutTrans        as LYOut
 import qualified Payasan.PSC.LilyPond.SimpleOutput    as LYOut
-import qualified Payasan.PSC.LilyPond.Utils           as LYOut
+import qualified Payasan.PSC.LilyPond.Pretty          as LYOut
 
 
 import Payasan.PSC.Base.ShowCommon

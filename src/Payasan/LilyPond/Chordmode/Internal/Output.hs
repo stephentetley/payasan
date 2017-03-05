@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.LilyPond.Chordmode.Internal.Output
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -22,7 +22,7 @@ module Payasan.LilyPond.Chordmode.Internal.Output
 import Payasan.LilyPond.Chordmode.Internal.Base
 
 import Payasan.PSC.LilyPond.SimpleOutput
-import Payasan.PSC.LilyPond.Utils
+import Payasan.PSC.LilyPond.Pretty
 
 import qualified Payasan.PSC.Repr.External.Syntax    as EXT
 

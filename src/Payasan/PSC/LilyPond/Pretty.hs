@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.LilyPond.Utils
+-- Module      :  Payasan.PSC.LilyPond.Pretty
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -10,13 +10,13 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Helpers for LilyPond output (pretty printers).
+-- Pretty printers for LilyPond output.
 --
 -- Underscore suffix indicates a command.
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.LilyPond.Utils
+module Payasan.PSC.LilyPond.Pretty
   ( 
 
   -- * Markup
