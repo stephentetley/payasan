@@ -21,8 +21,12 @@ module Payasan.Score.Cadenza.Internal.Traversals
   (
     Mon 
 
+  , get         -- re-export
+  , put         -- re-export
+
   , CadenzaAlgo(..)
   , transformCadenza
+  , genTransformNoteGroups
 
   , collectP
   , mapPitch
@@ -112,6 +116,20 @@ genTransform elemT st0 ph =
     noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
 
 
+
+genTransformNoteGroups :: forall st p1 p2 d1 d2 a1 a2. 
+                (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
+             -> SectionInfo 
+             -> st
+             -> [NoteGroup p1 d1 a1]
+             -> [NoteGroup p2 d2 a2]
+genTransformNoteGroups elemT info st0 gs = 
+    evalRewrite (mapM noteGroupT gs) info st0
+  where
+    noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
+    noteGroupT (Atom e)         = Atom <$> elemT e
+    noteGroupT (Beamed cs)      = Beamed      <$> mapM noteGroupT cs
+    noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
 
 --
 -- Design note - this leaks /shape/, possible to change a rest 

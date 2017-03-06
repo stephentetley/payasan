@@ -30,7 +30,6 @@ module Payasan.PSC.Repr.External.Syntax
 
   
   -- * Operations
-  , pushSectionInfo
   , sizeNoteGroup
   , initialSectionInfo
 
@@ -60,7 +59,7 @@ data Part pch drn anno = Part { part_sections :: [Section pch drn anno] }
 -- 
 -- E.g. it seems natural to add (append) a Section to a Part, but 
 -- while we can concat Parts (the Monoid instance makes sense)
--- doing so doesn't seem a natral way to build music - a Part 
+-- doing so doesn't seem a natural way to build music - a Part 
 -- feels singular, self contained.
 --
 
@@ -84,7 +83,7 @@ instance Monoid (Part pch drn anno) where
 -- "AAB").
 --
 data Section pch drn anno = Section
-    { section_name      :: String
+    { section_name      :: !String
     , section_info      :: !SectionInfo
     , section_bars      :: [Bar pch drn anno]
     }
@@ -135,11 +134,6 @@ data Grace1 pch drn = Grace1 pch drn
 --------------------------------------------------------------------------------
 -- Operations
 
-pushSectionInfo :: SectionInfo 
-                -> Part pch drn anno 
-                -> Part pch drn anno
-pushSectionInfo _ (Part {}) = 
-    error $ "pushSectionInfo - should now be redundant"
 
 
 sizeNoteGroup :: NoteGroup pch Duration anno -> RatDuration

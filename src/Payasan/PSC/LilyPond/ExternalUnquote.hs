@@ -10,7 +10,7 @@
 -- Stability   :  unstable
 -- Portability :  GHC
 --
--- Convert LilyPond to External Syntax.
+-- Convert quoted LilyPond to External Syntax.
 --
 --------------------------------------------------------------------------------
 

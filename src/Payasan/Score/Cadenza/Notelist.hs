@@ -20,7 +20,8 @@ module Payasan.Score.Cadenza.Notelist
     module Payasan.PSC.Old.Shell
    
   , StdCadenzaSection
-  , cadenza
+
+  , cadenza_lilypond
 
   , ScoreInfo(..)        -- Re-export
   , default_score_info
@@ -41,7 +42,6 @@ module Payasan.Score.Cadenza.Notelist
   ) where
 
 import Payasan.Score.Cadenza.Internal.CadenzaToExternal
-import Payasan.Score.Cadenza.Internal.InTrans
 import Payasan.Score.Cadenza.Internal.LilyPondParser
 import Payasan.Score.Cadenza.Internal.LilyPondUnquote
 import Payasan.Score.Cadenza.Internal.Syntax
@@ -74,7 +74,8 @@ fromLilyPondWith_Relative :: Pitch
                           -> LyCadenzaSection1 anno
                           -> StdCadenzaSection1 anno
 fromLilyPondWith_Relative pch locals = 
-    lilyPondTranslate_Relative pch . pushSectionInfo (locals { section_meter = Unmetered })
+    error "Out DATED"
+--    lilyPondTranslate_Relative pch . pushSectionInfo (locals { section_meter = Unmetered })
 
 
 

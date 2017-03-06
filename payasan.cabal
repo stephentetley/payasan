@@ -132,7 +132,6 @@ library
     Payasan.Score.Analysis.Trace,
     Payasan.Score.Cadenza.Notelist,
     Payasan.Score.Cadenza.Internal.CadenzaToExternal,
-    Payasan.Score.Cadenza.Internal.InTrans,
     Payasan.Score.Cadenza.Internal.Metrics,
     Payasan.Score.Cadenza.Internal.LilyPondParser,
     Payasan.Score.Cadenza.Internal.LilyPondUnquote,
