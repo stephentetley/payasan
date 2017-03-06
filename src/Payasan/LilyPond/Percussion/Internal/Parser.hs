@@ -58,11 +58,11 @@ drums = QuasiQuoter
 -- Parser
 
 
-parseLyDrums :: String -> Either ParseError (GenLySectionQuote DrumPitch Accent)
+parseLyDrums :: String -> Either ParseError (LySectionQuote DrumPitch Accent)
 parseLyDrums = parseLySectionQuote (makeDrumsDef accent)
 
 
-makeDrumsParser :: LyParser anno -> LyParser (GenLySectionQuote DrumPitch anno)
+makeDrumsParser :: LyParser anno -> LyParser (LySectionQuote DrumPitch anno)
 makeDrumsParser pAnno = makeLyParser (makeDrumsDef pAnno)
 
 

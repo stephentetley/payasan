@@ -70,9 +70,8 @@ data LyParserDef pch anno = LyParserDef
     }
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LySectionQuote ())
-parseLilyPondNoAnno = 
-    fmap (fmap specializeGenLySectionQuote) $ parseLySectionQuote parsedef
+parseLilyPondNoAnno :: String -> Either ParseError (LySectionQuote LyPitch ())
+parseLilyPondNoAnno = parseLySectionQuote parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
     
@@ -80,7 +79,7 @@ parseLilyPondNoAnno =
 
 parseLySectionQuote :: LyParserDef pch anno
                     -> String 
-                    -> Either ParseError (GenLySectionQuote pch anno)
+                    -> Either ParseError (LySectionQuote pch anno)
 parseLySectionQuote def = runParser (makeLyParser def) () ""
 
 
@@ -91,7 +90,7 @@ parseLySectionQuote def = runParser (makeLyParser def) () ""
 -- Note that some pipelines may lose original beaming and 
 -- try to resynthesize it.
 --
-makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (GenLySectionQuote pch anno)
+makeLyParser :: forall pch anno. LyParserDef pch anno -> LyParser (LySectionQuote pch anno)
 makeLyParser def = fullParseLy qsection
   where
     pPitch :: LyParser pch
@@ -100,8 +99,8 @@ makeLyParser def = fullParseLy qsection
     pAnno  :: LyParser anno
     pAnno  = annoParser def
     
-    qsection :: LyParser (GenLySectionQuote pch anno)
-    qsection = (\bs -> GenLySectionQuote { getGenLySectionQuote = bs }) <$> bars
+    qsection :: LyParser (LySectionQuote pch anno)
+    qsection = (\bs -> LySectionQuote { getLySectionQuote = bs }) <$> bars
 
     bars :: LyParser [Bar pch LyNoteLength anno]
     bars = sepBy bar barline

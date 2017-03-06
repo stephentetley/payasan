@@ -25,10 +25,7 @@ module Payasan.PSC.LilyPond.Base
     LyNoteList
 
   -- * Concrete syntax fragments
-  , GenLySectionQuote(..)
   , LySectionQuote(..)
-
-  , specializeGenLySectionQuote
 
   
   , LyTupletSpec(..)
@@ -89,20 +86,11 @@ data LyNoteList_
 
 type LyNoteList = TyDoc LyNoteList_ 
 
--- TODO - not worth the distinction:
--- LySectionQuote / GenLySectionQuote...
-newtype GenLySectionQuote pch anno = 
-    GenLySectionQuote { getGenLySectionQuote :: [Bar pch LyNoteLength anno] } 
-    deriving (Data,Eq,Show,Typeable)
 
-newtype LySectionQuote anno = 
-    LySectionQuote { getLySectionQuote :: [Bar LyPitch LyNoteLength anno] } 
+newtype LySectionQuote pch anno = 
+    LySectionQuote { getLySectionQuote :: [Bar pch LyNoteLength anno] } 
     deriving (Data,Eq,Show,Typeable)
       
-    
-specializeGenLySectionQuote :: GenLySectionQuote LyPitch anno 
-                            -> LySectionQuote anno
-specializeGenLySectionQuote = LySectionQuote . getGenLySectionQuote
 
 
 

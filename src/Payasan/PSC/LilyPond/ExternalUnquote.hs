@@ -21,7 +21,7 @@ module Payasan.PSC.LilyPond.ExternalUnquote
 
   , unquoteLyRelative
   , unquoteLyAbsolute
-  , unquoteGenLy
+  , unquoteLilyPond
   
   ) where
 
@@ -67,7 +67,7 @@ type AbsPMon a      = Mon () a
 unquoteLyRelative :: String 
                   -> SectionInfo 
                   -> Pitch 
-                  -> LySectionQuote anno 
+                  -> LySectionQuote LyPitch anno 
                   -> Section Pitch Duration anno
 unquoteLyRelative name info rpitch (LySectionQuote bs) =
     let bars = translateDuration info $ translatePitchRelative info rpitch bs
@@ -76,7 +76,7 @@ unquoteLyRelative name info rpitch (LySectionQuote bs) =
                , section_bars      = bars
                }
                
-unquoteLyAbsolute :: String -> SectionInfo -> LySectionQuote anno -> Section Pitch Duration anno
+unquoteLyAbsolute :: String -> SectionInfo -> LySectionQuote LyPitch anno -> Section Pitch Duration anno
 unquoteLyAbsolute name info (LySectionQuote bs) =
     let bars = translateDuration info $ translatePitchAbsolute info bs
     in Section { section_name      = name
@@ -84,8 +84,8 @@ unquoteLyAbsolute name info (LySectionQuote bs) =
                , section_bars      = bars
                }
 
-unquoteGenLy :: String -> SectionInfo -> GenLySectionQuote pch anno -> Section pch Duration anno
-unquoteGenLy name info (GenLySectionQuote bs) =
+unquoteLilyPond :: String -> SectionInfo -> LySectionQuote pch anno -> Section pch Duration anno
+unquoteLilyPond name info (LySectionQuote bs) =
     let bars = translateDuration info bs
     in Section { section_name      = name
                , section_info      = info
