@@ -64,6 +64,11 @@ module Payasan.Score.Elementary.Internal.Traversals
 
   , Mon 
 
+  , get         -- re-export
+  , put         -- re-export
+
+  , genTransformBars
+
   , ElementaryAlgo(..)
   , transformElementary
 
@@ -556,6 +561,26 @@ genTransform elemT st0 ph =
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
     noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
+
+
+genTransformBars :: forall st p1 p2 d1 d2 a1 a2. 
+                (Element p1 d1 a1 -> Mon st (Element p2 d2 a2))
+             -> SectionInfo
+             -> st
+             -> [Bar p1 d1 a1]
+             -> [Bar p2 d2 a2]
+genTransformBars elemT info st0 ph = 
+    evalRewrite (mapM barT ph) info st0
+  where
+
+    barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
+    barT (Bar cs)               = Bar <$> mapM noteGroupT cs
+
+    noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
+    noteGroupT (Atom e)         = Atom <$> elemT e
+    noteGroupT (Tuplet spec es) = Tuplet spec <$> mapM elemT es
+
+
 
 
 --------------------------------------------------------------------------------

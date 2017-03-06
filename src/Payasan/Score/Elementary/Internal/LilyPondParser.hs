@@ -18,8 +18,8 @@
 module Payasan.Score.Elementary.Internal.LilyPondParser
   (
 
-    lilypond
-  , LyParserDef (..)    -- re-export
+    LyParserDef (..)    -- re-export
+  , parseLilyPondNoAnno 
   , parseLySection
   , pitch               -- re-export
   , noAnno              -- re-export
@@ -38,23 +38,7 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Text.Parsec                              -- package: parsec
 
-import Language.Haskell.TH.Quote                -- package: template-haskell
 
-
-
-
---------------------------------------------------------------------------------
--- Quasiquote
-
-lilypond :: QuasiQuoter
-lilypond = QuasiQuoter
-    { quoteExp = \s -> case parseLilyPondNoAnno s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
 
 
 --------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ module Payasan.Score.Elementary.Notelist
   , ABCElemSection
   , abc
   , LyElemSection1
-  , lilypond
+  , elementary_lilypond
 
   , ScoreInfo(..)        -- Re-export
   , default_score_info
@@ -39,8 +39,8 @@ module Payasan.Score.Elementary.Notelist
   , fromABC
   , fromABCWith
 
-  , fromLilyPond_Relative
-  , fromLilyPondWith_Relative
+--  , fromLilyPond_Relative
+--  , fromLilyPondWith_Relative
 
 --  , outputAsABC
 --  , printAsABC
@@ -77,8 +77,7 @@ module Payasan.Score.Elementary.Notelist
 import Payasan.Score.Elementary.Internal.ABCInTrans
 import Payasan.Score.Elementary.Internal.ABCParser (abc)
 import Payasan.Score.Elementary.Internal.ElementaryToExternal
-import Payasan.Score.Elementary.Internal.LilyPondInTrans
-import Payasan.Score.Elementary.Internal.LilyPondParser (lilypond)
+import Payasan.Score.Elementary.Internal.LilyPondUnquote ( elementary_lilypond )
 import Payasan.Score.Elementary.Internal.ShowLinear
 import Payasan.Score.Elementary.Internal.ShowTabular
 import Payasan.Score.Elementary.Internal.Syntax
@@ -105,7 +104,7 @@ fromABC  = fromABCWith default_section_info
 fromABCWith :: SectionInfo -> ABCElemSection -> StdElemSection
 fromABCWith locals = abcTranslate . pushSectionInfo locals
 
-
+{-
 fromLilyPond_Relative :: Pitch -> LyElemSection1 () -> StdElemSection
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 
@@ -115,6 +114,7 @@ fromLilyPondWith_Relative :: Pitch
                           -> StdElemSection
 fromLilyPondWith_Relative pch locals = 
     lilyPondTranslate_Relative pch . pushSectionInfo locals
+-}
 
 {-
 outputAsABC :: ScoreInfo -> StaffInfo -> StdElemSection -> String

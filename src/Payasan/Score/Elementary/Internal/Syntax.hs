@@ -127,12 +127,12 @@ type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 
 
 newtype ABCSectionQuote anno =
-    ABCSectionQuote { getABCSectionQuote :: [NoteGroup ABCPitch ABCNoteLength anno] } 
+    ABCSectionQuote { getABCSectionQuote :: [Bar ABCPitch ABCNoteLength anno] } 
     deriving (Data,Eq,Show,Typeable)
 
 
 newtype LySectionQuote pch anno = 
-    LySectionQuote { getLySectionQuote :: [NoteGroup pch LyNoteLength anno] } 
+    LySectionQuote { getLySectionQuote :: [Bar pch LyNoteLength anno] } 
     deriving (Data,Eq,Show,Typeable)
 
 -- | Parametric on pitch so we can have the same syntax to 

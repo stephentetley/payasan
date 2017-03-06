@@ -21,14 +21,14 @@ module Payasan.LilyPond.Chordmode.Internal.InTrans
 
 import Payasan.LilyPond.Chordmode.Internal.Base
 
-import Payasan.Score.Elementary.Internal.LilyPondInTrans
+-- import Payasan.Score.Elementary.Internal.LilyPondInTrans
 import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.PSC.LilyPond.Base
 
 translateInput :: LyChordSection -> StdChordSection
-translateInput = trafoAnnos . trafoDuration
+translateInput = error "TODO" -- trafoAnnos . trafoDuration
 
 trafoAnnos :: Section LyPitch drn ChordSuffix -> Section Chord drn ()
 trafoAnnos = mapPitchAnno $ \p a -> (Chord (toPitchAbs p) a, ())

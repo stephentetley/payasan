@@ -9,7 +9,7 @@ import Payasan.PSC.ABC.ExternalUnquote
 import qualified Payasan.PSC.Csound.Compile         as CSD
 import qualified Payasan.PSC.LilyPond.Compile       as LY
 import qualified Payasan.PSC.LilyPond.OutTrans      as LY
-import qualified Payasan.PSC.LilyPond.Utils         as LY
+import qualified Payasan.PSC.LilyPond.Pretty        as LY
 import Payasan.PSC.LilyPond.ExternalUnquote
 
 import qualified Payasan.PSC.MIDI.Compile           as MIDI
@@ -22,6 +22,7 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.AltPitch
 import Payasan.Base.Basis
+import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 
@@ -38,7 +39,7 @@ abc_compiler = ABC.makePartCompiler lib
   where
     lib = ABC.emptyDef
 
-compileABCPart :: FilePath -> StdPart -> IO ()
+compileABCPart :: FilePath -> Part Pitch Duration anno -> IO ()
 compileABCPart path part = 
    let doc = ABC.assembleOutput "Untitled" TREBLE (initialSectionInfo part) $ ABC.compilePart abc_compiler part
    in ABC.writeABCFile path doc
@@ -52,7 +53,7 @@ ly_compiler = LY.makePartCompiler lib
                       , LY.pPitch = LY.pitch
                       }
 
-compileLyPart :: FilePath -> StdPart -> IO ()
+compileLyPart :: FilePath -> Part Pitch Duration () -> IO ()
 compileLyPart path part = 
    let doc = LY.assembleOutput "2.18.2" "Untitled" $ LY.compilePart ly_compiler part
    in LY.writeLyFile path doc
@@ -99,7 +100,7 @@ csd_compiler = CSD.makePartCompiler lib
     
 
 
-compileCsoundPart :: FilePath -> StdPart -> IO ()
+compileCsoundPart :: FilePath -> Part Pitch Duration anno -> IO ()
 compileCsoundPart path part = 
    do { xplate <- CSD.readCsdTemplate "./demo/template.csd"
       ; let sco = CSD.compilePart csd_compiler part
@@ -126,14 +127,14 @@ midi_compiler = MIDI.makePartCompiler lib
                         , MIDI.make_grace_body = midiGrace
                         }
 
-compileMIDIPart :: FilePath -> StdPart -> IO ()
+compileMIDIPart :: FilePath -> Part Pitch Duration anno -> IO ()
 compileMIDIPart path part = 
    let midi = MIDI.assembleOutput $  MIDI.compilePart midi_compiler part
    in MIDI.writeMIDIFile path midi
 
 
 
-section1abc :: StdSection
+section1abc :: Section Pitch Duration ()
 section1abc = unquoteABC "Phrase1abc" locals $ [abc| B4 z B B - | BB B2 z4 |]
 
 demo01 :: IO ()
@@ -143,7 +144,7 @@ demo01 = compileABCPart "abc_output.abc" (Part { part_sections = [section1abc] }
 -- Note - ElemPart reads (and ignores) beam group brackets.
 -- Beams are re-synthesized in the output.
 --
-section1ly :: StdSection
+section1ly :: Section Pitch Duration ()
 section1ly = unquoteLyRelative "Phrase1ly" locals middle_c $ 
     [lilypond| b'2 r8 b8 b4 ~ | b8[b] b4 r2 |]
 

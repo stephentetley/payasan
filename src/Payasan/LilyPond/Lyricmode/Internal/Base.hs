@@ -36,7 +36,7 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
 
   ) where
 
-import Payasan.Score.Elementary.Internal.LilyPondInTrans
+-- import Payasan.Score.Elementary.Internal.LilyPondInTrans
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 import Payasan.PSC.LilyPond.Base (LyNoteLength)
@@ -88,6 +88,6 @@ instance Pretty Syllable where
 
 
 inTrans :: ScoreInfo -> LyLyricSection1 anno -> LyricSection1 anno
-inTrans _ = trafoDuration
+inTrans _ = error "TODO" -- trafoDuration
 
 
