@@ -48,7 +48,9 @@ module Payasan.Score.Elementary.Internal.Syntax
   , ABCElemBar
   , ABCElemNoteGroup
   , ABCElemElement
-  
+
+  , ABCSectionQuote(..)  
+  , LySectionQuote(..)
 
   , Section(..)
   , Bar(..)
@@ -75,8 +77,8 @@ module Payasan.Score.Elementary.Internal.Syntax
 
 import Payasan.Score.Analysis.Common
 
-import Payasan.PSC.ABC.Base
-import Payasan.PSC.LilyPond.Base
+import Payasan.PSC.ABC.Base hiding ( ABCSectionQuote(..) )
+import Payasan.PSC.LilyPond.Base hiding ( LySectionQuote(..) )
 
 import Payasan.PSC.Base.SyntaxCommon
 
@@ -124,6 +126,15 @@ type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 
 
 
+newtype ABCSectionQuote anno =
+    ABCSectionQuote { getABCSectionQuote :: [NoteGroup ABCPitch ABCNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+
+
+newtype LySectionQuote pch anno = 
+    LySectionQuote { getLySectionQuote :: [NoteGroup pch LyNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+
 -- | Parametric on pitch so we can have the same syntax to 
 -- represent scale degrees, drum notes, etc.
 --
@@ -134,8 +145,9 @@ type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 -- prevents concatenation it simplifies transformation.
 -- 
 data Section pch drn anno = Section 
-    { section_info    :: !SectionInfo
-    , section_bars    :: [Bar pch drn anno] 
+    { section_name      :: !String
+    , section_info      :: !SectionInfo
+    , section_bars      :: [Bar pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
 
@@ -181,8 +193,10 @@ data Element pch drn anno =
 
 
 emptyOf :: Section pch drn anno -> Section pch drn anno
-emptyOf (Section { section_info = info }) = 
-    Section { section_info = info
+emptyOf (Section { section_info = info
+                 , section_name = name }) = 
+    Section { section_name   = name
+            , section_info = info
             , section_bars   = [] }
 
 
@@ -231,7 +245,7 @@ updatePosNoteGroup (Tuplet _ es)    = \pos -> foldr updatePosElement pos es
 
 -- Dont expose the constructor...
 --
-data Linear pch drn anno = Linear !SectionInfo !Position [NoteGroup pch drn anno] [Bar pch drn anno]
+data Linear pch drn anno = Linear !String !SectionInfo !Position [NoteGroup pch drn anno] [Bar pch drn anno]
 
 
 -- Possibly extend the (Position,Element) pair with Maybe TupletSpec
@@ -239,28 +253,30 @@ data View pch drn anno = Empty | (Position,Element pch drn anno) :< Linear pch d
 
 
 toLinear :: Section pch drn anno -> Linear pch drn anno
-toLinear (Section info bs) = 
+toLinear (Section name info bs) = 
    let (xs,ys) = case bs of { [] -> ([],[])
                             ; (z:zs) -> (bar_groups z,zs) }
-   in Linear info (Position 1 1) xs ys
+   in Linear name info (Position 1 1) xs ys
 
 
 fromLinear :: Linear pch drn anno -> Section pch drn anno
-fromLinear (Linear info _ es bs) = Section { section_info = info
-                                           , section_bars   = Bar es : bs }
+fromLinear (Linear name info _ es bs) = 
+    Section { section_name  = name
+            , section_info  = info
+            , section_bars  = Bar es : bs }
 
 
 viewl :: Linear pch drn anno -> View pch drn anno
-viewl (Linear info pos xs ys) = elements xs
+viewl (Linear name info pos xs ys) = elements xs
   where
-    elements (Atom e:es)            = (pos,e) :< Linear info (incPositionIndex 1 pos) es ys
+    elements (Atom e:es)            = (pos,e) :< Linear name info (incPositionIndex 1 pos) es ys
     elements (Tuplet spec ts:es)    = case listL ts of
       Nothing -> elements es
-      Just (a,as) -> (pos,a) :< Linear info (incPositionIndex 1 pos) (Tuplet spec as:es) ys
+      Just (a,as) -> (pos,a) :< Linear name info (incPositionIndex 1 pos) (Tuplet spec as:es) ys
 
     elements []                     = nextbar ys
 
-    nextbar (b:bs)                  = viewl $ Linear info (incPositionBar 1 pos) (bar_groups b) bs
+    nextbar (b:bs)                  = viewl $ Linear name info (incPositionBar 1 pos) (bar_groups b) bs
     nextbar []                      = Empty
 
 

@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.ShowLinear
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -42,7 +42,7 @@ elemLinear ppl ph = concatBars $ oSection ppl ph
 
 
 oSection :: LeafOutputNote pch drn anno -> Section pch drn anno -> [Doc]
-oSection ppl (Section _ xs)           = map (oBar ppl) xs
+oSection ppl (Section { section_bars = xs })           = map (oBar ppl) xs
 
 
 oBar :: LeafOutputNote pch drn anno -> Bar pch drn anno -> Doc

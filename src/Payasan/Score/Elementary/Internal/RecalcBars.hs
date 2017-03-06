@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.RecalcBars
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -45,7 +45,8 @@ type Notes pch anno = [NoteGroup pch Duration anno]
 
 
 data NoteList pch anno = NoteList
-    { notelist_header   :: SectionInfo
+    { notelist_name     :: !String
+    , notelist_header   :: SectionInfo
     , notelist_notes    :: [NoteGroup pch Duration anno]
     }
   deriving (Data,Eq,Show,Typeable)
@@ -56,8 +57,9 @@ data NoteList pch anno = NoteList
 -- change, so we segment them first.
 --
 flatten :: StdElemSection2 pch anno -> NoteList pch anno
-flatten (Section info bs) = 
-    NoteList { notelist_header = info
+flatten (Section name info bs) = 
+    NoteList { notelist_name = name
+             , notelist_header = info
              , notelist_notes  = concatMap fn bs }
   where
     fn (Bar xs) = xs
@@ -68,23 +70,24 @@ viaNoteList :: (SectionInfo -> Notes pch anno -> Notes pch anno)
             -> StdElemSection2 pch anno
 viaNoteList fn = remake . f2 . flatten
   where
-    f2 (NoteList info es) = NoteList info $ fn info es
+    f2 (NoteList name info es) = NoteList name info $ fn info es
 
 onNoteList :: (SectionInfo -> Notes pch anno -> ans) 
             -> StdElemSection2 pch anno
             -> ans
 onNoteList fn = f2 . flatten
   where
-    f2 (NoteList info es) = fn info es
+    f2 (NoteList _ info es) = fn info es
 
 
 --------------------------------------------------------------------------------
 -- Remake - notelist to 
 
 remake :: NoteList pch anno -> StdElemSection2 pch anno
-remake (NoteList info es) = 
-    Section { section_info   = info 
-            , section_bars   = fn $ section_meter info }
+remake (NoteList name info es) = 
+    Section { section_name  = name
+            , section_info  = info 
+            , section_bars  = fn $ section_meter info }
   where
     fn (Unmetered)  = [Bar es]
     fn (Metered t)  = map Bar $ split (barRatDuration t) es

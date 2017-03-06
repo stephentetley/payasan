@@ -12,6 +12,8 @@
 --
 -- Score represenation for Cadenza (free metered) music.
 --
+-- OUT-OF-DATE
+--
 --------------------------------------------------------------------------------
 
 module Payasan.Score.Cadenza.Notelist
@@ -61,6 +63,13 @@ import Payasan.Base.Basis
 import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
+
+
+-- NOTES 06/03/17
+-- The essence of _compiling_ Cadenza notation is to assemble it 
+-- as External, so we should not try and re-implement the 
+-- compiler API for External.
 
 
 

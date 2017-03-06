@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.Zipper
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -59,7 +59,8 @@ unstack (x:xs) ys = unstack xs (x:ys)
 
 
 data Loc pch drn anno = Loc 
-    { loc_info       :: !SectionInfo 
+    { loc_name        :: !String
+    , loc_info       :: !SectionInfo 
     , loc_stk        :: Stk (Bar pch drn anno)
     , loc_input      :: Inp pch drn anno
     }
@@ -74,8 +75,11 @@ data Inp pch drn anno = Nil
 
 
 makeLoc :: Section pch drn anno -> Loc pch drn anno
-makeLoc (Section info bs)        = 
-    Loc { loc_info = info, loc_stk = stk_empty, loc_input = makeInp bs }
+makeLoc (Section name info bs)     = 
+    Loc { loc_name  = name 
+        , loc_info  = info
+        , loc_stk   = stk_empty
+        , loc_input = makeInp bs }
 
 makeInp :: [Bar pch drn anno] -> Inp pch drn anno
 makeInp []                   = Nil
@@ -83,12 +87,16 @@ makeInp (b:bs)               = Inp (makeLocBar b) bs
 
 
 fromLoc :: Loc pch drn anno -> Section pch drn anno
-fromLoc (Loc info stk Nil)          = 
-    Section { section_info = info, section_bars = unstack stk [] }
+fromLoc (Loc name info stk Nil)          = 
+    Section { section_name = name
+            , section_info = info
+            , section_bars = unstack stk [] }
 
-fromLoc (Loc info stk (Inp bl as))  = 
+fromLoc (Loc name info stk (Inp bl as))  = 
     let inps = fromLocBar bl : as
-    in Section { section_info = info, section_bars = unstack stk inps }
+    in Section { section_name = name
+               , section_info = info
+               , section_bars = unstack stk inps }
 
 
 
@@ -104,11 +112,11 @@ backward loc = maybe loc id $ bwrdLoc loc
 
 -- Need a special test for end-of-bar (after initial forward)
 fwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
-fwrdLoc (Loc _    _   Nil)          = Nothing
-fwrdLoc (Loc info stk (Inp bl as))  = 
+fwrdLoc (Loc _    _    _   Nil)         = Nothing
+fwrdLoc (Loc name info stk (Inp bl as)) = 
     let bl2 = fwrdLocBar bl in
-    if atEndBar bl2 then Just $ Loc info (fromLocBar bl : stk) (makeInp as)
-                    else Just $ Loc info stk (Inp bl2 as)
+    if atEndBar bl2 then Just $ Loc name info (fromLocBar bl : stk) (makeInp as)
+                    else Just $ Loc name info stk (Inp bl2 as)
 
 
 gotoFront :: Loc pch drn anno -> Loc pch drn anno
@@ -140,9 +148,9 @@ forwardBar :: Loc pch drn anno -> Loc pch drn anno
 forwardBar loc = maybe loc id $ nextBar loc
 
 nextBar :: Loc pch drn anno -> Maybe (Loc pch drn anno)
-nextBar (Loc _    _   Nil)          = Nothing
-nextBar (Loc info stk (Inp bl as))  = 
-    Just $ Loc info (fromLocBar bl : stk) (makeInp as)
+nextBar (Loc _    _    _   Nil)         = Nothing
+nextBar (Loc name info stk (Inp bl as)) = 
+    Just $ Loc name info (fromLocBar bl : stk) (makeInp as)
 
 
 
@@ -151,19 +159,19 @@ nextBar (Loc info stk (Inp bl as))  =
 -- Plus when popping stack we want to go to the right end...
 --
 bwrdLoc :: Loc pch drn anno -> Maybe (Loc pch drn anno)
-bwrdLoc (Loc _    [] Nil)           = Nothing
-bwrdLoc (Loc info [] (Inp bl as))   = 
+bwrdLoc (Loc _    _    [] Nil)          = Nothing
+bwrdLoc (Loc name info [] (Inp bl as))  = 
     if atStartBar bl then Nothing
                      else let bl2 = bwrdLocBar bl 
-                          in Just $ Loc info [] (Inp bl2 as)
+                          in Just $ Loc name info [] (Inp bl2 as)
 
-bwrdLoc (Loc info stk@(s:ss) inp)   = case inp of
+bwrdLoc (Loc name info stk@(s:ss) inp)  = case inp of
     Inp bl as -> 
         if atStartBar bl then let inps = s : fromLocBar bl : as
-                              in Just $ Loc info ss (rightmost1CurrentBar $ makeInp inps)
+                              in Just $ Loc name info ss (rightmost1CurrentBar $ makeInp inps)
                          else let bl2 = bwrdLocBar bl
-                              in Just $ Loc info stk (Inp bl2 as)
-    Nil -> Just $ Loc info ss (makeInp [s])
+                              in Just $ Loc name info stk (Inp bl2 as)
+    Nil -> Just $ Loc name info ss (makeInp [s])
 
 
 
@@ -175,36 +183,44 @@ rightmost1CurrentBar (Inp bl xs)    = Inp (rightmost1Bar bl) xs
 
 
 change :: Element pch drn anno -> Loc pch drn anno -> Loc pch drn anno
-change _ (Loc info stk Nil)             = Loc info stk Nil
-change a (Loc info stk (Inp bl as))     = Loc info stk $ Inp (changeBar a bl) as
+change _ (Loc name info stk Nil)          = Loc name info stk Nil
+change a (Loc name info stk (Inp bl as))  = Loc name info stk $ Inp (changeBar a bl) as
 
 adjust :: (Element pch drn anno -> Element pch drn anno) 
        -> Loc pch drn anno -> Loc pch drn anno
-adjust _  (Loc info stk Nil)             = Loc info stk Nil
-adjust fn (Loc info stk (Inp bl as))     = Loc info stk $ Inp (adjustBar fn bl) as
+adjust _  (Loc name info stk Nil)         = Loc name info stk Nil
+adjust fn (Loc name info stk (Inp bl as)) = Loc name info stk $ Inp (adjustBar fn bl) as
 
 
 atLoc :: Loc pch drn anno -> Maybe (Element pch drn anno)
-atLoc (Loc _ _ Nil)                     = Nothing
-atLoc (Loc _ _ (Inp bl _))              = atLocBar bl
+atLoc (Loc _ _ _ Nil)                   = Nothing
+atLoc (Loc _ _ _ (Inp bl _))            = atLocBar bl
 
 
 remaining :: Loc pch drn anno -> Section pch drn anno
-remaining (Loc info _ Nil)          = 
-    Section { section_info = info, section_bars = [] }
+remaining (Loc name info _ Nil)         = 
+    Section { section_name = name
+            , section_info = info
+            , section_bars = [] }
 
-remaining (Loc info _ (Inp bl as))  = 
+remaining (Loc name info _ (Inp bl as)) = 
     let inps = case remainingBar bl of { Nothing -> as; Just b -> b:as }
-    in Section { section_info = info, section_bars = inps }
+    in Section { section_name = name
+               , section_info = info
+               , section_bars = inps }
 
 
 consumed :: Loc pch drn anno -> Section pch drn anno
-consumed (Loc info stk Nil)          = 
-    Section { section_info = info, section_bars = unstack stk []  }
+consumed (Loc name info stk Nil)        = 
+    Section { section_name = name
+            , section_info = info
+            , section_bars = unstack stk []  }
 
-consumed (Loc info stk (Inp bl _))   = 
+consumed (Loc name info stk (Inp bl _)) = 
     let inps = case consumedBar bl of { Nothing -> []; Just b -> [b] }
-    in Section { section_info = info, section_bars = unstack stk inps }
+    in Section { section_name = name
+               , section_info = info
+               , section_bars = unstack stk inps }
 
 
 

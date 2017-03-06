@@ -97,10 +97,10 @@ fromLilyPondWith locals = translateInput . ELEM.pushSectionInfo locals
 
 
 
-outputAsLilyPond :: ScoreInfo -> String -> StdChordSection -> String
-outputAsLilyPond globals name = 
+outputAsLilyPond :: ScoreInfo -> StdChordSection -> String
+outputAsLilyPond globals = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config
-                  . ELEM.transElementaryToExternal name
+                  . ELEM.transElementaryToExternal
                   . translateOutput
   where
     config  = MAIN.LilyPondPipeline 
@@ -110,20 +110,20 @@ outputAsLilyPond globals name =
                 }
 
 
-printAsLilyPond :: ScoreInfo -> String -> StdChordSection -> IO ()
-printAsLilyPond globals name = putStrLn . outputAsLilyPond globals name
+printAsLilyPond :: ScoreInfo -> StdChordSection -> IO ()
+printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> String -> StdChordSection -> String
-outputAsRhythmicMarkup globals name = 
-    MAIN.ppRender . ELEM.genOutputAsRhythmicMarkup def globals name
+outputAsRhythmicMarkup :: ScoreInfo -> StdChordSection -> String
+outputAsRhythmicMarkup globals = 
+    MAIN.ppRender . ELEM.genOutputAsRhythmicMarkup def globals
   where
     def = RHY.MarkupOutput { RHY.asMarkup = \p -> tiny_ (braces $ pPrint p) }
 
 
 printAsRhythmicMarkup :: ScoreInfo -> String -> StdChordSection -> IO ()
 printAsRhythmicMarkup globals name = 
-    putStrLn . outputAsRhythmicMarkup globals name
+    putStrLn . outputAsRhythmicMarkup globals
 
 
 ppRender :: Doc -> String

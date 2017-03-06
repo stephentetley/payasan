@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.Transform
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -75,7 +75,13 @@ transposeDiatonic ivl ph = diatonically (transformPitch (`addDiatonicInterval` i
 -- | Reverse
 --
 retrograde :: Section pch Duration anno -> Section pch Duration anno
-retrograde (Section info bs) = Section info $ map revBar $ reverse bs
+retrograde (Section { section_name = name 
+                    , section_info = info 
+                    , section_bars = bs }) = 
+    Section { section_name = name
+            , section_info = info 
+            , section_bars = map revBar $ reverse bs
+            }
   where
     revBar (Bar es)         = Bar $ map revNG $ reverse es
     

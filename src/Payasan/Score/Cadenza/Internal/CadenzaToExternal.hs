@@ -17,7 +17,8 @@
 
 module Payasan.Score.Cadenza.Internal.CadenzaToExternal
   (
-    transCadenzaToExternal
+    fromCadenza
+  , transCadenzaToExternal      
   ) where
 
 
@@ -25,29 +26,31 @@ import Payasan.Score.Cadenza.Internal.Syntax
 
 import qualified Payasan.PSC.Repr.External.Syntax as T
 
+fromCadenza :: Section pch drn anno -> T.Section pch drn anno
+fromCadenza = sectionT
 
+-- OLD API - DEPRECATED
 transCadenzaToExternal :: Section pch drn anno -> T.Part pch drn anno
-transCadenzaToExternal          = sectionT
+transCadenzaToExternal s1 = T.Part [ sectionT s1 ]
 
 
 
-sectionT :: Section pch drn anno -> T.Part pch drn anno
+sectionT :: Section pch drn anno -> T.Section pch drn anno
 sectionT (Section { section_name = name
                   , section_info = info 
                   , section_groups = gs })  = 
-    T.Part [T.Section name info [T.Bar $ map noteGroupT gs]]
+    T.Section { T.section_name = name 
+              , T.section_info = info 
+              , T.section_bars = [T.Bar $ map noteGroupT gs]
+              }
+  where
+    noteGroupT (Atom e)             = T.Atom $ elementT e
+    noteGroupT (Beamed xs)          = T.Beamed $ map noteGroupT xs
+    noteGroupT (Tuplet spec xs)     = T.Tuplet spec $ map (T.Atom . elementT) xs
 
-
-
-noteGroupT :: NoteGroup pch drn anno -> T.NoteGroup pch drn anno
-noteGroupT (Atom e)             = T.Atom $ elementT e
-noteGroupT (Beamed gs)          = T.Beamed $ map noteGroupT gs
-noteGroupT (Tuplet spec es)     = T.Tuplet spec $ map (T.Atom . elementT) es
-
-elementT :: Element pch drn anno -> T.Element pch drn anno
-elementT (Note p d a t)         = T.Note p d a t
-elementT (Rest d)               = T.Rest d
-elementT (Spacer d)             = T.Spacer d
-elementT (Skip d)               = T.Skip d
-elementT (Punctuation s)        = T.Punctuation s
+    elementT (Note p d a t)         = T.Note p d a t
+    elementT (Rest d)               = T.Rest d
+    elementT (Spacer d)             = T.Spacer d
+    elementT (Skip d)               = T.Skip d
+    elementT (Punctuation s)        = T.Punctuation s
 

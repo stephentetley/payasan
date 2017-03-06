@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.Operations
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -156,10 +156,10 @@ drop i = step i . makeLoc
 -- | TODO - should last element be untied?
 --
 takeBars :: Int -> Section pch drn anno -> Section pch drn anno
-takeBars i (Section info bs) = Section info $ PRE.take i bs
+takeBars i (Section name info bs) = Section name info $ PRE.take i bs
 
 dropBars :: Int -> Section pch drn anno -> Section pch drn anno
-dropBars i (Section info bs) = Section info $ PRE.drop i bs
+dropBars i (Section name info bs) = Section name info $ PRE.drop i bs
 
 
 takeSize :: RatDuration -> StdElemSection2 pch anno -> StdElemSection2 pch anno

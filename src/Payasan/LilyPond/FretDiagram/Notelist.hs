@@ -62,7 +62,7 @@ import qualified Payasan.PSC.Old.Pipeline as MAIN
 
 outputAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramSection -> String
 outputAsLilyPond globals name diags = 
-    MAIN.ppRender . MAIN.genOutputAsLilyPond config . chord_transElementaryToExternal name
+    MAIN.ppRender . MAIN.genOutputAsLilyPond config . chord_transElementaryToExternal
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams

@@ -340,7 +340,13 @@ transformIx :: forall p1 d1 a1 p2 d2 a2.
                (Position -> Element p1 d1 a1 -> Element p2 d2 a2) 
             -> Section p1 d1 a1 
             -> Section p2 d2 a2
-transformIx f (Section info bs0) = Section info $ snd $ bars start_position bs0
+transformIx f (Section { section_name = name
+                       , section_info = info
+                       , section_bars = bs0 }) = 
+    Section { section_name = name
+            , section_info = info
+            , section_bars = snd $ bars start_position bs0
+            }
   where
    bars :: Position -> [Bar p1 d1 a1] -> (Position, [Bar p2 d2 a2])
    bars = mapAccumL (\ix b -> let (_,b2) = bar1 ix b in (incPositionBar 1 ix,b2)) 
@@ -372,29 +378,34 @@ transformIxM :: forall p1 d1 a1 p2 d2 a2 m.
                (Position -> Element p1 d1 a1 -> m (Element p2 d2 a2))
             -> Section p1 d1 a1 
             -> m (Section p2 d2 a2)
-transformIxM mf (Section info bs0) = 
-    do { bs1 <- fmap snd $ bars start_position bs0
-       ; return $ Section info bs1 }
+transformIxM mf (Section { section_name = name
+                       , section_info = info
+                       , section_bars = bs0 }) = 
+    (\bs -> Section { section_name = name
+                    , section_info = info
+                    , section_bars = bs })
+      <$> (fmap snd $ bars start_position bs0)
+
   where
-   bars :: Position -> [Bar p1 d1 a1] -> m (Position, [Bar p2 d2 a2])
-   bars = mapAccumLM (\ix b -> do { (_,b2) <- bar1 ix b
-                                  ; return (incPositionBar 1 ix, b2)} )
+    bars :: Position -> [Bar p1 d1 a1] -> m (Position, [Bar p2 d2 a2])
+    bars = mapAccumLM (\ix b -> do { (_,b2) <- bar1 ix b
+                                   ; return (incPositionBar 1 ix, b2)} )
 
-   bar1 :: Position -> Bar p1 d1 a1 -> m (Position, Bar p2 d2 a2)
-   bar1 ix (Bar cs) = do { (ix1,cs1) <- mapAccumLM ngroup1 ix cs
-                         ; return (ix1, Bar cs1) }
+    bar1 :: Position -> Bar p1 d1 a1 -> m (Position, Bar p2 d2 a2)
+    bar1 ix (Bar cs) = do { (ix1,cs1) <- mapAccumLM ngroup1 ix cs
+                          ; return (ix1, Bar cs1) }
 
 
-   ngroup1 :: Position -> NoteGroup p1 d1 a1 -> m (Position, NoteGroup p2 d2 a2)
-   ngroup1 ix (Atom e)         = do { (ix1,e1) <- elem1 ix e 
-                                    ; return (ix1,Atom e1) }
+    ngroup1 :: Position -> NoteGroup p1 d1 a1 -> m (Position, NoteGroup p2 d2 a2)
+    ngroup1 ix (Atom e)         = do { (ix1,e1) <- elem1 ix e 
+                                     ; return (ix1,Atom e1) }
 
-   ngroup1 ix (Tuplet spec es) = do { (ix1,es1) <- mapAccumLM elem1 ix es 
-                                    ; return (ix1, Tuplet spec es1) }
+    ngroup1 ix (Tuplet spec es) = do { (ix1,es1) <- mapAccumLM elem1 ix es 
+                                     ; return (ix1, Tuplet spec es1) }
 
-   elem1 :: Position -> Element p1 d1 a1 -> m (Position, Element p2 d2 a2)
-   elem1 ix e = do { e1 <- mf ix e 
-                   ; return (incPositionIndex 1 ix, e1) }
+    elem1 :: Position -> Element p1 d1 a1 -> m (Position, Element p2 d2 a2)
+    elem1 ix e = do { e1 <- mf ix e 
+                    ; return (incPositionIndex 1 ix, e1) }
                    
 
 
@@ -515,7 +526,7 @@ genCollect mf a0 st ph =
     evalRewrite (partC a0 ph) (section_info ph) st
   where
     partC :: ac -> Section pch drn anno -> Mon st ac
-    partC ac (Section info bs)     = local (const info) (foldlM barC ac bs)
+    partC ac (Section _ info bs)     = local (const info) (foldlM barC ac bs)
 
     barC :: ac -> Bar pch drn anno -> Mon st ac
     barC ac (Bar cs)            = foldlM noteGroupC ac cs
@@ -537,7 +548,7 @@ genTransform elemT st0 ph =
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 
-    partT (Section info bs)        = local (const info) (Section info <$> mapM barT bs)
+    partT (Section name info bs)        = local (const info) (Section name info <$> mapM barT bs)
 
     barT :: Bar p1 d1 a1 -> Mon st (Bar p2 d2 a2)
     barT (Bar cs)               = Bar <$> mapM noteGroupT cs
@@ -761,7 +772,13 @@ foldPitchAnno fn a0 ph = collectPA step a0 () ph
 -- Punctuation
 
 censorPunctuation :: Section pch drn anno -> Section pch drn anno
-censorPunctuation (Section info bs) = Section info (map bar1 bs)
+censorPunctuation (Section { section_name = name 
+                           , section_info = info
+                           , section_bars = bs }) = 
+    Section { section_name = name
+            , section_info = info 
+            , section_bars = map bar1 bs
+            }
   where
     bar1 (Bar cs)               = Bar $ catMaybes $ map noteGroup1 cs
 
@@ -779,7 +796,13 @@ censorPunctuation (Section info bs) = Section info (map bar1 bs)
 -- Markup
 
 censorAnno :: Section pch drn anno -> Section pch drn ()
-censorAnno (Section info bs) = Section info (map bar1 bs)
+censorAnno (Section { section_name = name 
+                    , section_info = info
+                    , section_bars = bs }) = 
+    Section { section_name = name
+            , section_info = info 
+            , section_bars = map bar1 bs
+            }
   where
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
@@ -797,7 +820,13 @@ censorAnno (Section info bs) = Section info (map bar1 bs)
 -- Skip to rest
 
 changeSkipToRest :: Section pch drn anno -> Section pch drn anno
-changeSkipToRest (Section info bs) = Section info (map bar1 bs)
+changeSkipToRest (Section { section_name = name 
+                          , section_info = info
+                          , section_bars = bs }) = 
+    Section { section_name = name
+            , section_info = info 
+            , section_bars = map bar1 bs
+            }
   where
     bar1 (Bar cs)               = Bar $ map noteGroup1 cs
 
@@ -820,22 +849,22 @@ intoTraceIx :: forall p d a e.
                (Position -> Element p d a -> TraceElement e) 
             -> Section p d a
             -> TracePart e
-intoTraceIx f (Section _ bs0) = TracePart $ snd $ bars start_position bs0
+intoTraceIx f (Section { section_bars = bs0 }) = 
+    TracePart $ snd $ bars start_position bs0
   where
-   bars :: Position -> [Bar p d a] -> (Position, [TraceBar e])
-   bars = mapAccumL (\ix b -> let (_,b2) = bar1 ix b in (incPositionBar 1 ix,b2)) 
+    bars :: Position -> [Bar p d a] -> (Position, [TraceBar e])
+    bars = mapAccumL (\ix b -> let (_,b2) = bar1 ix b in (incPositionBar 1 ix,b2)) 
 
-   bar1 :: Position -> Bar p d a -> (Position, TraceBar e)
-   bar1 ix (Bar cs) = second (TraceBar . concat) $ mapAccumL ngroup1 ix cs
+    bar1 :: Position -> Bar p d a -> (Position, TraceBar e)
+    bar1 ix (Bar cs) = second (TraceBar . concat) $ mapAccumL ngroup1 ix cs
 
-
-   ngroup1 :: Position -> NoteGroup p d a -> (Position, [TraceElement e])
-   ngroup1 ix (Atom e)         = let (ix1,e1) = elem1 ix e in (ix1,[e1])
-   ngroup1 ix (Tuplet _ es)    = let (ix1,es1) = mapAccumL elem1 ix es 
+    ngroup1 :: Position -> NoteGroup p d a -> (Position, [TraceElement e])
+    ngroup1 ix (Atom e)         = let (ix1,e1) = elem1 ix e in (ix1,[e1])
+    ngroup1 ix (Tuplet _ es)    = let (ix1,es1) = mapAccumL elem1 ix es 
                                  in (ix1, es1)
 
-   elem1 :: Position -> Element p d a -> (Position, TraceElement e)
-   elem1 ix e = let e1 = f ix e in (incPositionIndex 1 ix, e1) 
+    elem1 :: Position -> Element p d a -> (Position, TraceElement e)
+    elem1 ix e = let e1 = f ix e in (incPositionIndex 1 ix, e1) 
 
 
 intoTraceM :: Monad m 
@@ -846,7 +875,8 @@ intoTraceIxM :: forall p d a e m. Monad m =>
                (Position -> Element p d a -> m (TraceElement e))
             -> Section p d a
             -> m (TracePart e)
-intoTraceIxM mf (Section _ bs0) = (TracePart . snd) <$> bars start_position bs0
+intoTraceIxM mf (Section { section_bars = bs0 }) = 
+    (TracePart . snd) <$> bars start_position bs0
   where
     bars :: Position -> [Bar p d a] -> m (Position, [TraceBar e])
     bars = mapAccumLM (\ix b -> do { (_,b2) <- bar1 ix b; return (incPositionBar 1 ix,b2)})
@@ -867,16 +897,17 @@ intoTraceIxM mf (Section _ bs0) = (TracePart . snd) <$> bars start_position bs0
 intoTraceAccum :: forall p d a ac e. 
                   (ac -> Element p d a -> (ac, TraceElement e)) 
                -> ac -> Section p d a -> (ac,TracePart e)
-intoTraceAccum f a0 (Section _ bs0) = second TracePart $ mapAccumL bar1 a0 bs0 
+intoTraceAccum f a0 (Section { section_bars = bs0 }) = 
+    second TracePart $ mapAccumL bar1 a0 bs0 
   where
-   bar1 :: ac -> Bar p d a -> (ac, TraceBar e)
-   bar1 ac (Bar cs) = second (TraceBar . concat) $ mapAccumL ngroup1 ac cs
+    bar1 :: ac -> Bar p d a -> (ac, TraceBar e)
+    bar1 ac (Bar cs) = second (TraceBar . concat) $ mapAccumL ngroup1 ac cs
 
-   ngroup1 :: ac -> NoteGroup p d a -> (ac, [TraceElement e])
-   ngroup1 ac (Atom e)      = second (\a -> [a]) $ elem1 ac e
-   ngroup1 ac (Tuplet _ es) = mapAccumL elem1 ac es 
+    ngroup1 :: ac -> NoteGroup p d a -> (ac, [TraceElement e])
+    ngroup1 ac (Atom e)      = second (\a -> [a]) $ elem1 ac e
+    ngroup1 ac (Tuplet _ es) = mapAccumL elem1 ac es 
                                 
 
-   elem1 :: ac -> Element p d a -> (ac, TraceElement e)
-   elem1 = f
+    elem1 :: ac -> Element p d a -> (ac, TraceElement e)
+    elem1 = f
  

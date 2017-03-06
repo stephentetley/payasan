@@ -78,7 +78,7 @@ abcSectionK :: ABCParser (ABCElemSection,SourcePos,String)
 abcSectionK = (,,) <$> section <*> getPosition <*> getInput
 
 section :: ABCParser ABCElemSection 
-section = Section default_section_info <$> bars
+section = Section "TODO" default_section_info <$> bars
 
 bars :: ABCParser [ABCElemBar]
 bars = sepBy bar barline

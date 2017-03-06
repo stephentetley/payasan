@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Models.Lyrics.Internal.Plain
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -40,8 +40,8 @@ type LyricsAtom = NoteGroup Syllable Duration Stress
 
 
 
-fromLyrics :: [[LyricsAtom]] -> LyricsSection
-fromLyrics xss = Section default_section_info $ map Bar xss
+fromLyrics :: String -> [[LyricsAtom]] -> LyricsSection
+fromLyrics name xss = Section name default_section_info $ map Bar xss
 
 
 

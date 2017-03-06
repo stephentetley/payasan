@@ -73,7 +73,7 @@ stressUse UNSTRESSED    = above $ command "unstressed"
 stressUse BLANK         = empty
 
 
-outputAsLilyPond :: ScoreInfo -> String -> LyricsSection -> String
+outputAsLilyPond :: ScoreInfo -> LyricsSection -> String
 outputAsLilyPond = LY.outputAsLilyPondDU (AnnoDU { defs = stressDefs, use = stressUse })
 
 

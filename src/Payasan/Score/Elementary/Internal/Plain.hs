@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.Plain
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -34,8 +34,8 @@ import Payasan.Base.Pitch
 
 type NoteListAtom = StdElemNoteGroup
 
-fromNoteList :: SectionInfo -> [NoteListAtom] -> StdElemSection
-fromNoteList ri xs = recalcBars $ Section ri [Bar xs]
+fromNoteList :: String -> SectionInfo -> [NoteListAtom] -> StdElemSection
+fromNoteList name info xs = recalcBars $ Section name info [Bar xs]
 
 note :: Pitch -> Duration -> NoteListAtom
 note p d = Atom $ Note p d () NO_TIE

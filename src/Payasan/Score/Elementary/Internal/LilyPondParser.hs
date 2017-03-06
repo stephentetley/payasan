@@ -68,8 +68,8 @@ parseLilyPondNoAnno = parseLySection parsedef
 
 
 parseLySection :: P.LyParserDef pch anno
-            -> String 
-            -> Either ParseError (LyElemSection2 pch anno)
+               -> String 
+               -> Either ParseError (LyElemSection2 pch anno)
 parseLySection def = runParser (makeLyParser def) () ""
 
 
@@ -84,7 +84,7 @@ makeLyParser def = fullParseLy section
     pAnno  = P.annoParser def
 
     section :: LyParser (LyElemSection2 pch anno)
-    section = Section default_section_info <$> bars
+    section = Section "TODO" default_section_info <$> bars
 
     bars :: LyParser [LyElemBar2 pch anno]
     bars = sepBy bar P.barline

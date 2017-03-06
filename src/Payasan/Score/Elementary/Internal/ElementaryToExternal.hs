@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------
 -- |
 -- Module      :  Payasan.Score.Elementary.Internal.ElementaryToExternal
--- Copyright   :  (c) Stephen Tetley 2015-2016
+-- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
 -- Maintainer  :  stephen.tetley@gmail.com
@@ -31,11 +31,11 @@ import qualified Payasan.PSC.Repr.External.Syntax as T
 
 
 transElementaryToExternal :: forall pch drn anno.
-                             String -> Section pch drn anno -> T.Part pch drn anno
-transElementaryToExternal name      = sectionT
+                             Section pch drn anno -> T.Part pch drn anno
+transElementaryToExternal = sectionT
   where
     sectionT :: Section pch drn anno -> T.Part pch drn anno
-    sectionT (Section info bs)      = T.Part [T.Section name info $ map barT bs]
+    sectionT (Section name info bs)      = T.Part [T.Section name info $ map barT bs]
 
 
     barT :: Bar pch drn anno -> T.Bar pch drn anno
@@ -57,18 +57,13 @@ transElementaryToExternal name      = sectionT
 
 
 
--- | Note - Prevents type change on duration (ideally duration 
--- would be opaque, it cannot be with the Main and Elementary
--- representations).
---
 chord_transElementaryToExternal :: forall pch drn anno. 
-                                   String
-                                -> Section [pch] drn anno
+                                   Section [pch] drn anno
                                 -> T.Part pch drn anno
-chord_transElementaryToExternal name = sectionT
+chord_transElementaryToExternal = sectionT
   where
     sectionT :: Section [pch] drn anno -> T.Part pch drn anno
-    sectionT (Section info bs)      = T.Part [T.Section name info $ map barT bs]
+    sectionT (Section name info bs) = T.Part [T.Section name info $ map barT bs]
 
 
     barT :: Bar [pch] drn anno -> T.Bar pch drn anno
