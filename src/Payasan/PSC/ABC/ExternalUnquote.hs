@@ -24,7 +24,7 @@ module Payasan.PSC.ABC.ExternalUnquote
 
   ) where
 
-import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.Base
 import Payasan.PSC.ABC.ExternalParser
 
 import Payasan.PSC.Repr.External.Syntax

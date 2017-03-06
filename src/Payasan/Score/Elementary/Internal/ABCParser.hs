@@ -22,7 +22,7 @@ module Payasan.Score.Elementary.Internal.ABCParser
 
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.Base
 import qualified Payasan.PSC.ABC.ExternalParser as P
 import Payasan.PSC.ABC.Lexer
 

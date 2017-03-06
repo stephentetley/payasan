@@ -76,11 +76,11 @@ module Payasan.PSC.Old.Pipeline
 
 
 
-import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.Base
 import qualified Payasan.PSC.ABC.ExternalUnquote         as ABC
 import qualified Payasan.PSC.ABC.ExternalParser          as ABC
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 import qualified Payasan.PSC.LilyPond.ExternalUnquote    as LY
 import qualified Payasan.PSC.LilyPond.ExternalParser     as LY
 

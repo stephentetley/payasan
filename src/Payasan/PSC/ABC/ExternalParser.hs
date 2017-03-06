@@ -31,8 +31,8 @@ module Payasan.PSC.ABC.ExternalParser
   ) where
 
 
+import Payasan.PSC.ABC.Base
 import Payasan.PSC.ABC.Lexer
-import Payasan.PSC.ABC.Common
 
 import Payasan.PSC.Repr.External.Syntax
 

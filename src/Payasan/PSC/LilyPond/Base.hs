@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.LilyPond.Common
+-- Module      :  Payasan.PSC.LilyPond.Base
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -19,7 +19,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.LilyPond.Common
+module Payasan.PSC.LilyPond.Base
   ( 
 
     LyNoteList

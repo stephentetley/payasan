@@ -24,7 +24,7 @@ import Payasan.LilyPond.Chordmode.Internal.Base
 import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.Score.Elementary.Internal.Syntax         as ELEM
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 
 translateOutput :: ELEM.Section Chord drn anno -> ELEM.Section LyPitch drn ChordSuffix
 translateOutput = trafoAnnos 

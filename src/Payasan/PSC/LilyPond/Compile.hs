@@ -35,7 +35,7 @@ module Payasan.PSC.LilyPond.Compile
   ) where
 
 
-import Payasan.PSC.LilyPond.Common hiding ( middle_c )
+import Payasan.PSC.LilyPond.Base hiding ( middle_c )
 import Payasan.PSC.LilyPond.OutTrans
 import Payasan.PSC.LilyPond.SimpleOutput
 

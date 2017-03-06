@@ -46,7 +46,7 @@ module Payasan.PSC.LilyPond.ExternalParser
 
   ) where
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.Lexer
 
 import Payasan.PSC.Repr.External.Syntax

@@ -27,7 +27,7 @@ module Payasan.PSC.LilyPond.OutTrans
   ) where
 
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals

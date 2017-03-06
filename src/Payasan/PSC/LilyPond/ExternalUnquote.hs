@@ -26,7 +26,7 @@ module Payasan.PSC.LilyPond.ExternalUnquote
   ) where
 
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.ExternalParser
 
 import Payasan.PSC.Repr.External.Syntax

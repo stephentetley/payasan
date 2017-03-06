@@ -38,7 +38,7 @@ module Payasan.PSC.ABC.Pretty
   ) where
 
 
-import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.Base
 
 import Payasan.PSC.Base.SyntaxCommon
 

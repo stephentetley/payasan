@@ -25,7 +25,7 @@ import Payasan.Score.Elementary.Internal.LilyPondInTrans
 import Payasan.Score.Elementary.Internal.Traversals
 import Payasan.Score.Elementary.Internal.Syntax
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 
 translateInput :: LyChordSection -> StdChordSection
 translateInput = trafoAnnos . trafoDuration

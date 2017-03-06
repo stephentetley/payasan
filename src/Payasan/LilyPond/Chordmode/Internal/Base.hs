@@ -34,7 +34,7 @@ module Payasan.LilyPond.Chordmode.Internal.Base
 
   ) where
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 
 import qualified Payasan.PSC.Repr.External.Syntax           as EXT
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM

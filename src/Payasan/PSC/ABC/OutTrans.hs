@@ -22,7 +22,7 @@ module Payasan.PSC.ABC.OutTrans
   ) where
 
 
-import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.Base
 
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals

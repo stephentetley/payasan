@@ -31,7 +31,7 @@ module Payasan.Score.Cadenza.Internal.LilyPondParser
 import Payasan.Score.Cadenza.Internal.Syntax
 
 import Payasan.PSC.LilyPond.Lexer
-import Payasan.PSC.LilyPond.Common ( LyPitch )
+import Payasan.PSC.LilyPond.Base ( LyPitch )
 import qualified Payasan.PSC.LilyPond.ExternalParser    as P
 import Payasan.PSC.LilyPond.ExternalParser (LyParserDef(..), pitch, noAnno)
 

@@ -27,7 +27,7 @@ module Payasan.PSC.LilyPond.RhythmicMarkup
   ) where
 
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.OutTrans
 import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput

@@ -24,11 +24,11 @@ module Payasan.LilyPond.Percussion.Internal.Parser
 
 import Payasan.LilyPond.Percussion.Internal.Base
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.ExternalParser
 import Payasan.PSC.LilyPond.Lexer
 
-import Payasan.PSC.Repr.External.Syntax
+-- import Payasan.PSC.Repr.External.Syntax
 
 import Text.Parsec                              -- package: parsec
 

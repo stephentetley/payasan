@@ -51,7 +51,7 @@ module Payasan.Score.Cadenza.Internal.Syntax
 
   ) where
 
-import Payasan.PSC.LilyPond.Common hiding  ( LySectionQuote(..) )
+import Payasan.PSC.LilyPond.Base hiding  ( LySectionQuote(..) )
 
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration

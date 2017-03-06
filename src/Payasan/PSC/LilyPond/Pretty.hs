@@ -100,7 +100,7 @@ module Payasan.PSC.LilyPond.Pretty
  
   ) where
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 
 import Payasan.PSC.Base.SyntaxCommon
 

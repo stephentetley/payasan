@@ -4,7 +4,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.ABC.Common
+-- Module      :  Payasan.PSC.ABC.Base
 -- Copyright   :  (c) Stephen Tetley 2016-2017
 -- License     :  BSD3
 --
@@ -16,7 +16,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.ABC.Common
+module Payasan.PSC.ABC.Base
   ( 
 
 

@@ -26,7 +26,7 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput
 

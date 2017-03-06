@@ -28,7 +28,7 @@ module Payasan.PSC.ABC.Output
   
   ) where
 
-import Payasan.PSC.ABC.Common
+import Payasan.PSC.ABC.Base
 import Payasan.PSC.ABC.Pretty
 
 import Payasan.PSC.Repr.External.Syntax

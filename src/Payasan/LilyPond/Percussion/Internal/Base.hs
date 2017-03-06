@@ -28,7 +28,7 @@ module Payasan.LilyPond.Percussion.Internal.Base
 
   ) where
 
-import Payasan.PSC.LilyPond.Common (LyNoteLength)
+import Payasan.PSC.LilyPond.Base (LyNoteLength)
 
 import qualified Payasan.PSC.Repr.External.Syntax       as EXT
 
