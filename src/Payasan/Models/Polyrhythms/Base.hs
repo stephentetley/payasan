@@ -46,8 +46,8 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 --
 outputAsLilyPond :: ScoreInfo 
                  -> Clef
-                 -> Pitch -> MAIN.StdPart 
-                 -> Pitch -> MAIN.StdPart 
+                 -> Pitch -> MAIN.Part Pitch Duration ()
+                 -> Pitch -> MAIN.Part Pitch Duration ()
                  -> String
 outputAsLilyPond globals clef p1 ph1 p2 ph2 = 
     MAIN.ppRender $ MAIN.genOutputAsLilyPond2 config2 ph1 ph2
@@ -63,8 +63,8 @@ outputAsLilyPond globals clef p1 ph1 p2 ph2 =
 
 
 outputTimbalesStyle :: ScoreInfo 
-                    -> MAIN.StdPart 
-                    -> MAIN.StdPart 
+                    -> MAIN.Part Pitch Duration ()
+                    -> MAIN.Part Pitch Duration ()
                     -> String
 outputTimbalesStyle globals ph1 ph2 =
     MAIN.ppRender $ MAIN.genOutputAsLilyPond2 config2 ph1 ph2

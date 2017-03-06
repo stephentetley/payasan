@@ -17,7 +17,7 @@
 module Payasan.PSC.Old.Pipeline
   ( 
 
-    EXT.StdPart         -- * re-export
+    EXT.Part            -- * re-export
   
   , ABC.abc             -- * re-export
 
@@ -262,7 +262,7 @@ genOutputAsLilyPond2 config ph1 ph2 =
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> Pitch -> EXT.StdPart1 anno -> String
+                          => ScoreInfo -> Pitch -> EXT.Part Pitch Duration anno -> String
 outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
@@ -274,7 +274,7 @@ outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
 
 
 printAsLilyPond_Relative :: Anno anno 
-                         => ScoreInfo -> Pitch -> EXT.StdPart1 anno -> IO ()
+                         => ScoreInfo -> Pitch -> EXT.Part Pitch Duration anno -> IO ()
 printAsLilyPond_Relative infos pch = putStrLn . outputAsLilyPond_Relative infos pch
 
 
@@ -294,14 +294,14 @@ genOutputAsRhythmicMarkup def infos =
                               , LYOut.printAnno = const empty }
 
 
-outputAsRhythmicMarkup :: ScoreInfo -> EXT.StdPart1 anno -> String
+outputAsRhythmicMarkup :: ScoreInfo -> EXT.Part Pitch Duration anno -> String
 outputAsRhythmicMarkup infos = 
     ppRender . genOutputAsRhythmicMarkup def infos 
   where
     def = LYOut.MarkupOutput { LYOut.asMarkup = \p -> LYOut.teeny_ (braces $ pPrint p) }
 
 
-printAsRhythmicMarkup :: ScoreInfo -> EXT.StdPart -> IO ()
+printAsRhythmicMarkup :: ScoreInfo -> EXT.Part Pitch Duration () -> IO ()
 printAsRhythmicMarkup infos = putStrLn . outputAsRhythmicMarkup infos
 
 
