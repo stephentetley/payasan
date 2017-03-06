@@ -17,7 +17,7 @@
 
 module Payasan.Score.Elementary.Internal.ABCParser
   (
-    abc
+    parseABCSection
   ) where
 
 import Payasan.Score.Elementary.Internal.Syntax
@@ -35,23 +35,6 @@ import Text.Parsec                              -- package: parsec
 import Language.Haskell.TH.Quote
 
 import Data.Char (isSpace)
-
---------------------------------------------------------------------------------
--- Quasiquote
-
--- Note - unfortunately we can\'t parameterize the quasiquoter
--- (e.g. with default note length)
-
-
-abc :: QuasiQuoter
-abc = QuasiQuoter
-    { quoteExp = \s -> case parseABCSection s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
 
 
 --------------------------------------------------------------------------------

@@ -12,6 +12,8 @@
 --
 -- (Pipeline)
 --
+-- DEPRECATED (whole module)
+--
 --------------------------------------------------------------------------------
 
 module Payasan.Score.Elementary.Notelist
@@ -23,7 +25,7 @@ module Payasan.Score.Elementary.Notelist
   , Section
   , StdElemSection
   , ABCElemSection
-  , abc
+  , elementary_abc
   , LyElemSection1
   , elementary_lilypond
 
@@ -36,8 +38,8 @@ module Payasan.Score.Elementary.Notelist
   , default_section_info
 
 
-  , fromABC
-  , fromABCWith
+--  , fromABC
+--  , fromABCWith
 
 --  , fromLilyPond_Relative
 --  , fromLilyPondWith_Relative
@@ -74,8 +76,7 @@ module Payasan.Score.Elementary.Notelist
 
   ) where
 
-import Payasan.Score.Elementary.Internal.ABCInTrans
-import Payasan.Score.Elementary.Internal.ABCParser (abc)
+import Payasan.Score.Elementary.Internal.ABCUnquote ( elementary_abc)
 import Payasan.Score.Elementary.Internal.ElementaryToExternal
 import Payasan.Score.Elementary.Internal.LilyPondUnquote ( elementary_lilypond )
 import Payasan.Score.Elementary.Internal.ShowLinear
@@ -97,14 +98,14 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass        -- package: pretty
 
-
+{-
 fromABC :: ABCElemSection -> StdElemSection
 fromABC  = fromABCWith default_section_info
 
 fromABCWith :: SectionInfo -> ABCElemSection -> StdElemSection
 fromABCWith locals = abcTranslate . pushSectionInfo locals
 
-{-
+
 fromLilyPond_Relative :: Pitch -> LyElemSection1 () -> StdElemSection
 fromLilyPond_Relative pch = fromLilyPondWith_Relative pch default_section_info
 

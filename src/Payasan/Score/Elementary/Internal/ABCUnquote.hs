@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Elementary.Internal.ABCInTrans
+-- Module      :  Payasan.Score.Elementary.Internal.ABCUnquote
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -14,39 +14,67 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Elementary.Internal.ABCInTrans
+module Payasan.Score.Elementary.Internal.ABCUnquote
   (
-    abcTranslate
+
+    elementary_abc
+  , unquoteABC
+
   ) where
 
 
 
+import Payasan.Score.Elementary.Internal.ABCParser
 import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
-import Payasan.PSC.ABC.Base
+import Payasan.PSC.ABC.Base hiding ( ABCSectionQuote(..) )
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 import Payasan.Base.Scale
 
+import Language.Haskell.TH.Quote
+
+
 import Control.Monad.Reader
 
-abcTranslate :: ABCElemSection -> Section Pitch Duration ()
-abcTranslate = transformElementary pch_algo . transformElementary drn_algo
 
+--------------------------------------------------------------------------------
+-- Quasiquote
+
+-- Note - unfortunately we can\'t parameterize the quasiquoter
+-- (e.g. with default note length)
+
+
+elementary_abc :: QuasiQuoter
+elementary_abc = QuasiQuoter
+    { quoteExp = \s -> case parseABCSection s of
+                         Left err -> error $ show err
+                         Right xs -> dataToExpQ (const Nothing) xs
+    , quoteType = \_ -> error "QQ - no Score Type"
+    , quoteDec  = \_ -> error "QQ - no Score Decl"
+    , quotePat  = \_ -> error "QQ - no Score Patt" 
+    } 
+
+
+type PMon a = Mon () a
+type DMon a = Mon UnitNoteLength a
+
+unquoteABC :: String -> SectionInfo -> ABCSectionQuote anno -> Section Pitch Duration anno
+unquoteABC name info (ABCSectionQuote bs) =
+    let bars = trafoDuration info $ trafoPitch info bs
+    in Section { section_name   = name
+               , section_info   = info
+               , section_bars   = bars
+               }
 
 --------------------------------------------------------------------------------
 -- Pitch translation
 
-type PMon a = Mon () a
-
-pch_algo :: ElementaryAlgo () ABCPitch Pitch drn drn anno anno
-pch_algo = ElementaryAlgo
-    { initial_state = ()
-    , element_trafo = elementP
-    }
+trafoPitch :: SectionInfo -> [Bar ABCPitch drn anno] -> [Bar Pitch drn anno]
+trafoPitch info = genTransformBars elementP info ()
 
 
 elementP :: Element ABCPitch drn anno -> PMon (Element Pitch drn anno) 
@@ -64,13 +92,8 @@ transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
 --------------------------------------------------------------------------------
 -- Translate duration
 
-type DMon a = Mon UnitNoteLength a
-
-drn_algo :: ElementaryAlgo UnitNoteLength pch pch ABCNoteLength Duration anno anno
-drn_algo = ElementaryAlgo
-    { initial_state = UNIT_NOTE_8
-    , element_trafo = elementD
-    }
+trafoDuration :: SectionInfo ->  [Bar pch ABCNoteLength anno] -> [Bar pch Duration anno]
+trafoDuration info = genTransformBars elementD info UNIT_NOTE_8
 
 
 elementD :: Element pch ABCNoteLength anno -> DMon (Element pch Duration anno)

@@ -31,9 +31,6 @@ import Payasan.Score.Elementary.Internal.Syntax
 import Payasan.Score.Elementary.Internal.Traversals
 
 import Payasan.PSC.LilyPond.Base hiding ( LySectionQuote(..) )
-import Payasan.PSC.LilyPond.Lexer
-import qualified Payasan.PSC.LilyPond.ExternalParser as P
-import Payasan.PSC.LilyPond.ExternalParser (LyParserDef(..), pitch, noAnno)
 
 
 import Payasan.PSC.Base.SyntaxCommon
@@ -41,7 +38,6 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.Parsec                              -- package: parsec
 
 import Language.Haskell.TH.Quote                -- package: template-haskell
 
