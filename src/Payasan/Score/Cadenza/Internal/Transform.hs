@@ -74,7 +74,7 @@ transposeDiatonic :: DiatonicInterval
 transposeDiatonic ivl ph = diatonically (mapPitch (`addDiatonicInterval` ivl)) ph
 
 retrograde :: Section pch Duration anno -> Section pch Duration anno
-retrograde (Section info gs) = Section info $ map revNG $ reverse gs
+retrograde (Section name info gs) = Section name info $ map revNG $ reverse gs
   where
     revNG (Atom e)          = Atom e
     revNG (Beamed cs)       = Beamed $ map revNG $ reverse cs

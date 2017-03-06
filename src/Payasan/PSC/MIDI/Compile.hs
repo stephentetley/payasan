@@ -52,7 +52,9 @@ import qualified ZMidi.Core as Z                -- package: zmidi-core
 import Data.Word
 
 
-
+-- User level representation of midi note (Avoid exposing 
+-- note-on / note-off)
+--
 data MIDINote = MIDINote 
     { note_pitch         :: !MidiPitch 
     , note_on_velocity   :: !Word8 

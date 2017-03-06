@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.Score.Cadenza.Internal.Parser
+-- Module      :  Payasan.Score.Cadenza.Internal.LilyPondParser
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -15,12 +15,13 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.Score.Cadenza.Internal.Parser
+module Payasan.Score.Cadenza.Internal.LilyPondParser
   (
 
-    cadenza
-  , LyParserDef (..)    -- re-export
+    LyParserDef (..)    -- re-export
+  , parseCadenzaNoAnno
   , parseCadenza
+
   , pitch               -- re-export
   , noAnno              -- re-export
 
@@ -30,7 +31,8 @@ module Payasan.Score.Cadenza.Internal.Parser
 import Payasan.Score.Cadenza.Internal.Syntax
 
 import Payasan.PSC.LilyPond.Lexer
-import qualified Payasan.PSC.LilyPond.ExternalParser as P
+import Payasan.PSC.LilyPond.Common ( LyPitch )
+import qualified Payasan.PSC.LilyPond.ExternalParser    as P
 import Payasan.PSC.LilyPond.ExternalParser (LyParserDef(..), pitch, noAnno)
 
 import Payasan.PSC.Base.SyntaxCommon
@@ -38,30 +40,13 @@ import Payasan.PSC.Base.SyntaxCommon
 
 import Text.Parsec                              -- package: parsec
 
-import Language.Haskell.TH.Quote                -- package: template-haskell
-
-
-
-
---------------------------------------------------------------------------------
--- Quasiquote
-
-cadenza :: QuasiQuoter
-cadenza = QuasiQuoter
-    { quoteExp = \s -> case parseCadenzaNoAnno s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
 
 
 --------------------------------------------------------------------------------
 -- Parser
 
 
-parseCadenzaNoAnno :: String -> Either ParseError (LyCadenzaSection1 ())
+parseCadenzaNoAnno :: String -> Either ParseError (LySectionQuote LyPitch ())
 parseCadenzaNoAnno = parseCadenza parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
@@ -69,25 +54,24 @@ parseCadenzaNoAnno = parseCadenza parsedef
 
 parseCadenza :: P.LyParserDef pch anno
               -> String 
-              -> Either ParseError (LyCadenzaSection2 pch anno)
+              -> Either ParseError (LySectionQuote pch anno)
 parseCadenza def = runParser (makeParser def) () ""
 
 
 
--- TODO - handle beaming... 
 
 makeParser :: forall pch anno. 
-              P.LyParserDef pch anno -> LyParser (LyCadenzaSection2 pch anno)
-makeParser def = fullParseLy section
+              P.LyParserDef pch anno -> LyParser (LySectionQuote pch anno)
+makeParser lib = fullParseLy section
   where
     pPitch :: LyParser pch
-    pPitch = P.pitchParser def
+    pPitch = P.pitchParser lib
 
     pAnno  :: LyParser anno
-    pAnno  = P.annoParser def
+    pAnno  = P.annoParser lib
 
-    section :: LyParser (LyCadenzaSection2 pch anno)
-    section = (Section default_section_info . reconcileBeamHeads) <$> noteGroups
+    section :: LyParser (LySectionQuote pch anno)
+    section = (LySectionQuote . reconcileBeamHeads) <$> noteGroups
 
     noteGroups :: LyParser [LyCadenzaNoteGroup2 pch anno]
     noteGroups = whiteSpace *> many noteGroup

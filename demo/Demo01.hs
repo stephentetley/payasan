@@ -26,10 +26,6 @@ import Payasan.Base.Pitch
 
 
 
-
-
--- MONOPHONIC
-
 locals :: SectionInfo
 locals = default_section_info
 
@@ -134,6 +130,8 @@ compileMIDIPart :: FilePath -> StdPart -> IO ()
 compileMIDIPart path part = 
    let midi = MIDI.assembleOutput $  MIDI.compilePart midi_compiler part
    in MIDI.writeMIDIFile path midi
+
+
 
 section1abc :: StdSection
 section1abc = unquoteABC "Phrase1abc" locals $ [abc| B4 z B B - | BB B2 z4 |]

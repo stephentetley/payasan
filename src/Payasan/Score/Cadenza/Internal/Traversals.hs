@@ -83,7 +83,7 @@ genCollect mf a0 st ph =
   where
 
     partC :: ac -> Section pch drn anno -> Mon st ac
-    partC ac (Section info bs)     = local (const info) (foldlM noteGroupC ac bs)
+    partC ac (Section _ info bs)     = local (const info) (foldlM noteGroupC ac bs)
 
     noteGroupC :: ac -> NoteGroup pch drn anno -> Mon st ac
     noteGroupC ac (Atom e)      = mf ac e
@@ -103,7 +103,8 @@ genTransform elemT st0 ph =
   where
 
     partT :: Section p1 d1 a1 -> Mon st (Section p2 d2 a2) 
-    partT (Section info bs)        = local (const info) (Section info <$> mapM noteGroupT bs)
+    partT (Section name info bs)        = 
+        local (const info) (Section name info <$> mapM noteGroupT bs)
 
     noteGroupT :: NoteGroup p1 d1 a1 -> Mon st (NoteGroup p2 d2 a2)
     noteGroupT (Atom e)         = Atom <$> elemT e
@@ -324,7 +325,7 @@ foldPitchAnno fn a0 ph = collectPA step a0 () ph
 -- Punctuation
 
 censorPunctuation :: Section pch drn anno -> Section pch drn anno
-censorPunctuation (Section info bs) = Section info $ noteGroups bs
+censorPunctuation (Section name info bs) = Section name info $ noteGroups bs
   where
     noteGroups gs               = catMaybes $ map noteGroup1 gs
 
@@ -345,7 +346,7 @@ censorPunctuation (Section info bs) = Section info $ noteGroups bs
 -- Markup
 
 censorAnno :: Section pch drn anno -> Section pch drn ()
-censorAnno (Section info gs) = Section info (map noteGroup1 gs)
+censorAnno (Section name info gs) = Section name info (map noteGroup1 gs)
   where
     noteGroup1 (Atom e)         = Atom $ changeNote e
     noteGroup1 (Beamed cs)      = Beamed $ map noteGroup1 cs
@@ -362,7 +363,7 @@ censorAnno (Section info gs) = Section info (map noteGroup1 gs)
 -- Skip to rest
 
 skipToRest :: Section pch drn anno -> Section pch drn anno
-skipToRest (Section info gs) = Section info (map noteGroup1 gs)
+skipToRest (Section name info gs) = Section name info (map noteGroup1 gs)
   where
     noteGroup1 (Atom e)         = Atom $ changeSkip e
     noteGroup1 (Beamed xs)      = Beamed $ map noteGroup1 xs

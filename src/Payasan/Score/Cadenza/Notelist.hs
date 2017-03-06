@@ -42,7 +42,8 @@ module Payasan.Score.Cadenza.Notelist
 
 import Payasan.Score.Cadenza.Internal.CadenzaToExternal
 import Payasan.Score.Cadenza.Internal.InTrans
-import Payasan.Score.Cadenza.Internal.Parser
+import Payasan.Score.Cadenza.Internal.LilyPondParser
+import Payasan.Score.Cadenza.Internal.LilyPondUnquote
 import Payasan.Score.Cadenza.Internal.Syntax
 
 
@@ -78,11 +79,10 @@ fromLilyPondWith_Relative pch locals =
 
 
 genOutputAsLilyPond :: LilyPondPipeline p1i a1i p1o a1o
-                    -> String
                     -> StdCadenzaSection2 p1i a1i
                     -> Doc
-genOutputAsLilyPond config name = 
-    outputStep . toGenLySection . beamingRewrite . transCadenzaToExternal name
+genOutputAsLilyPond config = 
+    outputStep . toGenLySection . beamingRewrite . transCadenzaToExternal
   where
     beamingRewrite      = beam_trafo config
     toGenLySection      = out_trafo config
@@ -91,8 +91,8 @@ genOutputAsLilyPond config name =
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> String -> Pitch -> StdCadenzaSection1 anno -> String
-outputAsLilyPond_Relative infos name pch = MAIN.ppRender . genOutputAsLilyPond config name
+                          => ScoreInfo -> Pitch -> StdCadenzaSection1 anno -> String
+outputAsLilyPond_Relative infos pch = MAIN.ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = noBeams
                                , out_trafo   = LY.translateToLyPartOut_Relative pch
@@ -101,7 +101,7 @@ outputAsLilyPond_Relative infos name pch = MAIN.ppRender . genOutputAsLilyPond c
     std_def = LY.LyOutputDef { LY.printPitch = PP.pitch, LY.printAnno = anno }
 
 printAsLilyPond_Relative :: Anno anno 
-                         => ScoreInfo -> String -> Pitch -> StdCadenzaSection1 anno -> IO ()
-printAsLilyPond_Relative globals name pch = 
-    putStrLn . outputAsLilyPond_Relative globals name pch
+                         => ScoreInfo -> Pitch -> StdCadenzaSection1 anno -> IO ()
+printAsLilyPond_Relative globals pch = 
+    putStrLn . outputAsLilyPond_Relative globals pch
 

@@ -103,9 +103,10 @@ data ScoreInfo = ScoreInfo
 
 
   
--- | Note - if we never introspect on Clef except to print in 
--- ABC or LilyPond there is only minor safety to be gained by 
--- an enum rather a String. A String would be user-extensible...
+-- | Consider this DEPRECATED.
+-- Clef should be thought of as a /print annotation/ and not
+-- be introspected upon, thus it would be fine as a String
+-- which is extensible.
 --
 data Clef = TREBLE | BASS
   deriving (Data,Eq,Show,Typeable)
@@ -129,7 +130,11 @@ default_score_info = ScoreInfo
 -- Elementary syntax is intended for transformation, hence we 
 -- put @SectionInfo@ at the start of the phrase
 --
-
+-- TODO - SectionInfo is probably the wrong mechanism to 
+-- annotate sections as some of the infos are already backend 
+-- specific and others are representation specific (e.g.
+-- percussion doesn't have a key).
+--
 data SectionInfo = SectionInfo
     { section_key               :: !Key
     , section_meter             :: !Meter
@@ -138,6 +143,8 @@ data SectionInfo = SectionInfo
     , section_bpm               :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
+
+
 
 
 data Tie = TIE | NO_TIE
@@ -162,9 +169,6 @@ type MeterPattern = [RatDuration]
 
 data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
   deriving (Data,Enum,Eq,Ord,Show,Typeable)
-
-
-
 
 
 

@@ -89,7 +89,8 @@ data LyNoteList_
 
 type LyNoteList = TyDoc LyNoteList_ 
 
-
+-- TODO - not worth the distinction:
+-- LySectionQuote / GenLySectionQuote...
 newtype GenLySectionQuote pch anno = 
     GenLySectionQuote { getGenLySectionQuote :: [Bar pch LyNoteLength anno] } 
     deriving (Data,Eq,Show,Typeable)

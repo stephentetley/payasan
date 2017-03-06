@@ -38,6 +38,8 @@ module Payasan.Score.Cadenza.Internal.Syntax
   , LyCadenzaNoteGroup2
   , LyCadenzaElement2
 
+  , LySectionQuote(..)
+
   , Section(..)
   , NoteGroup(..)
   , Element(..)
@@ -49,7 +51,7 @@ module Payasan.Score.Cadenza.Internal.Syntax
 
   ) where
 
-import Payasan.PSC.LilyPond.Common
+import Payasan.PSC.LilyPond.Common hiding  ( LySectionQuote(..) )
 
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
@@ -61,7 +63,7 @@ import Data.Data
 -- Syntax
 
 
-
+-- DEPRECATED - all aliases are depracted
 type StdCadenzaSection                  = StdCadenzaSection1      ()
 type StdCadenzaNoteGroup                = StdCadenzaNoteGroup1 ()
 type StdCadenzaElement                  = StdCadenzaElement1   ()
@@ -90,6 +92,10 @@ type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
 -- nice modes in LilyPond (percussion etc.).
 
 
+newtype LySectionQuote pch anno = 
+    LySectionQuote { getLySectionQuote :: [NoteGroup pch LyNoteLength anno] } 
+    deriving (Data,Eq,Show,Typeable)
+
 
 -- | Parametric on pitch so we can have the same syntax to 
 -- represent scale degrees, drum notes, etc.
@@ -101,7 +107,8 @@ type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
 -- prevents concatenation it simplifies transformation.
 -- 
 data Section pch drn anno = Section
-    { section_info      :: !SectionInfo
+    { section_name      :: String
+    , section_info      :: !SectionInfo
     , section_groups    :: [NoteGroup pch drn anno] 
     }
   deriving (Data,Eq,Show,Typeable)
