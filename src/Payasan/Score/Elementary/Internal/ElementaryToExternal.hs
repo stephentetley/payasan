@@ -18,7 +18,9 @@
 
 module Payasan.Score.Elementary.Internal.ElementaryToExternal
   (
-    transElementaryToExternal
+    fromElementary
+
+  , transElementaryToExternal           -- old API
   , chord_transElementaryToExternal
   ) where
 
@@ -29,14 +31,18 @@ import qualified Payasan.PSC.Repr.External.Syntax as T
 
 
 
+fromElementary :: Section pch drn anno -> T.Section pch drn anno
+fromElementary = sectionT
+
+
 
 transElementaryToExternal :: forall pch drn anno.
                              Section pch drn anno -> T.Part pch drn anno
-transElementaryToExternal = sectionT
+transElementaryToExternal s1 = T.Part { T.part_sections = [sectionT s1] }
+ 
+sectionT :: Section pch drn anno -> T.Section pch drn anno
+sectionT (Section name info bs)      = T.Section name info $ map barT bs
   where
-    sectionT :: Section pch drn anno -> T.Part pch drn anno
-    sectionT (Section name info bs)      = T.Part [T.Section name info $ map barT bs]
-
 
     barT :: Bar pch drn anno -> T.Bar pch drn anno
     barT (Bar cs)                   = T.Bar $ map noteGroupT cs

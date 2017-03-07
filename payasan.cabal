@@ -71,6 +71,7 @@ library
     Payasan.LilyPond.Percussion.Internal.Base,
     Payasan.LilyPond.Percussion.Internal.Output,
     Payasan.LilyPond.Percussion.Internal.Parser,
+    Payasan.LilyPond.Percussion.Internal.Unquote,
     Payasan.LilyPond.Percussion.Internal.PitchTrans,
     Payasan.Models.Chords.Base,
     Payasan.Models.Lyrics.Internal.Base,

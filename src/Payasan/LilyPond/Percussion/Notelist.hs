@@ -20,7 +20,7 @@ module Payasan.LilyPond.Percussion.Notelist
     module Payasan.PSC.Old.Shell
 
   , StdDrumPart
-  , drums
+  , drummode
 
   , ScoreInfo(..)
   , default_score_info
@@ -51,7 +51,7 @@ module Payasan.LilyPond.Percussion.Notelist
 
 import Payasan.LilyPond.Percussion.Internal.Base
 import Payasan.LilyPond.Percussion.Internal.Output (drumsOutput)
-import Payasan.LilyPond.Percussion.Internal.Parser (drums)  -- to re-export
+import Payasan.LilyPond.Percussion.Internal.Unquote (drummode)  -- to re-export
 import qualified Payasan.LilyPond.Percussion.Internal.PitchTrans    as PERC
 
 import qualified Payasan.PSC.Repr.External.AddBeams           as BEAM

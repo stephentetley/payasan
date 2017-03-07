@@ -17,9 +17,8 @@
 
 module Payasan.LilyPond.Percussion.Internal.Parser
   (
-    drums
+    parseLyDrums
   , makeDrumsParser
-
   ) where
 
 import Payasan.LilyPond.Percussion.Internal.Base
@@ -33,27 +32,6 @@ import Payasan.PSC.LilyPond.Lexer
 import Text.Parsec                              -- package: parsec
 
 
-import Language.Haskell.TH.Quote
-
-
-
---------------------------------------------------------------------------------
--- Quasiquote
-
--- Design note - use the lilypond mode command name @\drums\ as the 
--- quasiquoter name.
-
-drums :: QuasiQuoter
-drums = QuasiQuoter
-    { quoteExp = \s -> case parseLyDrums s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
-
-
 --------------------------------------------------------------------------------
 -- Parser
 
@@ -62,6 +40,8 @@ parseLyDrums :: String -> Either ParseError (LySectionQuote DrumPitch Accent)
 parseLyDrums = parseLySectionQuote (makeDrumsDef accent)
 
 
+-- | Expose this to allow custom accents...
+--
 makeDrumsParser :: LyParser anno -> LyParser (LySectionQuote DrumPitch anno)
 makeDrumsParser pAnno = makeLyParser (makeDrumsDef pAnno)
 

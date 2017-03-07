@@ -43,11 +43,21 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 import Data.Data
 
 
+
+-- Drums are a specialization of External - they must support 
+-- chords (for simultaneous drom notes).
+--
+-- Drums should have output to LilyPond and MIDI. There are 
+-- potentially several ways to print drums in LilyPond. 
+-- 
 type StdDrumPart        = EXT.Part  DrumPitch Duration     Accent
 type LyDrumPart         = EXT.Part  DrumPitch LyNoteLength Accent
 
+
+
 data Accent = ACCENT | NO_ACCENT
   deriving (Data,Eq,Ord,Show,Typeable)
+
 
 data DrumPitch = Acousticbassdrum
                | Bassdrum
