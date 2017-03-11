@@ -16,8 +16,7 @@
 
 module Payasan.LilyPond.Chordmode.Internal.Parser
   ( 
-     chordmode
-
+     parseChordMode
   ) where
 
 import Payasan.LilyPond.Chordmode.Internal.Base
@@ -29,19 +28,6 @@ import Payasan.PSC.LilyPond.Lexer
 
 import Text.Parsec                              -- package: parsec
 
-import Language.Haskell.TH.Quote
-
-
-
-chordmode :: QuasiQuoter
-chordmode = QuasiQuoter
-    { quoteExp = \s -> case parseChordMode s of
-                         Left err -> error $ show err
-                         Right xs -> dataToExpQ (const Nothing) xs
-    , quoteType = \_ -> error "QQ - no Score Type"
-    , quoteDec  = \_ -> error "QQ - no Score Decl"
-    , quotePat  = \_ -> error "QQ - no Score Patt" 
-    } 
 
 
 

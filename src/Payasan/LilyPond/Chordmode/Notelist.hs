@@ -53,11 +53,10 @@ module Payasan.LilyPond.Chordmode.Notelist
   ) where
 
 import Payasan.LilyPond.Chordmode.Internal.Base
-import Payasan.LilyPond.Chordmode.Internal.InTrans
 import Payasan.LilyPond.Chordmode.Internal.Interpret
 import Payasan.LilyPond.Chordmode.Internal.Output
 import Payasan.LilyPond.Chordmode.Internal.OutTrans
-import Payasan.LilyPond.Chordmode.Internal.Parser (chordmode)  -- to re-export
+import Payasan.LilyPond.Chordmode.Internal.Unquote
 
 
 import qualified Payasan.Score.Elementary.Internal.ElementaryToExternal as ELEM
