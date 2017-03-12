@@ -50,7 +50,7 @@ parseABCPart = runParser (fullParseABC qsection) () ""
 
 
 qsection :: ABCParser ABCSectionQuote
-qsection = (\bs -> ABCSectionQuote { getABCSection = bs}) <$> bars
+qsection = (\bs -> ABCSectionQuote { getABCSectionQuote = bs}) <$> bars
 
 bars :: ABCParser [Bar ABCPitch ABCNoteLength ()]
 bars = sepBy bar barline

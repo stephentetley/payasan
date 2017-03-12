@@ -19,6 +19,7 @@ module Payasan.LilyPond.FretDiagram.Internal.Base
   ( 
 
     FretDiagramSection
+  , FretDiagramQuote(..)
   , FretDiagram(..)
   , Fingering(..)
   , BarreIndicator(..)
@@ -46,7 +47,25 @@ import Data.Data
 import Data.List (sortBy)
 
 
+-- Note
+-- Fret diagrams are (markup) annotations rather than a 
+-- specialized score type.
+--
+-- We might want to define a model that only uses chords / 
+-- fret diagrams. Really @FretDiagramSection@ should live in
+-- this model.
+   
 type FretDiagramSection = Section [Pitch] Duration FretDiagram
+
+
+
+
+data FretDiagramQuote = FretDiagramQuote 
+    {  fdq_opt_barre     :: Maybe BarreIndicator
+     , fdq_fingerings    :: [Fingering]
+     }
+  deriving (Data,Eq,Show,Typeable)
+
 
 
 data FretDiagram = FretDiagram

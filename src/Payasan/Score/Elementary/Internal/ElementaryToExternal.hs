@@ -66,10 +66,10 @@ sectionT (Section name info bs)      = T.Section name info $ map barT bs
 chord_transElementaryToExternal :: forall pch drn anno. 
                                    Section [pch] drn anno
                                 -> T.Part pch drn anno
-chord_transElementaryToExternal = sectionT
+chord_transElementaryToExternal = sectionT1
   where
-    sectionT :: Section [pch] drn anno -> T.Part pch drn anno
-    sectionT (Section name info bs) = T.Part [T.Section name info $ map barT bs]
+    sectionT1 :: Section [pch] drn anno -> T.Part pch drn anno
+    sectionT1 (Section name info bs) = T.Part [T.Section name info $ map barT bs]
 
 
     barT :: Bar [pch] drn anno -> T.Bar pch drn anno

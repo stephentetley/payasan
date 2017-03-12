@@ -38,7 +38,6 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-import Text.Parsec                              -- package: parsec
 
 import Language.Haskell.TH.Quote                -- package: template-haskell
 

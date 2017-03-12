@@ -46,8 +46,8 @@ oSection def (Section { section_events = es })  = map (oEvent def) es
 
 
 oEvent :: LeafOutputEvent onset pch drn anno -> Event onset drn anno -> Doc
-oEvent def (Event ot d a)    = error "TODO"
-    -- pp_onset def ot <++> (pp_event def) pch drn anno
+oEvent _def (Event {})    = error "TODO oEvent"
+    -- pp_onset def ot <++> (pp_event def) pch d a
 
 
 

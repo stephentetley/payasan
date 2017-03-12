@@ -35,8 +35,6 @@ import Payasan.PSC.LilyPond.Base ( LyPitch )
 import qualified Payasan.PSC.LilyPond.ExternalParser    as P
 import Payasan.PSC.LilyPond.ExternalParser (LyParserDef(..), pitch, noAnno)
 
-import Payasan.PSC.Base.SyntaxCommon
-
 
 import Text.Parsec                              -- package: parsec
 

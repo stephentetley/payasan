@@ -32,7 +32,6 @@ import Payasan.PSC.Base.SyntaxCommon
 import Text.Parsec                              -- package: parsec
 
 
-import Language.Haskell.TH.Quote
 
 import Data.Char (isSpace)
 

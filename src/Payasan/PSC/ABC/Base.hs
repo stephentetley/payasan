@@ -73,7 +73,7 @@ type ABCNoteList = TyDoc ABCNoteList_
 
 
 newtype ABCSectionQuote = 
-    ABCSectionQuote { getABCSection :: [Bar ABCPitch ABCNoteLength ()] } 
+    ABCSectionQuote { getABCSectionQuote :: [Bar ABCPitch ABCNoteLength ()] } 
     deriving (Data,Eq,Show,Typeable)
 
 

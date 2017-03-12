@@ -47,7 +47,6 @@ import Payasan.Base.Pitch
 import Payasan.Base.Diatonic
 
 
-import Control.Monad.State              -- package: mtl
 
 -- Simple metrics
 
