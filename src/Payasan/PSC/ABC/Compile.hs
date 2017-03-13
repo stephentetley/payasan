@@ -38,7 +38,6 @@ import Payasan.PSC.ABC.OutTrans
 
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
-import Payasan.PSC.Repr.External.Syntax
 import qualified Payasan.PSC.Repr.External.Syntax as EXT
 
 import Payasan.Base.Duration
@@ -80,9 +79,8 @@ makePartCompiler lib = PartCompiler
   where
     cols          = bars_per_line lib
     
-    compileP part = let info    = initialSectionInfo part
-                        abc_ext = specializeToABCExternal part
-                        out     = makeABCNoteList cols info abc_ext
+    compileP part = let abc_ext = specializeToABCExternal part
+                        out     = makeABCNoteList cols abc_ext
                     in out
 
 

@@ -83,6 +83,7 @@ library
     Payasan.PSC.ABC.Compile,
     Payasan.PSC.ABC.ExternalUnquote,
     Payasan.PSC.ABC.ExternalParser,
+    Payasan.PSC.ABC.IRSimpleDoc,
     Payasan.PSC.ABC.Lexer,
     Payasan.PSC.ABC.Output,
     Payasan.PSC.ABC.OutTrans,

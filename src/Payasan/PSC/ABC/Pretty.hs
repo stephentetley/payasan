@@ -59,6 +59,10 @@ import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 field :: Char -> Doc -> Doc
 field c d = char c <> colon <> d
 
+
+-- | Midtune fields are printed in their own set of square
+-- brackets. 
+--
 midtuneField :: Char -> Doc -> Doc
 midtuneField c d = char '[' <> field c d <> char ']'
 

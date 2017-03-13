@@ -37,7 +37,7 @@ import Language.Haskell.TH.Quote
 
 fret_diagram :: QuasiQuoter
 fret_diagram = QuasiQuoter
-    { quoteExp = \s -> case parseFretDiagram s of
+    { quoteExp = \s -> case parseFretDiagramQuote s of
                          Left err -> error $ show err
                          Right xs -> dataToExpQ (const Nothing) xs
     , quoteType = \_ -> error "QQ - no Score Type"
@@ -47,13 +47,12 @@ fret_diagram = QuasiQuoter
 
 
 
-parseFretDiagram :: String -> Either ParseError FretDiagram
-parseFretDiagram = runParser (fullParseLy fretDiagram) () ""
+parseFretDiagramQuote :: String -> Either ParseError FretDiagramQuote
+parseFretDiagramQuote = runParser (fullParseLy fretDiagram) () ""
 
-fretDiagram :: LyParser FretDiagram
-fretDiagram = (\a b -> FretDiagram { fd_name       = ""
-                                   , fd_opt_barre  = a 
-                                   , fd_fingerings = b }) 
+fretDiagram :: LyParser FretDiagramQuote
+fretDiagram = (\a b -> FretDiagramQuote { fdq_opt_barre  = a 
+                                        , fdq_fingerings = b }) 
           <$> (whiteSpace *> optionMaybe barre) <*> many1 fingering
 
 fingering :: LyParser Fingering

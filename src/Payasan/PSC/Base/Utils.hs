@@ -30,6 +30,7 @@ module Payasan.PSC.Base.Utils
   , withString
   , (?+$)
   , ($+?)
+  , aggregateMaybes
   , punctuateSepEnd
   , ppTable
 
@@ -54,7 +55,7 @@ import Text.PrettyPrint.HughesPJ                -- package: pretty
 
 import Control.Monad.Identity                   -- package: mtl
 import Data.Char (isSpace)
-
+import Data.Maybe (catMaybes)
 
 --------------------------------------------------------------------------------
 -- Parsing
@@ -121,6 +122,16 @@ infixr 5 $+?
 ($+?) :: Doc -> Maybe Doc -> Doc
 ($+?) d1 (Nothing) = d1
 ($+?) d1 (Just d2) = d1 $+$ d2
+
+
+aggregateMaybes :: (Doc -> Doc -> Doc) -> [Maybe Doc] -> Maybe Doc 
+aggregateMaybes op = stepA . catMaybes 
+  where 
+    stepA (d:ds)    = Just $ stepB d ds
+    stepA []        = Nothing
+
+    stepB d1 (d2:ds) = d1 `op` (stepB d2 ds)
+    stepB d1 []      = d1
 
 
     

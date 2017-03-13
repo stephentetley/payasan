@@ -33,7 +33,7 @@ module Payasan.PSC.Repr.External.Syntax
   , sizeNoteGroup
   , initialSectionInfo
 
-  , extractSectionInfos
+  , sectionInfos
 
   ) where
 
@@ -166,8 +166,8 @@ initialSectionInfo (Part [])    = default_section_info
 initialSectionInfo (Part (s:_)) = section_info s
 
 
-extractSectionInfos :: Part pch drn anno -> [SectionInfo]
-extractSectionInfos = map section_info . part_sections
+sectionInfos :: Part pch drn anno -> [SectionInfo]
+sectionInfos = map section_info . part_sections
 
 
 

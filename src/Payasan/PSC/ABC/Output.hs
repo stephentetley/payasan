@@ -29,6 +29,7 @@ module Payasan.PSC.ABC.Output
   ) where
 
 import Payasan.PSC.ABC.Base
+import qualified Payasan.PSC.ABC.IRSimpleDoc as DOC
 import Payasan.PSC.ABC.Pretty
 
 import Payasan.PSC.Repr.External.Syntax
@@ -36,49 +37,19 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
 
-import Payasan.Base.Basis
-import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode )       -- package: pretty
 
-import Control.Monad.State
 
 type CatOp = Doc -> Doc -> Doc
 
 
-type Mon a = State SectionInfo a
 
-
-
-
-
-deltaMetrical :: SectionInfo -> Mon (Maybe (Meter,UnitNoteLength))
-deltaMetrical (SectionInfo { section_meter = m1
-                           , section_unit_note_len = u1 }) = 
-    fn <$> get
-  where
-    fn prev 
-        | section_meter prev == m1 && section_unit_note_len prev == u1 = Nothing
-        | otherwise        = Just (m1,u1)
-
-
-deltaKey :: SectionInfo -> Mon (Maybe Key)
-deltaKey (SectionInfo { section_key = k1 }) = 
-    fn <$> get
-  where
-    fn prev 
-        | section_key prev == k1 = Nothing
-        | otherwise           = Just k1
 
 
 --------------------------------------------------------------------------------
 
 -- ABC can handle annotations - it simply ignores them.
-
-
-type ABCPartOut anno            = Part        ABCPitch ABCNoteLength anno
-type ABCSectionOut anno         = Section     ABCPitch ABCNoteLength anno
-type ABCBarOut anno             = Bar         ABCPitch ABCNoteLength anno
 
 
 -- Doc fragments use a common (phantom) type.
@@ -123,45 +94,94 @@ makeABCHeader title clefname locals =
     key_clef = (key $ section_key locals) <+> (clef clefname)
 
 
--- | Note that line count for ABC output is "sketchy" - we 
--- might expect users to hand-edit formatting for final printing 
--- if bars do not fit nicely in 3s or 4s (no need to add 
--- advanced capabilities to PSC).
 --
-makeABCNoteList :: Int -> SectionInfo -> ABCPartOut anno -> ABCNoteList
-makeABCNoteList cols info (Part xs) = 
-    evalState (TyDoc <$> step xs) info
-  where
-    step []       = return empty
-    step [s]      = renderSectionM cols (text "|]") s
-    step (s:ss)   = do { d1 <- renderSectionM cols (char '|') s
-                       ; ds <- step ss
-                       ; return (d1 $+$ ds)
-                       }
-
--- | Midtune fields are printed in square brackets so they don't
--- need a separator (is this true?).
--- 
--- TODO - midtune fields need improving for clarity.
+-- ABC demands X field is first in header.
+-- ABC recommends T field is second in header
+-- ABC demands K is last field in header (ABCPlus manual p11)
+-- ABC recommends M field before L
 --
-renderSectionM :: Int -> Doc -> ABCSectionOut anno -> Mon Doc
-renderSectionM cols end (Section { section_info = info 
-                                 , section_bars = cs }) = 
-    do { dkey    <- deltaKey info
-       ; dmeter  <- deltaMetrical info
-       ; let ans = ppSection cols end $ map renderBar cs 
-       ; put info
-       ; return $ prefixM dmeter $ prefixK dkey $ ans
-       }
-  where
-    prefixK Nothing       = (empty <>)
-    prefixK (Just k)      = (midtuneField 'K' (key k) <+>)
-    prefixM Nothing       = (empty <>)
-    prefixM (Just (m,u))  = let doc = ( midtuneField 'M' (meter m) 
-                                       <> midtuneField 'L' (unitNoteLength u))
-                            in (doc <+>)
+-- Midtune fields are printed in square brackets, each midtune 
+-- field is printed in its own set of square brackets.
+--
 
-renderBar :: ABCBarOut anno -> Doc
+
+makeABCNoteList :: Int -> Part ABCPitch ABCNoteLength anno -> ABCNoteList
+makeABCNoteList cols part = renderDocPart cols $ toIRSimpleDoc part
+
+
+toIRSimpleDoc :: Part ABCPitch ABCNoteLength anno -> DOC.Part a
+toIRSimpleDoc part@(Part { part_sections = ss}) = 
+    DOC.Part { DOC.part_sections = zipWith sectionT prefixes ss }
+  where
+    prefixes = midtuneFields part
+
+    sectionT prefix (Section { section_name = name
+                             , section_bars = bars }) = 
+            DOC.Section { DOC.section_name   = name
+                        , DOC.section_header = prefix
+                        , DOC.section_bars   = map barT bars }
+    
+    barT bar = DOC.Bar { DOC.bar_content = renderBar bar }
+
+
+-- TODO assembleABC provides the wrong interface, when it is 
+-- improved use headerSuffix...
+
+headerSuffix :: Part pch drn anno -> Doc
+headerSuffix (Part { part_sections = ss }) = case ss of
+    [] -> empty_header
+    (s1:_) -> let info = section_info s1
+                  d1   = field 'M' (meter $ section_meter info)
+                  d2   = field 'L' (unitNoteLength $ section_unit_note_len info)
+                  d3   = field 'K' (key $ section_key info)
+              in d1 $+$ d2 $+$ d3
+
+
+-- | Just 'K' = c major
+--
+empty_header :: Doc
+empty_header = field 'K' (key c_maj)
+
+
+-- | The first (Maybe Doc) is always Nothing - this is because
+-- midtune fields represent deltas / changes to the initial 
+-- context given in the header.
+--
+-- A Nothing represents no changes / no midtune fields to print.
+--
+midtuneFields :: Part pch drn anno -> [Maybe Doc]
+midtuneFields part = case sectionInfos part of
+    [] -> []
+    (s:ss) -> Nothing : step s ss
+  where
+    step _ []       = []
+    step i (s:ss)   = let d1 = meterChange i s
+                          d2 = unitNoteLenChange i s
+                          d3 = keyChange i s
+                      in aggregateMaybes (<+>) [d1,d2,d3] : step s ss
+
+
+keyChange :: SectionInfo -> SectionInfo -> Maybe Doc
+keyChange (SectionInfo { section_key = old }) 
+          (SectionInfo { section_key = new }) = 
+    if new /= old then Just $ midtuneField 'K' (key new) 
+                  else Nothing
+
+meterChange :: SectionInfo -> SectionInfo -> Maybe Doc
+meterChange (SectionInfo { section_meter = old }) 
+            (SectionInfo { section_meter = new }) = 
+    if new /= old then Just $ midtuneField 'M' (meter new) 
+                  else Nothing
+
+unitNoteLenChange :: SectionInfo -> SectionInfo -> Maybe Doc
+unitNoteLenChange (SectionInfo { section_unit_note_len = old }) 
+                  (SectionInfo { section_unit_note_len = new }) = 
+    if new /= old then Just $ midtuneField 'L' (unitNoteLength new) 
+                  else Nothing
+
+
+
+renderBar :: Bar ABCPitch ABCNoteLength anno -> Doc
 renderBar (Bar { note_groups = ns }) = 
     let op = (<+>) in noteGroupList op ns
   where
@@ -178,6 +198,25 @@ renderBar (Bar { note_groups = ns }) =
     element op (Chord ps d _ t)     = tied op (chord ps d) t
     element _  (Graces xs)          = graceForm $ map (\(Grace1 p d) -> note p d) xs
     element _  (Punctuation {})     = empty
+
+
+-- | For the time being sections start on a new staff...
+--
+renderDocPart :: Int -> DOC.Part a -> ABCNoteList
+renderDocPart cols (DOC.Part { DOC.part_sections = ss }) = 
+    TyDoc $ sectionsD ss
+  where
+    sectionsD []     = empty
+    sectionsD [d]    = sectionD (text "|]") d
+    sectionsD (d:ds) = sectionD (text "|") d $+$ sectionsD ds
+
+    sectionD end (DOC.Section { DOC.section_header = mb_prefix 
+                              , DOC.section_bars   = dbars }) = 
+          let dbars1 = map DOC.bar_content dbars 
+              body   = ppSection cols end dbars1
+          in case mb_prefix of
+                Nothing -> body
+                Just doc -> doc <+> body
 
 
 
@@ -198,4 +237,5 @@ ppSection :: Int -> Doc -> [Doc] -> Doc
 ppSection cols end bars = 
     ppTable cols (<+>) $ punctuateSepEnd (char '|') end bars
     
-    
+
+
