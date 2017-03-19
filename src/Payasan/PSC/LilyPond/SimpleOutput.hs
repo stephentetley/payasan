@@ -25,7 +25,6 @@ module Payasan.PSC.LilyPond.SimpleOutput
 
   , assembleLy
 
-  , stateZero
   , simpleScore_Relative
   , simpleScore_Absolute
 
@@ -55,68 +54,7 @@ import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ        -- package: pretty
 
-import Control.Monad.State
 
-
-type Mon a = State St a
-
--- Meter pattern (SectionInfo) is irrelevant at this stage.
--- Only care about Key and Meter
-
-data St = St 
-    { prev_key          :: !Key
-    , prev_meter        :: !Meter
-    }
-
-
-
-
-stateZero :: SectionInfo -> St
-stateZero info = 
-    St { prev_key       = section_key info
-       , prev_meter     = section_meter info
-       }
-
-
-setInfo :: SectionInfo -> Mon () 
-setInfo info = modify (\s -> s { prev_key = section_key info
-                               , prev_meter = section_meter info })
-
-
--- | Always returns Unmetered even if prev was Unmetered
-deltaMetrical :: SectionInfo -> Mon (Maybe Meter)
-deltaMetrical (SectionInfo { section_meter = m1 }) = 
-    fn <$> gets prev_meter
-  where
-    fn prev 
-        | prev == m1 && m1 /= Unmetered   = Nothing
-        | otherwise                       = Just m1
-
-
-
-deltaKey :: SectionInfo -> Mon (Maybe Key)
-deltaKey (SectionInfo { section_key = k1 }) = 
-    fn <$> gets prev_key
-  where
-    fn prev 
-        | prev == k1    = Nothing
-        | otherwise     = Just k1
-
-
-deltaKeySig :: SectionInfo -> Mon (Maybe Doc)
-deltaKeySig info = fmap key_ <$> deltaKey info
-
-
--- Should only coalesce proper time signatures not cadenzas
-
-deltaTimeSig :: SectionInfo -> Mon (Maybe Doc, Maybe Doc)
-deltaTimeSig info = fn <$> deltaMetrical info
-  where
-    fn Nothing             = (Nothing, Nothing)
-    fn (Just (Unmetered))  = (Just cadenzaOn_, Just cadenzaOff_)
-    fn (Just (Metered t))  = (Just $ time_ t, Nothing)
-
---------------------------------------------------------------------------------
 
 
 data LyOutputDef pch anno = LyOutputDef 
@@ -135,7 +73,9 @@ makeLyHeader vstring name =
                  block (Just $ command "header") (title ss)
 
 
-
+-- Probably wrong - separate notions of header and notelist
+-- is looking mistaken...
+--
 assembleLy :: LyHeader -> LyNoteList -> Doc
 assembleLy header body = extractDoc header $+$ extractDoc body
     
@@ -196,7 +136,7 @@ simpleVoice_Relative def pch ph =
   where
     local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = extractDoc $ lilypondNoteList def local1 ph
+    notes           = extractDoc $ makeLyNoteList def ph
 
 
 simpleVoice_Absolute :: LyOutputDef pch anno
@@ -206,7 +146,7 @@ simpleVoice_Absolute def ph =
   where
     local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = extractDoc $ lilypondNoteList def local1 ph
+    notes           = extractDoc $ makeLyNoteList def ph
 
 
 -- NOTE 
@@ -234,60 +174,23 @@ absoluteCtx :: DOC.ContextDoc
 absoluteCtx = DOC.ContextDoc $ \d -> absolute_ $+$ d
 
 
--- TODO working towards an API that provides a (simple) "makeDoc"...
---
 makeLyNoteList :: LyOutputDef pch anno 
-               -> SectionInfo
                -> Part pch LyNoteLength anno
                -> LyNoteList
-makeLyNoteList def info ph =
-    TyDoc $ evalState (renderLyPartM def ph) (stateZero info)
+makeLyNoteList lib part =
+    TyDoc $ renderDocPart $ toIRSimpleDoc lib part
 
-
--- | Pitch should be \"context free\" at this point.
---
--- Design note - we only want to write this once.
--- Should allow different pch (standard, drum note, etc.)
--- to be printed. 
---
 lilypondNoteList :: LyOutputDef pch anno 
                  -> SectionInfo 
                  -> Part pch LyNoteLength anno
                  -> LyNoteList
-lilypondNoteList def prefix_locals ph = 
-    TyDoc $ evalState (renderLyPartM def ph) (stateZero prefix_locals)
+lilypondNoteList lib _ part = makeLyNoteList lib part
 
 
-
-
-
-renderLyPartM :: LyOutputDef pch anno 
-              -> Part pch LyNoteLength anno 
-              -> Mon Doc
-renderLyPartM lib (Part { part_sections = xs }) = 
-    vsep <$> mapM (renderSectionM lib) xs
-
-
--- Note - delta key implies standard pitch 
--- (i.e. not drum notes, neume names, etc...)
---
--- Should print section name first in a comment...
--- 
-renderSectionM :: LyOutputDef pch anno 
-               -> Section pch LyNoteLength anno 
-               -> Mon Doc
-renderSectionM lib (Section { section_info = locals
-                            , section_bars = bs }) =
-    do { dkeysig               <- deltaKeySig locals
-       ; (dtime,dtimestop)     <- deltaTimeSig locals
-       ; let ans = ppSection (bar_ "\\") $ map (renderBar lib) bs
-       ; setInfo locals
-       ; return (dtime ?+$ dkeysig ?+$ (ans $+? dtimestop))
-       }
 
 
 toIRSimpleDoc :: LyOutputDef pch anno -> Part pch LyNoteLength anno -> DOC.Part a
-toIRSimpleDoc lib part@(Part { part_sections = ss}) = 
+toIRSimpleDoc lib (Part { part_sections = ss}) = 
     DOC.Part { DOC.part_sections = map sectionT ss }
   where
     sectionT (Section { section_name = name
@@ -342,9 +245,8 @@ ppSection end bars = fn bars
     fn (b:bs)   = b <+> char '|' $+$ fn bs
 
 
-renderDocPart :: DOC.Part a -> LyNoteList
-renderDocPart (DOC.Part { DOC.part_sections = ss }) = 
-    TyDoc $ sectionsD ss
+renderDocPart :: DOC.Part a -> Doc
+renderDocPart (DOC.Part { DOC.part_sections = ss }) = sectionsD ss
   where
     sectionsD []     = empty
     sectionsD [d]    = sectionD (text "|]") d

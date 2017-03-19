@@ -106,10 +106,9 @@ makePartCompiler lib = PartCompiler
                             , printAnno  = pAnno lib }
 
     compileP :: Part ext_pch Duration anno -> LyNoteList
-    compileP part = let info    = initialSectionInfo part
-                        ext1    = rebeam part
+    compileP part = let ext1    = rebeam part
                         extly   = transformLyNoteLength $ pchTrafo ext1
-                        out     = makeLyNoteList outDef info extly
+                        out     = makeLyNoteList outDef extly
                     in out
 
 
