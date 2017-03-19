@@ -44,6 +44,7 @@ import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.Pretty
 
 import Payasan.PSC.Repr.External.Syntax
+import qualified Payasan.PSC.LilyPond.IRSimpleDoc as DOC
 
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.PSC.Base.Utils
@@ -208,8 +209,29 @@ simpleVoice_Absolute def ph =
     notes           = extractDoc $ lilypondNoteList def local1 ph
 
 
+-- NOTE 
+-- Delta changes might not be the best approach for LilyPond.
+-- Might be better to have each section print its context, even
+-- if there are no changes.
+--
 
 
+meterCtx :: Meter -> DOC.ContextDoc
+meterCtx (Unmetered) = 
+    DOC.ContextDoc $ \d -> cadenzaOn_ $+$ d $+$ cadenzaOff_
+    
+meterCtx (Metered t) = 
+    DOC.ContextDoc $ \d -> time_ t $+$ d
+
+keyCtx :: Key -> DOC.ContextDoc
+keyCtx k = DOC.ContextDoc $ \d -> key_ k $+$ d
+    
+
+relativeCtx :: Pitch -> DOC.ContextDoc
+relativeCtx p = DOC.ContextDoc $ \d -> block (Just $ relative_ p) d
+
+absoluteCtx :: DOC.ContextDoc
+absoluteCtx = DOC.ContextDoc $ \d -> absolute_ $+$ d
 
 
 -- TODO working towards an API that provides a (simple) "makeDoc"...
@@ -237,6 +259,8 @@ lilypondNoteList def prefix_locals ph =
 
 
 
+
+
 renderLyPartM :: LyOutputDef pch anno 
               -> Part pch LyNoteLength anno 
               -> Mon Doc
@@ -260,6 +284,26 @@ renderSectionM lib (Section { section_info = locals
        ; setInfo locals
        ; return (dtime ?+$ dkeysig ?+$ (ans $+? dtimestop))
        }
+
+
+toIRSimpleDoc :: LyOutputDef pch anno -> Part pch LyNoteLength anno -> DOC.Part a
+toIRSimpleDoc lib part@(Part { part_sections = ss}) = 
+    DOC.Part { DOC.part_sections = map sectionT ss }
+  where
+    sectionT (Section { section_name = name
+                      , section_info = info
+                      , section_bars = bars }) = 
+            DOC.Section { DOC.section_name    = name
+                        , DOC.section_context = makeContext info
+                        , DOC.section_bars    = map barT bars }
+    
+    barT bar = DOC.Bar { DOC.bar_content = renderBar lib bar }
+
+
+makeContext :: SectionInfo -> DOC.ContextDoc
+makeContext (SectionInfo { section_meter = m1
+                         , section_key   = k1 }) = 
+    meterCtx m1 `mappend` keyCtx k1
 
 
 -- | Bars are not terminated...
@@ -296,3 +340,20 @@ ppSection end bars = fn bars
     fn []       = empty
     fn [b]      = b <+> end
     fn (b:bs)   = b <+> char '|' $+$ fn bs
+
+
+renderDocPart :: DOC.Part a -> LyNoteList
+renderDocPart (DOC.Part { DOC.part_sections = ss }) = 
+    TyDoc $ sectionsD ss
+  where
+    sectionsD []     = empty
+    sectionsD [d]    = sectionD (text "|]") d
+    sectionsD (d:ds) = sectionD (text "|")  d $+$ sectionsD ds
+
+    sectionD end (DOC.Section { DOC.section_context = ctx
+                              , DOC.section_bars    = dbars }) = 
+          let dbars1 = map DOC.bar_content dbars 
+              body   = ppSection end dbars1
+          in DOC.getContext ctx $ body
+
+

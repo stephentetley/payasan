@@ -67,13 +67,16 @@ type ABCHeader = TyDoc ABCHeader_
 
 
 
-
-
 -- | "Document assembly" is so simple that it does not need to 
 -- run in a monad.
 --
 assembleABC :: ABCHeader -> ABCNoteList -> Doc
 assembleABC header body = extractDoc header $+$ extractDoc body
+
+
+
+-- makeABCHeader is wrong - don't expose SectionInfo
+
 
     
 -- | Note X field must be first K field should be last -
