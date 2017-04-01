@@ -19,7 +19,7 @@ module Payasan.Models.Lyrics.Internal.Base
   (
     LyricsSection 
   , Stress(..)
-  , outputAsLilyPond
+--  , outputAsLilyPond
   , lyrics
 
   , pStress
@@ -72,10 +72,11 @@ stressUse SECONDARY     = above $ command "secondary"
 stressUse UNSTRESSED    = above $ command "unstressed"
 stressUse BLANK         = empty
 
+{-
 
 outputAsLilyPond :: ScoreInfo -> LyricsSection -> String
 outputAsLilyPond = LY.outputAsLilyPondDU (AnnoDU { defs = stressDefs, use = stressUse })
-
+-}
 
 
 lyrics :: QuasiQuoter

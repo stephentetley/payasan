@@ -246,7 +246,8 @@ absolute_ = command "absolute"
 
 
 clef_ :: String -> Doc
-clef_ ss        = command "clef" <+> text ss
+clef_ ss                = command "clef" <+> text ss
+
 
 key_ :: Key -> Doc
 key_ (Key ps m)         = command "key" <+> pitchName ps <+> mode_ m

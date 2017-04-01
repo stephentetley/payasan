@@ -87,7 +87,7 @@ instance Pretty Syllable where
   pPrint (Syllable s)   = text s
 
 
-inTrans :: ScoreInfo -> LyLyricSection1 anno -> LyricSection1 anno
+inTrans :: LyLyricSection1 anno -> LyricSection1 anno
 inTrans _ = error "TODO" -- trafoDuration
 
 

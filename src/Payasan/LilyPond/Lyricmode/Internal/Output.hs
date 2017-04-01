@@ -38,27 +38,29 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 lyricsScore :: Anno a1 
-            => ScoreInfo 
+            => String
+            -> String 
             -> EXT.Part LyPitch LyNoteLength a1 
             -> EXT.Part Syllable LyNoteLength a2 
             -> Doc
-lyricsScore globals ph1 ph2 = 
+lyricsScore lyversion title ph1 ph2 = 
         header $+$ simultaneous1 (rhythm $+$ lyrics)
   where
-    header          = scoreHeader globals
+    header          = scoreHeader lyversion title
     rhythm          = rhythmVoice anno ph1
     lyrics          = lyricsVoice ph2
                       
 
 lyricsScoreDU :: AnnoDU a
-              -> ScoreInfo 
+              -> String 
+              -> String
               -> EXT.Part LyPitch LyNoteLength a
               -> EXT.Part Syllable LyNoteLength az
               -> Doc
-lyricsScoreDU annos globals ph1 ph2 = 
+lyricsScoreDU annos lyversion title ph1 ph2 = 
         header $+$ defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
   where
-    header          = scoreHeader globals
+    header          = scoreHeader lyversion title
     rhythm          = rhythmVoice (use annos) ph1
     lyrics          = lyricsVoice ph2
                       

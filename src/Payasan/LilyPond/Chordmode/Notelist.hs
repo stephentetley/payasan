@@ -22,8 +22,6 @@ module Payasan.LilyPond.Chordmode.Notelist
   , StdChordSection
   , chordmode
 
-  , ScoreInfo(..)
-  , default_score_info
 
   , SectionInfo(..)
   , UnitNoteLength(..)
@@ -32,6 +30,8 @@ module Payasan.LilyPond.Chordmode.Notelist
 
   , fromLilyPond
   , fromLilyPondWith
+
+{-
 
   , outputAsLilyPond
   , printAsLilyPond
@@ -48,7 +48,7 @@ module Payasan.LilyPond.Chordmode.Notelist
 
   , outputAsLinear
   , printAsLinear
-
+-}
 
   ) where
 
@@ -95,6 +95,7 @@ fromLilyPondWith :: SectionInfo
 fromLilyPondWith locals = translateInput . ELEM.pushSectionInfo locals
 
 
+{-
 
 outputAsLilyPond :: ScoreInfo -> StdChordSection -> String
 outputAsLilyPond globals = 
@@ -128,6 +129,8 @@ printAsRhythmicMarkup globals name =
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
 
+-}
+
 
 {-
 writeAsMIDI :: FilePath -> StdChordSection -> IO ()
@@ -146,6 +149,7 @@ midiTrans = ELEM.chord_transElementaryToExternal "noname" . chordTrans
 chordTrans :: StdChordSection -> ELEM.Section [Pitch] Duration ()
 chordTrans = ELEM.mapPitch buildNotes
 
+{-
 
 outputAsTabular :: ScoreInfo -> StdChordSection -> String
 outputAsTabular _gi ph = ppRender $ elemTabular lo ph
@@ -171,3 +175,5 @@ outputAsLinear _gi ph = ppRender $ elemLinear lo ph
 
 printAsLinear :: ScoreInfo -> StdChordSection ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi
+
+-}

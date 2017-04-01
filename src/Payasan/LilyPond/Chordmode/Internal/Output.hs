@@ -33,12 +33,12 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 
 
 
-chordmodeOutput :: ScoreInfo -> OutChordPart -> Doc
-chordmodeOutput globals ph = 
+chordmodeOutput :: String -> String -> OutChordPart -> Doc
+chordmodeOutput lyversion title ph = 
         header
     $+$ chordmodeBlock (extractDoc notes)
   where
-    header          = scoreHeader globals
+    header          = scoreHeader lyversion title
     local1          = EXT.initialSectionInfo ph
     notes           = lilypondNoteList chord_def local1 ph
     chord_def       = LyOutputDef { printPitch = pitch

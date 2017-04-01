@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable         #-}
 {-# OPTIONS -Wall #-}
 
 --------------------------------------------------------------------------------
@@ -108,6 +109,7 @@ import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
+import Data.Data
 
 
 
@@ -151,6 +153,25 @@ debug f a = tell (f a) >> return a
 
 transExternalToIRBeam :: a -> a
 transExternalToIRBeam = id
+
+
+
+-- | DEPRECATED - move to ABC and LilyPond _compilers_.
+data ScoreInfo = ScoreInfo
+    { score_title               :: !String
+    , score_ly_version          :: !String
+    }
+  deriving (Data,Eq,Show,Typeable)
+
+
+default_score_info :: ScoreInfo
+default_score_info = ScoreInfo
+    { score_title               = ""
+    , score_ly_version          = "2.18.2"
+    }
+
+
+
 
 {-
 fromABC :: EXT.Part ABCPitch ABCNoteLength () -> EXT.StdPart
@@ -267,7 +288,7 @@ outputAsLilyPond_Relative infos pch = ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = addBeams
                                , out_trafo   = LYOut.translateToLyPartOut_Relative pch
-                               , output_func = LYOut.simpleScore_Relative std_def infos pch
+                               , output_func = LYOut.simpleScore_Relative std_def (score_ly_version infos) (score_title infos) pch
                                }
     std_def = LYOut.LyOutputDef { LYOut.printPitch = LYOut.pitch
                                 , LYOut.printAnno = anno }
@@ -286,9 +307,10 @@ genOutputAsRhythmicMarkup :: LYOut.MarkupOutput pch
                           -> EXT.Part pch Duration anno 
                           -> Doc
 genOutputAsRhythmicMarkup def infos = 
-    LYOut.rhythmicMarkupScore ppDef infos . LYOut.translateToLyPartOut_RhythmicMarkup def
-                                          . addBeams 
-                                          . transExternalToIRBeam
+    LYOut.rhythmicMarkupScore ppDef (score_ly_version infos) (score_title infos)
+                              . LYOut.translateToLyPartOut_RhythmicMarkup def
+                              . addBeams 
+                              . transExternalToIRBeam
   where
     ppDef = LYOut.LyOutputDef { LYOut.printPitch = LYOut.pitch
                               , LYOut.printAnno = const empty }

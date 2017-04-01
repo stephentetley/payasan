@@ -93,12 +93,13 @@ elementP mo elt = case elt of
 -- Output
 
 rhythmicMarkupScore :: LyOutputDef pch anno 
-                    -> ScoreInfo 
+                    -> String 
+                    -> String
                     -> Part pch LyNoteLength anno -> Doc
-rhythmicMarkupScore def infos ph =
+rhythmicMarkupScore def lyversion title ph =
         header $+$ simultaneous1 (rhythmicMarkupVoice def ph)
   where
-    header          = scoreHeader infos
+    header          = scoreHeader lyversion title
 
 
 rhythmicMarkupVoice :: LyOutputDef pch anno 

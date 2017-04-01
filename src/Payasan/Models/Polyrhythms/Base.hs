@@ -44,12 +44,13 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 -- Print two voices.
 --
-outputAsLilyPond :: ScoreInfo 
+outputAsLilyPond :: String      
+                 -> String
                  -> String
                  -> Pitch -> MAIN.Part Pitch Duration ()
                  -> Pitch -> MAIN.Part Pitch Duration ()
                  -> String
-outputAsLilyPond globals clefname p1 ph1 p2 ph2 = 
+outputAsLilyPond lyversion title clefname p1 ph1 p2 ph2 = 
     MAIN.ppRender $ MAIN.genOutputAsLilyPond2 config2 ph1 ph2
   where
     config2         = MAIN.LilyPondPipeline2
@@ -57,16 +58,17 @@ outputAsLilyPond globals clefname p1 ph1 p2 ph2 =
                         , MAIN.pipe2_out_trafo1    = LY.translateToLyPartOut_Relative p1
                         , MAIN.pipe2_beam_trafo2   = addBeams
                         , MAIN.pipe2_out_trafo2    = LY.translateToLyPartOut_Relative p2
-                        , MAIN.pipe2_output_func   = polyrhythmScore globals clefname p1 p2
+                        , MAIN.pipe2_output_func   = polyrhythmScore lyversion title clefname p1 p2
                         }
 
 
 
-outputTimbalesStyle :: ScoreInfo 
+outputTimbalesStyle :: String 
+                    -> String
                     -> MAIN.Part Pitch Duration ()
                     -> MAIN.Part Pitch Duration ()
                     -> String
-outputTimbalesStyle globals ph1 ph2 =
+outputTimbalesStyle lyversion title ph1 ph2 =
     MAIN.ppRender $ MAIN.genOutputAsLilyPond2 config2 ph1 ph2
   where
     config2         = MAIN.LilyPondPipeline2
@@ -74,7 +76,7 @@ outputTimbalesStyle globals ph1 ph2 =
                         , MAIN.pipe2_out_trafo1    = timbalesTrafo Hitimbale
                         , MAIN.pipe2_beam_trafo2   = addBeams
                         , MAIN.pipe2_out_trafo2    = timbalesTrafo Lotimbale
-                        , MAIN.pipe2_output_func   = timbalesStyle globals
+                        , MAIN.pipe2_output_func   = timbalesStyle lyversion title
                         }
 
 
@@ -118,17 +120,18 @@ elementP dpitch elt = case elt of
 -- Key and time signature form a common prefix...
 --
 polyrhythmScore :: Anno a1 
-                => ScoreInfo 
+                => String
+                -> String
                 -> String
                 -> Pitch
                 -> Pitch
                 -> Part LyPitch LyNoteLength a1 
                 -> Part LyPitch LyNoteLength a1
                 -> Doc
-polyrhythmScore globals clefname p1 p2 ph1 ph2 = 
+polyrhythmScore lyversion title clefname p1 p2 ph1 ph2 = 
         header $+$ newStaff_ <+> (simultaneous1 (startphrase $+$ upper $+$ lower))
   where
-    header      = scoreHeader globals
+    header      = scoreHeader lyversion title
     locals1     = initialSectionInfo ph1
     startphrase = oPartHeader clefname locals1
     upper       = newVoiceDefn "upper" $+$ anonBlock (command "voiceOne" <+> upper1)
@@ -164,14 +167,15 @@ polyVoice_Relative def pch locals ph =
 
 
 timbalesStyle :: Anno a1 
-              => ScoreInfo 
+              => String
+              -> String
               -> Part DrumPitch LyNoteLength a1 
               -> Part DrumPitch LyNoteLength a1
               -> Doc
-timbalesStyle globals ph1 ph2 = 
+timbalesStyle lyversion title ph1 ph2 = 
         header $+$ upper_def $+$ lower_def $+$ score_ score
   where
-    header      = scoreHeader globals
+    header      = scoreHeader lyversion title
     locals1     = initialSectionInfo ph1
     upper_def   = phraseDef "upper" locals1 ph1
     lower_def   = phraseDef "lower" locals1 ph2

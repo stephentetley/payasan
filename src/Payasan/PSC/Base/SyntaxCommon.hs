@@ -21,9 +21,9 @@ module Payasan.PSC.Base.SyntaxCommon
     TyDoc(..)
   , TyText(..)
   
-  , ScoreInfo(..)
+--  , ScoreInfo(..)
 
-  , default_score_info
+--  , default_score_info
 
   , SectionInfo(..)
   , UnitNoteLength(..)
@@ -91,25 +91,11 @@ data TyText a = TyText { extractText :: TEXT.Text }
 
 
 
--- | DEPRECATED - move to ABC and LilyPond _compilers_.
-data ScoreInfo = ScoreInfo
-    { score_title               :: !String
-    , score_ly_version          :: !String
-    }
-  deriving (Data,Eq,Show,Typeable)
 
 
 
 
   
-
-
-default_score_info :: ScoreInfo
-default_score_info = ScoreInfo
-    { score_title               = ""
-    , score_ly_version          = "2.18.2"
-    }
-
 
 -- | Note - @SectionInfo@ is stored as a header to a Bar in
 -- Beam and Main syntax.

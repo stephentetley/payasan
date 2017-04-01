@@ -18,12 +18,10 @@ module Payasan.LilyPond.Lyricmode.Notelist
   ( 
 
     module Payasan.PSC.Old.Shell
-   
+
+{-   
   , LyricSection1
   , lyricmode
-
-  , ScoreInfo(..)        -- Re-export
-  , default_score_info
 
   , SectionInfo(..)         -- Re-export
   , UnitNoteLength(..)
@@ -35,7 +33,7 @@ module Payasan.LilyPond.Lyricmode.Notelist
   , outputAsLilyPond
   , outputAsLilyPondDU
   , printAsLilyPond
-
+-}
   ) where
 
 import Payasan.LilyPond.Lyricmode.Internal.Base
@@ -55,6 +53,7 @@ import Payasan.PSC.Old.Shell
 import Payasan.PSC.Base.SyntaxCommon
 
 
+{-
 
 fromLilyPond :: ScoreInfo -> LyLyricSection -> LyricSection1 ()
 fromLilyPond globals = fromLilyPondWith globals default_section_info
@@ -101,3 +100,4 @@ outputAsLilyPondDU annos globals lyrics =
 printAsLilyPond :: Anno anno => ScoreInfo -> LyricSection1 anno -> IO ()
 printAsLilyPond globals = putStrLn . outputAsLilyPond globals
 
+-}

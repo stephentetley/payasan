@@ -65,6 +65,8 @@ data LyOutputDef pch anno = LyOutputDef
 data LyHeader_
 type LyHeader = TyDoc LyHeader_
 
+
+
 makeLyHeader :: String -> String -> LyHeader
 makeLyHeader vstring name = 
     TyDoc $ version_ vstring $+$ header
@@ -81,32 +83,34 @@ assembleLy header body = extractDoc header $+$ extractDoc body
     
 
 simpleScore_Relative :: LyOutputDef pch anno 
-                     -> ScoreInfo 
+                     -> String
+                     -> String
                      -> Pitch
                      -> Part pch LyNoteLength anno 
                      -> Doc
-simpleScore_Relative def infos pch ph = 
+simpleScore_Relative def lyversion name pch ph = 
         header 
     $+$ anonBlock (simpleVoice_Relative def pch ph)
   where
-    header          = scoreHeader infos
+    header          = scoreHeader lyversion name
 
 simpleScore_Absolute :: LyOutputDef pch anno 
-                     -> ScoreInfo 
+                     -> String 
+                     -> String
                      -> Part pch LyNoteLength anno 
                      -> Doc
-simpleScore_Absolute def infos ph = 
+simpleScore_Absolute def lyversion name ph = 
         header 
     $+$ anonBlock (simpleVoice_Absolute def ph)
   where
-    header          = scoreHeader infos
+    header          = scoreHeader lyversion name
 
 
-scoreHeader :: ScoreInfo -> Doc
-scoreHeader globals = 
-    version_ (score_ly_version globals) $+$ header
+scoreHeader :: String -> String -> Doc
+scoreHeader lyversion name  = 
+    version_ lyversion $+$ header
   where
-    header  = withString (score_title globals) $ \ss ->
+    header  = withString name $ \ss ->
                  block (Just $ command "header") (title ss)
 
 

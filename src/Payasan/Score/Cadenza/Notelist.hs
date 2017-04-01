@@ -25,9 +25,6 @@ module Payasan.Score.Cadenza.Notelist
 
   , cadenza_lilypond
 
-  , ScoreInfo(..)        -- Re-export
-  , default_score_info
-
 
   , SectionInfo(..)         -- Re-export
   , UnitNoteLength(..)
@@ -101,17 +98,17 @@ genOutputAsLilyPond config =
 
 
 outputAsLilyPond_Relative :: Anno anno 
-                          => ScoreInfo -> Pitch -> StdCadenzaSection1 anno -> String
-outputAsLilyPond_Relative infos pch = MAIN.ppRender . genOutputAsLilyPond config
+                          => String -> String -> Pitch -> StdCadenzaSection1 anno -> String
+outputAsLilyPond_Relative lyversion title pch = MAIN.ppRender . genOutputAsLilyPond config
   where
     config  = LilyPondPipeline { beam_trafo  = noBeams
                                , out_trafo   = LY.translateToLyPartOut_Relative pch
-                               , output_func = LY.simpleScore_Relative std_def infos pch
+                               , output_func = LY.simpleScore_Relative std_def lyversion title pch
                                }
     std_def = LY.LyOutputDef { LY.printPitch = PP.pitch, LY.printAnno = anno }
 
 printAsLilyPond_Relative :: Anno anno 
-                         => ScoreInfo -> Pitch -> StdCadenzaSection1 anno -> IO ()
-printAsLilyPond_Relative globals pch = 
-    putStrLn . outputAsLilyPond_Relative globals pch
+                         => String -> String -> Pitch -> StdCadenzaSection1 anno -> IO ()
+printAsLilyPond_Relative lyversion title pch = 
+    putStrLn . outputAsLilyPond_Relative lyversion title pch
 

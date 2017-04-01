@@ -22,9 +22,6 @@ module Payasan.LilyPond.Percussion.Notelist
   , StdDrumPart
   , drummode
 
-  , ScoreInfo(..)
-  , default_score_info
-
 
   , SectionInfo(..)
   , UnitNoteLength(..)
@@ -34,19 +31,21 @@ module Payasan.LilyPond.Percussion.Notelist
 --  , fromLilyPond
 --  , fromLilyPondWith
 
+{-
   , outputAsLilyPond
   , printAsLilyPond
 
   , ppRender
-
+-}
 --  , writeAsMIDI
 
+{-
   , outputAsTabular
   , printAsTabular
 
   , outputAsLinear
   , printAsLinear
-
+-}
   ) where
 
 import Payasan.LilyPond.Percussion.Internal.Base
@@ -92,6 +91,7 @@ fromLilyPondWith locals =
     LY.translateFromInput_DurationOnly . pushSectionInfo locals
 -}
 
+{-
 
 outputAsLilyPond :: ScoreInfo -> StdDrumPart -> String
 outputAsLilyPond globals = MAIN.ppRender . MAIN.genOutputAsLilyPond config
@@ -108,7 +108,7 @@ printAsLilyPond gi = putStrLn . outputAsLilyPond gi
 
 ppRender :: Doc -> String
 ppRender = MAIN.ppRender
-
+-}
 
 {-
 writeAsMIDI :: FilePath -> StdDrumPart -> IO ()
@@ -120,6 +120,7 @@ writeAsMIDI path ph =
 
 
 
+{-
 
 outputAsTabular :: ScoreInfo -> StdDrumPart -> String
 outputAsTabular _gi ph = ppRender $ mainTabular lo ph
@@ -145,3 +146,4 @@ outputAsLinear _gi ph = ppRender $ mainLinear lo ph
 
 printAsLinear :: ScoreInfo -> StdDrumPart ->  IO ()
 printAsLinear gi = putStrLn . outputAsLinear gi
+-}

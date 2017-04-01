@@ -20,8 +20,6 @@ module Payasan.LilyPond.FretDiagram.Notelist
     module Payasan.PSC.Old.Shell
   , module Payasan.LilyPond.FretDiagram.Internal.Plain
 
-  , ScoreInfo(..)               -- Re-export
-  , default_score_info
 
   , SectionInfo(..)        -- Re-export
   , UnitNoteLength(..)
@@ -60,18 +58,18 @@ import qualified Payasan.PSC.Old.Pipeline as MAIN
 -- Maybe we should have a qq syntax anyway...
 
 
-outputAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramSection -> String
-outputAsLilyPond globals name diags = 
+outputAsLilyPond :: String -> String -> String -> [FretDiagram] -> FretDiagramSection -> String
+outputAsLilyPond lyversion title name diags = 
     MAIN.ppRender . MAIN.genOutputAsLilyPond config . chord_transElementaryToExternal
   where
     config  = MAIN.LilyPondPipeline 
                 { MAIN.beam_trafo  = addBeams
                 , MAIN.out_trafo   = LY.translateToLyPartOut_Absolute
-                , MAIN.output_func = fretDiagramOutput globals diags
+                , MAIN.output_func = fretDiagramOutput lyversion title diags
                 }
 
 
 
-printAsLilyPond :: ScoreInfo -> String -> [FretDiagram] -> FretDiagramSection -> IO ()
-printAsLilyPond info name diags = putStrLn . outputAsLilyPond info name diags
+printAsLilyPond :: String -> String -> String -> [FretDiagram] -> FretDiagramSection -> IO ()
+printAsLilyPond lyversion title name diags = putStrLn . outputAsLilyPond lyversion title name diags
 

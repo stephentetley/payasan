@@ -40,12 +40,13 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 -- TODO - anno actually fixed to Doc
 --
 analysisScore :: LyOutputDef pch anno 
-              -> ScoreInfo 
+              -> String 
+              -> String
               -> Part pch LyNoteLength anno -> Doc
-analysisScore def infos ph =
+analysisScore def lyversion title ph =
     header $+$ score_ (analysis_layout $+$ (extractDoc notes))
   where
-    header          = scoreHeader infos
+    header          = scoreHeader lyversion title
     local1          = initialSectionInfo ph
     notes           = lilypondNoteList def local1 ph
 

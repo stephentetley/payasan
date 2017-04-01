@@ -89,6 +89,7 @@ type ABCFile = TyDoc ABCFile_
 
 
 -- TODO clef and SectionInfo should be not be exposed...
+-- Should allow some user customization...
 --
 assembleOutput :: String -> String -> SectionInfo -> ABCNoteList -> ABCFile
 assembleOutput title1 clef1 info notes = 

@@ -35,14 +35,14 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 
 
-fretDiagramOutput :: ScoreInfo -> [FretDiagram] -> Part LyPitch LyNoteLength FretDiagram -> Doc
-fretDiagramOutput globals diags ph = 
+fretDiagramOutput :: String -> String -> [FretDiagram] -> Part LyPitch LyNoteLength FretDiagram -> Doc
+fretDiagramOutput lyversion title diags ph = 
         header
     $+$ defs defuse
     $+$ phraseBlock (extractDoc notes)
   where
     defuse          = diagramDU diags
-    header          = scoreHeader globals
+    header          = scoreHeader lyversion title
     locals1         = initialSectionInfo ph
     notes           = lilypondNoteList fret_def locals1 ph
 
