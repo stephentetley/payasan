@@ -84,7 +84,7 @@ assembleABC header body = extractDoc header $+$ extractDoc body
 -- 
 -- At some point we should allow this function to be customized...
 --
-makeABCHeader :: String -> Clef -> SectionInfo -> ABCHeader
+makeABCHeader :: String -> String -> SectionInfo -> ABCHeader
 makeABCHeader title clefname locals = 
     TyDoc $ vcat $
        [ field 'X' (int 1)

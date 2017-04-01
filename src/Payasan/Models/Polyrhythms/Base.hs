@@ -45,11 +45,11 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 -- Print two voices.
 --
 outputAsLilyPond :: ScoreInfo 
-                 -> Clef
+                 -> String
                  -> Pitch -> MAIN.Part Pitch Duration ()
                  -> Pitch -> MAIN.Part Pitch Duration ()
                  -> String
-outputAsLilyPond globals clef p1 ph1 p2 ph2 = 
+outputAsLilyPond globals clefname p1 ph1 p2 ph2 = 
     MAIN.ppRender $ MAIN.genOutputAsLilyPond2 config2 ph1 ph2
   where
     config2         = MAIN.LilyPondPipeline2
@@ -57,7 +57,7 @@ outputAsLilyPond globals clef p1 ph1 p2 ph2 =
                         , MAIN.pipe2_out_trafo1    = LY.translateToLyPartOut_Relative p1
                         , MAIN.pipe2_beam_trafo2   = addBeams
                         , MAIN.pipe2_out_trafo2    = LY.translateToLyPartOut_Relative p2
-                        , MAIN.pipe2_output_func   = polyrhythmScore globals clef p1 p2
+                        , MAIN.pipe2_output_func   = polyrhythmScore globals clefname p1 p2
                         }
 
 
@@ -119,18 +119,18 @@ elementP dpitch elt = case elt of
 --
 polyrhythmScore :: Anno a1 
                 => ScoreInfo 
-                -> Clef
+                -> String
                 -> Pitch
                 -> Pitch
                 -> Part LyPitch LyNoteLength a1 
                 -> Part LyPitch LyNoteLength a1
                 -> Doc
-polyrhythmScore globals clef p1 p2 ph1 ph2 = 
+polyrhythmScore globals clefname p1 p2 ph1 ph2 = 
         header $+$ newStaff_ <+> (simultaneous1 (startphrase $+$ upper $+$ lower))
   where
     header      = scoreHeader globals
     locals1     = initialSectionInfo ph1
-    startphrase = oPartHeader clef locals1
+    startphrase = oPartHeader clefname locals1
     upper       = newVoiceDefn "upper" $+$ anonBlock (command "voiceOne" <+> upper1)
     upper1      = polyVoice_Relative def p1 locals1 ph1
     lower       = newVoiceDefn "lower" $+$ anonBlock (command "voiceTwo" <+> lower1)
@@ -140,9 +140,9 @@ polyrhythmScore globals clef p1 p2 ph1 ph2 =
 
 -- TODO - avoid extra line for unmetered...
 --
-oPartHeader :: Clef -> SectionInfo -> Doc
-oPartHeader clf locals = 
-        clef_ clf
+oPartHeader :: String -> SectionInfo -> Doc
+oPartHeader clefname locals = 
+        clef_ clefname
     $+$ key_  (section_key locals)
     $+$ case section_meter locals of Unmetered -> empty
                                      Metered t -> time_ t

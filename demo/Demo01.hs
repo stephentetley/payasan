@@ -41,7 +41,7 @@ abc_compiler = ABC.makePartCompiler lib
 
 compileABCPart :: FilePath -> Part Pitch Duration anno -> IO ()
 compileABCPart path part = 
-   let doc = ABC.assembleOutput "Untitled" TREBLE (initialSectionInfo part) $ ABC.compilePart abc_compiler part
+   let doc = ABC.assembleOutput "Untitled" "treble" (initialSectionInfo part) $ ABC.compilePart abc_compiler part
    in ABC.writeABCFile path doc
 
 

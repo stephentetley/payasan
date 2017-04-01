@@ -22,7 +22,6 @@ module Payasan.PSC.Base.SyntaxCommon
   , TyText(..)
   
   , ScoreInfo(..)
-  , Clef(..)
 
   , default_score_info
 
@@ -103,14 +102,6 @@ data ScoreInfo = ScoreInfo
 
 
   
--- | Consider this DEPRECATED.
--- Clef should be thought of as a /print annotation/ and not
--- be introspected upon, thus it would be fine as a String
--- which is extensible.
---
-data Clef = TREBLE | BASS
-  deriving (Data,Eq,Show,Typeable)
-
 
 
 default_score_info :: ScoreInfo

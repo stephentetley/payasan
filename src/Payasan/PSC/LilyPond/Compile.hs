@@ -66,7 +66,7 @@ data PartCompilerDef ext_pch ly_pch anno = PartCompilerDef
     , pAnno             :: anno -> Doc
     , transformPitch    :: 
           forall drn. EXT.Part ext_pch drn anno -> EXT.Part ly_pch drn anno
-    , clef              :: Maybe Clef
+    , clef_name         :: Maybe String
     , recalc_beams      :: !Bool
     } 
 
@@ -76,7 +76,7 @@ emptyDef = PartCompilerDef
     { pPitch            = mkErr "pPitch"
     , pAnno             = mkErr "pAnno"
     , transformPitch    = mkErr "transformPitch"
-    , clef              = Just TREBLE
+    , clef_name         = Just "treble"
     , recalc_beams      = False
     }
   where

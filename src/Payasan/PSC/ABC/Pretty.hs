@@ -48,7 +48,7 @@ import Payasan.Base.Scale
 
 import Text.PrettyPrint.HughesPJ hiding ( Mode, mode )       -- package: pretty
 
-
+import Data.Char ( toLower )
 
 
 
@@ -89,10 +89,13 @@ unitNoteLength UNIT_NOTE_16     = text "1/16"
 key :: Key -> Doc
 key (Key n m)           = pitchName n <> mode m
 
-clef :: Clef -> Doc
+clef :: String -> Doc
+clef ss = text $ "clef=" ++ map toLower ss
+
+{-
 clef TREBLE             = text "clef=treble"
 clef BASS               = text "clef=bass"
-
+-}
 
 mode :: Mode -> Doc
 mode MAJOR              = empty

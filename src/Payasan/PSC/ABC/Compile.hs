@@ -60,13 +60,13 @@ data PartCompiler = PartCompiler
 
 
 data PartCompilerDef = PartCompilerDef 
-    { clef              :: !Clef
+    { clef_name          :: !String
     , bars_per_line     :: !Int
     } 
 
 emptyDef :: PartCompilerDef
 emptyDef = PartCompilerDef
-    { clef              = TREBLE
+    { clef_name         = "treble"
     , bars_per_line     = 4
     }
 
@@ -90,7 +90,7 @@ type ABCFile = TyDoc ABCFile_
 
 -- TODO clef and SectionInfo should be not be exposed...
 --
-assembleOutput :: String -> Clef -> SectionInfo -> ABCNoteList -> ABCFile
+assembleOutput :: String -> String -> SectionInfo -> ABCNoteList -> ABCFile
 assembleOutput title1 clef1 info notes = 
     TyDoc $ assembleABC (makeABCHeader title1 clef1 info) notes
 

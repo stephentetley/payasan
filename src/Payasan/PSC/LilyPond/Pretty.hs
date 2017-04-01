@@ -245,9 +245,8 @@ absolute_ :: Doc
 absolute_ = command "absolute"
 
 
-clef_ :: Clef -> Doc
-clef_ TREBLE    = command "clef" <+> text "treble"
-clef_ BASS      = command "clef" <+> text "bass"
+clef_ :: String -> Doc
+clef_ ss        = command "clef" <+> text ss
 
 key_ :: Key -> Doc
 key_ (Key ps m)         = command "key" <+> pitchName ps <+> mode_ m
