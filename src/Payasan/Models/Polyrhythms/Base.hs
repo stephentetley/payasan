@@ -18,8 +18,8 @@
 module Payasan.Models.Polyrhythms.Base
   ( 
 
-    outputAsLilyPond
-  , outputTimbalesStyle
+--    outputAsLilyPond
+--  , outputTimbalesStyle
 
   ) where
 
@@ -33,7 +33,6 @@ import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.Repr.External.AddBeams
 import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
-import qualified Payasan.PSC.Old.Pipeline                 as MAIN
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Basis
@@ -41,6 +40,8 @@ import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
+
+{-
 
 -- Print two voices.
 --
@@ -78,6 +79,7 @@ outputTimbalesStyle lyversion title ph1 ph2 =
                         , MAIN.pipe2_out_trafo2    = timbalesTrafo Lotimbale
                         , MAIN.pipe2_output_func   = timbalesStyle lyversion title
                         }
+-}
 
 
 timbalesTrafo :: DrumPitch 

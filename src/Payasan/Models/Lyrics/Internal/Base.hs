@@ -19,7 +19,6 @@ module Payasan.Models.Lyrics.Internal.Base
   (
     LyricsSection 
   , Stress(..)
---  , outputAsLilyPond
   , lyrics
 
   , pStress
@@ -28,7 +27,6 @@ module Payasan.Models.Lyrics.Internal.Base
 
 import qualified Payasan.LilyPond.Lyricmode.Internal.Base       as LY
 import qualified Payasan.LilyPond.Lyricmode.Internal.Parser     as LY
-import qualified Payasan.LilyPond.Lyricmode.Notelist            as LY
 
 import qualified Payasan.PSC.LilyPond.ExternalParser       as P
 import Payasan.PSC.LilyPond.Pretty
