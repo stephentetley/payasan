@@ -37,6 +37,7 @@ module Payasan.PSC.LilyPond.Compile
 
 import Payasan.PSC.LilyPond.Base hiding ( middle_c )
 import Payasan.PSC.LilyPond.OutTrans
+import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput
 
 import Payasan.PSC.Base.SyntaxCommon
@@ -68,6 +69,7 @@ data PartCompilerDef ext_pch ly_pch anno = PartCompilerDef
           forall drn. EXT.Part ext_pch drn anno -> EXT.Part ly_pch drn anno
     , clef_name         :: Maybe String
     , recalc_beams      :: !Bool
+    , part_context      :: Doc -> Doc
     } 
 
 
@@ -78,6 +80,7 @@ emptyDef = PartCompilerDef
     , transformPitch    = mkErr "transformPitch"
     , clef_name         = Just "treble"
     , recalc_beams      = False
+    , part_context      = anonBlock
     }
   where
     mkErr ss = error $ "Must supply an implementation of " ++ ss

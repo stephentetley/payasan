@@ -137,10 +137,13 @@ polyrhythmScore lyversion title clefname p1 p2 ph1 ph2 =
     locals1     = initialSectionInfo ph1
     startphrase = oPartHeader clefname locals1
     upper       = newVoiceDefn "upper" $+$ anonBlock (command "voiceOne" <+> upper1)
-    upper1      = polyVoice_Relative def p1 locals1 ph1
+    upper1      = polyVoice_Relative def p1 ph1
     lower       = newVoiceDefn "lower" $+$ anonBlock (command "voiceTwo" <+> lower1)
-    lower1      = polyVoice_Relative def p2 locals1 ph2
-    def         = LyOutputDef { printPitch = pitch, printAnno = anno }
+    lower1      = polyVoice_Relative def p2 ph2
+    def         = LyOutputDef { printPitch = pitch
+                              , printAnno = anno 
+                              , partContext = emptyCtx
+                              }
 
 
 -- TODO - avoid extra line for unmetered...
@@ -155,12 +158,11 @@ oPartHeader clefname locals =
 
 polyVoice_Relative :: LyOutputDef pch anno 
                    -> Pitch
-                   -> SectionInfo
                    -> Part pch LyNoteLength anno -> Doc
-polyVoice_Relative def pch locals ph = 
+polyVoice_Relative def pch ph = 
     block (Just $ relative_ pch) (extractDoc notes)
   where
-    notes           = lilypondNoteList def locals ph
+    notes           = makeLyNoteList def ph
 
 
 
@@ -179,8 +181,8 @@ timbalesStyle lyversion title ph1 ph2 =
   where
     header      = scoreHeader lyversion title
     locals1     = initialSectionInfo ph1
-    upper_def   = phraseDef "upper" locals1 ph1
-    lower_def   = phraseDef "lower" locals1 ph2
+    upper_def   = phraseDef "upper" ph1
+    lower_def   = phraseDef "lower" ph2
 
     score       =     newDrumStaffWith_ overrides 
                   $+$ simultaneous1 (upper_voice $+$ lower_voice)
@@ -195,15 +197,18 @@ timbalesStyle lyversion title ph1 ph2 =
 
 
 phraseDef :: Anno anno
-          => String -> SectionInfo -> Part DrumPitch LyNoteLength anno -> Doc
-phraseDef name locals ph = 
-    definition name $ polyVoice_Drum locals ph
+          => String -> Part DrumPitch LyNoteLength anno -> Doc
+phraseDef name ph = 
+    definition name $ polyVoice_Drum ph
 
 
 polyVoice_Drum :: Anno anno
-               => SectionInfo -> Part DrumPitch LyNoteLength anno -> Doc
-polyVoice_Drum locals ph = 
+               => Part DrumPitch LyNoteLength anno -> Doc
+polyVoice_Drum ph = 
     block (Just $ drummode_) (extractDoc notes)
   where
-    notes           = lilypondNoteList def locals ph
-    def             = LyOutputDef { printPitch = pPrint, printAnno = anno }
+    notes           = makeLyNoteList def ph
+    def             = LyOutputDef { printPitch = pPrint
+                                  , printAnno = anno 
+                                  , partContext = emptyCtx
+                                  }

@@ -43,10 +43,10 @@ lyricsScore :: Anno a1
             -> EXT.Part LyPitch LyNoteLength a1 
             -> EXT.Part Syllable LyNoteLength a2 
             -> Doc
-lyricsScore lyversion title ph1 ph2 = 
+lyricsScore lyversion title' ph1 ph2 = 
         header $+$ simultaneous1 (rhythm $+$ lyrics)
   where
-    header          = scoreHeader lyversion title
+    header          = scoreHeader lyversion title'
     rhythm          = rhythmVoice anno ph1
     lyrics          = lyricsVoice ph2
                       
@@ -57,10 +57,10 @@ lyricsScoreDU :: AnnoDU a
               -> EXT.Part LyPitch LyNoteLength a
               -> EXT.Part Syllable LyNoteLength az
               -> Doc
-lyricsScoreDU annos lyversion title ph1 ph2 = 
+lyricsScoreDU annos lyversion title' ph1 ph2 = 
         header $+$ defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
   where
-    header          = scoreHeader lyversion title
+    header          = scoreHeader lyversion title'
     rhythm          = rhythmVoice (use annos) ph1
     lyrics          = lyricsVoice ph2
                       
@@ -77,9 +77,12 @@ rhythmVoice annof ph = newVoiceDefn "rhythm" <+> anonBlock body
                        , hide_ "Staff.Clef"
                        , numericTimeSignature_
                        , stemDown_
-                       , simpleVoice_Absolute def ph
+                       , simpleVoice_OLD def ph
                        ]
-    def         = LyOutputDef { printPitch = pitch, printAnno = annof }
+    def         = LyOutputDef { printPitch = pitch
+                              , printAnno = annof 
+                              , partContext = absoluteCtx
+                              }
                       
 
 lyricsVoice :: EXT.Part Syllable LyNoteLength a -> Doc
@@ -87,11 +90,13 @@ lyricsVoice ph =
     block (Just prefix) (overrides $+$ extractDoc notes)
   where
     prefix      = command "new" <+> text "Lyrics" <+> command "lyricmode"
-    locals1     = EXT.initialSectionInfo ph
     overrides   = vcat [ override_ "LyricText #'font-size = #-1"
                        , override_ "Lyrics.LyricSpace.minimum-distance = #1.4"
                        , set_ "associatedVoice = #\"rhythm\""
                        ]         
-    notes       = lilypondNoteList lyric_def locals1 ph
-    lyric_def   = LyOutputDef { printPitch = pPrint, printAnno = \_ -> empty }
+    notes       = makeLyNoteList lyric_def ph
+    lyric_def   = LyOutputDef { printPitch = pPrint
+                              , printAnno = \_ -> empty
+                              , partContext = emptyCtx
+                              }
 

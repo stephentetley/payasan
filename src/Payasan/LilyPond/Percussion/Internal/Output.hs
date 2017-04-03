@@ -36,9 +36,11 @@ drumsOutput lyversion title beampart =
     $+$ drumsBlock (extractDoc notes)
   where
     header          = scoreHeader lyversion title
-    notes           = lilypondNoteList drum_def default_section_info beampart
+    notes           = makeLyNoteList drum_def beampart
     drum_def        = LyOutputDef { printPitch = text . shortName
-                                  , printAnno  = ppAccent }
+                                  , printAnno  = ppAccent 
+                                  , partContext = emptyCtx
+                                  }
 
 
 

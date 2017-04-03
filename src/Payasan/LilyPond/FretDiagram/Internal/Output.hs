@@ -43,12 +43,13 @@ fretDiagramOutput lyversion title diags ph =
   where
     defuse          = diagramDU diags
     header          = scoreHeader lyversion title
-    locals1         = initialSectionInfo ph
-    notes           = lilypondNoteList fret_def locals1 ph
+    notes           = makeLyNoteList fret_def ph
 
     fret_def        :: LyOutputDef LyPitch FretDiagram
     fret_def        = LyOutputDef { printPitch = pitch
-                                  , printAnno  = use defuse }
+                                  , printAnno  = use defuse 
+                                  , partContext  = emptyCtx
+                                  }
 
 
 

@@ -25,17 +25,18 @@ module Payasan.PSC.LilyPond.SimpleOutput
 
   , assembleLy
 
-  , simpleScore_Relative
-  , simpleScore_Absolute
 
-  , simpleVoice_Relative
-  , simpleVoice_Absolute
+
+  , simpleVoice_OLD
+
+  , absoluteCtx
+  , relativeCtx
+  , emptyCtx
 
   , scoreHeader
   , phraseHeader
 
   , makeLyNoteList
-  , lilypondNoteList
 
   ) where
 
@@ -60,7 +61,9 @@ import Text.PrettyPrint.HughesPJ        -- package: pretty
 data LyOutputDef pch anno = LyOutputDef 
     { printPitch    :: pch -> Doc
     , printAnno     :: anno -> Doc
+    , partContext   :: DOC.ContextDoc               -- e.g. absolute, relative
     }
+
 
 data LyHeader_
 type LyHeader = TyDoc LyHeader_
@@ -81,30 +84,6 @@ makeLyHeader vstring name =
 assembleLy :: LyHeader -> LyNoteList -> Doc
 assembleLy header body = extractDoc header $+$ extractDoc body
     
-
-simpleScore_Relative :: LyOutputDef pch anno 
-                     -> String
-                     -> String
-                     -> Pitch
-                     -> Part pch LyNoteLength anno 
-                     -> Doc
-simpleScore_Relative def lyversion name pch ph = 
-        header 
-    $+$ anonBlock (simpleVoice_Relative def pch ph)
-  where
-    header          = scoreHeader lyversion name
-
-simpleScore_Absolute :: LyOutputDef pch anno 
-                     -> String 
-                     -> String
-                     -> Part pch LyNoteLength anno 
-                     -> Doc
-simpleScore_Absolute def lyversion name ph = 
-        header 
-    $+$ anonBlock (simpleVoice_Absolute def ph)
-  where
-    header          = scoreHeader lyversion name
-
 
 scoreHeader :: String -> String -> Doc
 scoreHeader lyversion name  = 
@@ -127,30 +106,17 @@ phraseHeader locals = case section_meter locals of
 --------------------------------------------------------------------------------
 -- Notelist
 
-
--- @voiceOutput@ specifically for @standard@ pitch output.
---
--- Write alternative functions for other types of output.
--- 
-simpleVoice_Relative :: LyOutputDef pch anno 
-                     -> Pitch
-                     -> Part pch LyNoteLength anno -> Doc
-simpleVoice_Relative def pch ph = 
-    block (Just $ relative_ pch) (notes_header $+$ notes)
-  where
-    local1          = initialSectionInfo ph
-    notes_header    = phraseHeader local1
-    notes           = extractDoc $ makeLyNoteList def ph
-
-
-simpleVoice_Absolute :: LyOutputDef pch anno
-                     -> Part pch LyNoteLength anno -> Doc
-simpleVoice_Absolute def ph = 
+-- Deprecated...
+simpleVoice_OLD :: LyOutputDef pch anno -> Part pch LyNoteLength anno -> Doc
+simpleVoice_OLD lib ph = 
     absolute_ $+$ notes_header $+$ notes
   where
     local1          = initialSectionInfo ph
     notes_header    = phraseHeader local1
-    notes           = extractDoc $ makeLyNoteList def ph
+    notes           = extractDoc $ makeLyNoteList lib ph
+
+
+
 
 
 -- NOTE 
@@ -171,25 +137,26 @@ keyCtx :: Key -> DOC.ContextDoc
 keyCtx k = DOC.ContextDoc $ \d -> key_ k $+$ d
     
 
-relativeCtx :: Pitch -> DOC.ContextDoc
-relativeCtx p = DOC.ContextDoc $ \d -> block (Just $ relative_ p) d
-
-absoluteCtx :: DOC.ContextDoc
-absoluteCtx = DOC.ContextDoc $ \d -> absolute_ $+$ d
 
 
 makeLyNoteList :: LyOutputDef pch anno 
                -> Part pch LyNoteLength anno
                -> LyNoteList
 makeLyNoteList lib part =
-    TyDoc $ renderDocPart $ toIRSimpleDoc lib part
+    TyDoc $ ctxF $ renderDocPart $ toIRSimpleDoc lib part
+  where
+    ctxF = DOC.getContext $ partContext lib
 
-lilypondNoteList :: LyOutputDef pch anno 
-                 -> SectionInfo 
-                 -> Part pch LyNoteLength anno
-                 -> LyNoteList
-lilypondNoteList lib _ part = makeLyNoteList lib part
 
+
+relativeCtx     :: Pitch -> DOC.ContextDoc
+relativeCtx p   = DOC.ContextDoc $ \d -> block (Just $ relative_ p) d
+
+absoluteCtx     :: DOC.ContextDoc
+absoluteCtx     = DOC.ContextDoc $ \d -> block (Just $ absolute_) d
+
+emptyCtx        :: DOC.ContextDoc
+emptyCtx        = DOC.ContextDoc $ \d -> anonBlock d
 
 
 

@@ -110,7 +110,7 @@ rhythmicMarkupVoice def ph =
   where
     local1          = initialSectionInfo ph
     notes_header    = renderPartHeader local1
-    notes           = lilypondNoteList def local1 ph
+    notes           = makeLyNoteList def ph
 
 
 

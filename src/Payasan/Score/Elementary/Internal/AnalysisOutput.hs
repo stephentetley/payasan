@@ -47,8 +47,7 @@ analysisScore def lyversion title ph =
     header $+$ score_ (analysis_layout $+$ (extractDoc notes))
   where
     header          = scoreHeader lyversion title
-    local1          = initialSectionInfo ph
-    notes           = lilypondNoteList def local1 ph
+    notes           = makeLyNoteList def ph
 
 analysis_layout :: Doc
 analysis_layout = layout_ $ context_ body

@@ -39,8 +39,7 @@ chordmodeOutput lyversion title ph =
     $+$ chordmodeBlock (extractDoc notes)
   where
     header          = scoreHeader lyversion title
-    local1          = EXT.initialSectionInfo ph
-    notes           = lilypondNoteList chord_def local1 ph
+    notes           = makeLyNoteList chord_def ph
     chord_def       = LyOutputDef { printPitch = pitch
                                   , printAnno  = oChordSuffix }
 
