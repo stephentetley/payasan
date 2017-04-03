@@ -30,8 +30,6 @@ import Payasan.Base.Pitch
 locals :: SectionInfo
 locals = default_section_info
 
-globals :: ScoreInfo
-globals = default_score_info 
 
 
 abc_compiler :: ABC.PartCompiler
