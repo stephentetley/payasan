@@ -92,6 +92,13 @@ elementP mo elt = case elt of
 --------------------------------------------------------------------------------
 -- Output
 
+-- TODO - (Simple) Rhythmic output only differs from regular 
+-- tonal output in (b) the context embedding the notelist
+-- and (b) not printing a key signature. 
+--
+-- Ideally we would have user (library designer) specified
+-- SectionInfo but this would add complexity.
+
 rhythmicMarkupScore :: LyOutputDef pch anno 
                     -> String 
                     -> String

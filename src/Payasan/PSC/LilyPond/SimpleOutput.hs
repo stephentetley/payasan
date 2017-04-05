@@ -220,7 +220,7 @@ renderDocPart :: DOC.Part a -> Doc
 renderDocPart (DOC.Part { DOC.part_sections = ss }) = sectionsD ss
   where
     sectionsD []     = empty
-    sectionsD [d]    = sectionD (text "|]") d
+    sectionsD [d]    = sectionD (text "|") d
     sectionsD (d:ds) = sectionD (text "|")  d $+$ sectionsD ds
 
     sectionD end (DOC.Section { DOC.section_context = ctx

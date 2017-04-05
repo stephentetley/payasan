@@ -58,10 +58,10 @@ lyricsScoreDU :: AnnoDU a
               -> EXT.Part Syllable LyNoteLength az
               -> Doc
 lyricsScoreDU annos lyversion title' ph1 ph2 = 
-        header $+$ defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
+        header $+$ anno_defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
   where
     header          = scoreHeader lyversion title'
-    rhythm          = rhythmVoice (use annos) ph1
+    rhythm          = rhythmVoice (anno_use annos) ph1
     lyrics          = lyricsVoice ph2
                       
 

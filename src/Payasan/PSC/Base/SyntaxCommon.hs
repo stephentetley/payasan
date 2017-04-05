@@ -21,9 +21,6 @@ module Payasan.PSC.Base.SyntaxCommon
     TyDoc(..)
   , TyText(..)
   
---  , ScoreInfo(..)
-
---  , default_score_info
 
   , SectionInfo(..)
   , UnitNoteLength(..)
@@ -74,38 +71,30 @@ data TyText a = TyText { extractText :: TEXT.Text }
 -- Score syntax elements
 
 
--- | Note - don\'t store LilyPond Absolute / Relative pitch
+-- Note - don\'t store LilyPond Absolute / Relative pitch
 -- at bar level. This a a global property as we must render
 -- in one mode only.
-
--- Some data is usefully render info but should be specified by
+--
+-- Some data is usefully "render info" but should be specified by
 -- library writer not by the end user, e.g. beaming
 --
 -- Potentially there is a relationship between a user exposed 
 -- config and a larger internal one like Parsec\'s LanguageDef 
 -- and TokenParser
 --
--- CORRECTION - AbsPitch / Relative Pitch is actually a voice level
--- property.
+-- CORRECTION - AbsPitch / Relative Pitch is actually a 
+-- voice (part) level property.
 --
-
-
-
-
-
 
 
   
 
--- | Note - @SectionInfo@ is stored as a header to a Bar in
--- Beam and Main syntax.
+-- | Note - @SectionInfo@ is stored as a header to a Section in
+-- External syntax.
 -- 
--- This allows concatenating bars together (and tempo and key 
--- changes). Generally outputting must be sensitive to changes 
--- to SectionInfo as a new bar is printed.
--- 
--- Elementary syntax is intended for transformation, hence we 
--- put @SectionInfo@ at the start of the phrase
+-- This prevents (easy) concat of Sections - Sections would need
+-- identical headers, with differing headers Sections cannot 
+-- concat
 --
 -- TODO - SectionInfo is probably the wrong mechanism to 
 -- annotate sections as some of the infos are already backend 
@@ -123,24 +112,8 @@ data SectionInfo = SectionInfo
 
 
 
-
-data Tie = TIE | NO_TIE
-  deriving (Data,Enum,Eq,Ord,Show,Typeable)
-
-
-
-class Anno a where anno :: a -> Doc
-
-instance Anno () where anno = const empty
-
-
-data AnnoDU a = AnnoDU { defs :: Doc, use :: a -> Doc }
-
-
-
-
--- TODO - span bars with meter pattern (e.g. for 2-bar patterns
--- as in Latin music).
+-- TODO - nice to span bars with meter pattern 
+-- e.g. for 2-bar patterns as in Latin music.
 --
 type MeterPattern = [RatDuration]
 
@@ -159,6 +132,23 @@ default_section_info = SectionInfo
     , section_bpm               = 120
     }
 
+
+
+
+data Tie = TIE | NO_TIE
+  deriving (Data,Enum,Eq,Ord,Show,Typeable)
+
+
+
+class Anno a where anno :: a -> Doc
+
+instance Anno () where anno = const empty
+
+
+data AnnoDU a = AnnoDU 
+    { anno_defs :: Doc                  -- multiple annos
+    , anno_use  :: a -> Doc 
+    }
 
 
 
@@ -184,9 +174,6 @@ data TupletSpec = TupletSpec
 tupletUnitRatDuration :: TupletSpec -> RatDuration -> RatDuration 
 tupletUnitRatDuration (TupletSpec { tuplet_time_mult = m }) unitd = 
     unitd * realToFrac m
-
-
-
 
   
 
