@@ -40,7 +40,6 @@ module Payasan.LilyPond.Lyricmode.Internal.Base
 import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 import Payasan.PSC.LilyPond.Base (LyNoteLength)
-import Payasan.PSC.Base.SyntaxCommon
 
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty

@@ -73,10 +73,10 @@ data TyText a = TyText { extractText :: TEXT.Text }
 
 -- Note - don\'t store LilyPond Absolute / Relative pitch
 -- at bar level. This a a global property as we must render
--- in one mode only.
+-- a notelist in one mode only.
 --
 -- Some data is usefully "render info" but should be specified by
--- library writer not by the end user, e.g. beaming
+-- library writer not by the end user.
 --
 -- Potentially there is a relationship between a user exposed 
 -- config and a larger internal one like Parsec\'s LanguageDef 
@@ -145,6 +145,11 @@ class Anno a where anno :: a -> Doc
 instance Anno () where anno = const empty
 
 
+
+-- DEPRECATED
+-- The idea behind this wasn't so well founded. Defs should
+-- probably go somehow directly into the score template.
+--
 data AnnoDU a = AnnoDU 
     { anno_defs :: Doc                  -- multiple annos
     , anno_use  :: a -> Doc 

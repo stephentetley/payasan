@@ -25,10 +25,10 @@ module Payasan.PSC.ABC.Compile
   , PartCompiler(..)
   , makePartCompiler
 
-  , ABCFile
+  , ABCScore
 
   , assembleOutput
-  , writeABCFile
+  , writeABC
 
   ) where
 
@@ -84,18 +84,17 @@ makePartCompiler lib = PartCompiler
                     in out
 
 
-data ABCFile_ 
-type ABCFile = TyDoc ABCFile_
+data ABCScore_ 
+type ABCScore = TyDoc ABCScore_
 
 
 -- TODO clef and SectionInfo should be not be exposed...
 -- Should allow some user customization...
 --
-assembleOutput :: String -> String -> SectionInfo -> ABCNoteList -> ABCFile
+assembleOutput :: String -> String -> SectionInfo -> ABCNoteList -> ABCScore
 assembleOutput title1 clef1 info notes = 
     TyDoc $ assembleABC (makeABCHeader title1 clef1 info) notes
 
 
-writeABCFile :: FilePath -> ABCFile -> IO ()
-writeABCFile path doc = 
-    writeFile path (ppRender $ extractDoc doc)
+writeABC :: FilePath -> ABCScore -> IO ()
+writeABC path doc = writeFile path (ppRender $ extractDoc doc)

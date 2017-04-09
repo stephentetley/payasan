@@ -26,16 +26,17 @@ module Payasan.PSC.LilyPond.Compile
   , PartCompiler(..)
   , makePartCompiler
 
-  , LyFile
+  , LyScore
 
   , assembleOutput
 
-  , writeLyFile
+  , writeLilyPond
 
   ) where
 
 
 import Payasan.PSC.LilyPond.Base hiding ( middle_c )
+import Payasan.PSC.LilyPond.IRSimpleDoc ( ContextDoc(..) )
 import Payasan.PSC.LilyPond.OutTrans
 import Payasan.PSC.LilyPond.Pretty
 import Payasan.PSC.LilyPond.SimpleOutput
@@ -105,8 +106,10 @@ makePartCompiler lib = PartCompiler
     pchTrafo  = transformPitch lib
 
     outDef    :: LyOutputDef ly_pch anno
-    outDef    = LyOutputDef { printPitch = pPitch lib 
-                            , printAnno  = pAnno lib }
+    outDef    = LyOutputDef { printPitch  = pPitch lib 
+                            , printAnno   = pAnno lib
+                            , partContext = ContextDoc $ part_context lib
+                            }
 
     compileP :: Part ext_pch Duration anno -> LyNoteList
     compileP part = let ext1    = rebeam part
@@ -116,16 +119,15 @@ makePartCompiler lib = PartCompiler
 
 
 
-data LyFile_ 
-type LyFile = TyDoc LyFile_
+data LyScore_ 
+type LyScore = TyDoc LyScore_
 
 
-assembleOutput :: String -> String -> LyNoteList -> LyFile
+assembleOutput :: String -> String -> LyNoteList -> LyScore
 assembleOutput version1 title1 notes = 
     TyDoc $ assembleLy (makeLyHeader version1 title1) notes
 
 
 
-writeLyFile :: FilePath -> LyFile -> IO ()
-writeLyFile path doc = 
-    writeFile path (ppRender $ extractDoc doc)
+writeLilyPond :: FilePath -> LyScore -> IO ()
+writeLilyPond path doc = writeFile path (ppRender $ extractDoc doc)
