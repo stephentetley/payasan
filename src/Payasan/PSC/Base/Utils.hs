@@ -34,16 +34,6 @@ module Payasan.PSC.Base.Utils
   , punctuateSepEnd
   , ppTable
 
-    -- * Hughes list
-  , H
-  , emptyH
-  , appendH
-  , consH
-  , snocH
-  , wrapH
-  , replicateH
-  , toListH
-  , fromListH
   
   )  where
 
@@ -164,35 +154,3 @@ ppTable cols hop (x:xs) = vcat $ go 1 x xs
                    | otherwise  = ac : go 1 d ds
     go _ ac []                  = [ac]
     
-    
---------------------------------------------------------------------------------
--- Hughes list
--- Should be obsolete, but currently needed by MIDI output...
-
-
-type H a = [a] -> [a]
-
-emptyH :: H a 
-emptyH = id
-
-appendH :: H a -> H a -> H a
-appendH f g = f . g
-
-wrapH :: a -> H a 
-wrapH a = (a:)
-
-consH :: a -> H a -> H a
-consH a f = (a:) . f
-
-snocH :: H a -> a -> H a
-snocH f a = f . (a:)
-
-replicateH :: Int -> a -> H a
-replicateH i a = fromListH $ replicate i a
-
-
-toListH :: H a -> [a]
-toListH f = f $ []
-
-fromListH :: [a] -> H a
-fromListH xs = (xs++)

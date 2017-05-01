@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 -- |
--- Module      :  Payasan.PSC.Repr.External.AddBeams
+-- Module      :  Payasan.PSC.Repr.External.BeamGrouping
 -- Copyright   :  (c) Stephen Tetley 2015-2017
 -- License     :  BSD3
 --
@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Payasan.PSC.Repr.External.AddBeams
+module Payasan.PSC.Repr.External.BeamGrouping
   (
     addBeams
   , noBeams
