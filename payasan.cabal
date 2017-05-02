@@ -106,7 +106,7 @@ library
     Payasan.PSC.MIDI.Output,
     Payasan.PSC.MIDI.OutTrans,
     Payasan.PSC.MIDI.Syntax,
-    Payasan.PSC.Repr.External.AddBeams,
+    Payasan.PSC.Repr.External.BeamGrouping,
     Payasan.PSC.Repr.External.OutTransSeconds,
     Payasan.PSC.Repr.External.Plain,
     Payasan.PSC.Repr.External.ShowLinear,

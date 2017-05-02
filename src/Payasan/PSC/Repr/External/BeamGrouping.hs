@@ -46,8 +46,26 @@ beamBar info (Bar cs) =
     in Bar $ beamSegments segs1
 
 
+
+-- TO DO - this should remove all beam groups...
+--
 noBeams :: Part pch Duration anno -> Part pch Duration anno
-noBeams = id
+noBeams (Part { part_sections = ss }) = 
+    Part { part_sections = map noBeamSection ss }
+
+noBeamSection :: Section pch Duration anno -> Section pch Duration anno
+noBeamSection (Section name info bs) = 
+    Section name info $ map noBeamBar bs
+
+
+noBeamBar :: Bar pch Duration anno -> Bar pch Duration anno
+noBeamBar (Bar { note_groups = cs }) = 
+    Bar { note_groups = makeSingle cs } 
+  where
+    makeSingle [] = []
+    makeSingle (Beamed es   : xs) = makeSingle es ++ makeSingle xs
+    makeSingle (Atom e      : xs) = Atom e : makeSingle xs
+    makeSingle (Tuplet s es : xs) = Tuplet s (makeSingle es) : makeSingle xs
 
 
 
@@ -130,6 +148,8 @@ isSmall a = sizeNoteGroup a < qtrnote_len
 qtrnote_len :: RatDuration 
 qtrnote_len = (1%4)
 
+
+
 --------------------------------------------------------------------------------
 -- Detach extremities
 
@@ -172,6 +192,8 @@ detachableE (Note {})           = False
 detachableE (Chord {})          = False
 detachableE (Graces {})         = False
 detachableE (Punctuation {})    = True
+
+
 
 --------------------------------------------------------------------------------
 -- Finally beam

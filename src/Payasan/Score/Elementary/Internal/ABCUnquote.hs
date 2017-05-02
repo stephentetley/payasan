@@ -87,7 +87,8 @@ elementP (Punctuation s)        = pure $ Punctuation s
 
 
 transPch :: ABCPitch -> PMon Pitch
-transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
+transPch p0 = 
+    (\k -> toPitch (buildScale k) p0) <$> asks (sectionKeyWithDefault c_maj)
 
 --------------------------------------------------------------------------------
 -- Translate duration

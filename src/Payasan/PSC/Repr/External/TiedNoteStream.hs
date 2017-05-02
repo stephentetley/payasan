@@ -56,7 +56,7 @@ linearize (Part ss) = concatMap linearizeS ss
 
 linearizeS :: Section pch Duration anno -> [Element pch Seconds anno]
 linearizeS (Section _ info bs) = 
-    let bpm = section_bpm info in concatMap (linearizeB bpm) bs
+    let bpm = 120 in concatMap (linearizeB bpm) bs
 
 linearizeB :: BPM -> Bar pch Duration anno -> [Element pch Seconds anno]
 linearizeB bpm (Bar cs) = concatMap (linearizeNG bpm) cs

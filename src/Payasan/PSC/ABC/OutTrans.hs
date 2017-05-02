@@ -77,7 +77,8 @@ grace1P (Grace1 pch drn)            = (\p -> Grace1 p drn) <$> transPch pch
 -- This should be optimized to not make a scale each time!
 --
 transPch :: Pitch -> PMon ABCPitch
-transPch p0 = (\k -> fromPitch (buildScale k) p0) <$> asks section_key
+transPch p0 = 
+    (\k -> fromPitch (buildScale k) p0) <$> asks (sectionKeyWithDefault c_maj)
 
 --------------------------------------------------------------------------------
 -- Translate duration

@@ -651,7 +651,8 @@ ctxMapPitch fn = transformElementary algo
     algo = ElementaryAlgo { initial_state = ()
                           , element_trafo = stepE }
 
-    stepE (Note p d a t)    = (\ks -> Note (fn ks p) d a t) <$> asks section_key
+    stepE (Note p d a t)    = (\ks -> Note (fn ks p) d a t) 
+                                  <$> asks (sectionKeyWithDefault c_maj)
     stepE (Rest d)          = pure $ Rest d
     stepE (Spacer d)        = pure $ Spacer d
     stepE (Skip d)          = pure $ Skip d

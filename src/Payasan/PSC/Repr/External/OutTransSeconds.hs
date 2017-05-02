@@ -35,7 +35,7 @@ import Payasan.Base.Basis
 transDurationToSeconds :: Part pch Duration anno -> Part pch Seconds anno
 transDurationToSeconds = genTransform elementM ()
   where
-    elementM e = asks section_bpm >>= \bpm -> pure (element bpm e)
+    elementM e = return 120 >>= \bpm -> pure (element bpm e)
 
 
 element :: BPM -> Element pch Duration anno -> Element pch Seconds anno

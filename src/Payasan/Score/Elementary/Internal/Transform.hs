@@ -133,9 +133,9 @@ diatonically fn = fromDiatonicSection . fn . toDiatonicSection
 toDiatonicSection :: Section Pitch drn anno -> Section Diatonic drn anno
 toDiatonicSection = transformPitchCtx cxf toDiatonic
   where
-    cxf = buildScale . section_key
+    cxf = buildScale . sectionKeyWithDefault c_maj
 
 fromDiatonicSection :: Section Diatonic drn anno -> Section Pitch drn anno
 fromDiatonicSection = transformPitchCtx cxf fromDiatonic
   where
-    cxf = buildScale . section_key
+    cxf = buildScale . sectionKeyWithDefault c_maj

@@ -135,7 +135,7 @@ toDiatonicSection = transformCadenza step_algo
     change (Punctuation s)      = pure $ Punctuation s
 
     -- This is poor, scale should be built just once...
-    mf pch = (\key -> toDiatonic (buildScale key) pch) <$> asks section_key
+    mf pch = (\key -> toDiatonic (buildScale key) pch) <$> asks (sectionKeyWithDefault c_maj)
 
 
 fromDiatonicSection :: Section Diatonic drn anno -> Section Pitch drn anno
@@ -151,5 +151,5 @@ fromDiatonicSection = transformCadenza step_algo
     change (Punctuation s)      = pure $ Punctuation s
 
     -- This is poor, scale should be built just once...
-    mf oss = (\key -> fromDiatonic (buildScale key) oss) <$> asks section_key
+    mf oss = (\key -> fromDiatonic (buildScale key) oss) <$> asks (sectionKeyWithDefault c_maj)
 

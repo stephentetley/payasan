@@ -151,7 +151,7 @@ polyrhythmScore lyversion title clefname p1 p2 ph1 ph2 =
 oPartHeader :: String -> SectionInfo -> Doc
 oPartHeader clefname locals = 
         clef_ clefname
-    $+$ key_  (section_key locals)
+    $+$ key_  (sectionKeyWithDefault c_maj locals)
     $+$ case section_meter locals of Unmetered -> empty
                                      Metered t -> time_ t
 

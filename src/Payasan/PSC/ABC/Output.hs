@@ -94,7 +94,8 @@ makeABCHeader title clefname locals =
        , field 'K' key_clef 
        ]
   where
-    key_clef = (key $ section_key locals) <+> (clef clefname)
+    key1     = maybe c_maj id $ section_key locals
+    key_clef = key key1 <+> (clef clefname)
 
 
 --
@@ -136,7 +137,7 @@ headerSuffix (Part { part_sections = ss }) = case ss of
     (s1:_) -> let info = section_info s1
                   d1   = field 'M' (meter $ section_meter info)
                   d2   = field 'L' (unitNoteLength $ section_unit_note_len info)
-                  d3   = field 'K' (key $ section_key info)
+                  d3   = field 'K' (key $ sectionKeyWithDefault c_maj info)
               in d1 $+$ d2 $+$ d3
 
 
@@ -167,8 +168,9 @@ midtuneFields part = case sectionInfos part of
 keyChange :: SectionInfo -> SectionInfo -> Maybe Doc
 keyChange (SectionInfo { section_key = old }) 
           (SectionInfo { section_key = new }) = 
-    if new /= old then Just $ midtuneField 'K' (key new) 
-                  else Nothing
+    let key1 = maybe c_maj id new
+    in if new /= old then Just $ midtuneField 'K' (key key1) 
+                     else Nothing
 
 meterChange :: SectionInfo -> SectionInfo -> Maybe Doc
 meterChange (SectionInfo { section_meter = old }) 

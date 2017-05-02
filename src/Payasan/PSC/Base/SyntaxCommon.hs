@@ -31,6 +31,8 @@ module Payasan.PSC.Base.SyntaxCommon
 
   , default_section_info
 
+  , sectionKeyWithDefault
+
   , barRatDuration
 
   , MeterPattern
@@ -96,19 +98,17 @@ data TyText a = TyText { extractText :: TEXT.Text }
 -- identical headers, with differing headers Sections cannot 
 -- concat
 --
--- TODO - SectionInfo is probably the wrong mechanism to 
--- annotate sections as some of the infos are already backend 
--- specific and others are representation specific (e.g.
--- percussion doesn't have a key).
+-- SectionInfo should avoid backend specific info.
 --
 data SectionInfo = SectionInfo
-    { section_key               :: !Key
+    { section_key               :: Maybe Key
     , section_meter             :: !Meter
     , section_meter_pattern     :: !MeterPattern
     , section_unit_note_len     :: !UnitNoteLength
-    , section_bpm               :: !BPM
     }
   deriving (Data,Eq,Show,Typeable)
+
+
 
 
 
@@ -125,14 +125,15 @@ data UnitNoteLength = UNIT_NOTE_4 | UNIT_NOTE_8 | UNIT_NOTE_16
 
 default_section_info :: SectionInfo
 default_section_info = SectionInfo 
-    { section_key               = c_maj
+    { section_key               = Just $ c_maj
     , section_meter             = Metered $ TimeSig 4 4 
     , section_meter_pattern     = [1%2,1%2]
     , section_unit_note_len     = UNIT_NOTE_8
-    , section_bpm               = 120
     }
 
 
+sectionKeyWithDefault :: Key -> SectionInfo -> Key
+sectionKeyWithDefault dflt = maybe dflt id <$> section_key
 
 
 data Tie = TIE | NO_TIE

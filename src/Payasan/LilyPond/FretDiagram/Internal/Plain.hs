@@ -44,8 +44,8 @@ type NoteListAtom = NoteGroup FretDiagram Duration ()
 fromNoteList :: String -> SectionInfo -> GuitarTuning -> [[NoteListAtom]] 
              -> FretDiagramSection
 fromNoteList name locals tuning xss = 
-    mapPitchAnno (changeNote (section_key locals) tuning) $ 
-        Section name locals $ map Bar xss
+    let key = sectionKeyWithDefault c_maj locals
+    in mapPitchAnno (changeNote key tuning) $ Section name locals $ map Bar xss
 
 
 

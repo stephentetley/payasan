@@ -96,10 +96,10 @@ scoreHeader lyversion name  =
 
 phraseHeader :: SectionInfo -> Doc
 phraseHeader locals = case section_meter locals of
-    Unmetered -> cadenzaOn_ $+$ keyline
-    Metered t -> keyline $+$ time_ t
+    Unmetered -> cadenzaOn_ $+? keyline
+    Metered t -> keyline ?+$ time_ t
   where
-    keyline = key_ (section_key locals)
+    keyline = key_ <$> section_key locals
 
 
 
@@ -133,8 +133,8 @@ meterCtx (Unmetered) =
 meterCtx (Metered t) = 
     DOC.ContextDoc $ \d -> time_ t $+$ d
 
-keyCtx :: Key -> DOC.ContextDoc
-keyCtx k = DOC.ContextDoc $ \d -> key_ k $+$ d
+keyCtx :: Maybe Key -> DOC.ContextDoc
+keyCtx k = DOC.ContextDoc $ \d -> let keyline = fmap key_ k in keyline ?+$ d
     
 
 

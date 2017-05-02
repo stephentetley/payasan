@@ -36,6 +36,7 @@ import Payasan.PSC.Repr.External.Syntax
 import Payasan.PSC.Repr.External.Traversals
 
 import Payasan.PSC.Base.SyntaxCommon
+import Payasan.PSC.Base.Utils
 
 import Payasan.Base.Basis
 import Payasan.Base.Duration
@@ -124,7 +125,7 @@ rhythmicMarkupVoice def ph =
 -- TODO - this should be common...
 renderPartHeader :: SectionInfo -> Doc
 renderPartHeader locals = case section_meter locals of
-    Unmetered -> keyline
-    Metered t -> keyline $+$ time_ t
+    Unmetered -> maybe empty id keyline
+    Metered t -> keyline ?+$ time_ t
   where
-    keyline = key_  (section_key locals)
+    keyline = key_  <$> section_key locals

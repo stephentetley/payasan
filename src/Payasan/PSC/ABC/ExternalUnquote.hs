@@ -101,7 +101,8 @@ grace1P (Grace1 p d)            = (\p1 -> Grace1 p1 d) <$> transPch p
 -- signature
 
 transPch :: ABCPitch -> PTMon Pitch
-transPch p0 = (\k -> toPitch (buildScale k) p0) <$> asks section_key
+transPch p0 = 
+    (\k -> toPitch (buildScale k) p0) <$> asks (sectionKeyWithDefault c_maj)
 
 
 
