@@ -38,16 +38,16 @@ import Text.PrettyPrint.HughesPJClass           -- package: pretty
 fretDiagramOutput :: String -> String -> [FretDiagram] -> Part LyPitch LyNoteLength FretDiagram -> Doc
 fretDiagramOutput lyversion title diags ph = 
         header
-    $+$ anno_defs defuse
+    $+$ diag_defs
     $+$ phraseBlock (extractDoc notes)
   where
-    defuse          = diagramDU diags
+    diag_defs       = vcat $ map diagramDef diags
     header          = scoreHeader lyversion title
     notes           = makeLyNoteList fret_def ph
 
     fret_def        :: LyOutputDef LyPitch FretDiagram
     fret_def        = LyOutputDef { printPitch   = pitch
-                                  , printAnno    = anno_use defuse 
+                                  , printAnno    = diagramUse
                                   , partContext  = emptyCtx
                                   }
 
@@ -59,14 +59,6 @@ phraseBlock doc  = simultaneous1 $ anonBlock doc
 
 
 
--- | Note - the @universe@ of defs is not closed.
---
--- There are as many defs as there are diagrams defined.
---
-diagramDU :: [FretDiagram] -> AnnoDU FretDiagram
-diagramDU fs = AnnoDU { anno_defs  = vcat $ map diagramDef fs
-                      , anno_use   = diagramUse
-                      }
 
 diagramDef :: FretDiagram -> Doc
 diagramDef fd@(FretDiagram { fd_name = s }) = 

@@ -18,7 +18,6 @@ module Payasan.LilyPond.Lyricmode.Internal.Output
   ( 
    
     lyricsScore
-  , lyricsScoreDU
   , rhythmVoice
   , lyricsVoice
 
@@ -51,19 +50,6 @@ lyricsScore lyversion title' ph1 ph2 =
     lyrics          = lyricsVoice ph2
                       
 
-lyricsScoreDU :: AnnoDU a
-              -> String 
-              -> String
-              -> EXT.Part LyPitch LyNoteLength a
-              -> EXT.Part Syllable LyNoteLength az
-              -> Doc
-lyricsScoreDU annos lyversion title' ph1 ph2 = 
-        header $+$ anno_defs annos $+$ simultaneous1 (rhythm $+$ lyrics)
-  where
-    header          = scoreHeader lyversion title'
-    rhythm          = rhythmVoice (anno_use annos) ph1
-    lyrics          = lyricsVoice ph2
-                      
 
 
 

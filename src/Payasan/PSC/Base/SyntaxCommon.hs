@@ -27,7 +27,7 @@ module Payasan.PSC.Base.SyntaxCommon
 
   , Tie(..)
   , Anno(..)
-  , AnnoDU(..)
+--  , AnnoDU(..)
 
   , default_section_info
 

@@ -30,7 +30,6 @@ module Payasan.Base.Basis
   , Meter(..)
   , TimeSig(..)
 
-  , barLength
   , quarterNoteLength
 
   )  where
@@ -81,12 +80,6 @@ data Meter = Unmetered | Metered TimeSig
 data TimeSig = TimeSig Int Int
   deriving (Data,Eq,Ord,Show,Typeable)
 
-
--- note use length in naming to imply Seconds...
-
-barLength :: BPM -> TimeSig -> Seconds
-barLength bpm (TimeSig n d) =
-    (realToFrac n / realToFrac d) * (4 * quarterNoteLength bpm)
 
 
 quarterNoteLength :: BPM -> Seconds
