@@ -56,7 +56,7 @@ data NoteList pch anno = NoteList
 -- | Bars maybe be too long or too short upto a time sig (or key)
 -- change, so we segment them first.
 --
-flatten :: StdElemSection2 pch anno -> NoteList pch anno
+flatten :: Section pch Duration anno -> NoteList pch anno
 flatten (Section name info bs) = 
     NoteList { notelist_name = name
              , notelist_header = info
@@ -66,14 +66,14 @@ flatten (Section name info bs) =
 
 
 viaNoteList :: (SectionInfo -> Notes pch anno -> Notes pch anno) 
-            -> StdElemSection2 pch anno
-            -> StdElemSection2 pch anno
+            -> Section pch Duration anno
+            -> Section pch Duration anno
 viaNoteList fn = remake . f2 . flatten
   where
     f2 (NoteList name info es) = NoteList name info $ fn info es
 
 onNoteList :: (SectionInfo -> Notes pch anno -> ans) 
-            -> StdElemSection2 pch anno
+            -> Section pch Duration anno
             -> ans
 onNoteList fn = f2 . flatten
   where
@@ -83,14 +83,14 @@ onNoteList fn = f2 . flatten
 --------------------------------------------------------------------------------
 -- Remake - notelist to 
 
-remake :: NoteList pch anno -> StdElemSection2 pch anno
+remake :: NoteList pch anno -> Section pch Duration anno
 remake (NoteList name info es) = 
     Section { section_name  = name
             , section_info  = info 
             , section_bars  = fn $ section_meter info }
   where
     fn (Unmetered)  = [Bar es]
-    fn (Metered t)  = map Bar $ split (barRatDuration t) es
+    fn (Metered t)  = map Bar $ split (timeSigRatDuration t) es
 
 split :: RatDuration 
       -> [NoteGroup pch Duration anno]

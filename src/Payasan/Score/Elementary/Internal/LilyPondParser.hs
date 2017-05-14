@@ -29,6 +29,7 @@ module Payasan.Score.Elementary.Internal.LilyPondParser
 
 import Payasan.Score.Elementary.Internal.Syntax
 
+import Payasan.PSC.LilyPond.Base
 import Payasan.PSC.LilyPond.Lexer
 import qualified Payasan.PSC.LilyPond.ExternalParser as P
 import Payasan.PSC.LilyPond.ExternalParser (LyParserDef(..), pitch, noAnno)
@@ -45,7 +46,7 @@ import Text.Parsec                              -- package: parsec
 -- Parser
 
 
-parseLilyPondNoAnno :: String -> Either ParseError (LyElemSection1 ())
+parseLilyPondNoAnno :: String -> Either ParseError (Section LyPitch LyNoteLength ())
 parseLilyPondNoAnno = parseLySection parsedef
   where
     parsedef = LyParserDef { pitchParser = pitch, annoParser = noAnno }
@@ -53,12 +54,12 @@ parseLilyPondNoAnno = parseLySection parsedef
 
 parseLySection :: P.LyParserDef pch anno
                -> String 
-               -> Either ParseError (LyElemSection2 pch anno)
+               -> Either ParseError (Section pch LyNoteLength anno)
 parseLySection def = runParser (makeLyParser def) () ""
 
 
 makeLyParser :: forall pch anno. 
-                P.LyParserDef pch anno -> LyParser (LyElemSection2 pch anno)
+                P.LyParserDef pch anno -> LyParser (Section pch LyNoteLength anno)
 makeLyParser def = fullParseLy section
   where
     pPitch :: LyParser pch
@@ -67,38 +68,38 @@ makeLyParser def = fullParseLy section
     pAnno  :: LyParser anno
     pAnno  = P.annoParser def
 
-    section :: LyParser (LyElemSection2 pch anno)
+    section :: LyParser (Section pch LyNoteLength anno)
     section = Section "TODO" default_section_info <$> bars
 
-    bars :: LyParser [LyElemBar2 pch anno]
+    bars :: LyParser [Bar pch LyNoteLength anno]
     bars = sepBy bar P.barline
 
-    bar :: LyParser (LyElemBar2 pch anno)
+    bar :: LyParser (Bar pch LyNoteLength anno)
     bar = Bar <$> noteGroups 
 
-    noteGroups :: LyParser [LyElemNoteGroup2 pch anno]
+    noteGroups :: LyParser [NoteGroup pch LyNoteLength anno]
     noteGroups = whiteSpace *> many (ignoreSquares noteGroup)
 
-    noteGroup :: LyParser (LyElemNoteGroup2 pch anno)
+    noteGroup :: LyParser (NoteGroup pch LyNoteLength anno)
     noteGroup = tuplet <|> (Atom <$> element)
 
-    tuplet :: LyParser (LyElemNoteGroup2 pch anno)
+    tuplet :: LyParser (NoteGroup pch LyNoteLength anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
             <$> P.tupletSpec <*> braces elements
 
-    elements :: LyParser [LyElemElement2 pch anno]
+    elements :: LyParser [Element pch LyNoteLength anno]
     elements = whiteSpace *> many (ignoreSquares element)
 
-    element :: LyParser (LyElemElement2 pch anno)
+    element :: LyParser (Element pch LyNoteLength anno)
     element = lexeme (rest <|> note)
 
-    note :: LyParser (LyElemElement2 pch anno)
+    note :: LyParser (Element pch LyNoteLength anno)
     note = (\p d a t -> Note p d a t) 
              <$> pPitch <*> P.noteLength <*> pAnno <*> P.tie
         <?> "note"
 
-    rest :: LyParser (LyElemElement2 pch anno)
+    rest :: LyParser (Element pch LyNoteLength anno)
     rest = Rest <$> (char 'r' *> P.noteLength)
 
 

@@ -41,13 +41,13 @@ import Data.Char (isSpace)
 
 
 
-parseABCSection :: String -> Either ParseError ABCElemSection
+parseABCSection :: String -> Either ParseError (Section ABCPitch ABCNoteLength ())
 parseABCSection = runParser fullABCSection () ""
 
 
 
 
-fullABCSection :: ABCParser ABCElemSection
+fullABCSection :: ABCParser (Section ABCPitch ABCNoteLength ())
 fullABCSection = whiteSpace *> abcSectionK >>= step
   where 
     isTrail             = all (isSpace)
@@ -56,49 +56,49 @@ fullABCSection = whiteSpace *> abcSectionK >>= step
         | otherwise     = fail $ "parseFail - remaining input: " ++ ss
 
 
-abcSectionK :: ABCParser (ABCElemSection,SourcePos,String)
+abcSectionK :: ABCParser (Section ABCPitch ABCNoteLength (),SourcePos,String)
 abcSectionK = (,,) <$> section <*> getPosition <*> getInput
 
-section :: ABCParser ABCElemSection 
+section :: ABCParser (Section ABCPitch ABCNoteLength ())  
 section = Section "TODO" default_section_info <$> bars
 
-bars :: ABCParser [ABCElemBar]
+bars :: ABCParser [Bar ABCPitch ABCNoteLength ()]
 bars = sepBy bar barline
 
 barline :: ABCParser ()
 barline = reservedOp "|"
 
-bar :: ABCParser ABCElemBar
+bar :: ABCParser (Bar ABCPitch ABCNoteLength ())
 bar = Bar <$> noteGroups 
 
 
-noteGroups :: ABCParser [ABCElemNoteGroup]
+noteGroups :: ABCParser [NoteGroup ABCPitch ABCNoteLength ()]
 noteGroups = whiteSpace *> many noteGroup
 
 
-noteGroup :: ABCParser ABCElemNoteGroup
+noteGroup :: ABCParser (NoteGroup ABCPitch ABCNoteLength ())
 noteGroup = tuplet <|> (Atom <$> element)
 
-element :: ABCParser ABCElemElement
+element :: ABCParser (Element ABCPitch ABCNoteLength ())
 element = lexeme (rest <|> note)
 
-rest :: ABCParser ABCElemElement
+rest :: ABCParser (Element ABCPitch ABCNoteLength ())
 rest = Rest <$> (char 'z' *> P.noteLength)
 
-note :: ABCParser ABCElemElement
+note :: ABCParser (Element ABCPitch ABCNoteLength ())
 note = (\p d t -> Note p d () t) <$> pitch <*> P.noteLength <*> P.tie
     <?> "note"
 
 
 -- Cannot use parsecs count as ABC counts /deep leaves/.
 --
-tuplet :: ABCParser ABCElemNoteGroup
+tuplet :: ABCParser (NoteGroup ABCPitch ABCNoteLength ())
 tuplet = do 
    spec   <- P.tupletSpec
    notes  <- countedElements (tuplet_len spec)
    return $ Tuplet spec notes
 
-countedElements :: Int -> ABCParser [ABCElemElement]
+countedElements :: Int -> ABCParser [Element ABCPitch ABCNoteLength ()]
 countedElements n 
     | n > 0       = do { e  <- element
                        ; es <- countedElements (n - 1)

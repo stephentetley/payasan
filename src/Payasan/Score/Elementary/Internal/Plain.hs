@@ -32,9 +32,9 @@ import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
 import Payasan.Base.Pitch
 
-type NoteListAtom = StdElemNoteGroup
+type NoteListAtom = NoteGroup Pitch Duration ()
 
-fromNoteList :: String -> SectionInfo -> [NoteListAtom] -> StdElemSection
+fromNoteList :: String -> SectionInfo -> [NoteListAtom] -> Section Pitch Duration ()
 fromNoteList name info xs = recalcBars $ Section name info [Bar xs]
 
 note :: Pitch -> Duration -> NoteListAtom

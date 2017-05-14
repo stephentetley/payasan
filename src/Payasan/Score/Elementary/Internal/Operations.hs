@@ -64,18 +64,18 @@ import qualified Prelude as PRE
 
 -- cf. Data.Char character classes...
 
-isNote :: Element pdh drn anno -> Bool
+isNote :: Element pch drn anno -> Bool
 isNote (Note {})                = True
 isNote _                        = False
 
-isRestlike :: Element pdh drn anno -> Bool
+isRestlike :: Element pch drn anno -> Bool
 isRestlike (Note {})            = False
 isRestlike (Rest {})            = True
 isRestlike (Spacer {})          = True
 isRestlike (Skip {})            = True
 isRestlike (Punctuation {})     = False
 
-isPunctuation :: Element pdh drn anno -> Bool
+isPunctuation :: Element pch drn anno -> Bool
 isPunctuation (Punctuation {})  = True
 isPunctuation _                 = False
 
@@ -162,7 +162,7 @@ dropBars :: Int -> Section pch drn anno -> Section pch drn anno
 dropBars i (Section name info bs) = Section name info $ PRE.drop i bs
 
 
-takeSize :: RatDuration -> StdElemSection2 pch anno -> StdElemSection2 pch anno
+takeSize :: RatDuration -> Section pch Duration anno -> Section pch Duration anno
 takeSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 
@@ -173,7 +173,7 @@ takeSize rd = step 0 . makeLoc
 
 
 
-dropSize :: RatDuration -> StdElemSection2 pch anno -> StdElemSection2 pch anno
+dropSize :: RatDuration -> Section pch Duration anno -> Section pch Duration anno
 dropSize rd = step 0 . makeLoc 
   where
     step sz loc = case atLoc loc of 

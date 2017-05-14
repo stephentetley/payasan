@@ -19,37 +19,7 @@
 module Payasan.Score.Elementary.Internal.Syntax
   ( 
 
-    StdElemSection
-  , StdElemBar
-  , StdElemNoteGroup
-  , StdElemElement
-
-  , StdElemSection1
-  , StdElemBar1
-  , StdElemNoteGroup1
-  , StdElemElement1
-
-  , StdElemSection2
-  , StdElemBar2
-  , StdElemNoteGroup2
-  , StdElemElement2
-
-  , LyElemSection1
-  , LyElemBar1
-  , LyElemNoteGroup1
-  , LyElemElement1
-
-  , LyElemSection2
-  , LyElemBar2
-  , LyElemNoteGroup2
-  , LyElemElement2
-
-  , ABCElemSection
-  , ABCElemBar
-  , ABCElemNoteGroup
-  , ABCElemElement
-
-  , ABCSectionQuote(..)  
+    ABCSectionQuote(..)  
   , LySectionQuote(..)
 
   , Section(..)
@@ -83,45 +53,12 @@ import Payasan.PSC.LilyPond.Base hiding ( LySectionQuote(..) )
 import Payasan.PSC.Base.SyntaxCommon
 
 import Payasan.Base.Duration
-import Payasan.Base.Pitch
 
 import Data.Data
 
 --------------------------------------------------------------------------------
 -- Syntax
 
-
-type StdElemSection                 = StdElemSection1    ()
-type StdElemBar                     = StdElemBar1       ()
-type StdElemNoteGroup               = StdElemNoteGroup1 ()
-type StdElemElement                 = StdElemElement1   ()
-
-
-type StdElemSection1    anno        = Section   Pitch Duration anno
-type StdElemBar1        anno        = Bar       Pitch Duration anno
-type StdElemNoteGroup1  anno        = NoteGroup Pitch Duration anno
-type StdElemElement1    anno        = Element   Pitch Duration anno
-
-type StdElemSection2    pch anno    = Section   pch Duration anno
-type StdElemBar2        pch anno    = Bar       pch Duration anno
-type StdElemNoteGroup2  pch anno    = NoteGroup pch Duration anno
-type StdElemElement2    pch anno    = Element   pch Duration anno
-
-type LyElemSection1     anno        = LyElemSection2    LyPitch anno
-type LyElemBar1         anno        = LyElemBar2        LyPitch anno
-type LyElemNoteGroup1   anno        = LyElemNoteGroup2  LyPitch anno
-type LyElemElement1     anno        = LyElemElement2    LyPitch anno
-
-type LyElemSection2     pch anno    = Section   pch LyNoteLength anno
-type LyElemBar2         pch anno    = Bar       pch LyNoteLength anno
-type LyElemNoteGroup2   pch anno    = NoteGroup pch LyNoteLength anno
-type LyElemElement2     pch anno    = Element   pch LyNoteLength anno
-
-
-type ABCElemSection                 = Section   ABCPitch ABCNoteLength ()
-type ABCElemBar                     = Bar       ABCPitch ABCNoteLength ()
-type ABCElemNoteGroup               = NoteGroup ABCPitch ABCNoteLength ()
-type ABCElemElement                 = Element   ABCPitch ABCNoteLength ()
 
 
 

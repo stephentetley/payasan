@@ -27,13 +27,12 @@ module Payasan.PSC.Base.SyntaxCommon
 
   , Tie(..)
   , Anno(..)
---  , AnnoDU(..)
 
   , default_section_info
 
   , sectionKeyWithDefault
 
-  , barRatDuration
+  , timeSigRatDuration
 
   , MeterPattern
   , TupletSpec(..)
@@ -147,21 +146,11 @@ instance Anno () where anno = const empty
 
 
 
--- DEPRECATED
--- The idea behind this wasn't so well founded. Defs should
--- probably go somehow directly into the score template.
---
-data AnnoDU a = AnnoDU 
-    { anno_defs :: Doc                  -- multiple annos
-    , anno_use  :: a -> Doc 
-    }
 
 
 
-
-
-barRatDuration :: TimeSig -> RatDuration
-barRatDuration (TimeSig n d) = (fromIntegral n) * fn d
+timeSigRatDuration :: TimeSig -> RatDuration
+timeSigRatDuration (TimeSig n d) = (fromIntegral n) * fn d
   where
     fn i = 1 % fromIntegral i
 

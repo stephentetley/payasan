@@ -41,13 +41,14 @@ import qualified Payasan.Score.Elementary.Internal.Syntax   as ELEM
 
 import Payasan.PSC.LilyPond.Base (LyNoteLength)
 
+import Payasan.Base.Duration
 
 import Text.PrettyPrint.HughesPJClass           -- package: pretty
 
 import Data.Data
 
 
-type LyricSection1 anno    = ELEM.StdElemSection2 Syllable anno
+type LyricSection1 anno    = ELEM.Section Syllable Duration anno
 
 type LyLyricSection     = ELEM.Section    Syllable LyNoteLength ()
 type LyLyricBar         = ELEM.Bar        Syllable LyNoteLength ()
