@@ -18,27 +18,7 @@
 module Payasan.Score.Cadenza.Internal.Syntax
   ( 
 
-    StdCadenzaSection
-  , StdCadenzaNoteGroup
-  , StdCadenzaElement
-
-  , StdCadenzaSection1
-  , StdCadenzaNoteGroup1
-  , StdCadenzaElement1
-
-  , StdCadenzaSection2
-  , StdCadenzaNoteGroup2
-  , StdCadenzaElement2
-
-  , LyCadenzaSection1
-  , LyCadenzaNoteGroup1
-  , LyCadenzaElement1
-
-  , LyCadenzaSection2
-  , LyCadenzaNoteGroup2
-  , LyCadenzaElement2
-
-  , LySectionQuote(..)
+    LySectionQuote(..)
 
   , Section(..)
   , NoteGroup(..)
@@ -55,36 +35,11 @@ import Payasan.PSC.LilyPond.Base hiding  ( LySectionQuote(..) )
 
 import Payasan.PSC.Base.SyntaxCommon
 import Payasan.Base.Duration
-import Payasan.Base.Pitch
 
 import Data.Data
 
 --------------------------------------------------------------------------------
 -- Syntax
-
-
--- DEPRECATED - all aliases are depracted
-type StdCadenzaSection                  = StdCadenzaSection1      ()
-type StdCadenzaNoteGroup                = StdCadenzaNoteGroup1 ()
-type StdCadenzaElement                  = StdCadenzaElement1   ()
-
-
-type StdCadenzaSection1    anno         = Section   Pitch Duration anno
-type StdCadenzaNoteGroup1  anno         = NoteGroup Pitch Duration anno
-type StdCadenzaElement1    anno         = Element   Pitch Duration anno
-
-type StdCadenzaSection2    pch anno     = Section   pch Duration anno
-type StdCadenzaNoteGroup2  pch anno     = NoteGroup pch Duration anno
-type StdCadenzaElement2    pch anno     = Element   pch Duration anno
-
-type LyCadenzaSection1     anno         = LyCadenzaSection2    LyPitch anno
-type LyCadenzaNoteGroup1   anno         = LyCadenzaNoteGroup2  LyPitch anno
-type LyCadenzaElement1     anno         = LyCadenzaElement2    LyPitch anno
-
-type LyCadenzaSection2     pch anno     = Section   pch LyNoteLength anno
-type LyCadenzaNoteGroup2   pch anno     = NoteGroup pch LyNoteLength anno
-type LyCadenzaElement2     pch anno     = Element   pch LyNoteLength anno
-
 
 -- NOTE - we could accommodate ABC but parsing the input syntax
 -- is thorny (whitespace sensitive) and ABC is already a second 

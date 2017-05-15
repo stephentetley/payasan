@@ -31,7 +31,7 @@ module Payasan.Score.Cadenza.Internal.LilyPondParser
 import Payasan.Score.Cadenza.Internal.Syntax
 
 import Payasan.PSC.LilyPond.Lexer
-import Payasan.PSC.LilyPond.Base ( LyPitch )
+import Payasan.PSC.LilyPond.Base ( LyPitch, LyNoteLength )
 import qualified Payasan.PSC.LilyPond.ExternalParser    as P
 import Payasan.PSC.LilyPond.ExternalParser (LyParserDef(..), pitch, noAnno)
 
@@ -71,37 +71,37 @@ makeParser lib = fullParseLy section
     section :: LyParser (LySectionQuote pch anno)
     section = (LySectionQuote . reconcileBeamHeads) <$> noteGroups
 
-    noteGroups :: LyParser [LyCadenzaNoteGroup2 pch anno]
+    noteGroups :: LyParser [NoteGroup pch LyNoteLength anno]
     noteGroups = whiteSpace *> many noteGroup
 
-    noteGroup :: LyParser (LyCadenzaNoteGroup2 pch anno)
+    noteGroup :: LyParser (NoteGroup pch LyNoteLength anno)
     noteGroup = tuplet <|> beamTail <|> atom
 
 
-    beamTail :: LyParser (LyCadenzaNoteGroup2 pch anno)
+    beamTail :: LyParser (NoteGroup pch LyNoteLength anno)
     beamTail = Beamed <$> squares noteGroups
 
 
-    tuplet :: LyParser (LyCadenzaNoteGroup2 pch anno)
+    tuplet :: LyParser (NoteGroup pch LyNoteLength anno)
     tuplet = 
         (\spec notes -> Tuplet (P.makeTupletSpec spec (length notes)) notes)
             <$> P.tupletSpec <*> braces elements
 
-    atom :: LyParser (LyCadenzaNoteGroup2 pch anno)
+    atom :: LyParser (NoteGroup pch LyNoteLength anno)
     atom = Atom <$> element
 
-    elements :: LyParser [LyCadenzaElement2 pch anno]
+    elements :: LyParser [Element pch LyNoteLength anno]
     elements = whiteSpace *> many element
 
-    element :: LyParser (LyCadenzaElement2 pch anno)
+    element :: LyParser (Element pch LyNoteLength anno)
     element = lexeme (rest <|> note)
 
-    note :: LyParser (LyCadenzaElement2 pch anno)
+    note :: LyParser (Element pch LyNoteLength anno)
     note = (\p d a t -> Note p d a t) 
              <$> pPitch <*> P.noteLength <*> pAnno <*> P.tie
         <?> "note"
 
-    rest :: LyParser (LyCadenzaElement2 pch anno)
+    rest :: LyParser (Element pch LyNoteLength anno)
     rest = Rest <$> (char 'r' *> P.noteLength)
 
 
@@ -110,8 +110,8 @@ makeParser lib = fullParseLy section
 -- | @reconcileBeamHeads@ expects sensible beam groups. 
 -- It does not test for duration < quarter, or similar.
 --
-reconcileBeamHeads :: [LyCadenzaNoteGroup2 pch anno] 
-                   -> [LyCadenzaNoteGroup2 pch anno]
+reconcileBeamHeads :: [NoteGroup pch LyNoteLength anno] 
+                   -> [NoteGroup pch LyNoteLength anno]
 reconcileBeamHeads = step1
   where
     step1 []               = []
